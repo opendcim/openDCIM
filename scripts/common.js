@@ -40,7 +40,7 @@ function convertImgToBase64(url, callback, outputFormat){
 		var dataURL = canvas.toDataURL(outputFormat || 'image/png');
 		callback.call(this, dataURL);
 		// Clean up
-		canvas = null; 
+		canvas = null;
 	};
 	img.src = url;
 }
@@ -82,7 +82,7 @@ function getCookie(c_name) {
 		if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
 	}
 	return "";
-} 
+}
 
 // a way too specific function for scrolling a div
 function scrollolog(){
@@ -93,7 +93,7 @@ function scrollolog(){
 }
 
 
-// 
+//
 // Scan a text script and turn in url's found into clickable links
 //
 // Example: $('#olog > div ~ div').html(urlify($('#olog > div ~ div').text()))
@@ -258,7 +258,7 @@ $(document).ready(function(){
 		}
 	});
 
-	// The container helper function needs the menu to be visible 
+	// The container helper function needs the menu to be visible
 	function manglecontainer(){
 		if($('#datacenters .bullet').length==0){
 			setTimeout(function(){
@@ -287,7 +287,7 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 
 	var arrowW = 0.30 * width;
 	var arrowH = 0.30 * height;
- 
+
 	switch(direction){
 		case 'Top':
 			var p1={x: startx+arrowW, y: starty};
@@ -340,10 +340,10 @@ function drawArrow(canvas,startx,starty,width,height,direction){
 	canvas.beginPath();
 	canvas.moveTo(p1.x, p1.y);
 	canvas.lineTo(p2.x, p2.y); // end of main block
-	canvas.lineTo(p3.x, p3.y); // topmost point     
-	canvas.lineTo(p4.x, p4.y); // endpoint 
-	canvas.lineTo(p5.x, p5.y); // bottommost point 
-	canvas.lineTo(p6.x, p6.y); // end at bottom point 
+	canvas.lineTo(p3.x, p3.y); // topmost point
+	canvas.lineTo(p4.x, p4.y); // endpoint
+	canvas.lineTo(p5.x, p5.y); // bottommost point
+	canvas.lineTo(p6.x, p6.y); // end at bottom point
 	canvas.lineTo(p7.x, p7.y);
 
 	canvas.closePath();
@@ -496,7 +496,7 @@ function InsertCoordsTable(front,btn){
 		table.append(CoordinateRow(i,front));
 	}
 
-	// moved this to the end so that the previous values could be read in the case that the 
+	// moved this to the end so that the previous values could be read in the case that the
 	// edit coordinates button is pressed again
 	$(targetdiv+' #coordstable').html(table);
 }
@@ -698,7 +698,7 @@ function buildpowerportstable(){
 		image.append(del);
 		image.mouseover(function(){del.toggle()});
 		image.mouseout(function(){del.toggle()});
-		return image; 
+		return image;
 	}
 	function delimage(path,file){
 		var test=1;
@@ -825,7 +825,7 @@ function startmap(){
 		url: '',
 		type: "post",
 		async: false,
-		data: {dc: $('map[name=datacenter]').data('dc'), getobjects: ''}, 
+		data: {dc: $('map[name=datacenter]').data('dc'), getobjects: ''},
 		success: function(data){
 			var temp={'cabs':[],'panels':[],'zones':[] }; // array of areas we're using
 			var temphilight={'cabs':[],'panels':[],'zones':[] }; // array of areas and their outline state
@@ -863,7 +863,7 @@ function startmap(){
 		url: '',
 		type: "post",
 		async: false,
-		data: {dc: $('map[name=datacenter]').data('dc'), getoverview: ''}, 
+		data: {dc: $('map[name=datacenter]').data('dc'), getoverview: ''},
 		success: function(d){
 			stat=$.extend(true,{},d);
 		}
@@ -882,7 +882,7 @@ function startmap(){
 					} else {
 						Hilight($('.canvas > map > area[name=zone'+x+']'));
 					}
-				}	
+				}
 			});
 		});
 	}
@@ -1053,7 +1053,7 @@ function bindmaptooltips(){
 			tooltip.html(data);
 		});
 		$('body').append(tooltip);
-		
+
 		$(this).mouseleave(function(e){
 			tooltip.remove();
 			if (cx1>0 && e.shiftKey && $('#maptitle .nav > select').val()=="airflow"){
@@ -1154,7 +1154,7 @@ function cabinetimagecontrols(){
 		}
 	}
 
-	// TODO : Clean this shit up.  Make it more generic 
+	// TODO : Clean this shit up.  Make it more generic
 
 	// Read the cookie and do stuff
 	if(typeof $.cookie('devlabels')=='undefined' || $.cookie('devlabels')=='show'){
@@ -1169,14 +1169,14 @@ function cabinetimagecontrols(){
 	}else{
 		NoPictures();
 	}
-		
+
 	// Read the cookie and do stuff
 	if(typeof $.cookie('cabpos')=='undefined' || $.cookie('cabpos')=='show'){
 		snoitisoPoN();
 	}else{
 		NoPositions();
 	}
-		
+
 	function serutciPoN(){
 		// We're showing device images so labels are optional
 		lblbtn.show();
@@ -1272,7 +1272,7 @@ $(document).ready(function(){
 				}
 				arr_parents[data.device[x].DeviceID]=data.device[x].ParentDevice;
 			}
-			// iterate over all the devices again for figuring weight by u 
+			// iterate over all the devices again for figuring weight by u
 			for(var x in data.device){
 				totalweight += data.device[x].Weight;
 				if(data.device[x].ParentDevice==0){
@@ -1324,8 +1324,8 @@ $(document).ready(function(){
 
 // function to determine if two objects overlap
 function intersectRect(r1, r2) {
-	return !(r2.left > r1.right || 
-			r2.right < r1.left || 
+	return !(r2.left > r1.right ||
+			r2.right < r1.left ||
 			r2.top > r1.bottom ||
 			r2.bottom < r1.top);
 }
@@ -1382,11 +1382,11 @@ function initdrag(){
 		stop: function( event, ui ) {
 			var twofacedev=($('#adjustmeandclearthis').length==0)?false:true;
 			var collision=0;
-			var uirect={ 
-				left: ui.position.left, 
-				top: Math.floor(ui.position.top)-1, 
+			var uirect={
+				left: ui.position.left,
+				top: Math.floor(ui.position.top)-1,
 				right: ui.position.left+this.offsetWidth,
-				// subtract 1px to account for stuff lining up exactly. 
+				// subtract 1px to account for stuff lining up exactly.
 				bottom: Math.floor(ui.position.top+this.offsetHeight)-1
 			};
 			for(var i in this.parentElement.children){
@@ -1397,10 +1397,10 @@ function initdrag(){
 						// if the device is half depth we'll allow it over another half depth
 						continue;
 					}
-					var noderect={ 
-						left: node.offsetLeft, 
-						top: Math.floor(node.offsetTop), 
-						right: node.offsetLeft+node.offsetWidth, 
+					var noderect={
+						left: node.offsetLeft,
+						top: Math.floor(node.offsetTop),
+						right: node.offsetLeft+node.offsetWidth,
 						bottom: Math.floor(node.offsetTop+node.offsetHeight)
 					};
 					if(intersectRect(noderect,uirect)){
@@ -1456,7 +1456,7 @@ function initdrag(){
 				(twofacedev)?$('#adjustmeandclearthis')[0].style.top=device.style.top:'';
 
 				if(event.ctrlKey){
-					// We're copying a device so put the original back in place. 
+					// We're copying a device so put the original back in place.
 					device.style.left=ui.originalPosition.left+'px';
 					device.style.top=ui.originalPosition.top+'px';
 					(twofacedev)?$('#adjustmeandclearthis')[0].style.top=device.style.top:'';
@@ -1606,7 +1606,7 @@ function InsertDevice(obj){
 	}
 
 	// Here's as good a place as any to add in zero-u devices
-	if(obj.Height==0 && obj.DeviceType!='CDU' && obj.DeviceType!='Sensor'){ 
+	if(obj.Height==0 && obj.DeviceType!='CDU' && obj.DeviceType!='Sensor'){
 		$('#zerou').removeClass('hide');
 		var linkinsert=$('<a>').prop('href','devices.php?DeviceID='+obj.DeviceID).data('deviceid',obj.DeviceID).text(obj.Label);
 		if(obj.Rights=='None'){
@@ -1710,9 +1710,9 @@ function LameLogDisplay(){
 				function doit(override){
 					// set all the media types to the one selected from the drop down
 					$.post('',{
-						setall: override, 
-						devid: $('#DeviceID').val(), 
-						mt: setmediatype.val(), 
+						setall: override,
+						devid: $('#DeviceID').val(),
+						mt: setmediatype.val(),
 						cc: setmediatype.data(setmediatype.val())
 					}).done(function(data){
 						// setall kicked back every port run through them all and update note, media type, and color code
@@ -1994,13 +1994,13 @@ function LameLogDisplay(){
 			this.element.parent(0).width($(this.element.parent(0)).width());
 			this.wrapper=$("<span>").width(this.element.parent(0).width()-3).addClass("custom-combobox").insertAfter(this.element);
 
-			if(this.element.is(":visible")){ 
+			if(this.element.is(":visible")){
 				this.element.hide();
 				this._createAutocomplete();
 				this._createShowAllButton();
 			}
 		},
- 
+
 		_createAutocomplete: function() {
 			var selected=this.element.children(":selected"),
 				value=selected.val()?selected.text().trim():"";
@@ -2036,11 +2036,11 @@ function LameLogDisplay(){
 				autocompletechange: "_removeIfInvalid"
 			});
 		},
- 
+
 		_createShowAllButton: function() {
 			var input=this.input,
 			wasOpen=false;
- 
+
 			$("<a>").attr("tabIndex", -1)
 				.height($(this.wrapper).children('input').height())
 				.css({'width':'18px','vertical-align':'top','padding':$(this.wrapper).children('input').css('padding')})
@@ -2052,7 +2052,7 @@ function LameLogDisplay(){
 				.mousedown(function(){wasOpen=input.autocomplete("widget").is(":visible");})
 				.click(function(){
 					input.focus().select();
- 
+
 					// Close if already visible
 					if(wasOpen){return;}
 
@@ -2075,13 +2075,13 @@ function LameLogDisplay(){
 				}
 			}));
 		},
- 
+
 		_removeIfInvalid: function(event,ui){
 			// Selected an item, nothing to do
 			if(ui.item){
 				return;
 			}
- 
+
 			// Search for a match (case-insensitive)
 			var value=this.input.val(),
 				valueLowerCase=value.toLowerCase(),
@@ -2093,10 +2093,10 @@ function LameLogDisplay(){
 					return false;
 				}
 			});
- 
+
 			// Found a match, nothing to do
 			if(valid){return;}
- 
+
 			// Remove invalid value
 			this.input.val("").attr("title", value+" didn't match any item").tooltip("open");
 			this.element.val("");
@@ -2120,12 +2120,12 @@ function LameLogDisplay(){
 
 	while (prop = props.pop()) {
 		(function (natural, prop) {
-			$.fn[natural] = (natural in new Image()) ? 
+			$.fn[natural] = (natural in new Image()) ?
 			function () {
 			return this[0][natural];
-			} : 
+			} :
 			function () {
-			var 
+			var
 			node = this[0],
 			img,
 			value;
@@ -2149,7 +2149,7 @@ function LameLogDisplay(){
 			var ct=this.element.find('div:first-child');
 			ct.css({'text-decoration':'underline','cursor':'pointer'});
 
-			// Create a button to delete the row if the number of ports on a device is 
+			// Create a button to delete the row if the number of ports on a device is
 			// decreased
 			var del=$('<div>').addClass('delete').append($('<span>').addClass('ui-icon status down').on('click',function(e){row.deleteport()})).hide();
 			this.element.prepend(del);
@@ -2161,7 +2161,7 @@ function LameLogDisplay(){
 			this.cdevice     = this.element.find('div:nth-child(4)');
 			this.cdeviceport = this.element.find('div:nth-child(5)');
 			this.cnotes      = this.element.find('div:nth-child(6)');
-			// As we only track power connections on the primary chassis but display them 
+			// As we only track power connections on the primary chassis but display them
 			// on children we need a common place to check for the correct device id
 			this.deviceid    = (typeof $('select[name=ParentDevice]').val()=='undefined')?$('#DeviceID').val():$('select[name=ParentDevice]').val();
 
@@ -2349,7 +2349,7 @@ function LameLogDisplay(){
 			var ct=(pp.length==0)?this.element.find('div[id^="sp"]:not([id^="spn"])'):pp;
 			ct.css({'text-decoration':'underline','cursor':'pointer'});
 
-			// Create a button to delete the row if the number of ports on a device is 
+			// Create a button to delete the row if the number of ports on a device is
 			// decreased
 			var del=$('<div>').addClass('delete').append($('<span>').addClass('ui-icon status down').on('click',function(e){row.deleteport()})).hide();
 			this.element.prepend(del);
@@ -2413,7 +2413,7 @@ function LameLogDisplay(){
 			if(this.cdevice.data('default')>0){
 				this.destroy();
 			}
-		
+
 		},
 		edit: function() {
 			var row=this;
@@ -2552,7 +2552,7 @@ function LameLogDisplay(){
 			}else{
 				postoptions=$.extend(postoptions, {thisdev: this.cdevice.find('select').val(), pn: this.portnum});
 			}
-			
+
 			$.post('',postoptions).done(function(data){
 				var portlist=$("<select>");
 				$.each(data, function(key,port){

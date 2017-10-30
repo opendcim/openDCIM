@@ -55,14 +55,14 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 <script type="text/javascript">
@@ -130,10 +130,10 @@ function resize(){
 		// The math just isn't adding up across browsers and FUCK IE
 		if((main+sbw)<width){ // page is larger than content expand main to fit
 			$('#header').outerWidth(width);
-			$('div.main').outerWidth(width-sbw-4); 
+			$('div.main').outerWidth(width-sbw-4);
 			$('div.page').outerWidth(width);
 		}else{ // page is smaller than content expand the page to fit
-			$('div.main').width(width-sbw-12); 
+			$('div.main').width(width-sbw-12);
 			$('#header').width(width+4);
 			$('div.page').width(width+6);
 		}

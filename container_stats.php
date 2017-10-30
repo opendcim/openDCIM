@@ -11,7 +11,7 @@
 	}
 
 	$c=New Container();
-	
+
 	$c->ContainerID=$_GET["container"];
 	$c->GetContainer();
 	$cStats=$c->GetContainerStatistics();
@@ -22,7 +22,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Information Management</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">

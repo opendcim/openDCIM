@@ -3,7 +3,7 @@
 	require_once( 'facilities.inc.php' );
 
 	/*
-	 * Initial conversion from fac_PatchConnection, fac_SwitchConnection, 
+	 * Initial conversion from fac_PatchConnection, fac_SwitchConnection,
 	 * fac_DevicePorts over to a single table for all ports and their
 	 * connected whatevers.  We'll handle this for release in the install.php
 	 * this is meant for the dev branches only to do an immediate conversion.
@@ -11,7 +11,7 @@
 
 	// Retrieve a list of all switch and panel devices and make ports for them.
 
-	$sql='SELECT DeviceID,Ports,DeviceType from fac_Device WHERE 
+	$sql='SELECT DeviceID,Ports,DeviceType from fac_Device WHERE
 		DeviceType in ("Switch", "Patch Panel") AND Ports>0;';
 
 	foreach($dbh->query($sql) as $row){
@@ -24,30 +24,30 @@
 			}
 		}
 	}
-	
+
 	// Get a list of all non-switch and non-patch panel devices
 	$sql = "select DeviceID, Ports, DeviceType from fac_Device WHERE
 		DeviceType NOT IN ('Physical Infrastructure', 'Switch', 'Patch Panel')";
 	$swCount = $dbh->prepare( "select * from fac_SwitchConnection where EndpointDeviceID=:deviceid order by EndpointPort ASC" );
 	$ppCount = $dbh->prepare( "select * from fac_PatchConnection where FrontEndpointDeviceID=:deviceid order by FrontEndpointPort ASC" );
 	$portHash = array();
-	
+
 	$dev = new Device();
-	
+
 	foreach ( $dbh->query( $sql ) as $row ) {
 		$swCount->execute( array( ":deviceid" => $row["DeviceID"] ) );
 		$totalPorts = $swCount->rowCount();
-		
+
 		$ppCount->execute( array( ":deviceid" => $row["DeviceID"] ) );
 		$totalPorts += $ppCount->rowCount();
-		
+
 		$dev->DeviceID = $row["DeviceID"];
 		$dev->GetDevice();
 		if ( $dev->Ports < $totalPorts ) {
 			$dev->Ports = $totalPorts;
 			$dev->UpdateDevice();
 		}
-		
+
 		while ( $conRow = $swCount->fetch() ) {
 			$pNum = sizeof( $ports[$row["DeviceID"]] ) + 1;
 			$ports[$row["DeviceID"]][$pNum] = array();
@@ -76,9 +76,9 @@
 			printf( "Created patch panel port %d (%d) for device %d<br>\n", $pNum, $conRow["FrontEndpointPort"], $row["DeviceID"] );
 		}
 	}
-	
+
 	foreach($dbh->query('SELECT * FROM fac_PatchConnection;') as $row){
-		// Read all the patch connections again to get the rear connection info 
+		// Read all the patch connections again to get the rear connection info
 		$ports[$row['RearEndpointDeviceID']][-$row['RearEndpointPort']]['Connected Device']=$row['PanelDeviceID'];
 		$ports[$row['RearEndpointDeviceID']][-$row['RearEndpointPort']]['Connected Port']=-$row['PanelPortNumber'];
 		$ports[$row['RearEndpointDeviceID']][-$row['RearEndpointPort']]['Notes']=$row['RearNotes'];
@@ -103,12 +103,12 @@ print_r($ports);
 			$label=(isset($port['Label']))?$port['Label']:'';
 			$cport=(isset($port['Connected Port']))?$port['Connected Port']:null;
 			$notes=(isset($port['Notes']))?$port['Notes']:'';
-			
+
 //			$populate->execute( array( ":deviceid" => $deviceid, ":portnumber" => $portnum, ":label" => $label,
 //				":cdeviceid" => $cdevice, ":cport" => $cport, ":notes" => $notes ) );
 		}
 	}
-	
+
 	printf( "\n<p>Conversion completed.</p>\n" );
 
 ?>

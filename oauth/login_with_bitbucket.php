@@ -37,7 +37,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.bitbucket.org/1.0/user', 
+					'https://api.bitbucket.org/1.0/user',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -55,7 +55,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->user->first_name), 
+		echo '<h1>', HtmlSpecialChars($user->user->first_name),
 			' you have logged in successfully with Bitbucket!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

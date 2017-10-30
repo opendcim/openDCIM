@@ -13,7 +13,7 @@ require_once( "preflight.inc.php" );
 
 // Functions for upgrade / installing db objects
 	$successlog="";
-	
+
 function applyupdate ($updatefile){
 	global $dbh;
 
@@ -88,7 +88,7 @@ function sanitize($string,$stripall=true){
 
 	// Strip out the shit we don't allow
 	$clean=strip_tags($clean, $allowedtags);
-	// If we decide to strip double quotes instead of encoding them uncomment the 
+	// If we decide to strip double quotes instead of encoding them uncomment the
 	//	next line
 //	$clean=($stripall)?str_replace('"','',$clean):$clean;
 	// What is this gonna do ?
@@ -124,8 +124,8 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 	}
 
 	/*
-	   v4.0 migrated fac_Users to fac_People we need to adjust for older 
-	   installs that need upgrading.  The logic has remained nearly the 
+	   v4.0 migrated fac_Users to fac_People we need to adjust for older
+	   installs that need upgrading.  The logic has remained nearly the
 	   same but this will support upgrades as well as new installs
 	*/
 	$test=$result->fetchAll();
@@ -151,7 +151,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 	   create an admin user (all rights) as the current
 	   user.  */
 
-	$table=($usePeople)?'fac_People':'fac_User';	
+	$table=($usePeople)?'fac_People':'fac_User';
 	$sql="SELECT COUNT(*) AS TotalUsers FROM $table;";
 	$users=$dbh->query($sql)->fetchColumn();
 
@@ -252,7 +252,7 @@ function upgrade(){
 		$results[]=applyupdate("db-1.4-to-1.5.sql");
 		$version="1.5";
 	}
-	
+
 	if($version=="1.5"){	// Do the 1.5 to 2.0 Update
 		// Get a list of all Manufacturers that are duplicated
 		$sql="SELECT ManufacturerID,Name FROM fac_Manufacturer GROUP BY Name HAVING COUNT(*)>1;";
@@ -260,48 +260,48 @@ function upgrade(){
 			// Set all devices with that Manufacturer to the ID of just one
 			$sql="UPDATE fac_DeviceTemplate SET ManufacturerID={$row["ManufacturerID"]} WHERE ManufacturerID IN (SELECT ManufacturerID FROM fac_Manufacturer WHERE Name=\"{$row["Name"]}\");";
 			$dbh->query($sql);
-			
+
 			// Delete all the duplicates other than the one you set everything to
 			$sql="DELETE FROM fac_Manufacturer WHERE Name=\"{$row["Name"]}\" and ManufacturerID!={$row["ManufacturerID"]};";
 			$dbh->query($sql);
 		}
-		
+
 		// Repeat for Templates
 		$sql="SELECT TemplateID,ManufacturerID,Model FROM fac_DeviceTemplate GROUP BY ManufacturerID,Model HAVING COUNT(*)>1;";
 		foreach($dbh->query($sql) as $row){
 			$sql="UPDATE fac_Device SET TemplateID={$row["TemplateID"]} WHERE TemplateID IN (SELECT TemplateID FROM fac_DeviceTemplate WHERE ManufacturerID={$row["ManufacturerID"]} AND Model=\"{$row["Model"]}\");";
 			$dbh->query($sql);
-			
+
 			$sql="DELETE FROM fac_DeviceTemplate WHERE ManufacturerID={$row["ManufacturerID"]} AND TemplateID!={$row["TemplateID"]};";
 			$dbh->query($sql);
 		}
-		
+
 		// And finally, Departments
 		$sql="SELECT DeptID, Name FROM fac_Department GROUP BY Name HAVING COUNT(*)>1;";
 		foreach($dbh->query($sql) as $row){
 			$sql="UPDATE fac_Device SET Owner={$row["DeptID"]} WHERE Owner IN (SELECT DeptID FROM fac_Department WHERE Name=\"{$row["Name"]}\");";
 			$dbh->query($sql);
-			
+
 			// Yes, I know, this may create duplicates
 			$sql="UPDATE fac_DeptContacts SET DeptID={$row["DeptID"]} WHERE DeptID IN (SELECT DeptID FROM fac_Department WHERE Name=\"{$row["Name"]}\");";
 			$dbh->query($sql);
-			
+
 			$sql="DELETE FROM fac_Department WHERE Name=\"{$row["Name"]}\" AND DeptID!={$row["DeptID"]};";
 			$dbh->query($sql);
 		}
-		
+
 		// So delete the potential duplicate contact links created in the last step
 		$sql="SELECT DeptID,ContactID FROM fac_DeptContacts GROUP BY DeptID,ContactID HAVING COUNT(*)>1;";
 
-		foreach($dbh->query($sql) as $row){	
+		foreach($dbh->query($sql) as $row){
 			$sql="DELETE FROM fac_DeptContacts WHERE DeptID={$row["DeptID"]} AND ContactID={$row["ContactID"]};";
 			$dbh->query($sql);
-			
+
 			$sql="INSERT INTO fac_DeptContacts VALUES ({$row["DeptID"]},{$row["ContactID"]});";
 			$dbh->query($sql);
 		}
-		
-		 /* 
+
+		 /*
 		 /  Clean up multiple key issues.
 		 /
 		 /	1. Identify Multiple Keys
@@ -347,12 +347,12 @@ function upgrade(){
 		$dbh->query($sql);
 		$sql="ALTER TABLE fac_Department ADD UNIQUE KEY Name (Name);";
 		$dbh->query($sql);
-		
+
 		$config->rebuild();
 		$results[]=applyupdate("db-1.5-to-2.0.sql");
 		$version="2.0";
 	}
-	
+
 	if($version=="2.0"){
 		$sql="select InputAmperage from fac_PowerDistribution limit 1";
 		// See if the field exists - some people have manually added the missing one already, so we can't add what's already there
@@ -364,19 +364,19 @@ function upgrade(){
 
 		$sql='UPDATE fac_Config SET Value="2.0.1" WHERE Parameter="Version"';
 		$dbh->query($sql);
-		
+
 		$version="2.0.1";
 	}
 
 	if($version=="2.0.1"){
 		// Get a list of all Manufacturers that are duplicated
 		$sql="SELECT ManufacturerID,Name FROM fac_Manufacturer GROUP BY Name HAVING COUNT(*)>1;";
-		
+
 		foreach($dbh->query($sql) as $row){
 			// Set all devices with that Manufacturer to the ID of just one
 			$sql="UPDATE fac_DeviceTemplate SET ManufacturerID={$row["ManufacturerID"]} WHERE ManufacturerID IN (SELECT ManufacturerID FROM fac_Manufacturer WHERE Name=\"{$row["Name"]}\");";
 			$dbh->query($sql);
-			
+
 			// Delete all the duplicates other than the one you set everything to
 			$sql="DELETE FROM fac_Manufacturer WHERE Name=\"{$row["Name"]}\" and ManufacturerID!={$row["ManufacturerID"]};";
 			$dbh->query($sql);
@@ -384,11 +384,11 @@ function upgrade(){
 
 		// Repeat for Templates
 		$sql="SELECT TemplateID,ManufacturerID,Model FROM fac_DeviceTemplate GROUP BY ManufacturerID,Model HAVING COUNT(*)>1;";
-		
+
 		foreach($dbh->query($sql) as $row){
 			$sql="UPDATE fac_Device SET TemplateID={$row["TemplateID"]} WHERE TemplateID IN (SELECT TemplateID FROM fac_DeviceTemplate WHERE ManufacturerID={$row["ManufacturerID"]} AND Model=\"{$row["Model"]}\");";
 			$dbh->query($sql);
-			
+
 			$sql="DELETE FROM fac_DeviceTemplate WHERE ManufacturerID={$row["ManufacturerID"]} AND TemplateID!={$row["TemplateID"]};";
 			$dbh->query($sql);
 		}
@@ -407,7 +407,7 @@ function upgrade(){
 		$dbh->query($sql);
 		$sql="ALTER TABLE fac_Department ADD UNIQUE KEY Name (Name);";
 		$dbh->query($sql);
-		
+
 		// Clean up multiple indexes in fac_DeviceTemplate
 		$array=array();
 		$sql="SHOW INDEXES FROM fac_DeviceTemplate;";
@@ -434,7 +434,7 @@ function upgrade(){
 			$insert="INSERT INTO fac_DevicePorts VALUES (NULL , '{$row['EndpointDeviceID']}', '{$row['EndpointPort']}', NULL , '{$row['Notes']}');";
 			$dbh->query($insert);
 			$update="UPDATE fac_SwitchConnection SET ConnectionID='".$dbh->lastInsertId()."' WHERE EndpointDeviceID='{$row['EndpointDeviceID']}' AND EndpointPort='{$row['EndpointPort']}';";
-			$dbh->query($update);			
+			$dbh->query($update);
 		}
 		// Clear eany old primary key information
 		$dbh->query('ALTER TABLE fac_SwitchConnection DROP PRIMARY KEY;');
@@ -460,7 +460,7 @@ function upgrade(){
 		print "Creating {$numports['TotalPorts']} ports for {$numports['Devices']} devices. <b>THIS MAY TAKE A WHILE</b><br>\n";
 
 		// Retrieve a list of all devices and make ports for them.
-		$sql='SELECT DeviceID,Ports,DeviceType from fac_Device WHERE 
+		$sql='SELECT DeviceID,Ports,DeviceType from fac_Device WHERE
 			DeviceType!="Physical Infrastructure" AND Ports>0;';
 
 		$errors=array();
@@ -481,7 +481,7 @@ function upgrade(){
 			$findswitch->execute(array(':deviceid' => $deviceid));
 			$defined=$findswitch->fetchAll();
 			foreach($defined as $row){
-				// Weed out any port numbers that have been defined outside the range of 
+				// Weed out any port numbers that have been defined outside the range of
 				// valid ports for the device
 				if(isset($ports[$deviceid][$row['EndpointPort']])){
 					// Device Ports
@@ -495,7 +495,7 @@ function upgrade(){
 					$ports[$row['SwitchDeviceID']][$row['SwitchPortNumber']]['Connected Port']=$row['EndpointPort'];
 
 				}else{
-					// Either display this as a log item later or possibly backfill empty 
+					// Either display this as a log item later or possibly backfill empty
 					// ports with this data
 					$errors[$deviceid][$row['EndpointPort']]['Notes']=$row['Notes'];
 					$errors[$deviceid][$row['EndpointPort']]['Connected Device']=$row['SwitchDeviceID'];
@@ -509,7 +509,7 @@ function upgrade(){
 			$findpatch->execute(array(':deviceid' => $deviceid));
 			$defined=$findpatch->fetchAll();
 			foreach($defined as $row){
-				// Weed out any port numbers that have been defined outside the range of 
+				// Weed out any port numbers that have been defined outside the range of
 				// valid ports for the device
 				if(isset($ports[$deviceid][$row['FrontEndpointPort']])){
 					// Connect the device to the panel
@@ -521,7 +521,7 @@ function upgrade(){
 					$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Connected Port']=$row['FrontEndpointPort'];
 					$ports[$row['PanelDeviceID']][$row['PanelPortNumber']]['Notes']=$row['FrontNotes'];
 				}else{
-					// Either display this as a log item later or possibly backfill empty 
+					// Either display this as a log item later or possibly backfill empty
 					// ports with this data
 					$errors[$deviceid][$row['FrontEndpointPort']]['Notes']=$row['FrontNotes'];
 					$errors[$deviceid][$row['FrontEndpointPort']]['Connected Device']=$row['PanelDeviceID'];
@@ -531,7 +531,7 @@ function upgrade(){
 		}
 
 		foreach($dbh->query('SELECT * FROM fac_PatchConnection;') as $row){
-			// Read all the patch connections again to get the rear connection info 
+			// Read all the patch connections again to get the rear connection info
 			$ports[$row['RearEndpointDeviceID']][-$row['RearEndpointPort']]['Connected Device']=$row['PanelDeviceID'];
 			$ports[$row['RearEndpointDeviceID']][-$row['RearEndpointPort']]['Connected Port']=-$row['PanelPortNumber'];
 			$ports[$row['RearEndpointDeviceID']][-$row['RearEndpointPort']]['Notes']=$row['RearNotes'];
@@ -565,7 +565,7 @@ function upgrade(){
 			foreach($row as $portnum => $port){
 				$n=count($ports[$deviceid])+1;
 				$ports[$deviceid][]=$port;
-				// connect up the other side as well, $n will give us the new port number 
+				// connect up the other side as well, $n will give us the new port number
 				// since it is outside the defined range for the device
 				$ports[$port['Connected Device']][$port['Connected Port']]['Connected Device']=$deviceid;
 				$ports[$port['Connected Device']][$port['Connected Port']]['Connected Port']=$n;
@@ -655,7 +655,7 @@ function upgrade(){
 		// Bring up the rest of the classes
 		require_once("facilities.inc.php");
 
-		// People conversion 
+		// People conversion
 		$p=new People();
 		$c=new Contact();
 		$u=new User();
@@ -670,28 +670,28 @@ function upgrade(){
 				}
 				// we're keeping the Contact ID so assign it to the PersonID
 				$p->PersonID=$tmpc->ContactID;
-				
+
 				$u->UserID=$p->UserID;
 				$u->GetUserRights();
 				foreach($u as $prop => $val){
 					$p->$prop=$val;
 				}
 
-				// This shouldn't be necessary but... 
+				// This shouldn't be necessary but...
 				$p->MakeSafe();
-				
-				$sql="INSERT INTO fac_People SET PersonID=$p->PersonID, UserID=\"$p->UserID\", 
-					AdminOwnDevices=$p->AdminOwnDevices, ReadAccess=$p->ReadAccess, 
-					WriteAccess=$p->WriteAccess, DeleteAccess=$p->DeleteAccess, 
-					ContactAdmin=$p->ContactAdmin, RackRequest=$p->RackRequest, 
-					RackAdmin=$p->RackAdmin, SiteAdmin=$p->SiteAdmin, Disabled=$p->Disabled, 
-					LastName=\"$p->LastName\", FirstName=\"$p->FirstName\", 
-					Phone1=\"$p->Phone1\", Phone2=\"$p->Phone2\", Phone3=\"$p->Phone3\", 
+
+				$sql="INSERT INTO fac_People SET PersonID=$p->PersonID, UserID=\"$p->UserID\",
+					AdminOwnDevices=$p->AdminOwnDevices, ReadAccess=$p->ReadAccess,
+					WriteAccess=$p->WriteAccess, DeleteAccess=$p->DeleteAccess,
+					ContactAdmin=$p->ContactAdmin, RackRequest=$p->RackRequest,
+					RackAdmin=$p->RackAdmin, SiteAdmin=$p->SiteAdmin, Disabled=$p->Disabled,
+					LastName=\"$p->LastName\", FirstName=\"$p->FirstName\",
+					Phone1=\"$p->Phone1\", Phone2=\"$p->Phone2\", Phone3=\"$p->Phone3\",
 					Email=\"$p->Email\";";
 
 				$dbh->query($sql);
 			}
-			
+
 			$ulist=$u->GetUserList();
 			foreach($ulist as $tmpu){
 				/* This time around we have to see if the User is already in the fac_People table */
@@ -702,38 +702,38 @@ function upgrade(){
 					}
 					// Names have changed formats between the user table and the people table
 					$p->LastName=$tmpu->Name;
-					
+
 					$p->CreatePerson();
 				}
 			}
 		}
-		// END - People conversion 
+		// END - People conversion
 
 		// CDU template conversion, to be done prior to device conversion
 		/*
 		   I made a poor asumption on the initial build of this that we'd always have fewer
-		   CDU templates than device templates.  We're seeing an overlap conversion that is 
+		   CDU templates than device templates.  We're seeing an overlap conversion that is
 		   screwing the pooch.  This will find the highest template id from the two sets then
 		   we'll jump the line on the device_template id's and get them lined up.
 		 */
-		$sql="SELECT TemplateID FROM fac_CDUTemplate UNION SELECT TemplateID FROM 
+		$sql="SELECT TemplateID FROM fac_CDUTemplate UNION SELECT TemplateID FROM
 			fac_DeviceTemplate ORDER BY TemplateID DESC LIMIT 1;";
 		$baseid=$dbh->query($sql)->fetchColumn();
 
 		class PowerTemplate extends DeviceTemplate {
 			function CreateTemplate($templateid=null){
 				global $dbh;
-				
+
 				$this->MakeSafe();
 
 				$sqlinsert=(is_null($templateid))?'':" TemplateID=$templateid,";
 
-				$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID, 
-					Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
-					Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
-					SNMPVersion=\"$this->SNMPVersion\", PSCount=$this->PSCount, 
-					NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
-					FrontPictureFile=\"$this->FrontPictureFile\", 
+				$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID,
+					Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight,
+					Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\",
+					SNMPVersion=\"$this->SNMPVersion\", PSCount=$this->PSCount,
+					NumPorts=$this->NumPorts, Notes=\"$this->Notes\",
+					FrontPictureFile=\"$this->FrontPictureFile\",
 					RearPictureFile=\"$this->RearPictureFile\",$sqlinsert
 					ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots;";
 
@@ -793,28 +793,28 @@ function upgrade(){
 
 		class PowerDevice extends Device {
 			/*
-				to be efficient we don't want to create ports right now so we're extending 
+				to be efficient we don't want to create ports right now so we're extending
 				the class to override the create function
 			*/
 			function CreateDevice(){
 				global $dbh;
-				
+
 				$this->MakeSafe();
-				
+
 				$this->Label=transform($this->Label);
 				$this->SerialNo=transform($this->SerialNo);
 				$this->AssetTag=transform($this->AssetTag);
-				
-				$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-					PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", Hypervisor=$this->Hypervisor, Owner=$this->Owner, 
-					EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
-					Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
-					FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
-					PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
-					RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
-					MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
-					InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
-					WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
+
+				$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\",
+					PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", Hypervisor=$this->Hypervisor, Owner=$this->Owner,
+					EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact,
+					Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports,
+					FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts,
+					PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots,
+					RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice,
+					MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\",
+					InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\",
+					WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\",
 					Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide;";
 
 				if(!$dbh->exec($sql)){
@@ -872,7 +872,7 @@ function upgrade(){
 				$devid=intval($row['DeviceID']);
 				$devcon=$row['DeviceConnNumber'];
 				$newpduid=$ConvertedCDUs[$pduid];
-				
+
 				$port='';
 				if(is_numeric($pdupos) && $numeric && $pduid>0){
 					$port=$pdupos;
@@ -904,7 +904,7 @@ function upgrade(){
 		workdamnit(true,$PreNamedPorts,$PowerPorts,$ConvertedCDUs); // First time through setting up all numeric ports
 		workdamnit(false,$PreNamedPorts,$PowerPorts,$ConvertedCDUs); // Run through again but this time only deal with named ports and append them to the end of the numeric
 
-/* 
+/*
  * Debug Info
 
 		print "Converted CDUs:\n<br>";
@@ -946,16 +946,16 @@ function upgrade(){
 		foreach($ConvertedCDUs as $oldid => $newid){
 			$dbh->query("UPDATE fac_PowerDistribution SET PDUID = '$newid' WHERE PDUID=$oldid;");
 		}
-		
+
 		// Since we moved SNMPVersion out of the subtemplates and into the main one, we need one last cleanup
 		$st = $dbh->prepare( "select * from fac_DeviceTemplate where DeviceType='CDU'" );
 		$st->execute();
 		$up = $dbh->prepare( "update fac_Device set SNMPVersion=:SNMPVersion where TemplateID=:TemplateID" );
-		
+
 		while ( $row = $st->fetch() ) {
 			$up->execute( array( ":SNMPVersion"=>$row["SNMPVersion"], ":TemplateID"=>$row["TemplateID"] ) );
 		}
-		
+
 		// END - CDU template conversion, to be done prior to device conversion
 
 		// Sensor template conversion
@@ -1008,7 +1008,7 @@ function upgrade(){
 					$st->DeleteTemplate();
 				}
         }
-		
+
 		$ds = $dbh->prepare( "alter table fac_SensorTemplate drop column SNMPVersion" );
 
         // Step two - pull sensors from the Cabinets and create as new devices
@@ -1052,7 +1052,7 @@ function upgrade(){
 
 
 		// Make sure all child devices have updated cabinet information
-		$sql="SELECT DISTINCT ParentDevice AS DeviceID FROM fac_Device WHERE 
+		$sql="SELECT DISTINCT ParentDevice AS DeviceID FROM fac_Device WHERE
 			ParentDevice>0 ORDER BY ParentDevice ASC;";
 		foreach($dbh->query($sql) as $row){
 			$d=new Device();
@@ -1092,7 +1092,7 @@ function upgrade(){
 		$results[]=applyupdate("db-4.1.1-to-4.2.sql");
 
 		// Rebuild the config table just in case.
-		$config->rebuild();		
+		$config->rebuild();
 		$version="4.2";
 	}
 	if($version=="4.2"){
@@ -1157,7 +1157,7 @@ function upgrade(){
 <?php
 
 upgrade();
- 
+
 if(isset($results)){
 	date_default_timezone_set($config->ParameterArray['timezone']);
 
@@ -1241,7 +1241,7 @@ if(isset($results)){
 		$dc->DeliveryAddress = $_REQUEST['deliveryaddress'];
 		$dc->Administrator = $_REQUEST['administrator'];
 		$dc->DrawingFileName = $_REQUEST['drawingfilename'];
-		
+
 		if($_REQUEST['dcaction']=='Create'){
 			if(!($dc->CreateDataCenter())) {
 				$errormsg = "<h3>Datacenter not created, check the apache error log</h3>";
@@ -1325,7 +1325,7 @@ if(isset($results)){
 		Config::UpdateParameter( 'LDAPSiteAdmin', $_REQUEST['LDAPSiteAdmin']);
 	}
 
-	
+
 //Installation Complete
 	if($nodept=="" && $nodc=="" && $nocab==""){ // All three primary sections have had at least one item created
 		//enable the finish menu option
@@ -1337,7 +1337,7 @@ if(isset($results)){
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Installer</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery.miniColors.css" type="text/css">
@@ -1346,7 +1346,7 @@ if(isset($results)){
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
@@ -1790,7 +1790,7 @@ function resize(){
 
 	// The math just isn't adding up across browsers and FUCK IE
 	if((maindiv+sbw)<width){ // page is larger than content expand main to fit
-		$('div.main').width(width-sbw-16); 
+		$('div.main').width(width-sbw-16);
 	}else{ // page is smaller than content expand the page to fit
 		$('#header').width(width+4);
 		$('div.page').width(width+6);

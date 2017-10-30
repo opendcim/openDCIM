@@ -1,8 +1,8 @@
 <?php
 
 	require_once "../../vendor/autoload.php";
-	
-/* Code for when we go to Slim Framework v3	
+
+/* Code for when we go to Slim Framework v3
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Message\ResponseInterface as Response;
 
@@ -13,7 +13,7 @@
 	];
 
 	$c = new \Slim\Container($configuration);
-	
+
 	$app = new \Slim\App($c);
 */
 
@@ -37,13 +37,13 @@ function echoResponse( $response ) {
 	$app->get( '/test', function() {
 		$r['error'] = false;
 		$r['errorcode'] = 200;
-		/* v3 code 
+		/* v3 code
 		$out = $out->withJson($r, $r['errorcode'] );
 		return $out;
 		*/
 
 		echoResponse( $r );
 	});
- 
+
 $app->run();
 ?>

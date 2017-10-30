@@ -58,7 +58,7 @@
 	if(isset($_POST['cduuptime'])){
 		$pdu=new PowerDistribution();
 		$pdu->PDUID=$_POST['DeviceID'];
-		
+
 		echo $pdu->GetSmartCDUUptime();
 		exit;
 	}
@@ -118,7 +118,7 @@
 		exit;
 	}
 
-	// This will allow any jackass to certify an audit but the function is hidden and 
+	// This will allow any jackass to certify an audit but the function is hidden and
 	// this is the type of function that will be fixed with the API so i'm not fixing it
 	// as long as logging is enabled we'll know who triggered it.
 	if(isset($_POST['audit'])){
@@ -344,10 +344,10 @@
 					}
 
 					$ports=array();
-					$sql="SELECT p.*, d.Label as DeviceLabel, (SELECT Label FROM fac_Device 
-						WHERE DeviceID=p.ConnectedDeviceID) AS ConnectedDeviceLabel, (SELECT Label 
-						from fac_Ports WHERE DeviceID=p.ConnectedDeviceID AND 
-						PortNumber=p.ConnectedPort) AS ConnectedPortLabel FROM fac_Ports p, 
+					$sql="SELECT p.*, d.Label as DeviceLabel, (SELECT Label FROM fac_Device
+						WHERE DeviceID=p.ConnectedDeviceID) AS ConnectedDeviceLabel, (SELECT Label
+						from fac_Ports WHERE DeviceID=p.ConnectedDeviceID AND
+						PortNumber=p.ConnectedPort) AS ConnectedPortLabel FROM fac_Ports p,
 						fac_Device d WHERE p.DeviceID=d.DeviceID AND p.DeviceID=$dev->DeviceID;";
 					foreach($dbh->query($sql) as $row){
 						$ports[$row['PortNumber']]=$row;
@@ -458,7 +458,7 @@
 		$template->TemplateID=$_POST['customattrrefresh'];
 		$template->GetTemplateByID();
 		$dev->DeviceID=$_POST['DeviceID'];
-		$dev->GetDevice();	
+		$dev->GetDevice();
 		buildCustomAttributes($template, $dev);
 		exit;
 	}
@@ -583,7 +583,7 @@
 			if(isset($_POST['action'])){
 				$dev->GetDevice();
 
-				// Pull all properties from a template and apply to the device before we add the values set 
+				// Pull all properties from a template and apply to the device before we add the values set
 				// on the screen.  This will make sure things like slots are pulled from the template that aren't
 				// available to the end user initially
 				if($_POST['action']=='Create' && $_POST['TemplateID']>0){
@@ -604,7 +604,7 @@
 				if($_POST['action']!='Child'){
 					// Preserve this as a special variable to keep an injection from being possible
 					$devrights=$dev->Rights;
-					// Add in the "all devices" custom attributes 
+					// Add in the "all devices" custom attributes
 					$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
 					if(isset($dcaList)) {
 						foreach($dcaList as $dca) {
@@ -863,7 +863,7 @@
 	if ( $dev->DeviceID == 0 ) {
 		$dev->Status="Reserved";
 	}
-	
+
 	$title=($dev->Label!='')?"$dev->Label :: $dev->DeviceID":__("openDCIM Device Maintenance");
 
 	function buildVMtable($DeviceID){
@@ -893,7 +893,7 @@
 		}
 		echo '</div> <!-- END div.table -->';
 	}
-	
+
 	function buildCustomAttributes($template, $device) {
 		$dcaList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
 		$tdcaList=$template->CustomValues;
@@ -904,7 +904,7 @@
 		if(isset($dcaList)) {
 			foreach($dcaList as $dca) {
 				if($dca->AllDevices==1) {
-					$customvalues[$dca->AttributeID]["value"]=$dca->DefaultValue;	
+					$customvalues[$dca->AttributeID]["value"]=$dca->DefaultValue;
 					$customvalues[$dca->AttributeID]["type"]=$dca->AttributeType;
 					$customvalues[$dca->AttributeID]["required"]=$dca->Required;
 				}
@@ -925,7 +925,7 @@
 				$customvalues[$customkey]['value']=$device->$prop;
 			}
 		}
-		echo '<div class="table">';	
+		echo '<div class="table">';
 		foreach($customvalues as $customkey=>$customdata) {
 			$inputname = $dcaList[$customkey]->Label;
 			$validation="";
@@ -2061,7 +2061,7 @@ echo '
 		$PanelList=$Panel->getPanelList();
 		foreach($PanelList as $key=>$value){
 			$selected=($value->PanelID == $pdu->PanelID)?' selected':"";
-			print "\n\t\t\t\t\t<option value=\"$value->PanelID\"$selected>$value->PanelLabel</option>\n"; 
+			print "\n\t\t\t\t\t<option value=\"$value->PanelID\"$selected>$value->PanelLabel</option>\n";
 		}
 
 		echo '
@@ -2076,7 +2076,7 @@ echo '
 				$pnl=new PowerPanel();
 				$pnl->PanelID=$pdu->PanelID;
 				$pnl->getPanel();
-			
+
 				print $pnl->PanelVoltage." / ".intval($pnl->PanelVoltage/1.73);
 			}
 
@@ -2374,7 +2374,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 			$tmpDev=new Device();
 			$tmpDev->DeviceID=$port->ConnectedDeviceID;
 			$tmpDev->GetDevice();
-			
+
 			// Allow the user to modify the port if they have rights over the switch itself or
 			// the attached device.
 			$jsondata[$i]=($dev->Rights=="Write")?true:($tmpDev->Rights=="Write")?true:false;
@@ -2587,7 +2587,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 		});
 
 		// Setup an event listener for the enter key and prevent it from submitting the form
-		$('#olog input').keypress(function (e) {    
+		$('#olog input').keypress(function (e) {
 			var charCode = e.charCode || e.keyCode || e.which;
 			if (charCode  == 13) {
 				// if enter is pressed and there is something in this line then submit a new operations event

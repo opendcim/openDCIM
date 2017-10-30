@@ -2,14 +2,14 @@ openDCIM
 -----------
 
 
-	An Open Source Software package for managing the infrastructure of a 
-	data center, no matter how small or large.  Initially developed 
-	in-house at Vanderbilt University Information Technology Services by 
-	Scott Milliken.  
+	An Open Source Software package for managing the infrastructure of a
+	data center, no matter how small or large.  Initially developed
+	in-house at Vanderbilt University Information Technology Services by
+	Scott Milliken.
 
-	After leaving Vanderbilt for Oak Ridge National Laboratory, Vanderbilt 
-	granted permission for the package to be open sourced under GPLv3.  
-	Scott continues as the primary contributor to the package and is 
+	After leaving Vanderbilt for Oak Ridge National Laboratory, Vanderbilt
+	granted permission for the package to be open sourced under GPLv3.
+	Scott continues as the primary contributor to the package and is
 	actively recruiting assistance from others.
 
         This program is free software:  you can redistribute it and/or modify

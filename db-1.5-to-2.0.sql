@@ -36,14 +36,14 @@ ALTER TABLE fac_DeviceTemplate ADD UNIQUE KEY (ManufacturerID,Model);
 
 --
 -- Remove the primary key (unique) constraint from the CabinetAudit table
--- Handled this in the installer.  Left for people that might just try to 
+-- Handled this in the installer.  Left for people that might just try to
 -- apply the update manually.
 --
 
 -- ALTER TABLE fac_CabinetAudit DROP PRIMARY KEY;
 
 --
--- Correction for typo in create.sql for v1.5, won't have an effect on 
+-- Correction for typo in create.sql for v1.5, won't have an effect on
 -- existing installations will just recreate the same index after it removes it
 --
 
@@ -123,7 +123,7 @@ UPDATE fac_PowerDistribution SET TemplateID=(select TemplateID from fac_CDUTempl
 UPDATE fac_PowerDistribution SET TemplateID=(select TemplateID from fac_CDUTemplate a, fac_Manufacturer b where a.ManufacturerID=b.ManufacturerID and b.Name="ServerTech" and a.Model="Generic Single-Phase CDU") where ManagementType="ServerTech" and BreakerSize<3;
 UPDATE fac_PowerDistribution SET TemplateID=(select TemplateID from fac_CDUTemplate a, fac_Manufacturer b where a.ManufacturerID=b.ManufacturerID and b.Name="ServerTech" and a.Model="Generic 3-Phase CDU") where ManagementType="ServerTech" and BreakerSize=3;
 
--- 
+--
 -- Delete the columns no longer needed in the PowerDistribution table
 --
 
@@ -132,7 +132,7 @@ ALTER TABLE fac_PowerDistribution DROP COLUMN Model;
 ALTER TABLE fac_PowerDistribution DROP COLUMN NumOutputs;
 
 --
--- Add a new configurable timezone parameter 
+-- Add a new configurable timezone parameter
 --
 
 INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
@@ -178,7 +178,7 @@ CREATE TABLE fac_Tags (
 -- Add a new configurable device label case
 --
 
-INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
 ('LabelCase','upper','string','string','upper');
 
 
@@ -186,17 +186,17 @@ INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `Def
 -- Add a configuration item for defaulting empty date values on the device screen to NOW() or the epoch.
 --
 
-INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
 ('mDate','blank','string','string','blank');
-INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
 ('wDate','blank','string','string','blank');
 
 --
 -- Add configuration items for use in reports
 --
 
-INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
 ('NewInstallsPeriod','7','Days','int','7');
-INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
 ('InstallURL','','URL','string','');
 

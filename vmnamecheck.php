@@ -2,7 +2,7 @@
     require_once('db.inc.php');
     require_once('facilities.inc.php');
 	require_once('swiftmailer/swift_required.php');
-    
+
     $vm=new VM();
     $dev=new Device();
     $dept=new Department();
@@ -27,7 +27,7 @@
 	$message=Swift_Message::NewInstance()->setSubject(__("Virtual Machine Inventory Exception Report"));
 
 	// Set from address
-	try{		
+	try{
 		$message->setFrom($config->ParameterArray['MailFromAddr']);
 		$message->SetReplyTo($config->ParameterArray["MailToAddr"]);
 	}catch(Swift_RfcComplianceException $e){
@@ -35,7 +35,7 @@
 	}
 
 	// Add people to recipient list
-	try{		
+	try{
 		$message->setTo($config->ParameterArray['MailToAddr']);
 		/* // Add additional recipients below this section using the following examples
 		 * // Using addTo() to add recipients iteratively
@@ -49,7 +49,7 @@
 
 	$logo=getcwd().'/images/'.$config->ParameterArray["PDFLogoFile"];
 	$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
-	
+
 	$style = "
 <style type=\"text/css\">
 @media print {
@@ -80,17 +80,17 @@
 		foreach($vmList as $vmRow){
 			$dev->DeviceID=$vmRow->DeviceID;
 			$dev->GetDevice();
-        
+
 			$dept->DeptID=$vmRow->Owner;
 			if($dept->DeptID >0){
 				$dept->GetDeptByID();
 			}else{
 				$dept->Name=__("Unknown");
 			}
-          
+
 			$htmlMessage.="<tr><td>$dev->Label</td><td><a href=\"".$config->ParameterArray['InstallURL']."updatevmowner.php?vmindex=$vmRow->VMIndex"."\">$vmRow->vmName</a></td><td>$vmRow->vmState</td><td>$vmRow->LastUpdated</td></tr>\n";
 		}
-      
+
 		$htmlMessage.="</table></body></html>";
 
 		$message->setBody($htmlMessage,'text/html');
@@ -120,17 +120,17 @@
 		foreach($vmList as $vmRow){
 			$dev->DeviceID=$vmRow->DeviceID;
 			$dev->GetDevice();
-        
+
 			$dept->DeptID=$vmRow->Owner;
 			if($dept->DeptID >0){
 				$dept->GetDeptByID();
 			}else{
 				$dept->Name=__("Unknown");
 			}
-          
+
 			$htmlMessage.="<tr><td>$dev->Label</td><td>$vmRow->vmName</td><td>$vmRow->vmState</td><td>$vmRow->LastUpdated</td></tr>\n";
 		}
-      
+
 		$htmlMessage.="</table></body></html>";
 
 		$message->setBody($htmlMessage,'text/html');
@@ -147,5 +147,5 @@
 	}
 
 	// output any errors so they might get recorded someplace
-   	echo $error; 
+   	echo $error;
 ?>

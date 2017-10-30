@@ -9,10 +9,10 @@ if(!$person->SiteAdmin){
 }
 
 	$subheader=__("XML Output for CFD Simulation");
-	
+
 	$datacenter=new DataCenter();
 	$dcList=$datacenter->GetDCList();
-	
+
 	if(!isset($_REQUEST['datacenterid'])){
 ?>
 <!doctype html>
@@ -20,14 +20,14 @@ if(!$person->SiteAdmin){
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 
@@ -69,7 +69,7 @@ echo '			</select>
 			<button id="generate" type="submit">'.__("Generate").'</button>
 		</div>
 	</div>
-</div>		
+</div>
 </form>
 </div> <!-- END .center -->
 </div> <!-- END .main -->
@@ -80,21 +80,21 @@ echo '			</select>
 }else{
 	$cab=new Cabinet();
 	$dev=new Device();
-	
+
 	$datacenter->DataCenterID=$_REQUEST["datacenterid"];
 	$datacenter->GetDataCenter();
 	$cab->DataCenterID=$datacenter->DataCenterID;
 	$cabList=$cab->ListCabinetsByDC();
-	
+
 	header('Content-type: text/xml');
 	header('Cache-Control: no-store, no-cache');
 	header('Content-Disposition: attachment; filename="opendcim.xml"');
-	
+
 	print "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<datacenter>\n
 	<ID>$datacenter->DataCenterID</ID>
 	<Name>$datacenter->Name</Name>
 	<Size>$datacenter->SquareFootage</Size>\n";
-	
+
 	foreach($cabList as $cabRow){
 		print "\t<cabinet>
 		<ID>$cabRow->CabinetID</ID>
@@ -105,12 +105,12 @@ echo '			</select>
 		<MapY1>$cabRow->MapY1</MapY1>
 		<MapX2>$cabRow->MapX2</MapX2>
 		<MapY2>$cabRow->MapY2</MapY2>\n";
-		
+
 		$dev->Cabinet=$cabRow->CabinetID;
 		$devList=$dev->ViewDevicesByCabinet();
-		
+
 		$totalWatts=0;
-		
+
 		foreach($devList as $devRow){
 			$power=$devRow->GetDeviceTotalPower();
 			$totalWatts+=$power;
@@ -121,9 +121,9 @@ echo '			</select>
 			<Height>$devRow->Height</Height>
 			<Watts>$power</Watts>
 		</Device>\n";
-			
+
 		}
-		
+
 		print "\t\t<TotalWatts>$totalWatts</TotalWatts>\n\t</cabinet>\n";
 	}
 

@@ -16,11 +16,11 @@ class PDF extends FPDF {
   var $OutlineRoot;
   var $pdfconfig;
   var $pdfDB;
-  
+
 	function PDF(){
 		parent::FPDF();
 	}
-  
+
 	function Header() {
 		$this->pdfconfig = new Config();
 		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'] );
@@ -42,7 +42,7 @@ class PDF extends FPDF {
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
     		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
-	
+
   function Bookmark($txt,$level=0,$y=0) {
     if($y==-1)
         $y=$this->GetY();
@@ -130,10 +130,10 @@ class PDF extends FPDF {
 	//	Begin Report Generation
 	//
 	//
-	
+
 	$dept = new Department();
 	$con = new People();
-	
+
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	include_once("loadfonts.php");
@@ -201,7 +201,7 @@ class PDF extends FPDF {
 
 		$pdf->Ln();
 	}
-	
+
 	$pdf->Output();
 
 ?>

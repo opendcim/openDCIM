@@ -89,20 +89,20 @@ class PowerPorts {
 		$ports=array();
 		foreach($dbh->query($sql) as $row){
 			$ports[$row['PortNumber']]=PowerPorts::RowToObject($row);
-		}	
+		}
 		return $ports;
 	}
 
 	function createPort($ignore_errors=false) {
 		global $dbh;
-		
+
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_PowerPorts SET DeviceID=$this->DeviceID, 
-			PortNumber=$this->PortNumber, Label=\"$this->Label\", 
-			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort, 
+		$sql="INSERT INTO fac_PowerPorts SET DeviceID=$this->DeviceID,
+			PortNumber=$this->PortNumber, Label=\"$this->Label\",
+			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort,
 			Notes=\"$this->Notes\";";
-			
+
 		if(!$dbh->query($sql) && !$ignore_errors){
 			$info=$dbh->errorInfo();
 
@@ -164,7 +164,7 @@ class PowerPorts {
 		$oldport->PortNumber=$this->PortNumber;
 		$oldport->getPort();
 
-		$sql="UPDATE fac_PowerPorts SET Label=\"$this->Label\" WHERE 
+		$sql="UPDATE fac_PowerPorts SET Label=\"$this->Label\" WHERE
 			DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){
@@ -186,7 +186,7 @@ class PowerPorts {
 		// Disconnect anything that might be connected in the db
 		$this->removeConnection();
 
-		$sql="DELETE FROM fac_PowerPorts WHERE DeviceID=$this->DeviceID AND 
+		$sql="DELETE FROM fac_PowerPorts WHERE DeviceID=$this->DeviceID AND
 			PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){
@@ -252,7 +252,7 @@ class PowerPorts {
 		if(!$rights){
 			return false;
 		}
-	
+
 		$this->MakeSafe();
 
 		// Quick sanity check so we aren't depending on the user
@@ -279,14 +279,14 @@ class PowerPorts {
 
 		// update port
 		$sql="UPDATE fac_PowerPorts SET ConnectedDeviceID=$this->ConnectedDeviceID,
-			Label=\"$this->Label\", ConnectedPort=$this->ConnectedPort, 
-			Notes=\"$this->Notes\" WHERE DeviceID=$this->DeviceID AND 
+			Label=\"$this->Label\", ConnectedPort=$this->ConnectedPort,
+			Notes=\"$this->Notes\" WHERE DeviceID=$this->DeviceID AND
 			PortNumber=$this->PortNumber;";
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
 			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
-			
+
 			return false;
 		}
 
@@ -302,11 +302,11 @@ class PowerPorts {
 		$port1->MakeSafe();
 		$port2->MakeSafe();
 
-		$sql="UPDATE fac_PowerPorts SET ConnectedDeviceID=$port2->DeviceID, 
-			ConnectedPort=$port2->PortNumber, Notes=\"$port2->Notes\" WHERE 
+		$sql="UPDATE fac_PowerPorts SET ConnectedDeviceID=$port2->DeviceID,
+			ConnectedPort=$port2->PortNumber, Notes=\"$port2->Notes\" WHERE
 			DeviceID=$port1->DeviceID AND PortNumber=$port1->PortNumber;
-			UPDATE fac_PowerPorts SET ConnectedDeviceID=$port1->DeviceID, 
-			ConnectedPort=$port1->PortNumber, Notes=\"$port1->Notes\" WHERE 
+			UPDATE fac_PowerPorts SET ConnectedDeviceID=$port1->DeviceID,
+			ConnectedPort=$port1->PortNumber, Notes=\"$port1->Notes\" WHERE
 			DeviceID=$port2->DeviceID AND PortNumber=$port2->PortNumber;";
 
 		if(!$dbh->exec($sql)){
@@ -325,7 +325,7 @@ class PowerPorts {
 		$this->getPort();
 
 		$sql="UPDATE fac_PowerPorts SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
-			(DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber) OR 
+			(DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber) OR
 			(ConnectedDeviceID=$this->DeviceID AND ConnectedPort=$this->PortNumber);";
 
 		/* not sure the best way to catch these errors this should modify 2 lines
@@ -360,55 +360,55 @@ class PowerPorts {
 
 	static function getPortList($DeviceID){
 		global $dbh;
-		
+
 		$dev=new Device();
 		$dev->DeviceID=$DeviceID;
 		if(!$dev->GetDevice()){
 			return false;	// This device doesn't exist
 		}
-		
+
 		$sql="SELECT * FROM fac_PowerPorts WHERE DeviceID=$dev->DeviceID;";
-		
+
 		$portList=array();
 		foreach($dbh->query($sql) as $row){
 			$portList[$row['PortNumber']]=PowerPorts::RowToObject($row);
 		}
-		
+
 		if( sizeof($portList)==0 && $dev->DeviceType!="Physical Infrastructure" ){
 			// somehow this device doesn't have ports so make them now
 			$portList=PowerPorts::createPorts($dev->DeviceID);
 		}
-		
+
 		return $portList;
 	}
 
 	static function getConnectedPortList($DeviceID){
 		global $dbh;
-		
+
 		$dev=new Device();
 		$dev->DeviceID=$DeviceID;
 		if(!$dev->GetDevice()){
 			return false;	// This device doesn't exist
 		}
-		
+
 		$sql="SELECT * FROM fac_PowerPorts WHERE DeviceID=$dev->DeviceID and ConnectedDeviceID>0";
-		
+
 		$portList=array();
 		foreach($dbh->query($sql) as $row){
 			$portList[$row['PortNumber']]=PowerPorts::RowToObject($row);
 		}
-		
+
 		if( sizeof($portList)==0 && $dev->DeviceType!="Physical Infrastructure" ){
 			// somehow this device doesn't have ports so make them now
 			$portList=PowerPorts::createPorts($dev->DeviceID);
 		}
-		
+
 		return $portList;
 	}
 
 	function Search($indexedbyid=false,$loose=false){
 		global $dbh;
-		// Store any values that have been added before we make them safe 
+		// Store any values that have been added before we make them safe
 		foreach($this as $prop => $val){
 			if(isset($val)){
 				$o[$prop]=$val;

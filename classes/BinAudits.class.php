@@ -42,7 +42,7 @@ class BinAudits {
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-	
+
 	function AddAudit(){
 		$this->AuditStamp=date("Y-m-d",strtotime($this->AuditStamp));
 		$this->MakeSafe();

@@ -65,14 +65,14 @@ INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `Def
 -- Moved deadlines for rack requests into configuration table
 --
 
-INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES 
+INSERT INTO `fac_Config` (`Parameter`, `Value`, `UnitOfMeasure`, `ValType`, `DefaultVal`) VALUES
 ('RackWarningHours', 4, 'Hours', 'integer', '4'),
 ('RackOverdueHours', 1, 'Hours', 'integer', '1');
 
 --
 -- Not sure how this got overlooked for several releases
--- 
-ALTER TABLE fac_RackRequest ADD MfgDate DATE NOT NULL AFTER SerialNo; 
+--
+ALTER TABLE fac_RackRequest ADD MfgDate DATE NOT NULL AFTER SerialNo;
 
 --
 -- Add database structure changes for Parent/Child relationships of Chassis / Slots

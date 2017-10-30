@@ -19,7 +19,7 @@
 	$client->redirect_uri = 'http://'.$_SERVER['HTTP_HOST'].
 		dirname(strtok($_SERVER['REQUEST_URI'],'?')).'/login_with_surveymonkey.php';
 
-	$client->client_id = ''; $application_line = __LINE__; 
+	$client->client_id = ''; $application_line = __LINE__;
 	$client->client_secret = '';
 	$client->api_key = '';
 

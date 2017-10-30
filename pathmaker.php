@@ -71,7 +71,7 @@
 	}
 
 	// AJAX - End
-	
+
 	if(!$person->SiteAdmin){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -106,41 +106,41 @@
 			$status.="$dev->Label[{$_POST["PortNumber"][$_POST["elem_path"]]}]</a>)";
 		}
 	}
-	
+
 	if(isset($_POST['bot_crear'])){
 		if((isset($_POST['devid1']) && $_POST['devid1']!=0)
 			&& isset($_POST['port1']) && $_POST['port1']!=''
 			&& (isset($_POST['devid2']) && $_POST['devid2']!=0)
-			&& isset($_POST['port2']) && $_POST['port2']!=''){				
-			
+			&& isset($_POST['port2']) && $_POST['port2']!=''){
+
 			//INITIAL DEVICE
 
 			//Search device
 			$dev=new Device();
 			$dev->DeviceID=intval($_POST['devid1']);
-			
+
 			if ($dev->GetDevice()){
 				$pp=new PlannedPath();
 				$pp->devID1=$dev->DeviceID;
 				$pp->port1=intval($_POST['port1']);
 				$label1=$dev->Label;
 			}
-			
+
 			//FINAL DEVICE
-				
+
 			//Search device
 			$dev=new Device();
 			$dev->DeviceID=intval($_POST['devid2']);
-			
+
 			if ($dev->GetDevice() && isset($pp)){
 				$pp->devID2=$dev->DeviceID;
 				$pp->port2=intval($_POST['port2']);
 				$label2=$dev->Label;
 			}
-			
-			if ($status==""){		
+
+			if ($status==""){
 				$pathid=$label1."[".$pp->port1."]---".$label2."[".$pp->port2."]";
-				
+
 				//make path
 				if ($pp->MakePath()){
 					//Go to initial device on Path
@@ -176,7 +176,7 @@
 						case 9:
 							$status="<blink>".__("Path not found")."</blink>";
 							break;
-					}		
+					}
 				}
 			}
 		} else {
@@ -194,39 +194,39 @@
 		}
 
 		if ($status==""){
-			
+
 			$path.="<div style='text-align: center;'>";
 			$path.="<div style='font-size: 1.2em;'>".__("Connections")." $pathid</div>\n";
 
 			//Path Table
 			$path.="<table id=parcheos>\n\t<tr>\n\t\t<td colspan=6>&nbsp;</td>\n\t</tr>\n\t<tr>\n";
 			$path.="\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t\t<td>";
-			
+
 			$dev=new Device();
 			$end=false;
 			$elem_path=0;
-				
+
 			while (!$end) {
 				//first device
 				//get the device
 				$dev->DeviceID=$pp->DeviceID;
 				$dev->GetDevice();
 				$elem_path++;
-				
+
 				//I get device Lineage (for multi level chassis)
 				$devList=array();
 				$devList=$dev->GetDeviceLineage();
-				
+
 				//Device table
 				$path.="\n\t\t\t<table>\n\t\t\t\t<tr>\n\t\t\t\t\t<th colspan=2>";
-				
+
 				//cabinet
 				$cab=new Cabinet();
 				$cab->CabinetID=$devList[sizeof($devList)]->Cabinet;
 				$cab->GetCabinet();
 				$path.=__("Cabinet").": <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">$cab->Location</a>";
 				$path.="</th>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<td>U:{$devList[sizeof($devList)]->Position}</td>\n";
-				
+
 				//Lineage
 				$t=5;
 				for ($i=sizeof($devList); $i>1; $i--){
@@ -240,44 +240,44 @@
 					$path.=str_repeat("\t",$t++)."<tr>\n";
 					$path.=str_repeat("\t",$t)."<td>Slot:{$devList[$i-1]->Position}</td>\n";
 				}
-				
+
 				//Device
 				$path.=str_repeat("\t",$t--)."<td>".
 						"<a href=\"devices.php?DeviceID=$dev->DeviceID\">$dev->Label".
 						"</a><br>".__("Port").": ".abs($pp->PortNumber)."</td>\n";
 				$path.=str_repeat("\t",$t--)."</tr>\n";
 				$path.=str_repeat("\t",$t--)."</table>\n";
-				
+
 				//ending device table
 				for ($i=sizeof($devList); $i>1; $i--){
 					$path.=str_repeat("\t",$t--)."</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
 					$path.=str_repeat("\t",$t--)."</table>\n";
 				}
-				
+
 				$path.="\t\t</td>";
-				
+
 				if ($elem_path==1  || $dev->DeviceType=="Patch Panel"){
 					//half hose
 					//Out connection type
 					$tipo_con=($pp->PortNumber>0)?"f":"r";
-					
+
 					$path.="\n\t\t<td class=\"$tipo_con-left\"></td>\n";
 				}
 				//next device, if exist
 				if ($pp->GotoNextDevice()) {
 					$dev->DeviceID=$pp->DeviceID;
 					$dev->GetDevice();
-					
+
 					//In connection type
 					$tipo_con=($pp->PortNumber>0)?"r":"f";
-					
+
 					//half hose
 					$path.="\n\t\t<td class=\"$tipo_con-right\"></td>\n";
-					
+
 					//Out connection type
 					$tipo_con=($pp->PortNumber>0)?"f":"r";
-					
+
 					//Can I follow?
 					if ($dev->DeviceType=="Patch Panel"){
 						$path.="\n\t\t<td class=\"connection-$tipo_con-1\">";
@@ -289,21 +289,21 @@
 						$conex="";
 						$path.="\n\t\t<td>";
 					}
-				
+
 					//I get device Lineage (for multi level chassis)
 					$devList=array();
 					$devList=$dev->GetDeviceLineage();
-					
+
 					//Device Table
 					$path.="\n\t\t\t<table>\n\t\t\t\t<tr>\n\t\t\t\t\t<th colspan=2>";
-					
+
 					//cabinet
 					$cab=new Cabinet();
 					$cab->CabinetID=$devList[sizeof($devList)]->Cabinet;
 					$cab->GetCabinet();
 					$path.=__("Cabinet").": <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">$cab->Location</a>";
 					$path.="</th>\n\t\t\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t\t\t<td>U:{$devList[sizeof($devList)]->Position}</td>\n";
-					
+
 					//lineage
 					$t=5;
 					for ($i=sizeof($devList); $i>1; $i--){
@@ -317,20 +317,20 @@
 						$path.=str_repeat("\t",$t++)."<tr>\n";
 						$path.=str_repeat("\t",$t)."<td>Slot:{$devList[$i-1]->Position}</td>\n";
 					}
-					
+
 					//device
 					$path.=str_repeat("\t",$t--)."<td>".
 							"<a href=\"devices.php?DeviceID=$dev->DeviceID\">$dev->Label".
 							"</a><br>".__("Port").": ".abs($pp->PortNumber)."</td>\n";
 					$path.=str_repeat("\t",$t--)."</tr>\n";
-					
+
 					//ending device table
 					for ($i=sizeof($devList); $i>1; $i--){
 						$path.=str_repeat("\t",$t--)."</table>\n";
 						$path.=str_repeat("\t",$t--)."</td>\n";
 						$path.=str_repeat("\t",$t--)."</tr>\n";
 					}
-					
+
 					if ($pp->PortNumber>0){
 						$t++;
 						$path.=str_repeat("\t",$t++)."<tr>\n";
@@ -339,7 +339,7 @@
 						$path.=str_repeat("\t",$t--)."</tr>\n";
 					}
 					$path.=str_repeat("\t",$t--)."</table>\n";
-					
+
 					//ending row
 					$path.="\t\t</td>\n\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t</tr>\n";
 
@@ -347,7 +347,7 @@
 						$tipo_con=($pp->PortNumber>0)?"r":"f";  //In connection type
 
 						//row separation between patch rows: draw the connection between panels
-						$path.="\t<tr>\n\t\t<td></td><td class=\"connection-$tipo_con-4\">&nbsp;</td>\n"; 
+						$path.="\t<tr>\n\t\t<td></td><td class=\"connection-$tipo_con-4\">&nbsp;</td>\n";
 						$path.="\t\t<td class=\"connection-$tipo_con-3\">&nbsp;</td>\n";
 						$path.=$conex;
 						$path.="\n<tr>\n\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t\t<td>";
@@ -375,13 +375,13 @@
 			$path.="\t\t<td class=\"right\" colspan=2><img src=\"images/leyendar.png\" alt=\"\"></td>\n";
 			$path.="\t\t<td class=\"left\" colspan=4>&nbsp;&nbsp;".__("Rear Connection")."</td>\n";
 			$path.="\t</tr>\n";
-			
+
 			//End of path table
 			$path.="\t<tr>\n\t\t<td colspan=6>&nbsp;</td>\n\t</tr></table>";
-			
+
 			//Implement Form
 			$path.= "<form method=\"POST\">\n";
-			$path.= "<br>\n"; 
+			$path.= "<br>\n";
 			$path.= "<div>\n";
 			//PATH INFO
 			$path.= "\t<input type=\"hidden\" name=\"elem_path\" value=".count($pp->Path).">\n";
@@ -389,7 +389,7 @@
 				$path.="\t<input type=\"hidden\" name=\"DeviceID[$i]\" value=\"{$pp->Path[$i]["DeviceID"]}\">\n";
 				$path.="\t<input type=\"hidden\" name=\"PortNumber[$i]\" value=\"{$pp->Path[$i]["PortNumber"]}\">\n";
 			}
-				
+
 			$path.="\t<label for=\"notes\">".__("Notes")."</label>\n";
 			$path.="\t<input type=\"text\" name=\"notes\" id=\"notes\" size=20 value=\"\">\n";
 			$path.="\t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
@@ -397,16 +397,16 @@
 			$path.="</div>\n";
 			$path.="</form>\n";
 			$path.="</div>\n";
-		}	
+		}
 	}
-		
+
 ?>
 <!doctype html>
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -518,7 +518,7 @@ echo '</form>';
 </div></div>
 <?php echo "<br><br>",$path,"</div><br>";
 //print_r($_POST);
-//print "<br>"; 
+//print "<br>";
 echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div><!-- END div.main -->
 </div><!-- END div.page -->

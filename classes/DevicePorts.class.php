@@ -32,7 +32,7 @@ class DevicePorts {
 	var $ConnectedDeviceID;
 	var $ConnectedPort;
 	var $Notes;
-	
+
 	function MakeSafe() {
 		$this->DeviceID=intval($this->DeviceID);
 		$this->PortNumber=intval($this->PortNumber);
@@ -101,31 +101,31 @@ class DevicePorts {
 		$ports=array();
 		foreach($dbh->query($sql) as $row){
 			$ports[$row['PortNumber']]=DevicePorts::RowToObject($row);
-		}	
+		}
 		return $ports;
 	}
 
 	function getActivePortCount() {
 		global $dbh;
 		$this->MakeSafe();
-			
+
 		$sql = "select count(*) as ActivePorts from fac_Ports where DeviceID=$this->DeviceID and (ConnectedDeviceID>0 or Notes > '')";
-		
+
 		$row = $dbh->query($sql)->fetch();
 
 		return $row["ActivePorts"];
 	}
-		
+
 	function createPort($ignore_errors=false) {
 		global $dbh;
-		
+
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_Ports SET DeviceID=$this->DeviceID, PortNumber=$this->PortNumber, 
-			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
-			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort, 
+		$sql="INSERT INTO fac_Ports SET DeviceID=$this->DeviceID, PortNumber=$this->PortNumber,
+			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID,
+			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort,
 			Notes=\"$this->Notes\";";
-			
+
 		if(!$dbh->query($sql) && !$ignore_errors){
 			$info=$dbh->errorInfo();
 
@@ -148,7 +148,7 @@ class DevicePorts {
 		// Check the user's permissions to modify this device
 		if($dev->Rights!='Write'){return false;}
 		$portList=array();
-		
+
 		if($dev->DeviceType=="Switch"){
 			$nameList=SwitchInfo::getPortNames($dev->DeviceID);
 			$aliasList=SwitchInfo::getPortAlias($dev->DeviceID);
@@ -158,7 +158,7 @@ class DevicePorts {
 		//  - Template ports table
 		//  - SNMP data (if it exists)
 		//  - Placeholders
-		
+
 		//Search template ports
 		$tports=array();
 		if($dev->TemplateID>0){
@@ -166,7 +166,7 @@ class DevicePorts {
 			$tport->TemplateID=$dev->TemplateID;
 			$tports=$tport->getPorts();
 		}
-		
+
 		if($dev->DeviceType=="Switch"){
 			for($n=0; $n<$dev->Ports; $n++){
 				$i=$n+1;
@@ -222,7 +222,7 @@ class DevicePorts {
 
 		$this->MakeSafe();
 
-		$sql="UPDATE fac_Ports SET Label=\"$this->Label\" WHERE 
+		$sql="UPDATE fac_Ports SET Label=\"$this->Label\" WHERE
 			DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){
@@ -270,7 +270,7 @@ class DevicePorts {
 			if(!$rights){
 				return false;
 			}
-		
+
 			$this->MakeSafe();
 
 			// Quick sanity check so we aren't depending on the user
@@ -300,20 +300,20 @@ class DevicePorts {
 			}
 		}
 		// update port
-		$sql="UPDATE fac_Ports SET MediaID=$this->MediaID, ColorID=$this->ColorID, 
-			ConnectedDeviceID=$this->ConnectedDeviceID, Label=\"$this->Label\", 
-			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\" 
+		$sql="UPDATE fac_Ports SET MediaID=$this->MediaID, ColorID=$this->ColorID,
+			ConnectedDeviceID=$this->ConnectedDeviceID, Label=\"$this->Label\",
+			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\"
 			WHERE DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
 			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
-			
+
 			return false;
 		}
 
-		// If this is a patch panel and a front port then set the label on the rear 
+		// If this is a patch panel and a front port then set the label on the rear
 		// to match only after a successful update, done above.
 		if($dev->DeviceType=="Patch Panel" && $this->PortNumber>0 && $this->Label!=$oldport->Label){
 			$pport=new DevicePorts();
@@ -335,16 +335,16 @@ class DevicePorts {
 	static function followPathToEndPoint( $DeviceID, $PortNumber ) {
 		$path = array();
 		$n = sizeof( $path );
-		
+
 		$dev = new Device();
 		$dev->DeviceID=$DeviceID;
 		$dev->getDevice();
-		
+
 		$path[$n] = new DevicePorts();
 		$path[$n]->DeviceID = $DeviceID;
 		$path[$n]->PortNumber = ($dev->DeviceType=="Patch Panel")?-$PortNumber:$PortNumber;
 		$path[$n]->getPort();
-		
+
 		// Follow the trail until you get no more connections
 		while ( $path[$n]->ConnectedDeviceID > 0 ) {
 			$path[++$n] = new DevicePorts();
@@ -354,16 +354,16 @@ class DevicePorts {
 			$path[$n]->PortNumber = -($path[$n-1]->ConnectedPort);
 			$path[$n]->getPort();
 		}
-		
+
 		// If the connected device id is null and the label is empty then the port failed to lookup
-		// invert the sign and try to get the port again cause this might be a device and not a 
+		// invert the sign and try to get the port again cause this might be a device and not a
 		// patch panel
 		if($path[$n]->ConnectedDeviceID=="NULL" && $path[$n]->Label==""){
 			$path[$n]->PortNumber=$path[$n]->PortNumber*-1;
 			$path[$n]->getPort();
 		}
 
-		return $path;		
+		return $path;
 	}
 
 	static function makeConnection($port1,$port2){
@@ -372,11 +372,11 @@ class DevicePorts {
 		$port1->MakeSafe();
 		$port2->MakeSafe();
 
-		$sql="UPDATE fac_Ports SET ConnectedDeviceID=$port2->DeviceID, 
-			ConnectedPort=$port2->PortNumber, Notes=\"$port2->Notes\" WHERE 
-			DeviceID=$port1->DeviceID AND PortNumber=$port1->PortNumber; UPDATE fac_Ports 
-			SET ConnectedDeviceID=$port1->DeviceID, ConnectedPort=$port1->PortNumber, 
-			Notes=\"$port1->Notes\" WHERE DeviceID=$port2->DeviceID AND 
+		$sql="UPDATE fac_Ports SET ConnectedDeviceID=$port2->DeviceID,
+			ConnectedPort=$port2->PortNumber, Notes=\"$port2->Notes\" WHERE
+			DeviceID=$port1->DeviceID AND PortNumber=$port1->PortNumber; UPDATE fac_Ports
+			SET ConnectedDeviceID=$port1->DeviceID, ConnectedPort=$port1->PortNumber,
+			Notes=\"$port1->Notes\" WHERE DeviceID=$port2->DeviceID AND
 			PortNumber=$port2->PortNumber;";
 
 		if(!$dbh->exec($sql)){
@@ -395,7 +395,7 @@ class DevicePorts {
 		$this->getPort();
 
 		$sql="UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
-			(DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber) OR 
+			(DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber) OR
 			(ConnectedDeviceID=$this->DeviceID AND ConnectedPort=$this->PortNumber);";
 
 		/* not sure the best way to catch these errors this should modify 2 lines
@@ -428,7 +428,7 @@ class DevicePorts {
 		}else{
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
-		}		
+		}
 	}
 
 // these next two should probably be moved to the device object.
@@ -451,7 +451,7 @@ class DevicePorts {
 
 		return true;
 	}
-	
+
 	static function removePorts($DeviceID){
 		/*	Remove all ports from a device prior to delete, etc */
 		global $dbh;
@@ -553,13 +553,13 @@ class DevicePorts {
 			}
 
 			$cabinetID=$dev->GetDeviceCabinetID();
-			
-			$sqlSameCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
-				Cabinet=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Position 
+
+			$sqlSameCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND
+				Cabinet=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Position
 				DESC, Label ASC;";
-			$sqlDiffCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
+			$sqlDiffCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND
 				Cabinet!=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Label ASC;";
-			
+
 			foreach(array($sqlSameCabDevice, $sqlDiffCabDevice) as $sql){
 				foreach($dbh->query($sql) as $row){
 					// false to skip rights check we filtered using sql above
@@ -568,8 +568,8 @@ class DevicePorts {
 				}
 			}
 		}else{
-			$sql="SELECT a.*, b.Cabinet as CabinetID FROM fac_Ports a, fac_Device b WHERE 
-				Ports>0 AND Cabinet>-1 AND a.DeviceID=b.DeviceID AND 
+			$sql="SELECT a.*, b.Cabinet as CabinetID FROM fac_Ports a, fac_Device b WHERE
+				Ports>0 AND Cabinet>-1 AND a.DeviceID=b.DeviceID AND
 				a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
 			foreach($dbh->query($sql) as $row){
 				$candidates[]=array("DeviceID"=>$row["DeviceID"], "Label"=>$row["Label"], "CabinetID"=>$row["CabinetID"]);
@@ -581,32 +581,32 @@ class DevicePorts {
 
 	static function getPortList($DeviceID){
 		global $dbh;
-		
+
 		$dev=new Device();
 		$dev->DeviceID=$DeviceID;
 		if(!$dev->GetDevice()){
 			return false;	// This device doesn't exist
 		}
-		
+
 		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$dev->DeviceID;";
-		
+
 		$portList=array();
 		foreach($dbh->query($sql) as $row){
 			$portList[$row['PortNumber']]=DevicePorts::RowToObject($row);
 		}
-		
+
 		if( sizeof($portList)==0 && $dev->DeviceType!="Physical Infrastructure" ){
 			// somehow this device doesn't have ports so make them now
 			$portList=DevicePorts::createPorts($dev->DeviceID);
 		}
-		
+
 		return $portList;
 	}
 
 	function Search($indexedbyid=false,$loose=false){
 		global $dbh;
 		$o=array();
-		// Store any values that have been added before we make them safe 
+		// Store any values that have been added before we make them safe
 		foreach($this as $prop => $val){
 			if(isset($val)){
 				$o[$prop]=$val;

@@ -38,7 +38,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.dailymotion.com/user/me?fields=fullname,email', 
+					'https://api.dailymotion.com/user/me?fields=fullname,email',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -56,7 +56,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->fullname), 
+		echo '<h1>', HtmlSpecialChars($user->fullname),
 			' you have logged in successfully with Dailymotion!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

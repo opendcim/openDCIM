@@ -75,7 +75,7 @@ if(!$person->ReadAccess){
   <script type="text/javascript" src="scripts/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="scripts/ColVis.min.js"></script>
   <script type="text/javascript" src="scripts/TableTools.min.js"></script>
-  
+
   <script type="text/javascript">
 	$(document).ready(function(){
 		var rows;

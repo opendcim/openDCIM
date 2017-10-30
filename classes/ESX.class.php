@@ -26,7 +26,7 @@
 class ESX {
 	/*	ESX:	Class that contains methods, only.
 
-				Originally handled methods and properties related to VMs but 
+				Originally handled methods and properties related to VMs but
 				when ProxMox support was added this was broken out and the
 				VM.class.php section has all of the properties.
 	*/
@@ -66,7 +66,7 @@ class ESX {
 
 		return $vmList;
 	}
-  
+
 	function UpdateInventory($debug=false){
 		$dev=new Device();
 
@@ -86,7 +86,7 @@ class ESX {
 			}
 		}
 	}
-  
+
 	static function RefreshInventory( $ESXDevice, $debug = false ) {
 		global $dbh;
 
@@ -97,16 +97,16 @@ class ESX {
 			$dev->DeviceID = $ESXDevice;
 		}
 		$dev->GetDevice();
-		
+
 		$search = $dbh->prepare( "select * from fac_VMInventory where vmName=:vmName" );
 		$update = $dbh->prepare( "update fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState where vmName=:vmName" );
 		$insert = $dbh->prepare( "insert into fac_VMInventory set DeviceID=:DeviceID, LastUpdated=:LastUpdated, vmID=:vmID, vmState=:vmState, vmName=:vmName" );
-		
+
 		$vmList = ESX::EnumerateVMs( $dev, $debug );
 		if ( count( $vmList ) > 0 ) {
 			foreach( $vmList as $vm ) {
 				$search->execute( array( ":vmName"=>$vm->vmName ) );
-				
+
 				$parameters = array( ":DeviceID"=>$vm->DeviceID, ":LastUpdated"=>$vm->LastUpdated, ":vmID"=>$vm->vmID, ":vmState"=>$vm->vmState, ":vmName"=>$vm->vmName );
 
 				if ( $search->rowCount() > 0 ) {
@@ -115,12 +115,12 @@ class ESX {
 						error_log( "Updating existing VM '" . $vm->vmName . "'in inventory." );
 				} else {
 					$insert->execute( $parameters );
-					if ( $debug ) 
+					if ( $debug )
 						error_log( "Adding new VM '" . $vm->vmName . "'to inventory." );
 				}
 			}
 		}
-		
+
 		return $vmList;
 	}
 

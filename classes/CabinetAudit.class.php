@@ -26,7 +26,7 @@
 class CabinetAudit {
 	/*	CabinetAudit:	A perpetual audit trail for how often a cabinet has been audited, and by what user.
 	*/
-	
+
 	var $CabinetID;
 	var $UserID;
 	var $AuditStamp;
@@ -46,7 +46,7 @@ class CabinetAudit {
 
 	function GetLastAudit( $db = null ) {
 		global $dbh;
-		
+
 		$sql = "select * from fac_GenericLog where ObjectID=\"" . intval( $this->CabinetID ) . "\" and Class=\"CabinetAudit\" order by Time DESC Limit 1";
 
 		if($row=$dbh->query($sql)->fetch()){
@@ -60,10 +60,10 @@ class CabinetAudit {
 			return false;
 		}
 	}
-	
+
 	function GetLastAuditByUser() {
 		global $dbh;
-				
+
 		$sql = "select * from fac_GenericLog where UserID=\"" . addslashes( $this->UserID ) . "\" and Class=\"CabinetAudit\" order by Time DESC Limit 1";
 
 		if ( $row = $dbh->query( $sql )->fetch() ) {
@@ -76,7 +76,7 @@ class CabinetAudit {
 			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 			return false;
 		}
-		
+
 		return;
 	}
 }

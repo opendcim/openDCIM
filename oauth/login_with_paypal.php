@@ -27,7 +27,7 @@
 
 	/*
 	 *  Set the grant_type to client_credentials to obtain application only authorization
-	 */ 
+	 */
 	// $client->grant_type = 'client_credentials';
 
 	if(strlen($client->client_id) == 0

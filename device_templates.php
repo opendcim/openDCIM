@@ -18,7 +18,7 @@
 		}
 
 		header('Content-Type: application/json');
-		echo json_encode($returndata);  
+		echo json_encode($returndata);
 		exit;
 	}
 	if(isset($_GET['cdutemplate']) || isset($_GET['sensortemplate'])){
@@ -27,7 +27,7 @@
 		$t->GetTemplate();
 
 		header('Content-Type: application/json');
-		echo json_encode($t);  
+		echo json_encode($t);
 		exit;
 	}
 	// Get list of color codes
@@ -76,14 +76,14 @@
 		$result=$template->ImportTemplate($_FILES['templateFile']['tmp_name']);
 		$status=($result["status"]=="")?__("Template File Imported"):$result["status"].'<a id="import_err" style="margin-left: 1em;" title="'.__("View errors").'" href="#"><img src="images/info.png"></a>';
 	}
-	
+
 	if(isset($_REQUEST['TemplateID']) && $_REQUEST['TemplateID'] >0){
 		//get template
 		$template->TemplateID=$_REQUEST['TemplateID'];
 		$template->GetTemplateByID();
 		$deviceList = Device::GetDevicesByTemplate( $template->TemplateID );
 	}
-	
+
 	if(isset($_POST['action'])){
 		$template->ManufacturerID=$_POST['ManufacturerID'];
 		$template->Model=transform($_POST['Model']);
@@ -322,14 +322,14 @@
 	}
 	$imageselect.="</div>";
 
-	
+
 ?>
 <!doctype html>
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Device Class Templates</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -340,7 +340,7 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
-  
+
   <style type="text/css">
 	#deviceimages .center > div { border-width: 1px; border-style: solid; }
   </style>
@@ -378,7 +378,7 @@
 				},500);
 			}
 		});
-        
+
 		$('#clone').click(function(){
 			$('#TemplateID').val(0);
 			$('.caption button:not([value="Update"])').remove();
@@ -415,7 +415,7 @@
 			reload();
 			$("#imageselection").next('div').prepend(upload);
 			uploadifive();
-		});  
+		});
 
 		$('#DeviceType').change(function(){
 			if($('#DeviceType').val()=="Chassis"){
@@ -445,7 +445,7 @@
 				}else{
 					$('.cdudisclaimer').hide();
 				}
-			})();	
+			})();
 		}).change();
 
 		$( "#importButton" ).click(function() {
@@ -453,13 +453,13 @@
 				resizable: false,
 				width: 400,
 				height: 200,
-				modal: true,					
-				buttons: {	
-					<?php echo __("Import");?>: function() {  			
-						//  Llamamos al Formulario 
+				modal: true,
+				buttons: {
+					<?php echo __("Import");?>: function() {
+						//  Llamamos al Formulario
 						$('#frmImport').submit();
 					},
-					<?php echo __("Cancel");?>: function() {  							     				       
+					<?php echo __("Cancel");?>: function() {
 					    $("#dlg_importfile").dialog("close");
 					}
 				}
@@ -471,10 +471,10 @@
 				resizable: false,
 				width: 500,
 				height: 400,
-				modal: true,					
-				buttons: {	
-					<?php echo __("Close");?>: function() {  							     				       
-					    $("#dlg_import_err").dialog("close");  								   
+				modal: true,
+				buttons: {
+					<?php echo __("Close");?>: function() {
+					    $("#dlg_import_err").dialog("close");
 					}
 				}
 			});
@@ -556,7 +556,7 @@
 						if(portnames.length > $('#NumPorts').val()){
 							for (i = 1; i < portnames.length; i++) {
 								inputs.trigger('change')[i-1].value=portnames[i];
-							} 
+							}
 						}
 						e.currentTarget.value='';
 					}
@@ -731,7 +731,7 @@ echo '	</select></div>
 		print "		<option value=\"$ManufacturerRow->ManufacturerID\"$selected>$ManufacturerRow->Name</option>\n";
 	}
 
-echo '    </select>    
+echo '    </select>
    </div>
 </div>
 <div>
@@ -783,8 +783,8 @@ echo '	</select>
 		}
 		print "\t\t<option value=\"$unit\" $selected>$unit</option>\n";
 	}
-	
-echo '</select>	
+
+echo '</select>
 	</div>
 </div>
 
@@ -976,12 +976,12 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 		<div>
 		   <div><label for="Multiplier">',__("Multiplier"),'</label></div>
 		   <div><select name="Multiplier" id="Multiplier">';
-		   
+
 			$Multi=array("0.01","0.1","1","10","100");
 			foreach($Multi as $unit){
 					print "\t\t<option value=\"$unit\">$unit</option>\n";
 				}
-			
+
 		echo '   </select>
 		   </div>
 		</div>
@@ -1005,7 +1005,7 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 			foreach($ProfileList as $prof){
 				print "<option value=\"$prof\">$prof</option>";
 			}
-			
+
 		echo '   </select></div>
 		</div>
 		<div>
@@ -1051,7 +1051,7 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 			foreach(array("0.01","0.1","1","10","100") as $unit){
 				print "\t\t<option value=\"$unit\">$unit</option>\n";
 			}
-			
+
 		echo '   </select>
 		   </div>
 		</div>
@@ -1074,7 +1074,7 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 			foreach($unitofmeasurev as $unit){
 				print "\t\t<option value=\"$unit\">$unit</option>\n";
 			}
-			
+
 		echo '   </select>
 		   </div>
 		</div>
@@ -1101,17 +1101,17 @@ echo '<div id="imageselection" title="',__("Image file selector"),'">
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 
-<!-- dialog: importFile -->  
-<div id="dlg_importfile" style="display:none;" title="<?php echo __("Import Template From File");?>">  
+<!-- dialog: importFile -->
+<div id="dlg_importfile" style="display:none;" title="<?php echo __("Import Template From File");?>">
 	<br>
 	<form enctype="multipart/form-data" name="frmImport" id="frmImport" method="POST">
 		<input type="file" size="60" id="templateFile" name="templateFile" />
-	</form>  
+	</form>
 </div>
-<!-- end dialog: importFile -->  
-<!-- dialog: import_err -->  
-<div id="dlg_import_err" style="display:none;" title="<?php echo __("Import log");?>">  
-<?php 	
+<!-- end dialog: importFile -->
+<!-- dialog: import_err -->
+<div id="dlg_import_err" style="display:none;" title="<?php echo __("Import log");?>">
+<?php
 if (isset($result["log"])){
 	print '<ul style="list-style-type:disc; padding: 5px;">';
 	foreach($result["log"] as $logline){

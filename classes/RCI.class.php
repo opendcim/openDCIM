@@ -28,10 +28,10 @@ class RCI {
 		//
 		//	This function will return all statistics associated with the Rack Cooling Index
 		//
-		
+
 		global $dbh;
 		global $config;
-		
+
 		switch ( $limit ) {
 			case "dc":
 				$limitSQL = "and c.DataCenterID=$id";
@@ -48,7 +48,7 @@ class RCI {
 		$st->execute();
 		$row = $st->fetch();
 		$result["TotalCabinets"] = $row["TotalCabinets"];
-		
+
 		$lowSQL = "select c.Location, a.Temperature from fac_SensorReadings a, fac_Device b, fac_Cabinet c where a.DeviceID=b.DeviceID and b.BackSide=0 and b.Cabinet=c.CabinetID and a.Temperature<>0 and a.Temperature<'" . $config->ParameterArray["RCILow"] . "' $limitSQL order by Location ASC";
 		$RCILow = array();
 		$st = $dbh->prepare( $lowSQL );
@@ -56,10 +56,10 @@ class RCI {
 		while ( $row = $st->fetch() ) {
 			array_push( $RCILow, array( $row["Location"], $row["Temperature"] ));
 		}
-		
+
 		$result["RCILowCount"] = sizeof( $RCILow );
 		$result["RCILowList"] = $RCILow;
-		
+
 		$highSQL = "select c.Location, a.Temperature from fac_SensorReadings a, fac_Device b, fac_Cabinet c where a.DeviceID=b.DeviceID and b.BackSide=0 and b.Cabinet=c.CabinetID and a.Temperature<>0 and a.Temperature>'" . $config->ParameterArray["RCIHigh"] . "' $limitSQL order by Location ASC";
 		$RCIHigh = array();
 		$st = $dbh->prepare( $highSQL );
@@ -67,12 +67,12 @@ class RCI {
 		while ( $row = $st->fetch() ) {
 			array_push( $RCIHigh, array( $row["Location"], $row["Temperature"] ));
 		}
-		
+
 		$result["RCIHighCount"] = sizeof( $RCIHigh );
 		$result["RCIHighList"] = $RCIHigh;
-		
+
 		return $result;
 	}
-}	
+}
 
 ?>

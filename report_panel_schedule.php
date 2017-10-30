@@ -5,15 +5,15 @@
 
     require_once( "db.inc.php" );
     require_once( "facilities.inc.php" );
-    
+
     if(!$person->SiteAdmin){
         // No soup for you.
         header('Location: '.redirect());
         exit;
     }
-    
+
     $subheader = __("Power Panel Schedule Report");
-    
+
     if (!isset($_REQUEST['action'])){
         $datacenter = new DataCenter();
         $dcList = $datacenter->GetDCList();
@@ -25,7 +25,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
     <title>openDCIM Inventory Reporting</title>
     <link rel="stylesheet" href="css/inventory.php" type="text/css">
     <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -52,35 +52,35 @@
 		printf( "<tr><td>%s:</td><td>\n", __("Data Center") );
 		printf( "<select name=\"datacenterid\" onChange=\"form.submit()\">\n" );
 		printf( "<option value=\"\">%s</option>\n", __("Select data center") );
-		
+
 		foreach ( $dcList as $dc )
 			printf( "<option value=\"%d\">%s</option>\n", $dc->DataCenterID, $dc->Name );
-		
+
 		printf( "</td></tr>" );
 	} else {
 		$datacenter->DataCenterID = $_REQUEST['datacenterid'];
 		$datacenter->GetDataCenter();
-		
+
 		$sourceList = $pwrPanel->getSourcesByDataCenter( $datacenter->DataCenterID );
 		printf( "<input type=\"hidden\" name=\"datacenterid\" value=\"%d\">\n", $datacenter->DataCenterID );
-		
+
 		printf( "<h3>%s: %s</h3>", __("Choose either power sources or panels to simulate for Data Center"), $datacenter->Name );
-		
+
 		printf( "<input type=submit name=\"action\" value=\"%s\"><br>\n", __("Generate") );
-		
+
 		printf( "<table border=1 align=center>\n" );
 		printf( "<tr><th>%s</th><th>%s</th></tr>\n", __("Power Source"), __("Power Panel") );
-		
+
 		foreach ( $sourceList as $source ) {
 			$pwrPanel->ParentPanelID = $source->PanelID;
 			$panelList = $pwrPanel->getPanelListBySource();
 			printf( "<tr><td><input type=\"checkbox\" name=\"sourceid[]\" value=\"%d\">%s</td>\n", $source->PanelID, $source->PanelLabel );
-			
+
 			printf( "<td><table>\n" );
-			
+
 			foreach ( $panelList as $panel )
 				printf( "<tr><td><input type=\"checkbox\" name=\"panelid[]\" value=\"%d\">%s</td></tr>\n", $panel->PanelID, $panel->PanelLabel );
-			
+
 			printf( "</table></td></tr>\n" );
 		}
 	}
@@ -139,7 +139,7 @@
 		echo '<meta http-equiv="refresh" content="0">';
 		exit;
 	}
-    
+
     //
     // Now that we have a complete list of the panels, we need get the panel schedules for them
     //
@@ -163,13 +163,13 @@
 		if($panel->NumberScheme=="Odd/Even") {
 			$totalCols=4;
 		}
-        
+
 		$reportHTML.= '<table class="items" width="100%">';
 		$reportHTML.= '<thead>';
 		$reportHTML.= '<tr><td colspan="'.$totalCols.'" width="100%"><h4>'.__("Panel Schedule for").':<br>';
 		$reportHTML.= __("Data Center").': '.$dc->Name.'<br>';
 		$reportHTML.= __("Power Source").': '.$powerSource.'<br>';
-		$reportHTML.= __("Power Panel").': '.$panel->PanelLabel.'</h4></td></tr>'; 
+		$reportHTML.= __("Power Panel").': '.$panel->PanelLabel.'</h4></td></tr>';
 
 		if($panel->NumberScheme=="Odd/Even") {
 			$reportHTML.= '<tr><td width="5%">'.__("Pole").'</td>';
@@ -241,7 +241,7 @@
 						$filterTrLeft[]=array($currTrChildren[0], $currTrChildren[1]);
 						$filterTrRight[]=array($currTrChildren[2], $currTrChildren[3]);
 					} elseif($currTrChildrenCount == 3) {
-						// if child count is 3, then we need to figure out if the left half or the 
+						// if child count is 3, then we need to figure out if the left half or the
 						// right half is rowspanned. easiest way is to look at the second item
 						// and see if it is just an integer (the pole number) and if so, the
 						// left side is rowspanned, otherwise the right side is
@@ -250,7 +250,7 @@
 						} else {
 							$filterTrLeft[]=array($currTrChildren[0], $currTrChildren[1]);
 						}
-					} 
+					}
 				}
 			}
 
@@ -279,7 +279,7 @@
 				// simplehtmldoms handling of tbody in find() is broken, so filter it here
 				if( $currTr->parent()->tag!="thead" && count($currTr->children())==$numTD) {
 					$filterTr[]=$currTr;
-				}	
+				}
 			}
 			// now, go through the list and add the altcolor class to every other filtered row
 			for($count=0; $count<count($filterTr); $count++) {
@@ -320,7 +320,7 @@
 
 	// this is for sequential (which are done at the tr level)
 	foreach($dom->find('table.items tr.altcolor td[rowspan]') as $currTd) {
-		//for some reason, the find above doesn't always filter out trs that don't have 
+		//for some reason, the find above doesn't always filter out trs that don't have
 		// altcolor set, so make doubly sure
 		if(strpos($currTd->parent()->class, "altcolor")) {
 			// at this point, the currTd parent should be a row that is altcolored, and has a rowspan

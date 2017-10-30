@@ -37,12 +37,12 @@ if(isset($_POST['refresh'])){
 
 	$datacenter=new DataCenter();
 	$dcList=$datacenter->GetDCList();
-	
+
 	$templ=new DeviceTemplate();
 	$dept=new Department();
 	$dev=new Device();
 	$log=new LogActions();
-	
+
 	function BuildDataTable($log_object){
 		$limit=(isset($_REQUEST['Limit']))?$_REQUEST['Limit']:1000;
 		$result=$log_object->Search($limit);
@@ -119,12 +119,12 @@ if(isset($_POST['refresh'])){
   <script type="text/javascript" src="scripts/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="scripts/ColVis.min.js"></script>
   <script type="text/javascript" src="scripts/TableTools.min.js"></script>
-  
+
   <script type="text/javascript">
 	$(document).ready(function(){
 		// Start DataTables functions
 		dt();
-		
+
 		$('.table :input').change(function(){
 			GetTableData();
 			$('.table :input').each(function(){

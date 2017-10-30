@@ -38,7 +38,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.vimeo.com/me/?format=json', 
+					'https://api.vimeo.com/me/?format=json',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -56,7 +56,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->name), 
+		echo '<h1>', HtmlSpecialChars($user->name),
 			' you have logged in successfully with Vimeo!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

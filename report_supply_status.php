@@ -5,7 +5,7 @@
 
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
-	
+
 	if(!$person->ReadAccess){
 	    // No soup for you.
 	    header('Location: '.redirect());
@@ -13,8 +13,8 @@
 	}
 
 	/* Version 1.0 of this report has no selectable parameters - you just get a complete dump */
-	
-	$mpdf=new mPDF('win-1252','A4','','',20,15,48,25,10,10); 
+
+	$mpdf=new mPDF('win-1252','A4','','',20,15,48,25,10,10);
 	$mpdf->useOnlyCoreFonts = true;    // false is default
 	//$mpdf->SetProtection(array('print'));
 	$mpdf->SetTitle($config->ParameterArray["OrgName"] . " " . __("Supply Status Report"));
@@ -25,9 +25,9 @@
 	$sup = new Supplies();
 	$bin = new SupplyBin();
 	$bc = new BinContents();
-	
+
 	$SupplyList = $sup->GetSuppliesList();
-	
+
 	$html = '
 <html>
 <head>
@@ -92,20 +92,20 @@ mpdf-->
 <!-- ITEMS HERE -->';
 
 	foreach ( $SupplyList as $Supply ) {
-		$html .= sprintf('<tr><td align="center">%s</td><td>%s</td><td align="right">%d</td><td align="right">%d</td><td align="right">%d</td></tr>\n', 
+		$html .= sprintf('<tr><td align="center">%s</td><td>%s</td><td align="right">%d</td><td align="right">%d</td><td align="right">%d</td></tr>\n',
 			$Supply->PartNum, $Supply->PartName, $Supply->MinQty, $Supply->MaxQty, Supplies::GetSupplyCount($Supply->SupplyID) );
-			
+
 		$bc->SupplyID = $Supply->SupplyID;
 		$binList = $bc->FindSupplies();
-		
+
 		foreach ( $binList as $sb ) {
 			$bin->BinID = $sb->BinID;
 			$bin->GetBin();
-			
+
 			$html .= sprintf( '<tr><td>&nbsp;</td><td>%s: %s</td><td>&nbsp;</td><td>&nbsp;</td><td align="right">%d</td></tr>\n', __("Location"), $bin->Location, $sb->Count );
 		}
 	}
-	
+
 	$html .= '<!-- END ITEMS HERE -->
 <tr>
 <td class="bottom" colspan=5>&nbsp;</td>

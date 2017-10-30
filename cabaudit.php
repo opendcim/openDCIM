@@ -36,11 +36,11 @@ class PDF extends FPDF {
   var $OutlineRoot;
   var $pdfconfig;
 
-  
+
 	function PDF(){
 		parent::FPDF('L');
 	}
-  
+
 	function Header() {
 		$this->pdfconfig = new Config();
     	$this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
@@ -61,7 +61,7 @@ class PDF extends FPDF {
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
     		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
-	
+
 
   function Bookmark($txt,$level=0,$y=0) {
     if($y==-1)
@@ -375,8 +375,8 @@ class PDF_Diag extends PDF_Sector {
     }
 }
 
-  
-  
+
+
 
 
 //
@@ -385,7 +385,7 @@ class PDF_Diag extends PDF_Sector {
 //
 //
 	$pdf=new PDF();
-	$pdf->SetLeftMargin(5);	
+	$pdf->SetLeftMargin(5);
 	$pdf->SetRightMargin(5);
 	include_once("loadfonts.php");
 	$cab->CabinetID=$_REQUEST['cabinetid'];
@@ -395,7 +395,7 @@ class PDF_Diag extends PDF_Sector {
 	$pdf->AddPage();
 	$pdf->SetFillColor(224,235,255);
 	$fill=0;
-	
+
 	$cabmessage=__("Cabinet Location").': '.$cab->Location;
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'B',10);
 	$pdf->Cell(0,5,$cabmessage,0,1,'C',0);
@@ -462,7 +462,7 @@ class PDF_Diag extends PDF_Sector {
 		$pdf->Cell( $cellWidths[7], 6, '', 'LBRT', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[8], 6, '', 'LBRT', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[9], 6, '', 'LBRT', 1, 'L', $fill );
-		
+
 		$fill=!$fill;
 
 		if($devRow->DeviceType="Chassis1"){
@@ -484,7 +484,7 @@ class PDF_Diag extends PDF_Sector {
 				$pdf->Cell( 0, 5, 'Total Rack Units for ' . $dc->Name . ': ' . $DCRU, '', 1, 'L', '' );
 				$pdf->Cell( 0, 5, 'Total BTU Output for ' . $dc->Name . ': ' . sprintf( '%d (%.2f Tons)', $DCBTU, $DCBTU/12000 ), '', 1, 'L', '' );
 			}
-		  
+
 			$dc->DataCenterID=$cab->DataCenterID;
 			$dc->GetDataCenterbyID();
 			$DCRU=0;
@@ -499,7 +499,7 @@ class PDF_Diag extends PDF_Sector {
 
 	$pdf->AddPage();
 	$fill=0;
-	
+
 	$pdu->CabinetID=$cab->CabinetID;
         $cabmessage=__("PDUs at").' '.$cabmessage;
 	$pdf->SetFont($config->ParameterArray['PDFfont'],'B',10);
@@ -523,7 +523,7 @@ class PDF_Diag extends PDF_Sector {
 
 			$mfg->ManufacturerID=$pdutemp->ManufacturerID;
 			$mfg->GetManufacturerByID();
-	
+
 			$pdf->Cell( $cellWidths[0], 6, $PDUrow->Label, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[1], 6, $pdutemp->NumOutlets, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, "[$mfg->Name] $pdutemp->Model", 'LBRT', 0, 'L', $fill );

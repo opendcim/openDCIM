@@ -94,7 +94,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Information Management</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -107,16 +107,16 @@
     <?php if(isset($ie8fix)){echo $ie8fix;} ?>
   <![endif]-->
   <?php if(isset($screenadjustment)){echo $screenadjustment;} ?>
- 
+
 <script type="text/javascript">
-	$(document).keydown(function(event){ 
+	$(document).keydown(function(event){
 		if (event.ctrlKey && event.keyCode == 83) {
 			$('input[name=action]').trigger('click');
 			return false;
 		}
 	});
 </script>
- 
+
 </head>
 <body>
 <?php include( 'header.inc.php' ); ?>
@@ -130,9 +130,9 @@
 </div>
 
 	<div class="table">
-        <div class="title"><?php echo __("Coordinates"); ?></div> 
+        <div class="title"><?php echo __("Coordinates"); ?></div>
 	<form method="POST">
-    <div class="table"> 
+    <div class="table">
 <?php
 	if ( isset($_REQUEST['cabinetid']) )  {
 		print '<input type="hidden" name="cabinetid" value="'.$cab->CabinetID.'">';
@@ -140,25 +140,25 @@
 		print '<input type="hidden" name="panelid" value="'.$pan->PanelID.'">';
 	}
 ?>
-        <div> 
-          <div><b>X<sub>1</sub>:</b></div> 
- 		      <div><input type="text" name="x1" id="x1" value="<?php echo $MapX1; ?>"></div> 
-        </div> 
-        <div> 
-          <div><b>Y<sub>1</sub>:</b></div> 
-          <div><input type="text" name="y1" id="y1" value="<?php echo $MapY1; ?>"></div> 
-        </div> 
-        <div> 
-          <div><b>X<sub>2</sub>:</b></div> 
-          <div><input type="text" name="x2" id="x2" value="<?php echo $MapX2; ?>"></div> 
-          <div></div> 
-          <div></div> 
-        </div> 
-        <div> 
-          <div><b>Y<sub>2</sub>:</b></div> 
-          <div><input type="text" name="y2" id="y2" value="<?php echo $MapY2; ?>"></div> 
-          <div></div> 
-          <div></div> 
+        <div>
+          <div><b>X<sub>1</sub>:</b></div>
+ 		      <div><input type="text" name="x1" id="x1" value="<?php echo $MapX1; ?>"></div>
+        </div>
+        <div>
+          <div><b>Y<sub>1</sub>:</b></div>
+          <div><input type="text" name="y1" id="y1" value="<?php echo $MapY1; ?>"></div>
+        </div>
+        <div>
+          <div><b>X<sub>2</sub>:</b></div>
+          <div><input type="text" name="x2" id="x2" value="<?php echo $MapX2; ?>"></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div>
+          <div><b>Y<sub>2</sub>:</b></div>
+          <div><input type="text" name="y2" id="y2" value="<?php echo $MapY2; ?>"></div>
+          <div></div>
+          <div></div>
         </div>
 <?php
 	if ( isset( $_REQUEST['cabinetid'])) {
@@ -193,17 +193,17 @@
 <?php
 	}
 ?>
-    </div> <!-- END div.table --> 
+    </div> <!-- END div.table -->
 	</form>
 	</div>
 </div> <!-- END div.mapmaper -->
 
 <div class="center"><div>
 <?php echo "<img src=\"css/blank.gif\" height=$height width=$width>"; ?>
-<div class="container demo"> 
-  <div style="float: left; width: 70%;"> 
-    <p class="instructions"><?php echo __("Click and drag on the image to select an area for "),' ',$name; ?>.</p> 
- 
+<div class="container demo">
+  <div style="float: left; width: 70%;">
+    <p class="instructions"><?php echo __("Click and drag on the image to select an area for "),' ',$name; ?>.</p>
+
     <div class="frame" style="margin: 0 0.3em; width: 300px; height: 300px;">
 		<?php
 			$errors=array();
@@ -218,15 +218,15 @@
 			}else{
 				print "<img id=\"map\" src=\"drawings/$dc->DrawingFileName\">";
 			}
-		?>			
-    </div> 
-  </div> 
- 
-  <div style="float: left; width: 30%;"> 
-    <p style="font-size: 110%; font-weight: bold; padding-left: 0.1em;"><?php echo __("Selection Preview"); ?></p> 
-  
-  </div> 
-</div> 
+		?>
+    </div>
+  </div>
+
+  <div style="float: left; width: 30%;">
+    <p style="font-size: 110%; font-weight: bold; padding-left: 0.1em;"><?php echo __("Selection Preview"); ?></p>
+
+  </div>
+</div>
 <script type="text/javascript">
 	$(document).ready(function() {
 		function preview(img, selection) {

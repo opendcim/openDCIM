@@ -49,7 +49,7 @@ class PUEView {
 
 		// Instead of letting them pick ANY number of days, limit selection to 30, 90, 180, or 365
 		$validTimes = array( "30", "90", "180", "365" );
-		
+
 		$this->ViewID = int($this->ViewID);
 		$this->Description = sanitize($this->Description);
 		$this->Category = (in_array( $this->Category, $validCategories ))?$this->Category:"1";

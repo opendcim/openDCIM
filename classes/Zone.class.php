@@ -61,23 +61,23 @@ class Zone {
 
 		return $zone;
 	}
- 
+
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-	
+
 	function CreateZone(){
 		global $dbh;
-			
+
 		$this->MakeSafe();
-			
-		$sql="INSERT INTO fac_Zone SET Description=\"$this->Description\", 
+
+		$sql="INSERT INTO fac_Zone SET Description=\"$this->Description\",
 			DataCenterID=$this->DataCenterID,
 			MapX1=$this->MapX1,
 			MapY1=$this->MapY1,
@@ -95,29 +95,29 @@ class Zone {
 			return $this->ZoneID;
 		}
 	}
-	
+
 	function UpdateZone(){
 		$this->MakeSafe();
 
 		$oldzone=new Zone();
 		$oldzone->ZoneID=$this->ZoneID;
 		$oldzone->GetZone();
-			
+
 		//update all cabinets in this zone
-		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID WHERE 
+		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID WHERE
 			ZoneID=$this->ZoneID;";
 		if(!$this->query($sql)){
 			return false;
 		}
-	
-		//update zone	
-		$sql="UPDATE fac_Zone SET Description=\"$this->Description\", 
+
+		//update zone
+		$sql="UPDATE fac_Zone SET Description=\"$this->Description\",
 			DataCenterID=$this->DataCenterID,
 			MapX1=$this->MapX1,
 			MapY1=$this->MapY1,
 			MapX2=$this->MapX2,
-			MapY2=$this->MapY2, 
-			MapZoom=$this->MapZoom 
+			MapY2=$this->MapY2,
+			MapZoom=$this->MapZoom
 			WHERE ZoneID=$this->ZoneID;";
 		if(!$this->query($sql)){
 			return false;
@@ -126,12 +126,12 @@ class Zone {
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldzone):'';
 		return true;
 	}
-	
+
 	function DeleteZone(){
 		global $dbh;
-		
+
 		$this->MakeSafe();
-		
+
 		//update all cabinets in this zone
 		$cabinet=new Cabinet();
 		$cabinet->ZoneID=$this->ZoneID;
@@ -178,10 +178,10 @@ class Zone {
 
 		return $children;
 	}
- 
+
 	function GetZone(){
 		$this->MakeSafe();
-		
+
 		$sql="SELECT * FROM fac_Zone WHERE ZoneID=$this->ZoneID;";
 		if($row=$this->query($sql)->fetch()){
 			foreach(Zone::RowToObject($row) as $prop => $value){
@@ -192,20 +192,20 @@ class Zone {
 			return false;
 		}
 	}
-  
+
 	function GetZonesByDC($limit=false){
 		$this->MakeSafe();
-		
+
 		$hascoords=($limit)?'AND MapX1!=MapX2 AND MapY1!=MapY2':'';
 
-		$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID $hascoords 
+		$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID $hascoords
 			ORDER BY Description;";
-		
+
 		$zoneList=array();
 		foreach($this->query($sql) as $row){
 			$zoneList[]=Zone::RowToObject($row);
 		}
-		
+
 		return $zoneList;
 	}
 
@@ -222,10 +222,10 @@ class Zone {
 				$zoneList[]=Zone::RowToObject($row);
 			}
 		}
-		
+
 		return $zoneList;
 	}
-	
+
 	function GetZoneStatistics(){
 		$this->GetZone();
 
@@ -247,47 +247,47 @@ class Zone {
 			a.Cabinet=b.CabinetID AND a.Status!='Reserved' AND ParentDevice=0 AND
 			b.ZoneID=$this->ZoneID;";
 		$zoneStats["Allocated"]=($test=$this->query($sql)->fetchColumn())?$test:0;
-		
+
         $zoneStats["Available"]=$zoneStats["TotalU"] - $zoneStats["Occupied"] - $zoneStats["Infrastructure"] - $zoneStats["Allocated"];
 
 		// Perform two queries - one is for the wattage overrides (where NominalWatts > 0) and one for the template (default) values
-		$sql="SELECT SUM(NominalWatts) as TotalWatts FROM fac_Device a,fac_Cabinet b WHERE 
-			a.Cabinet=b.CabinetID AND a.NominalWatts>0 AND 
+		$sql="SELECT SUM(NominalWatts) as TotalWatts FROM fac_Device a,fac_Cabinet b WHERE
+			a.Cabinet=b.CabinetID AND a.NominalWatts>0 AND
 			b.ZoneID=$this->ZoneID;";
 		$zoneStats["ComputedWatts"]=($test=$this->query($sql)->fetchColumn())?$test:0;
-		
-		$sql="SELECT SUM(c.Wattage) as TotalWatts FROM fac_Device a, fac_Cabinet b, 
-			fac_DeviceTemplate c WHERE a.Cabinet=b.CabinetID AND 
-			a.TemplateID=c.TemplateID AND a.NominalWatts=0 AND 
+
+		$sql="SELECT SUM(c.Wattage) as TotalWatts FROM fac_Device a, fac_Cabinet b,
+			fac_DeviceTemplate c WHERE a.Cabinet=b.CabinetID AND
+			a.TemplateID=c.TemplateID AND a.NominalWatts=0 AND
 			b.ZoneID=$this->ZoneID;";
 		$zoneStats["ComputedWatts"]+=($test=$this->query($sql)->fetchColumn())?$test:0;
-		
-		$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID IN 
-			(SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID IN 
+
+		$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID IN
+			(SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID IN
 			(SELECT CabinetID FROM fac_Cabinet WHERE ZoneID=$this->ZoneID))";
 		$zoneStats["MeasuredWatts"]=($test=$this->query($sql)->fetchColumn())?$test:0;
-		
-		$sql="SELECT AVG(NULLIF(Temperature, 0)) AS AvgTemp FROM fac_SensorReadings a, 
+
+		$sql="SELECT AVG(NULLIF(Temperature, 0)) AS AvgTemp FROM fac_SensorReadings a,
 			fac_Device b, fac_Cabinet c WHERE a.DeviceID=b.DeviceID AND b.BackSide=0 and
-			b.Cabinet=c.CabinetID AND a.DeviceID IN (SELECT b.DeviceID FROM fac_Device 
+			b.Cabinet=c.CabinetID AND a.DeviceID IN (SELECT b.DeviceID FROM fac_Device
 			WHERE ZoneID=$this->ZoneID);";
 		$zoneStats["AvgTemp"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
 
-		$sql="SELECT AVG(NULLIF(Humidity, 0)) AS AvgHumdity FROM fac_SensorReadings a, 
+		$sql="SELECT AVG(NULLIF(Humidity, 0)) AS AvgHumdity FROM fac_SensorReadings a,
 			fac_Device b, fac_Cabinet c WHERE a.DeviceID=b.DeviceID AND b.BackSide=0 and
-			b.Cabinet=c.CabinetID AND a.DeviceID IN (SELECT b.DeviceID FROM fac_Device 
+			b.Cabinet=c.CabinetID AND a.DeviceID IN (SELECT b.DeviceID FROM fac_Device
 			WHERE ZoneID=$this->ZoneID);";
 		$zoneStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
 
 		$sql = "select count(*) from fac_Cabinet where ZoneID=" . intval($this->ZoneID);
 		$zoneStats["TotalCabinets"]=($test=$this->query($sql)->fetchColumn())?$test:0;
-		
+
 		return $zoneStats;
 	}
 
 	function Search($indexedbyid=false,$loose=false){
 		$o=new stdClass();
-		// Store any values that have been added before we make them safe 
+		// Store any values that have been added before we make them safe
 		foreach($this as $prop => $val){
 			if(isset($val)){
 				$o->$prop=$val;

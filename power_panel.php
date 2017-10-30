@@ -30,17 +30,17 @@
 		echo $return;
 		exit;
 	}
-	
+
 	// Set a default panel voltage based upon the configuration screen
 	$panel->PanelVoltage=$config->ParameterArray["DefaultPanelVoltage"];
-  
+
 	if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update")||($_POST["action"]=="Map"))){
 		foreach($panel as $prop => $val){
 			$panel->$prop=trim($_POST[$prop]);
 		}
-		// Coordinates aren't displayed on this page and the loop above is looking 
-		// for every attribute on the panel model.  This will load the original object 
-		// and pull over the coordinates so they don't get wiped. 
+		// Coordinates aren't displayed on this page and the loop above is looking
+		// for every attribute on the panel model.  This will load the original object
+		// and pull over the coordinates so they don't get wiped.
 		if($_POST["action"]!="Create"){
 			$pan=new PowerPanel();
 			$pan->PanelID=$panel->PanelID;
@@ -50,7 +50,7 @@
 			$panel->MapY1=$pan->MapY1;
 			$panel->MapY2=$pan->MapY2;
 		}
-		
+
 		if($_POST["action"]=="Create"){
 			if($panel->createPanel()){
 				header('Location: '.redirect("power_panel.php?PanelID=$panel->PanelID"));
@@ -70,7 +70,7 @@
 		$pduList=$pdu->GetPDUbyPanel();
 
 		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
-		
+
 		$decimalplaces=0;
 		function FindTicks(&$decimalplaces,$panelCap,&$dataMajorTicks){
 			$err=false;
@@ -83,19 +83,19 @@
 				$dataMajorTicks .= $tick;
 			}
 			return $err;
-		}	
+		}
 		while(FindTicks($decimalplaces,$panelCap,$dataMajorTicks)){
 			$decimalplaces++;
 			$dataMajorTicks = "";
 		}
-		
+
 		$dataMaxValue = sprintf( "%.0${decimalplaces}lf", $panelCap / 1000 );
-		
+
 		$dataHighlights = sprintf( "0 %d #eee, %d %d #fffacd, %d %d #eaa", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 
 		$mtarray=implode(",",explode(" ",$dataMajorTicks));
 		$hilights = sprintf( "{from: 0, to: %.0${decimalplaces}lf, color: '#eee'}, {from: %.0${decimalplaces}lf, to: %.0${decimalplaces}lf, color: '#fffacd'}, {from: %.0${decimalplaces}lf, to: %.0${decimalplaces}lf, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
-		
+
 		$panelLoad = sprintf( "%.0${decimalplaces}lf", PowerPanel::getInheritedLoad($panel->PanelID) / 1000 );
 		$msrLoad = sprintf( "%.0${decimalplaces}lf", $panel->getPanelLoad() / 1000 );
 		$estLoad = sprintf( "%.0${decimalplaces}lf", PowerPanel::getEstimatedLoad($panel->PanelID) / 1000 );
@@ -105,7 +105,7 @@
 		$inheritTitle = __("Inherited Meter Load");
 		$estimateTitle = __("Estimated Load");
 		$measuredTitle = __("Panel Meter Load");
-		
+
 		$script="
 	var pwrGauge=new Gauge({
 		height: 175,
@@ -207,14 +207,14 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Management</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/gauge.min.js"></script>
@@ -316,7 +316,7 @@ echo '	</select></div>
 		<select name="TemplateID" id="TemplateID">
 			<option value=0></option>';
 
-			foreach($tmpList as $tmp){ 
+			foreach($tmpList as $tmp){
 				$selected=($panel->TemplateID==$tmp->TemplateID)?' selected':'';
 				print "\n\t\t\t<option value=$tmp->TemplateID$selected>$tmp->Model</option>";
 			}
@@ -361,7 +361,7 @@ echo '		</select>
 <div class="pwr_gauge"><canvas id="power-estimate" width="150" height="150"></canvas></div>
 
 ';
-	
+
 		$panelSchedule=$panel->getPanelSchedule();
 		print "<center><h2>".__("Panel Schedule")."</h2></center>\n<table>";
 
@@ -402,7 +402,7 @@ echo '		</select>
 	if(isset($panelSchedule["unscheduled"]) && !empty($panelSchedule["unscheduled"])){
 		print "<div class=\"table error\">\n	<div>\n		<div>\n			<fieldset>\n				<legend>".__("Unknown Pole")."</legend>\n				<div class=\"table\">\n";
 		foreach($panelSchedule["unscheduled"] as $err){
-			$errData = $panel->getScheduleItemHtml($err, 0, false);	
+			$errData = $panel->getScheduleItemHtml($err, 0, false);
 			print "					<div><div>";
 			print $errData["html"];
 			print "</div></div>\n";
@@ -414,7 +414,7 @@ echo '		</select>
 	if(isset($panelSchedule["errors"]) && !empty($panelSchedule["errors"])){
 		print "<div class=\"table error\">\n	<div>\n		<div>\n			<fieldset>\n				<legend>".__("Errors")."</legend>\n				<div class=\"table\">\n";
 		foreach($panelSchedule["errors"] as $err){
-			$errData = $panel->getScheduleItemHtml($err, 0, false);	
+			$errData = $panel->getScheduleItemHtml($err, 0, false);
 			print "					<div><div>";
 			print $errData["html"];
 			print "</div></div>\n";

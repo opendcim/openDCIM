@@ -8,7 +8,7 @@
 		header('Location: '.redirect());
 		exit;
 	}
-	
+
 if (!isset($_REQUEST['action'])){
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -27,13 +27,13 @@ if (!isset($_REQUEST['action'])){
 <?php include( 'header.inc.php' ); ?>
 <?php
 	include( 'sidebar.inc.php' );
-	
+
 	$datacenter = new DataCenter();
 	$dcList = $datacenter->GetDCList();
-	
+
 	$pwrPanel = new PowerPanel();
 	$cab = new Cabinet();
-	
+
 ?>
 </div>
 <div class="main">
@@ -49,44 +49,44 @@ if (!isset($_REQUEST['action'])){
 		printf( "<option value=\"-1\">%s</option>\n", __("All Data Centers"));
 		foreach ( $dcList as $dc )
 			printf( "<option value=\"%d\">%s</option>\n", $dc->DataCenterID, $dc->Name );
-		
+
 		printf( "</td></tr>" );
 	} else {
 		if ( $_REQUEST['datacenterid'] > 0 ) {
 			/* If the datacenterid > 0, then it's a single data center */
 			$datacenter->DataCenterID = $_REQUEST['datacenterid'];
 			$datacenter->GetDataCenter();
-			
+
 			$sourceList = $pwrPanel->getSourcesByDataCenter( $datacenter->DataCenterID );
 		} else {
 			/*	All data centers were selected, so get ALL sources */
 			$sourceList = $pwrPanel->GetSources();
 		}
 		printf( "<input type=\"hidden\" name=\"datacenterid\" value=\"%d\">\n", $datacenter->DataCenterID );
-		
+
 		printf( "<h3>%s: %s</h3>", __("Choose either power sources or panels to simulate for Data Center"), $datacenter->Name );
-		
+
 		printf( "<input type=submit name=\"action\" value=\"%s\"><br>\n", __("Generate") );
-		
+
 		printf( "<input type=checkbox name=\"skipnormal\">%s<br>\n", __("Only show down/unknown devices") );
 
 		printf( "<table border=1 align=center>\n" );
 		printf( "<tr><th>%s</th><th>%s</th></tr>\n", __("Power Source"), __("Power Panel") );
-		
+
 		foreach ( $sourceList as $source ) {
 			$pwrPanel->ParentPanelID = $source->PanelID;
 			$panelList = $pwrPanel->getPanelListBySource();
-			
+
 			printf( "<tr><td><input type=\"checkbox\" name=\"sourceid[]\" value=\"%d\">%s</td>\n", $source->PanelID, $source->PanelLabel );
-			
+
 			printf( "<td><table>\n" );
-			
+
 			foreach ( $panelList as $panel )
 				printf( "<tr><td><input type=\"checkbox\" name=\"panelid[]\" value=\"%d\">%s</td></tr>\n", $panel->PanelID, $panel->PanelLabel );
-			
+
 			printf( "</table></td></tr>\n" );
 		}
-		
+
 		printf( "<div><label>%s</label><input type='text' size='50' name='tags' id='tags'></div>\n", __("Tags (example: +Linux -Development)") );
 	}
 ?>
@@ -152,32 +152,32 @@ if (!isset($_REQUEST['action'])){
 	$sheet->setActiveSheetIndex(0);
 	$sheet->getActiveSheet()->setTitle(__("Summary"));
 	$row = 1;
-	
+
 	// Make some quick user defined sort comparisons for this report only
-	
+
 	function compareCab( $a, $b ) {
 		if ( $a->Location == $b->Location )
 			return 0;
-		
+
 		return ( $a->Location > $b->Location ) ? +1 : -1;
 	}
-	
+
 	$dc->DataCenterID = intval( $_REQUEST['datacenterid'] );
 	$dc->GetDataCenter();
-	
+
 	$skipNormal = false;
 
 	if (isset( $_REQUEST["skipnormal"] ) ) {
 		$skipNormal = $_REQUEST["skipnormal"];
 	}
-	
+
 	if(isset($_POST['sourceid'])){
 		$srcArray=$_POST['sourceid'];
 	}
 	if(isset($_POST['panelid'])){
 		$pnlArray=$_POST['panelid'];
 	}
-	
+
 	if ( isset( $_POST['tags'] ) ) {
 		$tagList = preg_split( "/([\+\-])/", $_POST['tags'], -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 		$includeTags = array();
@@ -195,21 +195,21 @@ if (!isset($_REQUEST['action'])){
 			}
 		}
 	}
-	
+
 	if ( count( $srcArray ) > 0 ) {
 		// Build an array of the Panels affected when the entire source goes down.
 		// This will allow us to use one section of code to calculate effects of panels going down and use it for both cases.
 		$pnlList = array();
-		
+
 		foreach ( $srcArray as $srcID ) {
 			$pan->ParentPanelID = $srcID;
-			
+
 			$pnlList = array_merge( $pnlList, $pan->getPanelListBySource() );
 		}
 	} else {
 		// Need to build an array of Panel Objects (what we got from input was just the IDs)
 		$pnlList = array();
-		
+
 		foreach ( $pnlArray as $pnlID ) {
 			$pnlCount = count( $pnlList );
 			$pnlList[$pnlCount] = new PowerPanel();
@@ -217,27 +217,27 @@ if (!isset($_REQUEST['action'])){
 			$pnlList[$pnlCount]->GetPanel();
 		}
 	}
-	
+
 	// Now that we have a complete list of the panels, we need a list of the CDUs affected by the outage
-	
+
 	$pduList = array();
-	
+
 	// Rebuild an array of just the Panel ID values
 	$pnlArray = array();
-	
+
 	foreach ( $pnlList as $pnlDown ) {
 		$pdu->PanelID = $pnlDown->PanelID;
-		
+
 		$pduList = array_merge( $pduList, $pdu->GetPDUbyPanel());
-		
+
 		array_push( $pnlArray, $pnlDown->PanelID );
 	}
 
 	// And finally, build a list of cabinets that have at least one circuit from the affected panels
-	
+
 	$cabIDList = array();
 	$cabList = array();
-	
+
 	// Also need to build a unique list of all PDU ID's included in outage
 	$pduArray = array();
 	$fsArray = array();
@@ -245,14 +245,14 @@ if (!isset($_REQUEST['action'])){
 	foreach ( $pduList as $outagePDU ) {
 		if ( array_search( $outagePDU->CabinetID, $cabIDList ) === false ) {
 			array_push( $cabIDList, $outagePDU->CabinetID );
-			
+
 			$cabCount = count( $cabList );
-			
+
 			$cabList[$cabCount] = new Cabinet();
 			$cabList[$cabCount]->CabinetID = $outagePDU->CabinetID;
 			$cabList[$cabCount]->GetCabinet();
 		}
-			
+
 		if ( $outagePDU->FailSafe ) {
 			// Check both inputs on a FailSafe PDU
 			if ( in_array( $outagePDU->PanelID, $pnlArray ) && in_array( $outagePDU->PanelID2, $pnlArray ) ) {
@@ -266,7 +266,7 @@ if (!isset($_REQUEST['action'])){
 			array_push( $pduArray, $outagePDU->PDUID );
 		}
 	}
-		
+
 	usort( $cabList, 'compareCab' );
 
 	$activeSheet = $sheet->getActiveSheet();
@@ -282,7 +282,7 @@ if (!isset($_REQUEST['action'])){
 	$activeSheet->getColumnDimension('B')->setAutoSize(true);
 	$activeSheet->getColumnDimension('C')->setAutoSize(true);
 	$activeSheet->getColumnDimension('D')->setAutoSize(true);
-	
+
 	// Create an array to map projects to status
 	$projStatus=array();
 	$projRow=array();
@@ -328,7 +328,7 @@ if (!isset($_REQUEST['action'])){
 		$activeSheet->setShowGridlines(false);
 
 		$sheetTitle = substr( $proj->ProjectName, 0, 30 );
-		$sheetTitle = preg_replace( '/[\\/\*\?\[\]]/', '_', $sheetTitle ); 
+		$sheetTitle = preg_replace( '/[\\/\*\?\[\]]/', '_', $sheetTitle );
 		$activeSheet->setTitle( $sheetTitle );
 		$activeSheet->mergeCells('A1:F1');
 
@@ -394,7 +394,7 @@ if (!isset($_REQUEST['action'])){
 			}
 			$sql .= ")) ";
 		}
-		
+
 		// If tags were added, only include devices that don't have tags in the Exclude array
 		if ( sizeof( $excludeTags ) > 0 ) {
 			$sql .= " AND DeviceID not in (select DeviceID from fac_DeviceTags a, fac_Tags b where a.TagID=b.TagID and b.Name in (";
@@ -406,7 +406,7 @@ if (!isset($_REQUEST['action'])){
 			}
 			$sql .= ")) ";
 		}
-		
+
 		$st = $dbh->prepare( $sql );
 		$st->execute();
 		$st->setFetchMode( PDO::FETCH_CLASS, "Device" );
@@ -419,19 +419,19 @@ if (!isset($_REQUEST['action'])){
 			foreach ( $devList as $devRow ) {
 				$downPanels = "";
 				$outageStatus = "Down";
-				
+
 				// If there is not a circuit to the cabinet that is unaffected, no need to even check
 				if ( $diversity ) {
 					// If a circuit was entered with no panel ID, or a device has no connections documented, mark it as unknown
 					// The only way to be sure a device will stay up is if we have a connection to an unaffected circuit,
 					// or to a failsafe switch (ATS) connected to at least one unaffected circuit.
 					$outageStatus = "Down";
-					
+
 					$connList = PowerPorts::getConnectedPortList( $devRow->DeviceID );
-					
+
 					$devPDUList = array();
 					$fsDiverse = false;
-					
+
 					if ( count( $connList ) == 0 ) {
 						$outageStatus = "Undocumented";
 					}
@@ -449,7 +449,7 @@ if (!isset($_REQUEST['action'])){
 							$fsDiverse = true;
 						}
 					}
-					
+
 					if ( count( $devPDUList ) > 0 ) {
 						if ( count( $devPDUList ) < $devRow->PowerSupplyCount )
 							$outageStatus = "Degraded";
@@ -524,7 +524,7 @@ if (!isset($_REQUEST['action'])){
 							$dept->GetDeptByID();
 
 							$activeSheet->SetCellValue('F'.$row, $dept->Name );
-							
+
 							$row++;
 						}
 					}

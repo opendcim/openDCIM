@@ -8,7 +8,7 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
     var methods = {
 
         init : function(options) {
-            
+
             return this.each(function() {
 
                 // Create a reference to the jQuery DOM object
@@ -40,7 +40,7 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
                     'auto'            : true,               // Automatically upload a file when it's added to the queue
                     'buttonClass'     : false,              // A class to add to the UploadiFive button
                     'buttonText'      : 'Select Files',     // The text that appears on the UploadiFive button
-                    'checkScript'     : false,              // Path to the script that checks for existing file names 
+                    'checkScript'     : false,              // Path to the script that checks for existing file names
                     'dnd'             : true,               // Allow drag and drop into the queue
                     'dropTarget'      : false,              // Selector for the drop target
                     'fileObjName'     : 'Filedata',         // The name of the file object to use in your server-side script
@@ -103,7 +103,7 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
                     'position'  : 'absolute',
                     'right'     : '-3px',
                     'top'       : '-3px',
-                    'z-index'   : 999 
+                    'z-index'   : 999
                 });
 
                 // Create a new input
@@ -355,7 +355,7 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
                         });
                         // Send the filename to the check script
                         var checkData = $.extend(settings.formData, {filename: file.name});
-						// The .ajaxSetup isn't making .post synchronous so I changed it out 
+						// The .ajaxSetup isn't making .post synchronous so I changed it out
 						// to a straight .ajax call that we can force
 						$.ajax({
 							url: settings.checkScript,
@@ -451,7 +451,7 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
                                     eol      = '\r\n',
                                     binFile  = '';
 
-                                // Build an RFC2388 String 
+                                // Build an RFC2388 String
                                 binFile += dashes + boundary + eol;
                                 // Generate the headers
                                 binFile += 'Content-Disposition: form-data; name="' + settings.fileObjName + '"';
@@ -482,11 +482,11 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
                                     if (status == 404) {
                                         $data.error('404_FILE_NOT_FOUND', file, uploadAll);
                                     } else {
-                                        if (file.xhr.responseText != 'Invalid file type.') {    
+                                        if (file.xhr.responseText != 'Invalid file type.') {
                                             $data.uploadComplete(e, file, uploadAll);
                                         } else {
                                             $data.error(file.xhr.responseText, file, uploadAll);
-                                        } 
+                                        }
                                     }
                                 }, false);
 
@@ -554,7 +554,7 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
                         file.queueItem.addClass('error')
                         // Output the error in the queue item
                         .find('.fileinfo').html(' - ' + errorMsg);
-                        // Hide the 
+                        // Hide the
                         file.queueItem.find('.progress').remove();
                     }
                     // Trigger the error event
@@ -621,10 +621,10 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
                     // Style the button wrapper
                     $data.button.css({
                         'height'      : settings.height,
-                        'line-height' : settings.height + 'px', 
+                        'line-height' : settings.height + 'px',
                         'overflow'    : 'hidden',
                         'position'    : 'relative',
-                        'text-align'  : 'center', 
+                        'text-align'  : 'center',
                         'width'       : settings.width
                     });
 
@@ -771,9 +771,9 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
                 if (typeof settings.onCancel === 'function') {
                     settings.onCancel.call($this, file);
                 }
-                
+
             });
-            
+
         },
 
         // Upload the files in the queue
@@ -854,7 +854,7 @@ Released under the UploadiFive Standard License <http://www.uploadify.com/upload
                 var $this    = $(this),
                     $data    = $this.data('uploadifive'),
                     settings = $data.settings;
-            
+
                 // Clear the queue
                 methods.clearQueue.call($this);
                 // Destroy the queue if it was created

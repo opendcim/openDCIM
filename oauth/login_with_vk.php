@@ -38,7 +38,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.vk.com/method/users.get', 
+					'https://api.vk.com/method/users.get',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -56,7 +56,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->response[0]->first_name), 
+		echo '<h1>', HtmlSpecialChars($user->response[0]->first_name),
 			' you have logged in successfully with VK!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

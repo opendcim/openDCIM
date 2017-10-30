@@ -25,7 +25,7 @@
 
 class SensorTemplate {
 	/* Sensor Template - Information about how to get temperature/humidity from various types of devices */
-	
+
 	var $TemplateID;
 	var $ManufacturerID;
 	var $Model;
@@ -34,7 +34,7 @@ class SensorTemplate {
 	var $TempMultiplier;
 	var $HumidityMultiplier;
 	var $mUnits;
-	
+
 	function __construct() {
 		$this->Model = "";
 		$this->TemperatureOID = "";
@@ -96,25 +96,25 @@ class SensorTemplate {
 
 	static function getTemplates(){
 		global $dbh;
-		
+
 		$sql="SELECT * FROM fac_SensorTemplate ORDER BY ManufacturerID, Model ASC;";
-		
+
 		$tempList = array();
 		foreach($dbh->query($sql) as $row){
 			$tempList[]=SensorTemplate::RowToObject($row);
 		}
-		
+
 		return $tempList;
 	}
-	
+
 	function CreateTemplate($templateid){
 		global $dbh;
 
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID, 
-			Model=\"$this->Model\", TemperatureOID=\"$this->TemperatureOID\", 
-			HumidityOID=\"$this->HumidityOID\", TempMultiplier=$this->TempMultiplier, 
+		$sql="INSERT INTO fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID,
+			Model=\"$this->Model\", TemperatureOID=\"$this->TemperatureOID\",
+			HumidityOID=\"$this->HumidityOID\", TempMultiplier=$this->TempMultiplier,
 			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\",
 			TemplateID=".intval($templateid);
 
@@ -128,19 +128,19 @@ class SensorTemplate {
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->TemplateID;
 	}
-	
+
 	function UpdateTemplate() {
 		global $dbh;
-		
-		$this->MakeSafe();	
+
+		$this->MakeSafe();
 
 		$old=new SensorTemplate();
 		$old->TemplateID=$this->TemplateID;
 		$old->GetTemplate();
 
-		$sql="UPDATE fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID, 
-			Model=\"$this->Model\", TemperatureOID=\"$this->TemperatureOID\", 
-			HumidityOID=\"$this->HumidityOID\", TempMultiplier=$this->TempMultiplier, 
+		$sql="UPDATE fac_SensorTemplate SET ManufacturerID=$this->ManufacturerID,
+			Model=\"$this->Model\", TemperatureOID=\"$this->TemperatureOID\",
+			HumidityOID=\"$this->HumidityOID\", TempMultiplier=$this->TempMultiplier,
 			HumidityMultiplier=$this->HumidityMultiplier, mUnits=\"$this->mUnits\"
 			WHERE TemplateID=$this->TemplateID;";
 
@@ -152,14 +152,14 @@ class SensorTemplate {
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 		return true;
 	}
-	
+
 	function DeleteTemplate() {
 		global $dbh;
-		
+
 		// Set any sensors using this template back to the default "no template" value
 		$sql = "update fac_Cabinet set SensorTemplateID=0 where SensorTemplateID=" . intval( $this->TemplateID );
 		$dbh->exec( $sql );
-		
+
 		// Now it is "safe" to delete the record as it will leave no orphans
 		$sql = "delete from fac_SensorTemplate where TemplateID=" . intval( $this->TemplateID );
 		$dbh->exec( $sql );

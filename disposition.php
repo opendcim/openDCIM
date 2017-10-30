@@ -9,7 +9,7 @@
 		header('Location: '.redirect());
 		exit;
 	}
-	
+
 	$status = "";
 	$disp = new Disposition;
 
@@ -49,7 +49,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>openDCIM Data Center Inventory</title>
-  
+
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">

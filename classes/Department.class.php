@@ -27,7 +27,7 @@ class Department {
 					is simply a mechanism for grouping multiple assets together
 					by logical container for the concept of an owner.
 	*/
-	
+
 	var $DeptID;
 	var $Name;
 	var $ExecSponsor;
@@ -83,8 +83,8 @@ class Department {
 		global $dbh;
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_Department SET Name=\"$this->Name\", 
-			ExecSponsor=\"$this->ExecSponsor\", SDM=\"$this->SDM\", 
+		$sql="INSERT INTO fac_Department SET Name=\"$this->Name\",
+			ExecSponsor=\"$this->ExecSponsor\", SDM=\"$this->SDM\",
 			Classification=\"$this->Classification\", DeptColor=\"$this->DeptColor\";";
 
 		if($this->exec($sql)){
@@ -104,13 +104,13 @@ class Department {
 		$olddept->DeptID=$this->DeptID;
 		$olddept->GetDeptByID();
 
-		$sql="UPDATE fac_Department SET Name=\"$this->Name\", 
-			ExecSponsor=\"$this->ExecSponsor\", SDM=\"$this->SDM\", 
-			Classification=\"$this->Classification\" , DeptColor=\"$this->DeptColor\" 
+		$sql="UPDATE fac_Department SET Name=\"$this->Name\",
+			ExecSponsor=\"$this->ExecSponsor\", SDM=\"$this->SDM\",
+			Classification=\"$this->Classification\" , DeptColor=\"$this->DeptColor\"
 			WHERE DeptID=\"$this->DeptID\";";
 
 		(class_exists('LogActions'))?LogActions::LogThis($this,$olddept):'';
-		$this->query($sql); 
+		$this->query($sql);
 		$this->MakeDisplay();
 	}
 
@@ -159,7 +159,7 @@ class Department {
 	 			$this->exec($sql);
 			}
 		}
-	
+
 		// Clear any users from this department
 		$sql="DELETE FROM fac_DeptContacts WHERE DeptID=$this->DeptID;";
 		$this->exec($sql);
@@ -245,17 +245,17 @@ class Department {
 		if(is_array($MemberList)){
 		  foreach($MemberList as $PersonID){
 				$sql="INSERT INTO fac_DeptContacts SET DeptID=$this->DeptID, ContactID=".intval($PersonID).";";
-	 			$this->exec($sql); 
+	 			$this->exec($sql);
 			}
 		}
 		$this->MakeDisplay();
 	}
-	
+
 	function GetDepartmentByContact($UserID){
-		$sql="SELECT a.* FROM fac_Department a, fac_DeptContacts b, fac_People c 
-			WHERE a.DeptID=b.DeptID AND b.PersonID=c.PersonID AND 
+		$sql="SELECT a.* FROM fac_Department a, fac_DeptContacts b, fac_People c
+			WHERE a.DeptID=b.DeptID AND b.PersonID=c.PersonID AND
 			c.UserID=\"".sanitize($UserID)."\";";
-	 
+
 		// If someone is assigned to more than one department, just return the first hit
 		if($row=$this->query($sql)->fetch()){
 			$this->DeptID=$row["DeptID"];
@@ -265,7 +265,7 @@ class Department {
 
 	function Search($indexedbyid=false,$loose=false){
 		$o=array();
-		// Store any values that have been added before we make them safe 
+		// Store any values that have been added before we make them safe
 		foreach($this as $prop => $val){
 			if(isset($val)){
 				$o[$prop]=$val;

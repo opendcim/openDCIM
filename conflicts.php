@@ -15,7 +15,7 @@ class PatchConnection {
 							any other device within the same data center.  For trans-data center connections, you can map the
 							port back to itself, and list the external source in the Notes field.
 	*/
-	
+
 	var $PanelDeviceID;
 	var $PanelPortNumber;
 	var $FrontEndpointDeviceID;
@@ -34,7 +34,7 @@ class PatchConnection {
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-	
+
 	function GetConnectionRecord(){
 		global $dbh;
 
@@ -46,7 +46,7 @@ class PatchConnection {
 			return -1;
 		}
 
-		foreach($sth as $row){	
+		foreach($sth as $row){
 			$this->FrontEndpointDeviceID=$row["FrontEndpointDeviceID"];
 			$this->FrontEndpointPort=$row["FrontEndpointPort"];
 			$this->RearEndpointDeviceID=$row["RearEndpointDeviceID"];
@@ -54,21 +54,21 @@ class PatchConnection {
 			$this->FrontNotes=$row["FrontNotes"];
 			$this->RearNotes=$row["RearNotes"];
 		}
-		
-		return 1;		
+
+		return 1;
 	}
-	
+
 	function MakeFrontConnection($recursive=true){
 		$this->MakeSafe();
 
 		$tmpDev=new Device();
 		$tmpDev->DeviceID = $this->PanelDeviceID;
 		$tmpDev->GetDevice();
-		
+
 		// If you pass a port number lower than 1, or higher than the total number of ports defined for the patch panel, then bounce
 		if ( $this->PanelPortNumber < 1 || $this->PanelPortNumber > $tmpDev->Ports )
 			return -1;
-			
+
 		$sql="INSERT INTO fac_PatchConnection VALUES ($this->PanelDeviceID, $this->PanelPortNumber, $this->FrontEndpointDeviceID, $this->FrontEndpointPort, NULL, NULL, \"$this->FrontNotes\", NULL ) ON DUPLICATE KEY UPDATE FrontEndpointDeviceID=$this->FrontEndpointDeviceID,FrontEndpointPort=$this->FrontEndpointPort,FrontNotes=\"$this->FrontNotes\";";
 
 		if(!$this->query($sql)){
@@ -77,7 +77,7 @@ class PatchConnection {
 
 		$tmpDev->DeviceID=$this->FrontEndpointDeviceID;
 		$tmpDev->GetDevice();
-		
+
 		if($recursive && $tmpDev->DeviceType=="Switch"){
 			$tmpSw = new SwitchConnection();
 			$tmpSw->SwitchDeviceID = $this->FrontEndpointDeviceID;
@@ -85,7 +85,7 @@ class PatchConnection {
 			$tmpSw->EndpointDeviceID = $this->PanelDeviceID;
 			$tmpSw->EndpointPort = $this->PanelPortNumber;
 			$tmpSw->Notes = $this->FrontNotes;
-			
+
 			// Remove any existing connection from this port
 			$tmpSw->RemoveConnection( );
 			// Call yourself, but with the recursive = false so that you don't create a loop
@@ -101,30 +101,30 @@ class PatchConnection {
 			$tmpPanel->FrontNotes = $this->FrontNotes;
 			$tmpPanel->MakeFrontConnection( false );
 		}
-		
+
 		$this->GetConnectionRecord(); // reload the object from the DB
 		return 1;
 	}
-	
+
 	function MakeRearConnection($recursive=true){
 		$this->MakeSafe();
-		
+
 		$tmpDev=new Device();
 		$tmpDev->DeviceID = $this->PanelDeviceID;
 		$tmpDev->GetDevice();
-		
+
 		// If you pass a port number lower than 1, or higher than the total number of ports defined for the patch panel, then bounce
 		if ( $this->PanelPortNumber < 1 || $this->PanelPortNumber > $tmpDev->Ports )
 			return -1;
-		
+
 		$sql="INSERT INTO fac_PatchConnection VALUES ($this->PanelDeviceID, $this->PanelPortNumber, NULL, NULL, $this->RearEndpointDeviceID, $this->RearEndpointPort, NULL, \"$this->RearNotes\" ) ON DUPLICATE KEY UPDATE RearEndpointDeviceID=$this->RearEndpointDeviceID,RearEndpointPort=$this->RearEndpointPort,RearNotes=\"$this->RearNotes\";";
-		if(!$this->query($sql)){	
+		if(!$this->query($sql)){
 			return -1;
 		}
 
 		$tmpDev->DeviceID = $this->RearEndpointDeviceID;
 		$tmpDev->GetDevice();
-		
+
 		// Patch Panel rear connections will only go to circuits or other patch panels
 		// So there is no need to test for a switch like with the front side
 		if ( $recursive && $tmpDev->DeviceType == "Patch Panel" ) {
@@ -136,11 +136,11 @@ class PatchConnection {
 			$tmpPanel->RearNotes = $this->RearNotes;
 			$tmpPanel->MakeRearConnection( false );
 		}
-		
+
 		$this->GetConnectionRecord(); // reload the object from the DB
 		return 1;
 	}
-	
+
 	function RemoveFrontConnection($recursive=true){
 		$this->GetConnectionRecord(); // just pulled data from db both variables are int already, no need to sanitize again
 		$sql="UPDATE fac_PatchConnection SET FrontEndpointDeviceID=NULL, FrontEndpointPort=NULL, FrontNotes=NULL WHERE PanelDeviceID=$this->PanelDeviceID AND PanelPortNumber=$this->PanelPortNumber;";
@@ -148,19 +148,19 @@ class PatchConnection {
 		if(!$this->query($sql)){
 			return -1;
 		}
-		
+
 		// Check the endpoint of the front connection in case it has a reciprocal connection
 		$tmpDev = new Device();
 		$tmpDev->DeviceID = $this->FrontEndpointDeviceID;
 		$tmpDev->GetDevice();
-		
+
 		if ( $recursive && $tmpDev->DeviceType == "Switch" ) {
 			$tmpSw = new SwitchConnection();
 			$tmpSw->SwitchDeviceID = $this->FrontEndpointDeviceID;
 			$tmpSw->SwitchPortNumber = $this->FrontEndpointPort;
-			$tmpSw->RemoveConnection();	
+			$tmpSw->RemoveConnection();
 		}
-		
+
 		// Patch panel connections can go front to front, or rear to rear, but never front to rear
 		// So since this is a front connection removal, you only need to remove the front connection
 		// at the opposite end
@@ -173,7 +173,7 @@ class PatchConnection {
 		$this->GetConnectionRecord(); // reload the object from the DB
 		return 1;
 	}
-	
+
 	function RemoveRearConnection($recursive=true){
 		$this->GetConnectionRecord(); // just pulled data from db both variables are int already, no need to sanitize again
 		$sql="UPDATE fac_PatchConnection SET RearEndpointDeviceID=NULL, RearEndpointPort=NULL, RearNotes=NULL WHERE PanelDeviceID=$this->PanelDeviceID AND PanelPortNumber=$this->PanelPortNumber;";
@@ -181,7 +181,7 @@ class PatchConnection {
 		if(!$this->query()){
 			return -1;
 		}
-		
+
 		// Check the endpoint of the front connection in case it has a reciprocal connection
 		$tmpDev = new Device();
 		$tmpDev->DeviceID = $this->RearEndpointDeviceID;
@@ -189,7 +189,7 @@ class PatchConnection {
 		// Patch panel rear connections can only go to either
 		//		(a) Another patch panel (rear)
 		//		(b) A circuit ID - in which case the DeviceID is 0, but the notes has the circuit ID
-		
+
 		// Patch panel connections can go front to front, or rear to rear, but never front to rear
 		// So since this is a front connection removal, you only need to remove the front connection
 		// at the opposite end
@@ -199,18 +199,18 @@ class PatchConnection {
 			$tmpPanel->PanelPortNumber = $this->RearEndpointPort;
 			$tmpPanel->RemoveRearConnection(false);
 		}
-		
+
 		return 1;
 	}
-	
+
 	function DropEndpointConnections() {
 		global $dbh;
 
 		// You call this when deleting an endpoint device, other than a patch panel
 		$this->MakeSafe();
 
-		$sql="UPDATE fac_PatchConnection SET FrontEndpointDeviceID=NULL, 
-			FrontEndpointPort=NULL, FrontNotes=NULL WHERE 
+		$sql="UPDATE fac_PatchConnection SET FrontEndpointDeviceID=NULL,
+			FrontEndpointPort=NULL, FrontNotes=NULL WHERE
 			FrontEndpointDeviceID=$this->FrontEndpointDeviceID;";
 
 		if(!$dbh->query($sql)){
@@ -222,14 +222,14 @@ class PatchConnection {
 			return true;
 		}
 	}
-	
+
 	function DropPanelConnections() {
 		global $dbh;
 
 		// You only call this when you are deleting another patch panel
 		$this->MakeSafe();
-		$sql="UPDATE fac_PatchConnection SET RearEndpointDeviceID=NULL, 
-			RearEndpointPort=NULL, RearNotes=NULL WHERE 
+		$sql="UPDATE fac_PatchConnection SET RearEndpointDeviceID=NULL,
+			RearEndpointPort=NULL, RearNotes=NULL WHERE
 			FrontEndpointDeviceID=$this->FrontEndpointDeviceID;";
 
 		if(!$dbh->query($sql)){
@@ -238,10 +238,10 @@ class PatchConnection {
 			error_log("DropPanelConnections::PDO Error: {$info[2]} SQL=$sql");
 			return -1;
 		}
-		
+
 		// Delete any records for this panel itself
 		$sql="DELETE FROM fac_PatchConnection WHERE PanelDeviceID=$this->PanelDeviceID;";
-		
+
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
@@ -251,23 +251,23 @@ class PatchConnection {
 			return true;
 		}
 	}
-	
+
 	function GetPanelConnections(){
 		$this->MakeSafe();
 		$sql="SELECT * FROM fac_PatchConnection WHERE PanelDeviceID=$this->PanelDeviceID ORDER BY PanelPortNumber;";
-		
+
 		$tmpDev = new Device();
 		$tmpDev->DeviceID = $this->PanelDeviceID;
 		$tmpDev->GetDevice();
 		$connList=array();
-		
+
 		for ( $i = 1; $i <= $tmpDev->Ports; $i++ ) {
 			$connList[$i] = new PatchConnection();
 			$connList[$i]->PanelDeviceID = $tmpDev->DeviceID;
 			$connList[$i]->PanelPortNumber = $i;
-		}      
-	
-		foreach($this->query($sql) as $connRow){	
+		}
+
+		foreach($this->query($sql) as $connRow){
 			$connNum=$connRow["PanelPortNumber"];
 			$connList[$connNum]->PanelDeviceID=$connRow["PanelDeviceID"];
 			$connList[$connNum]->PanelPortNumber=$connRow["PanelPortNumber"];
@@ -278,14 +278,14 @@ class PatchConnection {
 			$connList[$connNum]->FrontNotes=$connRow["FrontNotes"];
 			$connList[$connNum]->RearNotes=$connRow["RearNotes"];
 		}
-		
+
 		return $connList;
 	}
-	
+
 	function GetEndpointConnections(){
 		$this->MakeSafe();
 		$sql="SELECT * FROM fac_PatchConnection WHERE FrontEndpointDeviceID=$this->FrontEndpointDeviceID ORDER BY PanelDeviceID ASC;";
-		
+
 		$patchList=array();
 		foreach($this->query($sql) as $row){
 			$pNum=sizeof($patchList);
@@ -299,7 +299,7 @@ class PatchConnection {
 			$patchList[$pNum]->FrontNotes=$row["FrontNotes"];
 			$patchList[$pNum]->RearNotes=$row["RearNotes"];
 		}
-		
+
 		return $patchList;
 	}
 
@@ -312,7 +312,7 @@ class PatchConnection {
 		$this->RearEndpointDeviceID=(is_null($this->RearEndpointDeviceID))?'NULL':intval($this->RearEndpointDeviceID);
 		$this->RearEndpointPort=(is_null($this->RearEndpointPort))?'NULL':intval($this->RearEndpointPort);
 		$this->RearNotes=(is_null($this->RearNotes))?'NULL':addslashes($this->RearNotes);
-	}	
+	}
 
 }
 
@@ -321,7 +321,7 @@ class SwitchConnection {
 							any other device within the same data center.  For trans-data center connections, you can map the
 							port back to itself, and list the external source in the Notes field.
 	*/
-	
+
 	var $SwitchDeviceID;
 	var $SwitchPortNumber;
 	var $EndpointDeviceID;
@@ -341,10 +341,10 @@ class SwitchConnection {
 
 		$this->MakeSafe();
 
-		$sql="INSERT INFO fac_SwitchConnection SET SwitchDeviceID=$this->SwitchDeviceID, 
-			SwitchPortNumber=$this->SwitchPortNumber, 
-			EndpointDeviceID=$this->EndpointDeviceID, 
-			EndpointPort=$this->EndpointPort, Notes=\"$this->Notes\";"; 
+		$sql="INSERT INFO fac_SwitchConnection SET SwitchDeviceID=$this->SwitchDeviceID,
+			SwitchPortNumber=$this->SwitchPortNumber,
+			EndpointDeviceID=$this->EndpointDeviceID,
+			EndpointPort=$this->EndpointPort, Notes=\"$this->Notes\";";
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
@@ -356,7 +356,7 @@ class SwitchConnection {
 		$tmpDev=new Device();
 		$tmpDev->DeviceID=$this->EndpointDeviceID;
 		$tmpDev->GetDevice();
-		
+
 		if ( $recursive && $tmpDev->DeviceType == "Switch" ) {
 			$tmpSw = new SwitchConnection();
 			$tmpSw->SwitchDeviceID = $this->EndpointDeviceID;
@@ -364,7 +364,7 @@ class SwitchConnection {
 			$tmpSw->EndpointDeviceID = $this->SwitchDeviceID;
 			$tmpSw->EndpointPort = $this->SwitchPortNumber;
 			$tmpSw->Notes = $this->Notes;
-			
+
 			// Remove any existing connection from this port
 			$tmpSw->RemoveConnection();
 			// Call yourself, but with the recursive = false so that you don't create a loop
@@ -380,10 +380,10 @@ class SwitchConnection {
 			$tmpPan->FrontNotes = $this->Notes;
 			$tmpPan->MakeFrontConnection(false );
 		}
-		
+
 		return 1;
 	}
-  
+
 	function UpdateConnection() {
 		$sql = "update fac_SwitchConnection set EndpointDeviceID=\"" . intval( $this->EndpointDeviceID ) . "\", EndpointPort=\"" . intval( $this->EndpointPort ) . "\", Notes=\"" . addslashes( $this->Notes ) . "\" where SwitchDeviceID=\"" . intval( $this->SwitchDeviceID ) . "\" and SwitchPortNumber=\"" . intval( $this->SwitchPortNumber ) . "\"";
 		$this->query($sql);
@@ -391,7 +391,7 @@ class SwitchConnection {
 		$tmpDev = new Device();
 		$tmpDev->DeviceID = intval($this->EndpointDeviceID);
 		$tmpDev->GetDevice();
-		
+
 		if ( $tmpDev->DeviceType == "Switch" ) {
 			$tmpSw = new SwitchConnection();
 			$tmpSw->SwitchDeviceID = $this->EndpointDeviceID;
@@ -399,7 +399,7 @@ class SwitchConnection {
 			$tmpSw->EndpointDeviceID = $this->SwitchDeviceID;
 			$tmpSw->EndpointPort = $this->SwitchPortNumber;
 			$tmpSw->Notes = $this->Notes;
-			
+
 			// Remove any existing connection from this port
 			$tmpSw->RemoveConnection();
 			// Call yourself, but with the recursive = false so that you don't create a loop
@@ -416,12 +416,12 @@ class SwitchConnection {
 			$tmpPan->MakeFrontConnection(false );
 		}
 	}
-	
+
 	function GetConnectionRecord() {
 		global $dbh;
-		
+
 		$sql = sprintf( "select * from fac_SwitchConnection where SwitchDeviceID=%d and SwitchPortNumber=%d", intval( $this->SwitchDeviceID), intval( $this->SwitchPortNumber ) );
-			
+
 		if ( ! $row =$dbh->query( $sql )->fetch() ) {
 			return false;
 		}
@@ -429,10 +429,10 @@ class SwitchConnection {
 		$this->EndpointDeviceID = $row["EndpointDeviceID"];
 		$this->EndpointPort = $row["EndpointPort"];
 		$this->Notes = $row["Notes"];
-		
-		return;	
+
+		return;
 	}
-    
+
 	function RemoveConnection( $recursive=false ) {
 		$this->GetConnectionRecord();
 
@@ -457,7 +457,7 @@ class SwitchConnection {
 
 		return $result;
 	}
-  
+
 	function DropEndpointConnections() {
 		global $dbh;
 
@@ -474,7 +474,7 @@ class SwitchConnection {
 			return true;
 		}
 	}
-  
+
 	function DropSwitchConnections() {
 		global $dbh;
 
@@ -503,7 +503,7 @@ class SwitchConnection {
 			$connList[$i] = new SwitchConnection();
 			$connList[$i]->SwitchDeviceID = $tmpDev->DeviceID;
 			$connList[$i]->SwitchPortNumber = $i;
-		}      
+		}
 
 		foreach($this->query($selectSQL) as $connRow){
 			$connNum = $connRow["SwitchPortNumber"];
@@ -516,7 +516,7 @@ class SwitchConnection {
 
 		return $connList;
 	}
-  
+
 	function GetSwitchPortConnector() {
 		$selectSQL = "select * from fac_SwitchConnection where SwitchDeviceID=\"" . $this->SwitchDeviceID . "\" and SwitchPortNumber=\"" . $this->SwitchPortNumber . "\"";
 
@@ -528,7 +528,7 @@ class SwitchConnection {
 
 		return;
 	}
-  
+
 	function GetEndpointConnections() {
 		$selectSQL = "select * from fac_SwitchConnection where EndpointDeviceID=\"" . $this->EndpointDeviceID . "\" order by EndpointPort";
 
@@ -545,7 +545,7 @@ class SwitchConnection {
 		}
 
 		return $connList;
-	}  
+	}
 }
 
 	if(isset($_POST['DeviceID']) && isset($_POST['power'])){
@@ -691,14 +691,14 @@ class SwitchConnection {
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 <script type="text/javascript">
@@ -744,7 +744,7 @@ class SwitchConnection {
 												//	row.remove();
 												}
 											}
-										}); 
+										});
 									});
 								});
 							}
