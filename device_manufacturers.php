@@ -69,7 +69,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Device Class Templates</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -103,7 +103,7 @@
 		var count;
 		$.ajax({
 			type:'get',
-			async: false, 
+			async: false,
 			data:{getTemplateCount: $('#ManufacturerID').val()},
 			success: function(data){
 				$('#count').text(data.length);
@@ -115,7 +115,7 @@
 
 	function DeleteManufacturer(){
 		function DeleteNow(manufacturerid){
-			// If manufacturerid unset then just delete 
+			// If manufacturerid unset then just delete
 			transferto=(typeof(manufacturerid)=='undefined')?0:manufacturerid;
 			$.post('',{ManufacturerID: $('#ManufacturerID').val(), TransferTo: transferto, action: 'Delete'},function(data){
 				if(data){

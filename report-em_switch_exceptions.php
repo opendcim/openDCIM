@@ -20,14 +20,14 @@
 	$message = Swift_Message::NewInstance()->setSubject( __("Data Center Switch Capacity Exceptions Report" ) );
 
 	// Set from address
-	try{		
+	try{
 		$message->setFrom($config->ParameterArray['MailFromAddr']);
 	}catch(Swift_RfcComplianceException $e){
 		$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 	}
 
 	// Add data center team to the list of recipients
-	try{		
+	try{
 		$message->addTo($config->ParameterArray['FacMgrMail']);
 	}catch(Swift_RfcComplianceException $e){
 		$error.=__("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
@@ -37,15 +37,15 @@
 	$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
 
 	$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>ITS Data Center Inventory</title></head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", $config->ParameterArray["HeaderColor"], $logo );
-	
+
 	$htmlMessage .= sprintf( "<p>The following switches are near full capacity per documentation.</p>" );
-	
+
 	$devList = Device::GetSwitchesToReport();
 	$lastDC = null;
 	$lastCabinet = null;
 	$urlBase = $config->ParameterArray["InstallURL"];
 	$threshold = intval($config->ParameterArray["NetworkThreshold"]) / 100;
-	
+
 	if ( sizeof( $devList ) == 0 ) {
 		$htmlMessage .= "<p>There are no switches that qualify for this report.</p>\n";
 	} else {
@@ -53,7 +53,7 @@
 		$dc = new DataCenter();
 		$port = new DevicePorts();
 		$dev = new Device();
-		
+
 		$exceptionRows = "";
 		$mismatchRows = "";
 
@@ -64,18 +64,18 @@
 				$lastCabinet = $cab->CabinetID;
 				$cabinet = $cab->Location;
 			}
-			
+
 			if ( $cab->DataCenterID != $lastDC ) {
 				$dc->DataCenterID = $cab->DataCenterID;
 				$dc->GetDataCenter();
 				$lastDC = $dc->DataCenterID;
 				$dataCenter = $dc->Name;
 			}
-			
+
 			$port->DeviceID = $devRow->DeviceID;
 			$activeCount = intval( $port->getActivePortCount() );
-			
-			$portList = $port->getPorts();	
+
+			$portList = $port->getPorts();
 			$statusList = SwitchInfo::getPortStatus( $devRow->DeviceID );
 
 			if ( sizeof( $statusList ) == sizeof( $portList ) && ( sizeof( $portList ) > 0 ) ) {
@@ -95,7 +95,7 @@
 							$devAnchor = "&nbsp;";
 							$portName = "&nbsp;";
 						}
-						
+
 						$exceptionRows .= sprintf( "<tr><td><a href=\"%sdevices.php?DeviceID=%d\">%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $urlBase, $devRow->DeviceID, $devRow->Label, $currPort->Label, $devAnchor, $portName, $currPort->Notes, $statusList[$n+1] );
 					}
 				}
@@ -113,7 +113,7 @@
 			$htmlMessage .= $mismatchRows;
 			$htmlMessage .= "</table>\n";
 		}
-		
+
 		if ( $exceptionRows != "" ) {
 			$htmlMessage .= "<p>The following ports specifically have an exception between documentation and SNMP information.</p>";
 			$htmlMessage .= "<table border='1'>\n<tr><th>Device Name</th><th>Port</th><th>Documented Device</th><th>Documented Port</th><th>Notes</th><th>Link Status</th></tr>\n";

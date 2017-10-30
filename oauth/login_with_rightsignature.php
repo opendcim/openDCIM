@@ -36,7 +36,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://rightsignature.com/api/users/user_details.json', 
+					'https://rightsignature.com/api/users/user_details.json',
 					'GET', array(), array(
 						'FailOnAccessError'=>true,
 						'ResponseContentType'=>'application/json'
@@ -57,7 +57,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars(print_r($user->user->name, 1)), 
+		echo '<h1>', HtmlSpecialChars(print_r($user->user->name, 1)),
 			' you have logged in successfully with RightSignature!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

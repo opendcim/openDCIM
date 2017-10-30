@@ -29,7 +29,7 @@ class PowerConnection {
 							as connecting power across cabinets is not just a BAD PRACTICE, it's
 							outright idiotic, except in temporary situations.
 	*/
-	
+
 	var $PDUID;
 	var $PDUPosition;
 	var $DeviceID;
@@ -95,8 +95,8 @@ class PowerConnection {
 
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_PowerConnection SET DeviceID=$this->DeviceID, 
-			DeviceConnNumber=$this->DeviceConnNumber, PDUID=$this->PDUID, 
+		$sql="INSERT INTO fac_PowerConnection SET DeviceID=$this->DeviceID,
+			DeviceConnNumber=$this->DeviceConnNumber, PDUID=$this->PDUID,
 			PDUPosition=\"$this->PDUPosition\" ON DUPLICATE KEY UPDATE DeviceID=$this->DeviceID,
 			DeviceConnNumber=$this->DeviceConnNumber;";
 
@@ -108,10 +108,10 @@ class PowerConnection {
 		}
 		return false;
 	}
-	
+
 	function DeleteConnections(){
 		/*
-		 * This function is called when deleting a device, and will remove 
+		 * This function is called when deleting a device, and will remove
 		 * ALL connections for the specified device.
 		 */
 		global $dbh;
@@ -127,16 +127,16 @@ class PowerConnection {
 		}
 		return false;
 	}
-	
+
 	function RemoveConnection(){
 		/*
-		 * This function is called when removing a single connection, 
+		 * This function is called when removing a single connection,
 		 * specified by the unique combination of PDU ID and PDU Position.
 		 */
 		global $dbh;
 
 		$this->MakeSafe();
-		$sql="DELETE FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND 
+		$sql="DELETE FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND
 			PDUPosition=\"$this->PDUPosition\";";
 
 		if($this->CanWrite()){
@@ -152,9 +152,9 @@ class PowerConnection {
 		global $dbh;
 
 		$this->MakeSafe();
-		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND 
+		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND
 			PDUPosition=\"$this->PDUPosition\";";
-    
+
 		if($row=$dbh->query($sql)->fetch()){
 			foreach(PowerConnection::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
@@ -163,12 +163,12 @@ class PowerConnection {
 		}
 		return false;
 	}
-  
+
 	function GetConnectionsByPDU(){
 		global $dbh;
 
 		$this->MakeSafe();
-		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID ORDER BY 
+		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID ORDER BY
 			PDUPosition;";
 
 		$connList=array();
@@ -177,7 +177,7 @@ class PowerConnection {
 		}
 		return $connList;
 	}
-  
+
 	function GetConnectionsByDevice(){
 		global $dbh;
 
@@ -189,6 +189,6 @@ class PowerConnection {
 			$connList[]=PowerConnection::RowToObject($row);
 		}
 		return $connList;
-	}    
+	}
 }
 ?>

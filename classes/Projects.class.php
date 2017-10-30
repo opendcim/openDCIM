@@ -44,12 +44,12 @@ class Projects {
 		global $dbh;
 		return $dbh->prepare($sql);
 	}
-	
+
 	function lastID() {
 		global $dbh;
 		return $dbh->lastInsertID();
 	}
-	
+
 	static function getProject( $ProjectID ) {
 		global $dbh;
 

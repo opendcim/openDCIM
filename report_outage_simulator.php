@@ -7,7 +7,7 @@
 		header('Location: '.redirect());
 		exit;
 	}
-	
+
 if (!isset($_REQUEST['action'])){
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -26,13 +26,13 @@ if (!isset($_REQUEST['action'])){
 <?php include( 'header.inc.php' ); ?>
 <?php
 	include( 'sidebar.inc.php' );
-	
+
 	$datacenter = new DataCenter();
 	$dcList = $datacenter->GetDCList();
-	
+
 	$pwrPanel = new PowerPanel();
 	$cab = new Cabinet();
-	
+
 ?>
 </div>
 <div class="main">
@@ -48,44 +48,44 @@ if (!isset($_REQUEST['action'])){
 		printf( "<option value=\"-1\">%s</option>\n", __("All Data Centers"));
 		foreach ( $dcList as $dc )
 			printf( "<option value=\"%d\">%s</option>\n", $dc->DataCenterID, $dc->Name );
-		
+
 		printf( "</td></tr>" );
 	} else {
 		if ( $_REQUEST['datacenterid'] > 0 ) {
 			/* If the datacenterid > 0, then it's a single data center */
 			$datacenter->DataCenterID = $_REQUEST['datacenterid'];
 			$datacenter->GetDataCenter();
-			
+
 			$sourceList = $pwrPanel->getSourcesByDataCenter( $datacenter->DataCenterID );
 		} else {
 			/*	All data centers were selected, so get ALL sources */
 			$sourceList = $pwrPanel->GetSources();
 		}
 		printf( "<input type=\"hidden\" name=\"datacenterid\" value=\"%d\">\n", $datacenter->DataCenterID );
-		
+
 		printf( "<h3>%s: %s</h3>", __("Choose either power sources or panels to simulate for Data Center"), $datacenter->Name );
-		
+
 		printf( "<input type=submit name=\"action\" value=\"%s\"><br>\n", __("Generate") );
-		
+
 		printf( "<input type=checkbox name=\"skipnormal\">%s<br>\n", __("Only show down/unknown devices") );
-		
+
 		printf( "<table border=1 align=center>\n" );
 		printf( "<tr><th>%s</th><th>%s</th></tr>\n", __("Power Source"), __("Power Panel") );
-		
+
 		foreach ( $sourceList as $source ) {
 			$pwrPanel->ParentPanelID = $source->PanelID;
 			$panelList = $pwrPanel->getPanelListBySource();
-			
+
 			printf( "<tr><td><input type=\"checkbox\" name=\"sourceid[]\" value=\"%d\">%s</td>\n", $source->PanelID, $source->PanelLabel );
-			
+
 			printf( "<td><table>\n" );
-			
+
 			foreach ( $panelList as $panel )
 				printf( "<tr><td><input type=\"checkbox\" name=\"panelid[]\" value=\"%d\">%s</td></tr>\n", $panel->PanelID, $panel->PanelLabel );
-			
+
 			printf( "</table></td></tr>\n" );
 		}
-		
+
 		printf( "<div><label>%s</label><input type='text' size='50' name='tags' id='tags'></div>\n", __("Tags (example: +Linux -Development)") );
 	}
 ?>
@@ -96,13 +96,13 @@ if (!isset($_REQUEST['action'])){
 	$today = date( "Y-m-d" );
 
 	$xl = new PHPExcel();
-	
+
 	$xl->getProperties()->setCreator("openDCIM");
 	$xl->getProperties()->setLastModifiedBy("openDCIM");
 	$xl->getProperties()->setTitle("Data Center Inventory");
 	$xl->getProperties()->setSubject("Power Outage Simulation");
 	$xl->getProperties()->setDescription("Simulation of power outage event based upon user specified criteria.");
-	
+
 	$xl->setActiveSheetIndex(0);
 
 	$currSheet = $xl->getActiveSheet();
@@ -119,37 +119,37 @@ if (!isset($_REQUEST['action'])){
 	$tmpPerson = new People();
 	$dept = new Department();
 	$dc = new DataCenter();
-	
+
 	// Make some quick user defined sort comparisons for this report only
-	
+
 	function compareCab( $a, $b ) {
 		if ( $a->Location == $b->Location )
 			return 0;
-		
+
 		return ( $a->Location > $b->Location ) ? +1 : -1;
 	}
-	
+
 	$dc->DataCenterID = intval( $_REQUEST['datacenterid'] );
 	$dc->GetDataCenter();
-	
+
 	$skipNormal = false;
 
 	if (isset( $_REQUEST["skipnormal"] ) ) {
 		$skipNormal = $_REQUEST["skipnormal"];
 	}
-	
+
 	if(isset($_POST['sourceid'])){
 		$srcArray=$_POST['sourceid'];
 	}
 	if(isset($_POST['panelid'])){
 		$pnlArray=$_POST['panelid'];
 	}
-	
+
 	if ( isset( $_POST['tags'] ) ) {
 		$tagList = preg_split( "/([\+\-])/", $_POST['tags'], -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 		$includeTags = array();
 		$excludeTags = array();
-		
+
 		foreach ( $tagList as $t ) {
 			if ( $t == '+' ) {
 				$tInclude = true;
@@ -162,16 +162,16 @@ if (!isset($_REQUEST['action'])){
 			}
 		}
 	}
-	
+
 	if ( @count( $srcArray ) > 0 ) {
 		// Build an array of the Panels affected when the entire source goes down.
 		// This will allow us to use one section of code to calculate effects of panels going down and use it for both cases.
-		
+
 		$pnlList = array();
-		
+
 		foreach ( $srcArray as $srcID ) {
 			$pan->ParentPanelID = $srcID;
-			
+
 			$pnlList = array_merge( $pnlList, $pan->getPanelListBySource() );
 
 					// Include the source, in case there are direct connections
@@ -184,7 +184,7 @@ if (!isset($_REQUEST['action'])){
 	} else {
 		// Need to build an array of Panel Objects (what we got from input was just the IDs)
 		$pnlList = array();
-		
+
 		foreach ( $pnlArray as $pnlID ) {
 			$pnlCount = count( $pnlList );
 			$pnlList[$pnlCount] = new PowerPanel();
@@ -194,7 +194,7 @@ if (!isset($_REQUEST['action'])){
 	}
 
 	// List out the panels affected in the first sheet of the workbook
-	
+
 	$row = 2;
 	foreach( $pnlList as $downPanel ) {
 		$currSheet->setCellValue( 'A'.$row, $downPanel->PanelLabel );
@@ -210,40 +210,40 @@ if (!isset($_REQUEST['action'])){
 	$currSheet->calculateColumnWidths();
 
 	// And finally, build a list of cabinets that have at least one circuit from the affected panels
-	
+
 	$cabIDList = array();
 	$cabList = array();
-	
+
 	// Also need to build a unique list of all PDU ID's included in outage
 	$pduArray = array();
 	$fsArray = array();
 
 	// Now that we have a complete list of the panels, we need a list of the CDUs affected by the outage
-	
+
 	$pduList = array();
-	
+
 	// Rebuild an array of just the Panel ID values
 	$pnlArray = array();
-	
+
 	foreach ( $pnlList as $pnlDown ) {
 		$pdu->PanelID = $pnlDown->PanelID;
-		
+
 		$pduList = array_merge( $pduList, $pdu->GetPDUbyPanel());
-		
+
 		array_push( $pnlArray, $pnlDown->PanelID );
 	}
 
 	foreach ( $pduList as $outagePDU ) {
 		if ( array_search( $outagePDU->CabinetID, $cabIDList ) === false ) {
 			array_push( $cabIDList, $outagePDU->CabinetID );
-			
+
 			$cabCount = count( $cabList );
-			
+
 			$cabList[$cabCount] = new Cabinet();
 			$cabList[$cabCount]->CabinetID = $outagePDU->CabinetID;
 			$cabList[$cabCount]->GetCabinet();
 		}
-			
+
 		if ( $outagePDU->FailSafe ) {
 			// Check both inputs on a FailSafe PDU
 			if ( in_array( $outagePDU->PanelID, $pnlArray ) && in_array( $outagePDU->PanelID2, $pnlArray ) ) {
@@ -259,7 +259,7 @@ if (!isset($_REQUEST['action'])){
 	}
 
 	// Now, print a list of the Cabinets that are affected by this outage
-		
+
 	usort( $cabList, 'compareCab' );
 
 	$currSheet = $xl->createSheet();
@@ -395,7 +395,7 @@ if (!isset($_REQUEST['action'])){
 										'color' => array( 'rgb' => 'F28A8C')
 									)
 							)
-						);					
+						);
 				}
 				$row++;
 			}
@@ -409,7 +409,7 @@ if (!isset($_REQUEST['action'])){
 
 	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 	header( sprintf( "Content-Disposition: attachment;filename=\"opendcim-%s.xlsx\"", date( "YmdHis" ) ) );
-	
+
 	$writer = new PHPExcel_Writer_Excel2007($xl);
 	$writer->save('php://output');
 }

@@ -1,21 +1,21 @@
 /**
  * Copyright (c)2005-2009 Matt Kruse (javascripttoolbox.com)
- * 
- * Dual licensed under the MIT and GPL licenses. 
+ *
+ * Dual licensed under the MIT and GPL licenses.
  * This basically means you can use this code however you want for
  * free, but don't claim to have written it yourself!
  * Donations always accepted: http://www.JavascriptToolbox.com/donate/
- * 
+ *
  * Please do not link to the .js files on javascripttoolbox.com from
  * your site. Copy the files locally to your server instead.
- * 
+ *
  */
 /*
 This code is inspired by and extended from Stuart Langridge's aqlist code:
 		http://www.kryogenix.org/code/browser/aqlists/
 		Stuart Langridge, November 2002
 		sil@kryogenix.org
-		Inspired by Aaron's labels.js (http://youngpup.net/demos/labels/) 
+		Inspired by Aaron's labels.js (http://youngpup.net/demos/labels/)
 		and Dave Lindquist's menuDropDown.js (http://www.gazingus.org/dhtml/?id=109)
 */
 

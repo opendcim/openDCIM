@@ -32,7 +32,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title><?php echo __("openDCIM Data Center Inventory");?></title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -40,7 +40,7 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.uploadifive.js"></script>
@@ -155,7 +155,7 @@ $(function() {
 </div><!-- END div.main -->
 </div><!-- END div.page -->
 
-<?php 
+<?php
 echo '<div id="delete-confirm" title="'.__("Delete image file?").'" class="hide">
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'.__("This image will be permanently deleted and cannot be recovered. Are you sure?").'</p>
 </div>';

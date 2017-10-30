@@ -27,13 +27,13 @@ class ColorCoding {
 	var $ColorID;
 	var $Name;
 	var $DefaultNote;
-	
+
 	function CreateCode() {
 		global $dbh;
-		
-		$sql="INSERT INTO fac_ColorCoding SET Name=\"".sanitize($this->Name)."\", 
+
+		$sql="INSERT INTO fac_ColorCoding SET Name=\"".sanitize($this->Name)."\",
 			DefaultNote=\"".sanitize($this->DefaultNote)."\"";
-		
+
 		if($dbh->exec($sql)){
 			$this->ColorID=$dbh->lastInsertId();
 		}else{
@@ -42,45 +42,45 @@ class ColorCoding {
 			error_log("PDO Error::CreateCode {$info[2]}");
 			return false;
 		}
-		
+
 		return $this->ColorID;
 	}
-	
+
 	function UpdateCode() {
 		global $dbh;
-		
-		$sql="UPDATE fac_ColorCoding SET Name=\"".sanitize($this->Name)."\", 
+
+		$sql="UPDATE fac_ColorCoding SET Name=\"".sanitize($this->Name)."\",
 			DefaultNote=\"".sanitize($this->DefaultNote)."\" WHERE ColorID=".intval($this->ColorID).";";
-		
+
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 			error_log("PDO Error: {$info[2]}");
 			return false;
-		}else{		
+		}else{
 			return true;
 		}
 	}
-	
+
 	function DeleteCode() {
 		/* If you call this, the upstream application should be checking to see if it is used already - you don't want to
 			create orphan connetions that reference this color code! */
 		global $dbh;
-		
+
 		$sql="DELETE FROM fac_ColorCoding WHERE ColorID=".intval($this->ColorID);
-		
+
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
 
 			error_log("PDO Error: {$info[2]}");
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	function GetCode() {
 		global $dbh;
-		
+
 		$sql="SELECT * FROM fac_ColorCoding WHERE ColorID=".intval($this->ColorID);
 
 		if($row=$dbh->query($sql)->fetch()){
@@ -89,13 +89,13 @@ class ColorCoding {
 		}else{
 			return false;
 		}
-			
+
 		return true;
 	}
-	
+
 	function GetCodeByName() {
 		global $dbh;
-		
+
 		$sql="SELECT * FROM fac_ColorCoding WHERE Name='".transform($this->Name)."';";
 
 		if($row=$dbh->query($sql)->fetch()){
@@ -104,16 +104,16 @@ class ColorCoding {
 		}else{
 			return false;
 		}
-			
+
 		return true;
 	}
-	
-	
+
+
 	static function GetCodeList() {
 		global $dbh;
-		
+
 		$sql="SELECT * FROM fac_ColorCoding ORDER BY Name ASC";
-		
+
 		$codeList=array();
 		foreach($dbh->query($sql) as $row){
 			$n=$row["ColorID"]; // index array by id
@@ -122,7 +122,7 @@ class ColorCoding {
 			$codeList[$n]->Name=$row["Name"];
 			$codeList[$n]->DefaultNote=$row["DefaultNote"];
 		}
-		
+
 		return $codeList;
 	}
 
@@ -150,7 +150,7 @@ class ColorCoding {
 			$info=$dbh->errorInfo();
 			error_log("PDO Error: {$info[2]}");
 			return false;
-		}else{		
+		}else{
 			return true;
 		}
 	}
@@ -160,13 +160,13 @@ class ColorCoding {
 		$colorid=intval($colorid);
 
 		// get a count of the number of times this color is in use both on ports or assigned
-		// to a template.  
+		// to a template.
 		$sql="SELECT COUNT(*) + (SELECT COUNT(*) FROM fac_MediaTypes WHERE ColorID=$colorid) +
 			(SELECT COUNT(*) FROM fac_TemplatePorts WHERE ColorID=$colorid)
 			AS Result FROM fac_Ports WHERE ColorID=$colorid";
 		$count=$dbh->prepare($sql);
 		$count->execute();
-		
+
 
 		return $count->fetchColumn();
 	}

@@ -36,7 +36,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.flickr.com/services/rest/', 
+					'https://api.flickr.com/services/rest/',
 					'GET', array(
 						'method'=>'flickr.test.login',
 						'format'=>'json',
@@ -59,7 +59,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->user->username->_content), 
+		echo '<h1>', HtmlSpecialChars($user->user->username->_content),
 			' you have logged in successfully with Flickr!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

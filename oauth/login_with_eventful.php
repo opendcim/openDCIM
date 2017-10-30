@@ -38,7 +38,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'http://api.evdb.com/rest/users/get', 
+					'http://api.evdb.com/rest/users/get',
 					'GET', array(
 						'id'=>$account,
 						'app_key'=>$application_key

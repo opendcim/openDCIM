@@ -122,7 +122,7 @@ class Platform
         } catch( Exception $e ){
             $sysObjectId = null;
         }
-        
+
         // there's possibly a better way to do this...?
         foreach( glob(  __DIR__ . '/Platforms/vendor_*.php' ) as $f )
             include( $f );

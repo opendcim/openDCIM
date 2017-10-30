@@ -148,18 +148,18 @@ class Cabinet {
 
 	function CreateCabinet(){
 		global $dbh;
-		
+
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_Cabinet SET DataCenterID=$this->DataCenterID, 
+		$sql="INSERT INTO fac_Cabinet SET DataCenterID=$this->DataCenterID,
 			Location=\"$this->Location\", LocationSortable=\"$this->LocationSortable\",
-			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
-			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
-			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
-			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
-			MapX1=$this->MapX1, MapY1=$this->MapY1, 
+			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID,
+			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\",
+			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight,
+			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\",
+			MapX1=$this->MapX1, MapY1=$this->MapY1,
 			MapX2=$this->MapX2, MapY2=$this->MapY2,
-			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\", 
+			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\",
 			U1Position=\"$this->U1Position\";";
 
 		if(!$dbh->exec($sql)){
@@ -170,29 +170,29 @@ class Cabinet {
 		}else{
 			$this->CabinetID=$dbh->lastInsertID();
 		}
-		
+
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->CabinetID;
 	}
 
 	function UpdateCabinet(){
 		global $dbh;
-		
+
 		$this->MakeSafe();
 
 		$old=new Cabinet();
 		$old->CabinetID=$this->CabinetID;
 		$old->GetCabinet();
 
-		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID, 
+		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID,
 			Location=\"$this->Location\", LocationSortable=\"$this->LocationSortable\",
-			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
-			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
-			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
-			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
-			MapX1=$this->MapX1, MapY1=$this->MapY1, 
+			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID,
+			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\",
+			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight,
+			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\",
+			MapX1=$this->MapX1, MapY1=$this->MapY1,
 			MapX2=$this->MapX2, MapY2=$this->MapY2,
-			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\", 
+			FrontEdge=\"$this->FrontEdge\", Notes=\"$this->Notes\",
 			U1Position=\"$this->U1Position\" WHERE CabinetID=$this->CabinetID;";
 
 		if(!$dbh->query($sql)){
@@ -210,9 +210,9 @@ class Cabinet {
 		global $dbh;
 
 		$this->MakeSafe();
-		
+
 		$sql="SELECT * FROM fac_Cabinet WHERE CabinetID=$this->CabinetID;";
-		
+
 		if($cabinetRow=$dbh->query($sql)->fetch()){
 			foreach(Cabinet::RowToObject($cabinetRow) as $prop => $value){
 				$this->$prop=$value;
@@ -248,7 +248,7 @@ class Cabinet {
 	function ListCabinetsByDC($limit=false,$limitzone=false){
 		global $dbh;
 		global $config;
-		
+
 		$this->MakeSafe();
 
 		$sql = "select * from fac_Cabinet where DataCenterID='" . $this->DataCenterID . "'";
@@ -258,12 +258,12 @@ class Cabinet {
 		$sql .= " ORDER BY Location ASC";
 
 		$cabinetList = array();
-		
+
 		foreach( $dbh->query($sql) as $cabinetRow){
 			$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
-			$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);		
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);
 		}
-		
+
 		foreach($cabinetList as $i => $cab){
 			if($limit && ($cab->MapX1==$cab->MapX2 || $cab->MapY1==$cab->MapY2)){
 				unset($cabinetList[$i]);
@@ -283,7 +283,7 @@ class Cabinet {
 		$sql = "select * from fac_Cabinet where AssignedTo='" . $this->AssignedTo . "'";
 		foreach( $dbh->query($sql) as $cabinetRow){
 			$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
-			$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);		
+			$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);
 		}
 
 		return $cabinetList;
@@ -296,21 +296,21 @@ class Cabinet {
 		$this->MakeSafe();
 
 		$cabinetList = array();
-		if ( $this->ZoneID>0) {	
+		if ( $this->ZoneID>0) {
 			$sql = "select * from fac_Cabinet where ZoneID='" . $this->ZoneID . "'";
 			foreach( $dbh->query($sql) as $cabinetRow){
 				$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
-				$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);		
+				$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);
 			}
 		}
 		return $cabinetList;
 	}
-	
+
 	function CabinetOccupancy($CabinetID){
 		global $dbh;
 
 		$CabinetID=intval($CabinetID);
-		
+
 		//$sql="SELECT SUM(Height) AS Occupancy FROM fac_Device WHERE Cabinet=$CabinetID;";
 		//JMGA halfdepth height calculation
 		$sql = "select sum(if(HalfDepth,Height/2,Height)) as Occupancy from fac_Device where ParentDevice=0 AND Cabinet=$CabinetID";
@@ -340,9 +340,9 @@ class Cabinet {
 
 	function GetZoneSelectList(){
 		global $dbh;
-		
+
 		$this->MakeSafe();
-		
+
 		$sql="SELECT * FROM fac_Zone WHERE DataCenterID=$this->DataCenterID ORDER BY Description;";
 
 		$selectList='<select name="zoneid" id="zoneid">';
@@ -366,9 +366,9 @@ class Cabinet {
 		$cabrow=new CabRow();
 		$cabrow->CabRowID=$this->CabRowID;
 
-		$sql="SELECT MIN(MapX1) AS MapX1, MAX(MapX2) AS MapX2, MIN(MapY1) AS MapY1, 
-			MAX(MapY2) AS MapY2, AVG(MapX1) AS AvgX1, AVG(MapX2) AS AvgX2, COUNT(*) AS 
-			CabCount FROM fac_Cabinet WHERE CabRowID=$cabrow->CabRowID AND MapX1>0 
+		$sql="SELECT MIN(MapX1) AS MapX1, MAX(MapX2) AS MapX2, MIN(MapY1) AS MapY1,
+			MAX(MapY2) AS MapY2, AVG(MapX1) AS AvgX1, AVG(MapX2) AS AvgX2, COUNT(*) AS
+			CabCount FROM fac_Cabinet WHERE CabRowID=$cabrow->CabRowID AND MapX1>0
 			AND MapX2>0 AND MapY1>0 and MapY2>0;";
 		$shape=$dbh->query($sql)->fetch();
 
@@ -381,7 +381,7 @@ class Cabinet {
 		/*
 		 * In rows with more than one cabinet we can determine the layout based on
 		 * their size.  The side of a row will be close to the change in x or y while
-		 * the front/rear of a row will be equal to the average of the sides 
+		 * the front/rear of a row will be equal to the average of the sides
 		 * multiplied by the number of objects in the set
 		 *
 		 * change = size * number of cabinets
@@ -391,7 +391,7 @@ class Cabinet {
 		$frontedge=$cabrow->GetCabRowFrontEdge($layout);
 
 		// Order first by row layout then by natural sort
-		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$cabrow->CabRowID ORDER BY $order 
+		$sql="SELECT * FROM fac_Cabinet WHERE CabRowID=$cabrow->CabRowID ORDER BY $order
 			LocationSortable ASC;";
 
 		$cabinetList=array();
@@ -410,12 +410,12 @@ class Cabinet {
 		global $dbh;
 
 		$this->MakeSafe();
-		
+
 		$sql="SELECT * FROM fac_CabRow WHERE ZoneID=$this->ZoneID ORDER BY Name;";
 
 		$selectList='<select name="cabrowid" id="cabrowid">';
 		$selectList.='<option value=0>'.__("None").'</option>';
-		
+
 		foreach($dbh->query($sql) as $selectRow){
 			$selected=($selectRow["CabRowID"]==$this->CabRowID)?' selected':'';
 			$selectList.="<option value=\"{$selectRow["CabRowID"]}\"$selected>{$selectRow["Name"]}</option>";
@@ -425,13 +425,13 @@ class Cabinet {
 
 		return $selectList;
 	}
-	
+
 	function GetCabinetSelectList(){
 		global $dbh;
 		global $person;
-		
-		$sql="SELECT Name, CabinetID, Location, AssignedTo FROM fac_DataCenter, fac_Cabinet WHERE 
-			fac_DataCenter.DataCenterID=fac_Cabinet.DataCenterID ORDER BY Name ASC, 
+
+		$sql="SELECT Name, CabinetID, Location, AssignedTo FROM fac_DataCenter, fac_Cabinet WHERE
+			fac_DataCenter.DataCenterID=fac_Cabinet.DataCenterID ORDER BY Name ASC,
 			Location ASC, LENGTH(Location);";
 
 		$selectList="<select name=\"CabinetID\" id=\"CabinetID\"><option value=\"-1\">Storage Room</option>";
@@ -450,28 +450,28 @@ class Cabinet {
 
 	function DeleteCabinet(){
 		global $dbh;
-		
+
 		/* Need to delete all devices and CDUs first */
 		$tmpDev=new Device();
 		$tmpCDU=new PowerDistribution();
-		
+
 		$tmpDev->Cabinet=$this->CabinetID;
 		$devList=$tmpDev->ViewDevicesByCabinet();
-		
+
 		foreach($devList as &$delDev){
 			$delDev->DeleteDevice();
 		}
-		
+
 		$tmpCDU->CabinetID=$this->CabinetID;
 		$cduList=$tmpCDU->GetPDUbyCabinet();
-		
+
 		foreach($cduList as &$delCDU){
 			$delCDU->DeletePDU();
 		}
 
 		// Remove from any projects
 		ProjectMembership::removeMember( $this->CabinetID, 'Cabinet' );
-		
+
 		$sql="DELETE FROM fac_Cabinet WHERE CabinetID=$this->CabinetID;";
 
 		if(!$dbh->exec($sql)){
@@ -480,7 +480,7 @@ class Cabinet {
 			error_log("PDO Error::DeleteCabinet: {$info[2]} SQL=$sql");
 			return false;
 		}
-	
+
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
@@ -497,7 +497,7 @@ class Cabinet {
 		// This will store all our extended sql
 		$sqlextend="";
 		foreach($this as $prop => $val){
-			// We force the following values to knowns in makesafe 
+			// We force the following values to knowns in makesafe
 			if($prop=="FrontEdge" && $val=="Top" && $ot!="Top"){
 				continue;
 			}
@@ -530,9 +530,9 @@ class Cabinet {
 
 	function SearchByCustomTag( $tag=null ) {
 		global $dbh;
-		
-		$sql="SELECT a.* from fac_Cabinet a, fac_CabinetTags b, fac_Tags c WHERE 
-			a.CabinetID=b.CabinetID AND b.TagID=c.TagID AND UCASE(c.Name) LIKE 
+
+		$sql="SELECT a.* from fac_Cabinet a, fac_CabinetTags b, fac_Tags c WHERE
+			a.CabinetID=b.CabinetID AND b.TagID=c.TagID AND UCASE(c.Name) LIKE
 			UCASE('%".sanitize($tag)."%') ORDER BY LocationSortable;";
 
 		$cabinetList=array();
@@ -543,10 +543,10 @@ class Cabinet {
 		}
 		return $cabinetList;
 	}
-	
+
 	function GetTags() {
 		global $dbh;
-		
+
 		$sql = "SELECT TagID FROM fac_CabinetTags WHERE CabinetID=".intval($this->CabinetID).";";
 
 		$tags = array();
@@ -560,7 +560,7 @@ class Cabinet {
 
 	function SetTags($tags=array()){
 		global $dbh;
-		
+
 		if(count($tags)>0){
 			//Clear existing tags
 			$this->SetTags();
@@ -575,7 +575,7 @@ class Cabinet {
 
 					error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
 					return false;
-				}			
+				}
 			}
 		}else{
 			//If no array is passed then clear all the tags
@@ -592,7 +592,7 @@ class Cabinet {
 
 		$cabstats=new stdClass();
 		//Weight
-		$sql="SELECT SUM(NominalWatts) AS watts, SUM(Weight) AS weight FROM 
+		$sql="SELECT SUM(NominalWatts) AS watts, SUM(Weight) AS weight FROM
 			fac_Device WHERE Cabinet=$cab->CabinetID;";
 
 		foreach($dbh->query($sql) as $row){

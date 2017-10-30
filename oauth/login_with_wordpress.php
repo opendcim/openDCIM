@@ -21,7 +21,7 @@
 
 	$client->client_id = ''; $application_line = __LINE__;
 	$client->client_secret = '';
-	
+
 	if(strlen($client->client_id) == 0
 	|| strlen($client->client_secret) == 0)
 		die('Please go to Wordpress Apps page https://developer.wordpress.com/apps/new/ , '.
@@ -38,7 +38,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://public-api.wordpress.com/rest/v1/me', 
+					'https://public-api.wordpress.com/rest/v1/me',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -56,7 +56,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->display_name), 
+		echo '<h1>', HtmlSpecialChars($user->display_name),
 			' you have logged in successfully with Wordpress!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

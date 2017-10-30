@@ -70,7 +70,7 @@
 				$cab->U1Position = "Bottom";
 			}
 		}
-		
+
 		if($cab->Location!=""){
 			if(($cab->CabinetID >0)&&($_POST['action']=='Update')){
 				$status=__("Updated");
@@ -122,7 +122,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>Facilities Cabinet Maintenance</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -213,7 +213,7 @@
 		$('#rackform').validationEngine({});
 		$('input[name="installationdate"]').datepicker({dateFormat: "yy-mm-dd"});
 		$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
-		
+
 		$('#tags').textext({
 			plugins : 'autocomplete tags ajax arrow prompt focus',
 <?php echo $taginsert; ?>
@@ -302,7 +302,7 @@ foreach($posarray as $pos => $translation){
 	$selected=($cab->U1Position==$pos)?' selected':'';
 	print "      <option value=\"$pos\"$selected>$translation</option>\n";
 }
-   
+
 echo '</select></div>
 </div>
 <div>
@@ -346,13 +346,13 @@ echo '</select></div>
 		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
 ?>
-</div>		
+</div>
 </div> <!-- END div.table -->
 </form>
 </div></div>
 <?php if($cab->CabinetID >0){
-		echo '<a href="cabnavigator.php?cabinetid=',$cab->CabinetID,'">[ ',__("Return to Navigator"),' ]</a>'; 
-	}else{ 
+		echo '<a href="cabnavigator.php?cabinetid=',$cab->CabinetID,'">[ ',__("Return to Navigator"),' ]</a>';
+	}else{
 		echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>';
 	}
 

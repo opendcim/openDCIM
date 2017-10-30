@@ -14,11 +14,11 @@
 
 	/*
 	   I made a poor asumption on the initial build of this that we'd always have fewer
-	   CDU templates than device templates.  We're seeing an overlap conversion that is 
+	   CDU templates than device templates.  We're seeing an overlap conversion that is
 	   screwing the pooch.  This will find the highest template id from the two sets then
 	   we'll jump the line on the device_template id's and get them lined up.
 	 */
-    $sql="SELECT TemplateID FROM fac_CDUTemplate UNION SELECT TemplateID FROM 
+    $sql="SELECT TemplateID FROM fac_CDUTemplate UNION SELECT TemplateID FROM
 		fac_DeviceTemplate ORDER BY TemplateID DESC LIMIT 1;";
     $baseid=$dbh->query($sql)->fetchColumn();
 
@@ -26,17 +26,17 @@
 class PowerTemplate extends DeviceTemplate {
 	function CreateTemplate($templateid=null){
 		global $dbh;
-		
+
 		$this->MakeSafe();
 
 		$sqlinsert=(is_null($templateid))?'':" TemplateID=$templateid,";
 
-		$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID, 
-			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight, 
-			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\", 
-			SNMPVersion=\"$this->SNMPVersion\", PSCount=$this->PSCount, 
-			NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
-			FrontPictureFile=\"$this->FrontPictureFile\", 
+		$sql="INSERT INTO fac_DeviceTemplate SET ManufacturerID=$this->ManufacturerID,
+			Model=\"$this->Model\", Height=$this->Height, Weight=$this->Weight,
+			Wattage=$this->Wattage, DeviceType=\"$this->DeviceType\",
+			SNMPVersion=\"$this->SNMPVersion\", PSCount=$this->PSCount,
+			NumPorts=$this->NumPorts, Notes=\"$this->Notes\",
+			FrontPictureFile=\"$this->FrontPictureFile\",
 			RearPictureFile=\"$this->RearPictureFile\",$sqlinsert
 			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots;";
 
@@ -62,7 +62,7 @@ class PowerTemplate extends DeviceTemplate {
 		return $ct;
 	}
 }
-	
+
 	$converted=array(); //index old id, value new id
 	$sql="SELECT * FROM fac_CDUTemplate;";
 	foreach($dbh->query($sql) as $cdutemplate){
@@ -97,28 +97,28 @@ class PowerTemplate extends DeviceTemplate {
 
 class PowerDevice extends Device {
 	/*
-		to be efficient we don't want to create ports right now so we're extending 
+		to be efficient we don't want to create ports right now so we're extending
 		the class to overrie the create function
 	*/
 	function CreateDevice(){
 		global $dbh;
-		
+
 		$this->MakeSafe();
-		
+
 		$this->Label=transform($this->Label);
 		$this->SerialNo=transform($this->SerialNo);
 		$this->AssetTag=transform($this->AssetTag);
-		
-		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\", 
-			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", Hypervisor=$this->Hypervisor, Owner=$this->Owner, 
-			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact, 
-			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports, 
-			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts, 
-			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots, 
-			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice, 
-			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
-			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\", 
-			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\", 
+
+		$sql="INSERT INTO fac_Device SET Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", AssetTag=\"$this->AssetTag\",
+			PrimaryIP=\"$this->PrimaryIP\", SNMPCommunity=\"$this->SNMPCommunity\", Hypervisor=$this->Hypervisor, Owner=$this->Owner,
+			EscalationTimeID=$this->EscalationTimeID, EscalationID=$this->EscalationID, PrimaryContact=$this->PrimaryContact,
+			Cabinet=$this->Cabinet, Position=$this->Position, Height=$this->Height, Ports=$this->Ports,
+			FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, NominalWatts=$this->NominalWatts,
+			PowerSupplyCount=$this->PowerSupplyCount, DeviceType=\"$this->DeviceType\", ChassisSlots=$this->ChassisSlots,
+			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice,
+			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\",
+			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", WarrantyCo=\"$this->WarrantyCo\",
+			WarrantyExpire=\"".date("Y-m-d", strtotime($this->WarrantyExpire))."\", Notes=\"$this->Notes\",
 			Reservation=$this->Reservation, HalfDepth=$this->HalfDepth, BackSide=$this->BackSide;";
 
 		if ( ! $dbh->exec( $sql ) ) {
@@ -196,7 +196,7 @@ class PowerDevice extends Device {
 				$PowerPorts[$ConvertedCDUs[$row['PDUID']]][$port]['ConnectedDeviceID']=$row['DeviceID'];
 				$PowerPorts[$ConvertedCDUs[$row['PDUID']]][$port]['ConnectedPort']=$row['DeviceConnNumber'];
 			}
-		}	
+		}
 	}
 
 	// We need to get a list of all existing power connections

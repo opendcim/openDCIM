@@ -160,7 +160,7 @@ CREATE TABLE fac_CDUTemplate (
   OID3 varchar(80) NOT NULL,
   ATSStatusOID varchar(80) NOT NULL,
   ATSDesiredResult varchar(80) NOT NULL,
-  ProcessingProfile varchar(20) NOT NULL DEFAULT "SingleOIDWatts", 
+  ProcessingProfile varchar(20) NOT NULL DEFAULT "SingleOIDWatts",
   Voltage int(11) NOT NULL,
   Amperage int(11) NOT NULL,
   NumOutlets int(11) NOT NULL,

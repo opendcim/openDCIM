@@ -54,17 +54,17 @@ class CabRow {
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		return $dbh->exec($sql);
 	}
-	
+
 	function CreateCabRow(){
 		global $dbh;
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_CabRow SET Name=\"$this->Name\", 
+		$sql="INSERT INTO fac_CabRow SET Name=\"$this->Name\",
 			DataCenterID=$this->DataCenterID, ZoneID=$this->ZoneID;";
 		if($dbh->exec($sql)){
 			$this->CabRowID=$dbh->lastInsertId();
@@ -74,7 +74,7 @@ class CabRow {
 			return false;
 		}
 	}
-	
+
 	function UpdateCabRow(){
 		$this->MakeSafe();
 
@@ -88,19 +88,19 @@ class CabRow {
 		if(!$this->query($sql)){
 			return false;
 		}
-		
+
 		$sql="UPDATE fac_CabRow SET Name=\"$this->Name\", DataCenterID=$this->DataCenterID, ZoneID=$this->ZoneID WHERE CabRowID=$this->CabRowID;";
 		if(!$this->query($sql)){
 			return false;
 		}
-		
+
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldcabrow):'';
 		return true;
 	}
-	
+
 	function DeleteCabRow(){
 		global $dbh;
-		
+
 		$this->MakeSafe();
 
 		//update cabinets in this row
@@ -165,12 +165,12 @@ class CabRow {
 	}
 	function GetCabRowList(){
 		$sql="SELECT * FROM fac_CabRow ORDER BY Name ASC;";
-		
+
 		$cabrowList=array();
 		foreach($this->query($sql) as $row){
 			$cabrowList[]=CabRow::RowToObject($row);
 		}
-		
+
 		return $cabrowList;
 	}
 
@@ -190,8 +190,8 @@ class CabRow {
 			}
 		}
 
-		$sql="SELECT FrontEdge, count(*) as CabCount FROM fac_Cabinet WHERE 
-			CabRowID=$this->CabRowID$layout GROUP BY FrontEdge ORDER BY CabCount DESC 
+		$sql="SELECT FrontEdge, count(*) as CabCount FROM fac_Cabinet WHERE
+			CabRowID=$this->CabRowID$layout GROUP BY FrontEdge ORDER BY CabCount DESC
 			LIMIT 1;";
 
 		if($cabinetRow=$this->query($sql)->fetch()){
@@ -203,7 +203,7 @@ class CabRow {
 
 	function Search($indexedbyid=false,$loose=false){
 		$o=new stdClass();
-		// Store any values that have been added before we make them safe 
+		// Store any values that have been added before we make them safe
 		foreach($this as $prop => $val){
 			if(isset($val)){
 				$o->$prop=$val;

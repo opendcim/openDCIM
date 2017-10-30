@@ -21,11 +21,11 @@ class PDF extends FPDF {
   var $OutlineRoot;
   var $pdfconfig;
   var $pdfDB;
-  
+
 	function PDF(){
 		parent::FPDF();
 	}
-  
+
 	function Header() {
 		$this->pdfconfig = new Config();
 		if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
@@ -46,7 +46,7 @@ class PDF extends FPDF {
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
     		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
-	
+
   function Bookmark($txt,$level=0,$y=0) {
     if($y==-1)
         $y=$this->GetY();
@@ -173,7 +173,7 @@ class PDF extends FPDF {
 
 	$fill = 0;
 
-	foreach( $devList as $devRow ) { 
+	foreach( $devList as $devRow ) {
 	  if ( ( $devRow->TemplateID > 0 ) && ( ( $devRow->PowerSupplyCount > 0 ) && ( $devRow->DeviceType!='Physical Infrastructure' ) ) )
 	    continue;
 
@@ -191,7 +191,7 @@ class PDF extends FPDF {
       $template = 'Yes';
     else
       $template = 'No';
-      
+
 		$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[1], 6, $devRow->SerialNo, 'LBRT', 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[2], 6, $template, 'LBRT', 0, 'L', $fill );
@@ -246,7 +246,7 @@ class PDF extends FPDF {
 		foreach( $devList as $devRow ) {
 		  if ( ( $devRow->TemplateID > 0 ) && ($devRow->PowerSupplyCount > 0 ))
 		    continue;
-		    
+
 			if ( $devRow->Cabinet != $cab->CabinetID ) {
 				$cab->CabinetID = $devRow->Cabinet;
 				$cab->GetCabinet();
@@ -261,7 +261,7 @@ class PDF extends FPDF {
         $template = __("Yes");
       else
         $template = __("No");
-        
+
 			$pdf->Cell( $cellWidths[0], 6, $devRow->Label, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[1], 6, $devRow->SerialNo, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $template, 'LBRT', 0, 'L', $fill );

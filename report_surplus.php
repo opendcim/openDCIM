@@ -1,6 +1,6 @@
 <?php
 /*	Template file for creating Excel based reports
-	
+
 	Basically just the setup of the front page for consistency
 */
 
@@ -21,7 +21,7 @@
 			$dispDesc = $dispList[0]->Name;
 		}
 
-		if ( isset( $_REQUEST['startdate'] ) && $_REQUEST['startdate'] != "" ) { 
+		if ( isset( $_REQUEST['startdate'] ) && $_REQUEST['startdate'] != "" ) {
 			$startDate = date( "Y-m-d", strtotime( $_REQUEST['startdate'] ));
 			$startDesc = $startDate;
 		} else {
@@ -47,13 +47,13 @@
         $dt = new DeviceTemplate();
 
 		$workBook = new PHPExcel();
-		
+
 		$workBook->getProperties()->setCreator("openDCIM");
 		$workBook->getProperties()->setLastModifiedBy("openDCIM");
 		$workBook->getProperties()->setTitle("Data Center Inventory Export");
 		$workBook->getProperties()->setSubject("Data Center Inventory Export");
 		$workBook->getProperties()->setDescription("Export of the openDCIM database based upon user filtered criteria.");
-		
+
 		// Start off with the TPS Cover Page
 
 		$workBook->setActiveSheetIndex(0);
@@ -145,10 +145,10 @@
 
             foreach( $columnList as $fieldName=>$columnName ) {
                 $cellAddr = $columnName."7";
-  
+
                 $sheet->setCellValue( $cellAddr, $fieldName );
             }
-        
+
         	$currRow = 8;
 
         	$dispDevList = DispositionMembership::getDevices( $disp->DispositionID );
@@ -180,14 +180,14 @@
             foreach( $columnList as $i => $v ) {
                 $sheet->getColumnDimension($v)->setAutoSize(true);
             }
-		}			
+		}
 		// Now finalize it and send to the client
 
 		$workBook->setActiveSheetIndex(0);
 
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		header( sprintf( "Content-Disposition: attachment;filename=\"opendcim-%s.xlsx\"", date( "YmdHis" ) ) );
-		
+
 		$writer = new PHPExcel_Writer_Excel2007($workBook);
 		$writer->save('php://output');
 
@@ -199,7 +199,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Inventory Reporting</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">

@@ -3,7 +3,7 @@
 	/*	Even though we're including these files in to an upstream index.php that already declares
 		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
 		included file.
-	
+
 
 	Framework v3 Specific
 
@@ -23,8 +23,8 @@
 //	URL:	/api/v1/people
 //	Method: POST
 //	Params: userid (required)
-//			lastname, firstname, phone1, phone2, phone3, email, adminowndevices, 
-//			readaccess, writeaccess, deleteaccess, contactadmin, rackrequest, 
+//			lastname, firstname, phone1, phone2, phone3, email, adminowndevices,
+//			readaccess, writeaccess, deleteaccess, contactadmin, rackrequest,
 //			rackadmin, siteadmin
 //	Returns: record as modified
 //
@@ -42,7 +42,7 @@ $app->post('/people/:personid', function($personid) use ($person) {
 			$r['error']=true;
 			$r['errorcode']=404;
 			$r['message']=__("UserID=" . $p->PersonID . " not found in database.");
-		} else {	
+		} else {
 			// Slim Framework will simply return null for any variables that were not passed, so this is safe to call without blowing up the script
 			$vars = getParsedBody();
 			foreach($p as $prop => $val){
@@ -51,7 +51,7 @@ $app->post('/people/:personid', function($personid) use ($person) {
 				}
 			}
 			$p->Disabled=false;
-			
+
 			if(!$p->UpdatePerson()){
 				$r['error']=true;
 				$r['errorcode']=403;
@@ -75,7 +75,7 @@ $app->post('/people/:personid', function($personid) use ($person) {
 //	Method: POST
 //	Params:
 //		Required: peopleid, newpeopleid
-//	Returns: true / false on the updates being successful 
+//	Returns: true / false on the updates being successful
 //
 
 $app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peopleid, $newpeopleid) use ( $person) {
@@ -128,7 +128,7 @@ $app->post('/people/:peopleid/transferdevicesto/:newpeopleid', function($peoplei
 //
 //	URL:	/api/v1/powerport/:deviceid
 //	Method:	POST
-//	Params:	
+//	Params:
 //		required: DeviceID, PortNumber
 //		optional: Label, ConnectedDeviceID, ConnectedPort, Notes
 //	Returns:  true/false on update operation
@@ -157,9 +157,9 @@ $app->post( '/powerport/:deviceid', function($deviceid) use ($person) {
 //
 //	URL:	/api/v1/colorcode/:colorid
 //	Method:	POST
-//	Params:	
+//	Params:
 //		required: ColorID, Name
-//		optional: DefaultNote 
+//		optional: DefaultNote
 //	Returns:  true/false on update operation
 //
 
@@ -195,7 +195,7 @@ $app->post( '/colorcode/:colorid', function($colorid) use ($person) {
 //
 //	URL:	/api/v1/colorcode/:colorid/replacewith/:newcolorid
 //	Method:	POST
-//	Params:	
+//	Params:
 //		required: ColorID, NewColorID
 //		optional: DefaultNote, Name
 //	Returns:  true/false on update operation
@@ -231,7 +231,7 @@ $app->post( '/device/:deviceid', function($deviceid) {
 	// Rights are handled in the back end classes based upon the UserID attached to $person, so skip checks here
 	$dev=new Device();
 	$dev->DeviceID=$deviceid;
-	
+
 	if(!$dev->GetDevice()){
 		$r['error']=true;
 		$r['errorcode']=404;
@@ -296,10 +296,10 @@ $app->post( '/device/:deviceid/store', function($deviceid) {
 //
 //	URL:	/api/v1/devicetemplate/:templateid
 //	Method:	POST
-//	Params:	
+//	Params:
 //		Required: templateid
 //		Optional: everything else
-//	Returns: true/false on update operation 
+//	Returns: true/false on update operation
 //
 
 $app->post( '/devicetemplate/:templateid', function($templateid) use ($person) {
@@ -336,7 +336,7 @@ $app->post( '/devicetemplate/:templateid', function($templateid) use ($person) {
 //
 //	URL:	/api/v1/devicetemplate/:templateid/dataport/:portnumber
 //	Method:	POST
-//	Params:	
+//	Params:
 //		Required: templateid, portnumber, portlabel
 //		Optional: everything else
 //	Returns: true/false on update operation
@@ -381,7 +381,7 @@ $app->post( '/devicetemplate/:templateid/dataport/:portnumber', function($templa
 //
 //	URL:	/api/v1/devicetemplate/:templateid/slot/:slotnum
 //	Method:	POST
-//	Params:	
+//	Params:
 //		Required: templateid, slutnum
 //		Optional: everything else
 //	Returns: true/false on update operation
@@ -408,7 +408,7 @@ $app->post( '/devicetemplate/:templateid/slot/:slotnum', function($templateid, $
 					$s->$prop=$val;
 				}
 			}
-			// Just to make sure 
+			// Just to make sure
 			$s->TemplateID=$templateid;
 			$s->PortNumber=$slotnum;
 			if(!$s->UpdateSlot()){
@@ -429,10 +429,10 @@ $app->post( '/devicetemplate/:templateid/slot/:slotnum', function($templateid, $
 //
 //	URL:	/api/v1/devicestatus/:statusid
 //	Method:	POST
-//	Params: 
+//	Params:
 //		Required: StatusID
 //		Optional: Status, ColorCode
-//	Returns: true/false on update operations 
+//	Returns: true/false on update operations
 //
 
 $app->post( '/devicestatus/:statusid', function($statusid) use ($person) {
@@ -476,7 +476,7 @@ $app->post( '/devicestatus/:statusid', function($statusid) use ($person) {
 $app->post( '/manufacturer/:manufacturerid', function($manufacturerid) use ($person) {
 	$man=new Manufacturer();
 	$man->ManufacturerID=$manufacturerid;
-	
+
 	$r['error']=true;
 	$r['errorcode']=400;
 

@@ -50,7 +50,7 @@ class People {
 	var $SiteAdmin;
 	var $APIKey;
 	var $Disabled;
-	
+
 	function MakeSafe(){
 		$this->PersonID=intval($this->PersonID);
 		$this->UserID=sanitize($this->UserID);
@@ -71,7 +71,7 @@ class People {
 		$this->SiteAdmin=intval($this->SiteAdmin);
 		$this->Disabled=intval($this->Disabled);
 	}
-	
+
 	function MakeDisplay(){
 		$this->PersonID=intval($this->PersonID);
 		$this->UserID=sanitize($this->UserID);
@@ -129,18 +129,18 @@ class People {
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function lastID($sql) {
 		global $dbh;
 		return $dbh->lastInsertID();
 	}
-	
+
 	function AssignDepartments( $DeptList ) {
 		$this->MakeSafe();
-		
+
 		$sql = "delete from fac_DeptContacts where ContactID=" . $this->PersonID;
 		$this->exec( $sql );
-		
+
 		foreach ( $DeptList as $DeptID ) {
 			$sql = "insert into fac_DeptContacts set ContactID=" . $this->PersonID . ", DeptID=$DeptID";
 			$this->exec( $sql );
@@ -164,20 +164,20 @@ class People {
 		if ( $this->ReadAccess ) {
 			return true;
 		}
-		
+
 		if ( in_array( $Owner, $this->isMemberOf() ) ) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	function canWrite( $Owner ) {
 		// If the user has Global rights, don't wast compute cycles on more granular checks
 		if ( $this->WriteAccess ) {
 			return true;
 		}
-		
+
 		if ( in_array( $Owner, $this->isMemberOf() ) && $this->AdminOwnDevices ) {
 			return true;
 		} else {
@@ -187,15 +187,15 @@ class People {
 
 	function CreatePerson() {
 		global $dbh;
-		
+
 		$this->MakeSafe();
-		
-		$sql="INSERT INTO fac_People SET UserID=\"$this->UserID\", LastName=\"$this->LastName\", 
-			FirstName=\"$this->FirstName\", Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", 
-			Phone3=\"$this->Phone3\", Email=\"$this->Email\", 
-			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess, 
-			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
-			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
+
+		$sql="INSERT INTO fac_People SET UserID=\"$this->UserID\", LastName=\"$this->LastName\",
+			FirstName=\"$this->FirstName\", Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\",
+			Phone3=\"$this->Phone3\", Email=\"$this->Email\",
+			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess,
+			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess,
+			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest,
 			RackAdmin=$this->RackAdmin, BulkOperations=$this->BulkOperations, SiteAdmin=$this->SiteAdmin,
 			APIKey=\"$this->APIKey\", Disabled=$this->Disabled;";
 
@@ -209,7 +209,7 @@ class People {
 			return $this->PersonID;
 		}
 	}
-	
+
 	static function Current(){
 		$cperson=new People();
 
@@ -233,10 +233,10 @@ class People {
 			$cperson->UserID=$_SESSION['userid'];
 			$cperson->GetUserRights();
 		}
-		
+
 		return $cperson;
 	}
-	
+
 	function GetDeptsByPerson() {
 		$sql="SELECT DeptID FROM fac_DeptContacts WHERE ContactID=" . intval( $this->PersonID );
 
@@ -253,12 +253,12 @@ class People {
 
 		return $deptList;
 	}
-	
+
 	function GetPerson() {
 		$this->MakeSafe();
-		
+
 		$sql = "select * from fac_People where PersonID=\"". $this->PersonID . "\"";
-		
+
 		if ( $row = $this->query( $sql )->fetch() ) {
 			foreach( People::RowToObject( $row ) as $prop=>$value ) {
 				$this->$prop=$value;
@@ -276,28 +276,28 @@ class People {
 			return false;
 		}
 	}
-	
+
 	function GetPeopleByDepartment( $DeptID ) {
 		$sql = "select * from fac_People where PersonID in (select ContactID from fac_DeptContacts where DeptID=$DeptID) order by LastName ASC, FirstName ASC";
-		
+
 		$personList=array();
 		foreach($this->query($sql) as $row){
 			$personList[]=People::RowToObject($row);
 		}
 
 		return $personList;
-	}		
-	
+	}
+
 	function GetPersonByUserID() {
 		$this->MakeSafe();
-		
+
 		$sql = "select * from fac_People where ucase(UserID)=ucase(\"" . $this->UserID . "\")";
-		
+
 		if ( $row = $this->query( $sql )->fetch() ) {
 			foreach( People::RowToObject( $row ) as $prop=>$value ) {
 				$this->$prop=$value;
 			}
-			
+
 			return true;
 		} else {
 			// Kick back a blank record if the UserID was not found
@@ -306,14 +306,14 @@ class People {
 					$this->$prop = '';
 				}
 			}
-			
+
 			return false;
 		}
 	}
-	
+
 	function GetUserList($indexed=false){
 		$sql="SELECT * FROM fac_People ORDER BY LastName ASC, FirstName ASC";
-		
+
 		$userList=array();
 		foreach($this->query($sql) as $row){
 			if($indexed){
@@ -325,22 +325,22 @@ class People {
 
 		return $userList;
 	}
-	
+
 	function GetUserRights( $templateNewUsers = false ) {
 		$this->MakeSafe();
-		
+
 		/* Set all rights to false just in case the object being called is reused */
 		foreach($this as $prop => $value){
 			if($prop!='LastName' && $prop!='UserID'){
 				$this->$prop=false;
 			}
 		}
-		
+
 		// The default for no user in DB
 		$this->Disabled = true;
 
 		$sql="SELECT * FROM fac_People WHERE UserID=\"$this->UserID\";";
-		
+
 		if($row=$this->query($sql)->fetch()){
 			foreach(People::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
@@ -367,14 +367,14 @@ class People {
 				}
 			}
 		}
-		
+
 		return;
 	}
-	
+
 	function isMemberOf(){
 		$this->GetUserRights();
-		
-		$sql="SELECT DeptID FROM fac_DeptContacts WHERE ContactID IN 
+
+		$sql="SELECT DeptID FROM fac_DeptContacts WHERE ContactID IN
 			(SELECT PersonID FROM fac_People WHERE UserID=\"$this->UserID\");";
 
 		$deptList=array();
@@ -387,20 +387,20 @@ class People {
 
 		return $deptList;
 	}
-	
+
 	function UpdatePerson() {
 		$this->MakeSafe();
-		
-		$sql="UPDATE fac_People SET UserID=\"$this->UserID\", LastName=\"$this->LastName\", 
-			FirstName=\"$this->FirstName\", Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", 
-			Phone3=\"$this->Phone3\", Email=\"$this->Email\", 
-			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess, 
-			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
-			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
+
+		$sql="UPDATE fac_People SET UserID=\"$this->UserID\", LastName=\"$this->LastName\",
+			FirstName=\"$this->FirstName\", Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\",
+			Phone3=\"$this->Phone3\", Email=\"$this->Email\",
+			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess,
+			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess,
+			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest,
 			RackAdmin=$this->RackAdmin, BulkOperations=$this->BulkOperations, SiteAdmin=$this->SiteAdmin,
 			APIKey=\"$this->APIKey\", Disabled=$this->Disabled
 			WHERE PersonID=$this->PersonID;";
-			
+
 		if ( $this->query( $sql ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return true;
@@ -412,7 +412,7 @@ class People {
 
 	function Search($indexedbyid=false,$loose=false){
 		$o=array();
-		// Store any values that have been added before we make them safe 
+		// Store any values that have been added before we make them safe
 		foreach($this as $prop => $val){
 			if(isset($val)){
 				$o[$prop]=$val;

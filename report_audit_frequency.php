@@ -17,7 +17,7 @@ class PDF extends FPDF {
   var $outlines=array();
   var $OutlineRoot;
   var $pdfconfig;
-  
+
 	function Header() {
 		$this->pdfconfig = new Config();
 		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'] );
@@ -39,7 +39,7 @@ class PDF extends FPDF {
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
     		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
-	
+
   function Bookmark($txt,$level=0,$y=0) {
     if($y==-1)
         $y=$this->GetY();
@@ -131,7 +131,7 @@ if(!isset($_REQUEST['action'])){
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Inventory Reporting</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
@@ -200,23 +200,23 @@ $(function(){
 	$cab = new Cabinet();
 	$cabAudit=new CabinetAudit();
 	$dc=new DataCenter();
-	
+
 	// If no data center was selected, then show all data centers, otherwise, add in a SQL clause
-		
+
 	if ( @intval($_REQUEST["datacenterid"]) > 0 ) {
 		$dcLimit = sprintf( "CabinetID in (select CabinetID from fac_Cabinet where DataCenterID=%d) and", intval( $_REQUEST["datacenterid"] ));
 		$dc->DataCenterID = $_REQUEST["datacenterid"];
 		$dc->GetDataCenter();
-		
+
 		$cab->DataCenterID = $dc->DataCenterID;
 		$cabList = $cab->ListCabinetsByDC();
 	} else {
 		$dcLimit = "";
 		$dc->Name = "All Data Centers";
-		
+
 		$cabList = $cab->ListCabinets();
 	}
-	
+
 	$pdf=new PDF();
 	$pdf->AliasNbPages();
 	include_once("loadfonts.php");
@@ -229,42 +229,42 @@ $(function(){
 
 	$pdf->SetfillColor( 224, 235, 255 );
 	$pdf->SetTextColor( 0 );
-	
+
 	$column = 0;
-	
+
 	$pdf->SetLeftMargin( 10 );
 	$pdf->AddPage();
 	$pdf->Bookmark( "Activity by Location" );
-	
+
 	$pdf->Cell( 80, 5, __("Activity by Location") );
 	$pdf->Ln();
-	
+
 	$headerTags = array( __("Cabinet Location"), __("Last Audit"), __("Times Audited"), __("Installation Date"), __("Days Since Last Audit") );
 	$cellWidths = array( 40, 30, 30, 30, 60 );
-	
+
 	$fill = 0;
-	
+
 	$freqCount = array( "30"=>0, "90"=>0, "180"=>0, "365"=>0, "Year"=>0 );
-	
+
 	$maxval = count( $headerTags );
 
 	for ( $col = 0; $col < $maxval; $col++ )
 		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
-		
+
 	$pdf->Ln();
-	
+
 	$currDate = new DateTime( "now" );
 	$borders = "TLR";
-	
+
 	foreach ( $cabList as $tmpCab ) {
 		$sql="select a.Time as AuditDate, b.Name as Auditor, c.Location, c.InstallationDate from fac_GenericLog a, fac_User b, fac_Cabinet c where a.Action=\"CertifyAudit\" and a.UserID=b.UserID and a.ObjectID=c.CabinetID and c.CabinetID=$tmpCab->CabinetID order by a.Time DESC limit 1;";
 
 		foreach($dbh->query($sql) as $resRow){
 			$pdf->Cell( $cellWidths[0], 6, $tmpCab->Location, $borders, 0, 'L', $fill );
-			
+
 			$sql="SELECT COUNT(Time) AS Frequency FROM fac_GenericLog WHERE Action=\"CertifyAudit\" and ObjectID=$tmpCab->CabinetID;";
 			$frequency=$dbh->query($sql)->fetchColumn();
-			
+
 			if ( $frequency == 0 ) {
 				$auditDate = "Never";
 				$lastAudit = new DateTime( $resRow["InstallationDate"] );
@@ -272,9 +272,9 @@ $(function(){
 				$auditDate = date( "D, M d, Y", strtotime( $resRow["AuditDate"] ) );
 				$lastAudit = new DateTime( $resRow["AuditDate"] );
 			}
-			
+
 			$interval = $currDate->diff($lastAudit);
-			
+
 			if ( $interval->days < 31 ) {
 				$freqCount["30"]++;
 				$period = "0-30 Days";
@@ -291,46 +291,46 @@ $(function(){
 				$freqCount["Year"]++;
 				$period = "1 Year or Longer";
 			}
-			
+
 			$installDate = date( "M d, Y", strtotime( $resRow["InstallationDate"] ) );
-			
+
 			$pdf->Cell( $cellWidths[1], 6, $auditDate, $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $frequency, $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[3], 6, $installDate, $borders, 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[4], 6, $period, $borders, 0, 'L', $fill );
-		
+
 			$pdf->Ln();
-			
+
 			$fill =! $fill;
 		}
-				
+
 		$pdf->Cell( array_sum( $cellWidths ), 0, '', 'T' );
 		$pdf->Ln();
 	}
-	
+
 	$pdf->AddPage();
-	
+
 	$pdf->Bookmark( "Summary by Period" );
-	
+
 	$pdf->Cell( 80, 5, __("Summary by Period") );
 	$pdf->Ln();
-	
+
 	$headerTags = array( __("Days Since Last Audit"), __("Number of Cabinets"), __("Percentage") );
 	$cellWidths = array( 40, 40, 40 );
-	
+
 	$fill = 0;
 	$borders = "TLR";
-	
+
 	$totalAudits = array_sum( $freqCount );
-	
+
 	$maxval = count( $headerTags );
 
 	for ( $col = 0; $col < $maxval; $col++ )
 
 		$pdf->Cell( $cellWidths[$col], 7, $headerTags[$col], 1, 0, 'C', 1 );
-		
+
 	$pdf->Ln();
-	
+
 	foreach ( $freqCount as $key => $value ) {
 		switch ( $key ) {
 			case "30":
@@ -356,15 +356,15 @@ $(function(){
 		// Silencing the next line because i'm too lazy to validate the data properly
 		@$pdf->Cell( $cellWidths[2], 6, sprintf( "%.2f%%", $value / $totalAudits * 100 ), $borders, 0, 'C', $fill );
 		$pdf->Ln();
-		
+
 		$fill =! $fill;
 	}
-	
+
 	$pdf->Cell( array_sum( $cellWidths ), 0, '', 'T' );
 	$pdf->Ln();
-	
+
 	$pdf->Output();
-	
+
 }
 ?>
 

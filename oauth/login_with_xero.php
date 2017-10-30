@@ -37,7 +37,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.xero.com/api.xro/2.0/Users', 
+					'https://api.xero.com/api.xro/2.0/Users',
 					'GET', array(), array('FailOnAccessError'=>true, 'DecodeXMLResponse'=>'simplexml'), $user);
 			}
 		}
@@ -55,7 +55,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->Users->User->FirstName), 
+		echo '<h1>', HtmlSpecialChars($user->Users->User->FirstName),
 			' you have logged in successfully with Xero!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

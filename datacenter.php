@@ -9,11 +9,11 @@
 		header('Location: '.redirect());
 		exit;
 	}
-	
+
 	$status="";
 
 	$dc=new DataCenter();
-	
+
 	// AJAX Action
 	if(isset($_POST['confirmdelete']) && isset($_POST['datacenterid'])){
 		// About the nuke this place from orbit
@@ -26,7 +26,7 @@
 		}
 		exit;
 	}
-	
+
 	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
 		$dc->DataCenterID=$_POST['datacenterid'];
 		$dc->Name=trim($_POST['name']);
@@ -38,7 +38,7 @@
 		$dc->ContainerID=$_POST['container'];
 		$dc->MapX=$_POST['x'];
 		$dc->MapY=$_POST['y'];
-		
+
 		if($dc->Name!=""){
 			if($_POST['action']=='Create'){
 				$dc->CreateDataCenter();
@@ -98,7 +98,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>openDCIM Data Center Inventory</title>
-  
+
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
@@ -287,25 +287,25 @@ echo '	</select></div>
 
 echo '	</select></div>
 </div>
-<div> 
-	<div><b>X</b></div> 
- 	<div><input type="text" name="x" id="x" value="',$dc->MapX,'" onblur="mueve()"></div> 
-</div> 
-<div> 
-    <div><b>Y</b></div> 
-    <div><input type="text" name="y" id="y" value="',$dc->MapY,'" onblur="mueve()"></div> 
-</div>'; 
+<div>
+	<div><b>X</b></div>
+ 	<div><input type="text" name="x" id="x" value="',$dc->MapX,'" onblur="mueve()"></div>
+</div>
+<div>
+    <div><b>Y</b></div>
+    <div><input type="text" name="y" id="y" value="',$dc->MapY,'" onblur="mueve()"></div>
+</div>';
 
-print "<div id=divcontainer>\n"; 
+print "<div id=divcontainer>\n";
 if ($dc->ContainerID>0){
-	print "  <div><b>".__("Click on the image to select DC coordinates")."</b></div>"; 
+	print "  <div><b>".__("Click on the image to select DC coordinates")."</b></div>";
 	$container->ContainerID=$dc->ContainerID;
 	$container->GetContainer();
 	print "<div>";
 	print $container->MakeContainerMiniImage("dc",$dc->DataCenterID);
-	print "</div>"; 
+	print "</div>";
 }
-print "</div>"; 
+print "</div>";
 
 echo '<div class="caption">';
 
@@ -314,7 +314,7 @@ echo '<div class="caption">';
 	}else{
 		echo '   <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}
-	
+
 	if ( $person->SiteAdmin && $dc->DataCenterID > 0 ) {
 		echo '    <button type="button" id="delete-btn" name="action" value="Delete">',__("Delete"),'</button>';
 	}

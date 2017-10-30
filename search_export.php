@@ -6,11 +6,11 @@
 
 	$datacenter=new DataCenter();
 	$dcList=$datacenter->GetDCList();
-	
+
 	$templ=new DeviceTemplate();
 	$dept=new Department();
 	$dev=new Device();
-	
+
 	$body="";
 
 	if(isset($_REQUEST['datacenterid'])){
@@ -23,9 +23,9 @@
 			$ca_result=$dbh->query($ca_sql)->fetchAll();
 			foreach($ca_result as $ca_row){
 				$custom_concat .= ", GROUP_CONCAT(IF(d.AttributeID={$ca_row["AttributeID"]},value,NULL)) AS Attribute{$ca_row["AttributeID"]} ";
-			} 
+			}
 
-			$sql="SELECT a.Name AS DataCenter, b.DeviceID, c.Location, b.Position, 
+			$sql="SELECT a.Name AS DataCenter, b.DeviceID, c.Location, b.Position,
 				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.WarrantyExpire, b.PrimaryIP, b.ParentDevice,
 				b.TemplateID, b.Owner, c.CabinetID, c.DataCenterID, f.Name as Manufacturer $custom_concat FROM fac_DataCenter a,
 				fac_Cabinet c, fac_DeviceTemplate e, fac_Manufacturer f, fac_Device b  LEFT OUTER JOIN fac_DeviceCustomValue d on
@@ -33,7 +33,7 @@
 				AND e.ManufacturerID=f.ManufacturerID AND f.Name!='Virtual' $dclimit
 				GROUP BY DeviceID ORDER BY DataCenter ASC, Location ASC, Position ASC;";
 			$result=$dbh->query($sql);
-		
+
 			$ca_headers = '';
 			foreach($ca_result as $ca_row){
 				$ca_headers .= "\t<th>{$ca_row["Label"]}</th>";
@@ -70,13 +70,13 @@
       			$warranty=date("Y-m-d",strtotime($row["WarrantyExpire"]));
 			$Model="";
 			$Department="";
-			
+
 			if($row["TemplateID"] >0){
 				$templ->TemplateID=$row["TemplateID"];
 				$templ->GetTemplateByID();
 				$Model="<a href=\"device_templates.php?TemplateID=$templ->TemplateID\" target=\"template\">$templ->Model</a>";
 			}
-			
+
 			if($row["Owner"] >0){
 				$dept->DeptID=$row["Owner"];
 				$dept->GetDeptByID();
@@ -112,16 +112,16 @@
       \t<td>$warranty</td>
 			\t<td>$date</td>
 			{$ca_cells}\t\n\t\t</tr>\n";
-			
+
 			if($row["DeviceType"]=="Chassis"){
 				// Find all of the children!
 				$childList=$dev->GetDeviceChildren();
-				
+
 				foreach($childList as $child){
 					$cdate=date("Y-m-d",strtotime($child->InstallDate));
           $cwarranty=date("Y-m-d",strtotime($child->WarrantyExpire));
 					$cModel="";
-					$cDepartment="";					
+					$cDepartment="";
 
 					$ctags=implode(",", $child->GetTags());
 					if($child->TemplateID >0){
@@ -129,7 +129,7 @@
 						$templ->GetTemplateByID();
 						$cModel="<a href=\"device_templates.php?TemplateID=$templ->TemplateID\" target=\"template\">$templ->Model</a>";
 					}
-					
+
 					if($child->Owner >0){
 						$dept->DeptID=$child->Owner;
 						$dept->GetDeptByID();
@@ -183,7 +183,7 @@
   <script type="text/javascript" src="scripts/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="scripts/ColVis.min.js"></script>
   <script type="text/javascript" src="scripts/TableTools.min.js"></script>
-  
+
   <script type="text/javascript">
 	$(document).ready(function(){
 		var rows;

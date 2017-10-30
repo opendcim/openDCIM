@@ -7,7 +7,7 @@
  *
 */
 if(jQuery) (function($) {
-	
+
 	// Yay, MiniColors!
 	$.minicolors = {
 		// Default settings
@@ -31,20 +31,20 @@ if(jQuery) (function($) {
 			theme: 'default'
 		}
 	};
-	
+
 	// Public methods
 	$.extend($.fn, {
 		minicolors: function(method, data) {
-			
+
 			switch(method) {
-				
+
 				// Destroy the control
 				case 'destroy':
 					$(this).each( function() {
 						destroy($(this));
 					});
 					return $(this);
-				
+
 				// Get/set opacity
 				case 'opacity':
 					if( data === undefined ) {
@@ -57,16 +57,16 @@ if(jQuery) (function($) {
 						});
 						return $(this);
 					}
-				
+
 				// Get an RGB(A) object based on the current color/opacity
 				case 'rgbObject':
 					return rgbObject($(this), method === 'rgbaObject');
-				
+
 				// Get an RGB(A) string based on the current color/opacity
 				case 'rgbString':
 				case 'rgbaString':
 					return rgbString($(this), method === 'rgbaString')
-				
+
 				// Get/set settings on the fly
 				case 'settings':
 					if( data === undefined ) {
@@ -80,7 +80,7 @@ if(jQuery) (function($) {
 						});
 						return $(this);
 					}
-				
+
 				// Get/set the hex color value
 				case 'value':
 					if( data === undefined ) {
@@ -93,7 +93,7 @@ if(jQuery) (function($) {
 						});
 						return $(this);
 					}
-				
+
 				// Initializes the control
 				case 'create':
 				default:
@@ -102,38 +102,38 @@ if(jQuery) (function($) {
 						init($(this), data);
 					});
 					return $(this);
-				
+
 			}
-			
+
 		}
 	});
-	
+
 	// Initialize input elements
 	function init(input, settings) {
-		
+
 		var minicolors = $('<span class="minicolors" />'),
 			defaultSettings = $.minicolors.defaultSettings;
-		
+
 		// Do nothing if already initialized
 		if( input.data('minicolors-initialized') ) return;
-		
+
 		// Handle settings
 		settings = $.extend(true, {}, defaultSettings, settings);
-		
+
 		// The wrapper
 		minicolors
 			.addClass('minicolors-theme-' + settings.theme)
 			.addClass('minicolors-swatch-position-' + settings.swatchPosition)
 			.toggleClass('minicolors-swatch-left', settings.swatchPosition === 'left')
 			.toggleClass('minicolors-with-opacity', settings.opacity);
-		
+
 		// Custom positioning
 		if( settings.position !== undefined ) {
 			$.each(settings.position.split(' '), function() {
 				minicolors.addClass('minicolors-position-' + this);
 			});
 		}
-		
+
 		// The input
 		input
 			.addClass('minicolors-input')
@@ -143,11 +143,11 @@ if(jQuery) (function($) {
 			.prop('maxlength', 7)
 			.wrap(minicolors)
 			.after(
-				'<span class="minicolors-panel minicolors-slider-' + settings.control + '">' + 
-					'<span class="minicolors-slider">' + 
+				'<span class="minicolors-panel minicolors-slider-' + settings.control + '">' +
+					'<span class="minicolors-slider">' +
 						'<span class="minicolors-picker"></span>' +
-					'</span>' + 
-					'<span class="minicolors-opacity-slider">' + 
+					'</span>' +
+					'<span class="minicolors-opacity-slider">' +
 						'<span class="minicolors-picker"></span>' +
 					'</span>' +
 					'<span class="minicolors-grid">' +
@@ -156,10 +156,10 @@ if(jQuery) (function($) {
 					'</span>' +
 				'</span>'
 			);
-		
+
 		// Prevent text selection in IE
 		input.parent().find('.minicolors-panel').on('selectstart', function() { return false; }).end();
-		
+
 		// Detect swatch position
 		if( settings.swatchPosition === 'left' ) {
 			// Left
@@ -168,22 +168,22 @@ if(jQuery) (function($) {
 			// Right
 			input.after('<span class="minicolors-swatch"><span></span></span>');
 		}
-		
+
 		// Disable textfield
 		if( !settings.textfield ) input.addClass('minicolors-hidden');
-		
+
 		// Inline controls
 		if( settings.inline ) input.parent().addClass('minicolors-inline');
-		
+
 		updateFromInput(input);
-		
+
 	}
-	
+
 	// Returns the input back to its original state
 	function destroy(input) {
-		
+
 		var minicolors = input.parent();
-		
+
 		// Revert the input element
 		input
 			.removeData('minicolors-initialized')
@@ -191,63 +191,63 @@ if(jQuery) (function($) {
 			.removeProp('size')
 			.removeProp('maxlength')
 			.removeClass('minicolors-input');
-		
+
 		// Remove the wrap and destroy whatever remains
 		minicolors.before(input).remove();
-		
+
 	}
-	
+
 	// Refresh the specified control
 	function refresh(input) {
 		updateFromInput(input);
 	}
-	
+
 	// Shows the specified dropdown panel
 	function show(input) {
-		
+
 		var minicolors = input.parent(),
 			panel = minicolors.find('.minicolors-panel'),
 			settings = input.data('minicolors-settings');
-		
+
 		// Do nothing if uninitialized, disabled, or already open
 		if( !input.data('minicolors-initialized') || input.prop('disabled') || minicolors.hasClass('minicolors-focus') ) return;
-		
+
 		hide();
-		
+
 		minicolors.addClass('minicolors-focus');
 		panel
 			.stop(true, true)
 			.fadeIn(settings.showSpeed, function() {
 				if( settings.show ) settings.show.call(input);
 			});
-		
+
 	}
-	
+
 	// Hides all dropdown panels
 	function hide() {
-		
+
 		$('.minicolors-input').each( function() {
-			
+
 			var input = $(this),
 				settings = input.data('minicolors-settings'),
 				minicolors = input.parent();
-			
+
 			// Don't hide inline controls
 			if( settings.inline ) return;
-			
+
 			minicolors.find('.minicolors-panel').fadeOut(settings.hideSpeed, function() {
 				if(minicolors.hasClass('minicolors-focus')) {
 					if( settings.hide ) settings.hide.call(input);
 				}
 				minicolors.removeClass('minicolors-focus');
-			});			
-						
+			});
+
 		});
 	}
-	
+
 	// Moves the selected picker
 	function move(target, event, animate) {
-		
+
 		var input = target.parents('.minicolors').find('.minicolors-input'),
 			settings = input.data('minicolors-settings'),
 			picker = target.find('[class$=-picker]'),
@@ -257,20 +257,20 @@ if(jQuery) (function($) {
 			y = Math.round(event.pageY - offsetY),
 			duration = animate ? settings.animationSpeed : 0,
 			wx, wy, r, phi;
-			
-		
+
+
 		// Touch support
 		if( event.originalEvent.changedTouches ) {
 			x = event.originalEvent.changedTouches[0].pageX - offsetX;
 			y = event.originalEvent.changedTouches[0].pageY - offsetY;
 		}
-		
+
 		// Constrain picker to its container
 		if( x < 0 ) x = 0;
 		if( y < 0 ) y = 0;
 		if( x > target.width() ) x = target.width();
 		if( y > target.height() ) y = target.height();
-		
+
 		// Constrain color wheel values to the wheel
 		if( target.parent().is('.minicolors-slider-wheel') && picker.parent().is('.minicolors-grid') ) {
 			wx = 75 - x;
@@ -286,7 +286,7 @@ if(jQuery) (function($) {
 			x = Math.round(x);
 			y = Math.round(y);
 		}
-		
+
 		// Move the picker
 		if( target.is('.minicolors-grid') ) {
 			picker
@@ -306,52 +306,52 @@ if(jQuery) (function($) {
 					updateFromControl(input);
 				});
 		}
-		
+
 	}
-	
+
 	// Sets the input based on the color picker values
 	function updateFromControl(input) {
-		
+
 		function getCoords(picker, container) {
-			
+
 			var left, top;
 			if( !picker.length || !container ) return null;
 			left = picker.offset().left;
 			top = picker.offset().top;
-			
+
 			return {
 				x: left - container.offset().left + (picker.outerWidth() / 2),
 				y: top - container.offset().top + (picker.outerHeight() / 2)
 			};
-			
+
 		}
-		
+
 		var hue, saturation, brightness, opacity, rgb, hex, x, y, r, phi,
-			
+
 			// Helpful references
 			minicolors = input.parent(),
 			settings = input.data('minicolors-settings'),
 			panel = minicolors.find('.minicolors-panel'),
 			swatch = minicolors.find('.minicolors-swatch'),
-			
+
 			// Panel objects
 			grid = minicolors.find('.minicolors-grid'),
 			slider = minicolors.find('.minicolors-slider'),
 			opacitySlider = minicolors.find('.minicolors-opacity-slider'),
-			
+
 			// Picker objects
 			gridPicker = grid.find('[class$=-picker]'),
 			sliderPicker = slider.find('[class$=-picker]'),
 			opacityPicker = opacitySlider.find('[class$=-picker]'),
-			
+
 			// Picker positions
 			gridPos = getCoords(gridPicker, grid),
 			sliderPos = getCoords(sliderPicker, slider),
 			opacityPos = getCoords(opacityPicker, opacitySlider);
-		
+
 		// Determine HSB values
 		switch(settings.control) {
-			
+
 			case 'wheel':
 				// Calculate hue, saturation, and brightness
 				x = (grid.width() / 2) - gridPos.x;
@@ -372,11 +372,11 @@ if(jQuery) (function($) {
 					s: saturation,
 					b: brightness
 				});
-				
+
 				// Update UI
 				slider.css('backgroundColor', hsb2hex({ h: hue, s: saturation, b: 100 }));
 				break;
-			
+
 			case 'saturation':
 				// Calculate hue, saturation, and brightness
 				hue = keepWithin(parseInt(gridPos.x * (360 / grid.width())), 0, 360);
@@ -387,12 +387,12 @@ if(jQuery) (function($) {
 					s: saturation,
 					b: brightness
 				});
-				
+
 				// Update UI
 				slider.css('backgroundColor', hsb2hex({ h: hue, s: 100, b: brightness }));
 				minicolors.find('.minicolors-grid-inner').css('opacity', saturation / 100);
 				break;
-			
+
 			case 'brightness':
 				// Calculate hue, saturation, and brightness
 				hue = keepWithin(parseInt(gridPos.x * (360 / grid.width())), 0, 360);
@@ -403,12 +403,12 @@ if(jQuery) (function($) {
 					s: saturation,
 					b: brightness
 				});
-				
+
 				// Update UI
 				slider.css('backgroundColor', hsb2hex({ h: hue, s: saturation, b: 100 }));
 				minicolors.find('.minicolors-grid-inner').css('opacity', 1 - (brightness / 100));
 				break;
-			
+
 			default:
 				// Calculate hue, saturation, and brightness
 				hue = keepWithin(360 - parseInt(sliderPos.y * (360 / slider.height())), 0, 360);
@@ -419,13 +419,13 @@ if(jQuery) (function($) {
 					s: saturation,
 					b: brightness
 				});
-				
+
 				// Update UI
 				grid.css('backgroundColor', hsb2hex({ h: hue, s: 100, b: 100 }));
 				break;
-			
+
 		}
-		
+
 		// Determine opacity
 		if( settings.opacity ) {
 			opacity = parseFloat(1 - (opacityPos.y / opacitySlider.height())).toFixed(2);
@@ -436,19 +436,19 @@ if(jQuery) (function($) {
     // Adjust case
     input.val( convertCase(hex, settings.letterCase) );
 		if( settings.opacity ) input.attr('data-opacity', opacity);
-		
+
 		// Set swatch color
 		swatch.find('SPAN').css({
 			backgroundColor: hex,
 			opacity: opacity
 		});
-		
+
 		// Handle change event
 		if( hex + opacity !== input.data('minicolors-lastChange') ) {
-			
+
 			// Remember last-changed value
 			input.data('minicolors-lastChange', hex + opacity);
-			
+
 			// Fire change event
 			if( settings.change ) {
 				if( settings.changeDelay ) {
@@ -462,60 +462,60 @@ if(jQuery) (function($) {
 					settings.change.call(input, hex, opacity);
 				}
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	// Sets the color picker values from the input
 	function updateFromInput(input, preserveInputValue) {
-		
+
 		var hex,
 			hsb,
 			opacity,
 			x, y, r, phi,
-			
+
 			// Helpful references
 			minicolors = input.parent(),
 			settings = input.data('minicolors-settings'),
 			swatch = minicolors.find('.minicolors-swatch'),
-			
-			
+
+
 			// Panel objects
 			grid = minicolors.find('.minicolors-grid'),
 			slider = minicolors.find('.minicolors-slider'),
 			opacitySlider = minicolors.find('.minicolors-opacity-slider'),
-			
+
 			// Picker objects
 			gridPicker = grid.find('[class$=-picker]'),
 			sliderPicker = slider.find('[class$=-picker]'),
 			opacityPicker = opacitySlider.find('[class$=-picker]');
-		
+
 		// Determine hex/HSB values
 		hex = convertCase(parseHex(input.val(), true), settings.letterCase);
 		if( !hex ) hex = convertCase(parseHex(settings.defaultValue, true));
 		hsb = hex2hsb(hex);
-		
+
 		// Update input value
 		if( !preserveInputValue ) input.val(hex);
-		
+
 		// Determine opacity value
 		if( settings.opacity ) {
 			opacity = input.attr('data-opacity') === '' ? 1 : keepWithin(parseFloat(input.attr('data-opacity')).toFixed(2), 0, 1);
 			input.attr('data-opacity', opacity);
 			swatch.find('SPAN').css('opacity', opacity);
-			
+
 			// Set opacity picker position
 			y = keepWithin(opacitySlider.height() - (opacitySlider.height() * opacity), 0, opacitySlider.height());
 			opacityPicker.css('top', y + 'px');
 		}
-		
+
 		// Update swatch
 		swatch.find('SPAN').css('backgroundColor', hex);
-		
+
 		// Determine picker locations
 		switch(settings.control) {
-			
+
 			case 'wheel':
 				// Set grid position
 				r = keepWithin(Math.ceil(hsb.s * 0.75), 0, grid.height() / 2);
@@ -526,16 +526,16 @@ if(jQuery) (function($) {
 					top: y + 'px',
 					left: x + 'px'
 				});
-				
+
 				// Set slider position
 				y = 150 - (hsb.b / (100 / grid.height()));
 				if( hex === '' ) y = 0;
 				sliderPicker.css('top', y + 'px');
-				
+
 				// Update panel color
 				slider.css('backgroundColor', hsb2hex({ h: hsb.h, s: hsb.s, b: 100 }));
 				break;
-			
+
 			case 'saturation':
 				// Set grid position
 				x = keepWithin((5 * hsb.h) / 12, 0, 150);
@@ -543,18 +543,18 @@ if(jQuery) (function($) {
 				gridPicker.css({
 					top: y + 'px',
 					left: x + 'px'
-				});				
-				
+				});
+
 				// Set slider position
 				y = keepWithin(slider.height() - (hsb.s * (slider.height() / 100)), 0, slider.height());
 				sliderPicker.css('top', y + 'px');
-				
+
 				// Update UI
 				slider.css('backgroundColor', hsb2hex({ h: hsb.h, s: 100, b: hsb.b }));
 				minicolors.find('.minicolors-grid-inner').css('opacity', hsb.s / 100);
-				
+
 				break;
-			
+
 			case 'brightness':
 				// Set grid position
 				x = keepWithin((5 * hsb.h) / 12, 0, 150);
@@ -562,17 +562,17 @@ if(jQuery) (function($) {
 				gridPicker.css({
 					top: y + 'px',
 					left: x + 'px'
-				});				
-				
+				});
+
 				// Set slider position
 				y = keepWithin(slider.height() - (hsb.b * (slider.height() / 100)), 0, slider.height());
 				sliderPicker.css('top', y + 'px');
-				
+
 				// Update UI
 				slider.css('backgroundColor', hsb2hex({ h: hsb.h, s: hsb.s, b: 100 }));
 				minicolors.find('.minicolors-grid-inner').css('opacity', 1 - (hsb.b / 100));
 				break;
-			
+
 			default:
 				// Set grid position
 				x = keepWithin(Math.ceil(hsb.s / (100 / grid.width())), 0, grid.width());
@@ -581,19 +581,19 @@ if(jQuery) (function($) {
 					top: y + 'px',
 					left: x + 'px'
 				});
-				
+
 				// Set slider position
 				y = keepWithin(slider.height() - (hsb.h / (360 / slider.height())), 0, slider.height());
 				sliderPicker.css('top', y + 'px');
-				
+
 				// Update panel color
 				grid.css('backgroundColor', hsb2hex({ h: hsb.h, s: 100, b: 100 }));
 				break;
-				
+
 		}
-		
+
 	}
-	
+
 	// Generates an RGB(A) object based on the input's value
 	function rgbObject(input) {
 		var hex = parseHex($(input).val(), true),
@@ -603,7 +603,7 @@ if(jQuery) (function($) {
 		if( opacity !== undefined ) $.extend(rgb, { a: parseFloat(opacity) });
 		return rgb;
 	}
-	
+
 	// Genearates an RGB(A) string based on the input's value
 	function rgbString(input, alpha) {
 		var hex = parseHex($(input).val(), true),
@@ -617,12 +617,12 @@ if(jQuery) (function($) {
 			return 'rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')';
 		}
 	}
-	
+
 	// Converts to the letter case specified in settings
 	function convertCase(string, letterCase) {
 		return letterCase === 'uppercase' ? string.toUpperCase() : string.toLowerCase();
 	}
-	
+
 	// Parses a string and returns a valid hex string when possible
 	function parseHex(string, expand) {
 		string = string.replace(/[^A-F0-9]/ig, '');
@@ -632,14 +632,14 @@ if(jQuery) (function($) {
 		}
 		return '#' + string;
 	}
-	
+
 	// Keeps value within min and max
 	function keepWithin(value, min, max) {
 		if( value < min ) value = min;
 		if( value > max ) value = max;
 		return value;
 	}
-	
+
 	// Converts an HSB object to an RGB object
 	function hsb2rgb(hsb) {
 		var rgb = {};
@@ -667,7 +667,7 @@ if(jQuery) (function($) {
 			b: Math.round(rgb.b)
 		};
 	}
-	
+
 	// Converts an RGB object to a hex string
 	function rgb2hex(rgb) {
 		var hex = [
@@ -680,19 +680,19 @@ if(jQuery) (function($) {
 		});
 		return '#' + hex.join('');
 	}
-	
+
 	// Converts an HSB object to a hex string
 	function hsb2hex(hsb) {
 		return rgb2hex(hsb2rgb(hsb));
 	}
-	
+
 	// Converts a hex string to an HSB object
 	function hex2hsb(hex) {
 		var hsb = rgb2hsb(hex2rgb(hex));
 		if( hsb.s === 0 ) hsb.h = 360;
 		return hsb;
 	}
-	
+
 	// Converts an RGB object to an HSB object
 	function rgb2hsb(rgb) {
 		var hsb = { h: 0, s: 0, b: 0 };
@@ -720,7 +720,7 @@ if(jQuery) (function($) {
 		hsb.b *= 100/255;
 		return hsb;
 	}
-	
+
 	// Converts a hex string to an RGB object
 	function hex2rgb(hex) {
 		hex = parseInt(((hex.indexOf('#') > -1) ? hex.substring(1) : hex), 16);
@@ -730,7 +730,7 @@ if(jQuery) (function($) {
 			b: (hex & 0x0000FF)
 		};
 	}
-	
+
 	// Handle events
 	$(document)
 		// Hide on clicks outside of the control
@@ -776,16 +776,16 @@ if(jQuery) (function($) {
 			var input = $(this),
 				settings = input.data('minicolors-settings');
 			if( !input.data('minicolors-initialized') ) return;
-			
+
 			// Parse Hex
 			input.val(parseHex(input.val(), true));
-			
+
 			// Is it blank?
 			if( input.val() === '' ) input.val(parseHex(settings.defaultValue, true));
-			
+
 			// Adjust case
 			input.val( convertCase(input.val(), settings.letterCase) );
-			
+
 			hide(input);
 		})
 		// Handle keypresses
@@ -816,5 +816,5 @@ if(jQuery) (function($) {
 				updateFromInput(input, true);
 			}, 1);
 		});
-	
+
 })(jQuery);

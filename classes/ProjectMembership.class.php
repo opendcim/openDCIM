@@ -38,7 +38,7 @@ class ProjectMembership {
 
 		$st = $dbh->prepare( "select * from fac_ProjectMembership where ProjectID=:ProjectID and MemberType='Cabinet' order by MemberID ASC" );
 		$st->setFetchMode( PDO::FETCH_CLASS, "ProjectMembership" );
-		
+
 		// Since we are using PDO, it is safe to send this blindly to the query.
 		$st->execute( array( ":ProjectID"=>$ProjectID ));
 		$result = array();
@@ -67,7 +67,7 @@ class ProjectMembership {
 
 		$st = $dbh->prepare( "select * from fac_ProjectMembership where ProjectID=:ProjectID and MemberType='Device' order by MemberID ASC" );
 		$st->setFetchMode( PDO::FETCH_CLASS, "ProjectMembership" );
-		
+
 		// Since we are using PDO, it is safe to send this blindly to the query.
 		$st->execute( array( ":ProjectID"=>$ProjectID ));
 		$result = array();
@@ -104,11 +104,11 @@ class ProjectMembership {
 	}
 
 	//	function getCabinetMembership
-	//	
+	//
 	//	Parameters:	CabinetID
-	//	
+	//
 	//	Returns:	Array of Project objects for all projects the CabinetID is a member of
-	//	
+	//
 	static function getCabinetMembership( $CabinetID ) {
 		global $dbh;
 

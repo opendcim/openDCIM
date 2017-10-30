@@ -36,7 +36,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'http://api.tumblr.com/v2/user/info', 
+					'http://api.tumblr.com/v2/user/info',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 		}
@@ -55,7 +55,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->response->user->name), 
+		echo '<h1>', HtmlSpecialChars($user->response->user->name),
 			' you have logged in successfully with Tumblr!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

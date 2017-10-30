@@ -16,11 +16,11 @@ class PDF extends FPDF {
   var $OutlineRoot;
   var $pdfconfig;
   var $pdfDB;
-  
+
 	function PDF(){
 		parent::FPDF();
 	}
-  
+
 	function Header() {
 		$this->pdfconfig = new Config();
     	$logofile = 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'];
@@ -42,7 +42,7 @@ class PDF extends FPDF {
     		$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'I',8);
     		$this->Cell(0,10,__("Page").' '.$this->PageNo().'/{nb}',0,0,'C');
 	}
-	
+
   function Bookmark($txt,$level=0,$y=0) {
     if($y==-1)
         $y=$this->GetY();
@@ -154,21 +154,21 @@ class PDF extends FPDF {
 	$pdf->SetTextColor( 0 );
 
 	$pdf->Bookmark( 'Data Centers' );
-	
+
 	$dcList = $dc->GetDCList();
-  
+
 	foreach ( $dcList as $dcRow ) {
 		$pdf->AddPage();
 		$pdf->BookMark( $dcRow->Name, 1 );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], 'BU', 12 );
 		$pdf->Cell( 80, 5, __("Data Center").': ' . $dcRow->Name );
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
-		
-  	
+
+
 		$sourceList = $pan->getSourcesByDataCenter( $dcRow->DataCenterID );
-    
+
 		foreach ( $sourceList as $sourceRow ) {
-			
+
 			$pdf->BookMark( $sourceRow->PanelLabel, 2 );
 			$pdf->Ln();
 			$pdf->SetFont( $config->ParameterArray['PDFfont'], 'U', 12 );
@@ -178,7 +178,7 @@ class PDF extends FPDF {
 
 			$pan->ParentPanelID = $sourceRow->PanelID;
 			$panList = $pan->getPanelListBySource();
-      			
+
 			foreach ( $panList as $panRow ) {
 				$pdf->BookMark( $panRow->PanelLabel, 3 );
 				$pdf->Ln();
@@ -188,7 +188,7 @@ class PDF extends FPDF {
 				$pdf->Ln();
 				$pdu->PanelID=$panRow->PanelID;
 				$pduList = $pdu->GetPDUbyPanel();
-				
+
 				foreach ( $pduList as $pduRow ){
 					$pdf->BookMark( $pduRow->Label, 4 );
 					$pdf->Ln();
@@ -198,7 +198,7 @@ class PDF extends FPDF {
 					$pdf->Ln();
 					$dev->Cabinet=$pduRow->CabinetID;
 					$devList=$dev->ViewDevicesByCabinet();
-					
+
 					$headerTags = array( __("Power Source"), __("Panel"), __("PDU"), __("Device Name") );
 					$cellWidths = array( 40, 30, 30, 60 );
 
@@ -210,21 +210,21 @@ class PDF extends FPDF {
 					$pdf->Ln();
 
 					$fill = 0;
-									
+
 					foreach( $devList as $devRow){
           				$pdf->Cell( $cellWidths[0], 6, $sourceRow->PanelLabel, 'LBRT', 0, 'L', $fill );
 						$pdf->Cell( $cellWidths[1], 6, $panRow->PanelLabel, 'LBRT', 0, 'L', $fill );
-						$pdf->Cell( $cellWidths[2], 6, $pduRow->Label, 'LBRT', 0, 'L', $fill ); 
+						$pdf->Cell( $cellWidths[2], 6, $pduRow->Label, 'LBRT', 0, 'L', $fill );
 						$pdf->Cell( $cellWidths[3], 6, $devRow->Label, 'LBRT', 1, 'L', $fill );
-      					$fill =! $fill;         	
-					}	
+      					$fill =! $fill;
+					}
 					$pdf->Ln();
 				}
 				$pdf->Ln();
 			}
-			      
+
 			$pdf->Ln();
-		}    	
+		}
     }
 
 	$pdf->Output();

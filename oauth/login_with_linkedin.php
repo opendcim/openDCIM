@@ -42,7 +42,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'http://api.linkedin.com/v1/people/~', 
+					'http://api.linkedin.com/v1/people/~',
 					'GET', array(
 						'format'=>'json'
 					), array('FailOnAccessError'=>true), $user);
@@ -67,7 +67,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->firstName), 
+		echo '<h1>', HtmlSpecialChars($user->firstName),
 			' you have logged in successfully with LinkedIn!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

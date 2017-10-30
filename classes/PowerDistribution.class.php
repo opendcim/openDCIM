@@ -22,18 +22,18 @@
 
 	For further details on the license, see http://www.gnu.org/licenses
 */
-	
+
 class PowerDistribution {
 	/* PowerDistribution:	A power strip, essentially.  Intelligent power strips from APC, Geist Manufacturing,
 							and Server Technologies are supported for polling of amperage.  Future implementation
 							will include temperature/humidity probe data for inclusion on the data center mapping.
 							Non-monitored power strips are also supported, but simply won't have data regarding
 							current load.
-							
+
 							Power strips are mapped to the panel / circuit, and panels are mapped to the power source,
 							which is then wrapped up at the data center level.
 	*/
-	
+
 	var $PDUID;
 	var $Label;
 	var $CabinetID;
@@ -94,7 +94,7 @@ class PowerDistribution {
 
 		return $PDU;
 	}
-	
+
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
@@ -135,7 +135,7 @@ class PowerDistribution {
 	 * description - alpha numeric return of the system description can include line breaks
 	 * location - alpha numeric return of the location if set
 	 * name - alpha numeric return of the name of the system
-	 * services - int 
+	 * services - int
 	 * uptime - int - uptime of the device returned as ticks.  tick defined as 1/1000'th of a second
 	 */
 	static private function OSS_SNMP_Lookup($dev,$snmplookup,$oid=null){
@@ -175,12 +175,12 @@ class PowerDistribution {
 
 		$sqladdon=(!is_null($pduid))?", PDUID=".intval($pduid):"";
 
-		$sql="INSERT INTO fac_PowerDistribution SET Label=\"$this->Label\", 
-			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID, 
-			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\", 
-			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, 
-			PanelPole=\"$this->PanelPole\", InputAmperage=$this->InputAmperage, 
-			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, 
+		$sql="INSERT INTO fac_PowerDistribution SET Label=\"$this->Label\",
+			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID,
+			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\",
+			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize,
+			PanelPole=\"$this->PanelPole\", InputAmperage=$this->InputAmperage,
+			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2,
 			PanelPole2=$this->PanelPole2$sqladdon;";
 
 		if($this->exec($sql)){
@@ -204,11 +204,11 @@ class PowerDistribution {
 		$oldpdu->PDUID=$this->PDUID;
 		$oldpdu->GetPDU();
 
-		$sql="UPDATE fac_PowerDistribution SET Label=\"$this->Label\", 
-			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID, 
-			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\", 
-			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, 
-			PanelPole=\"$this->PanelPole\", InputAmperage=$this->InputAmperage, 
+		$sql="UPDATE fac_PowerDistribution SET Label=\"$this->Label\",
+			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID,
+			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\",
+			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize,
+			PanelPole=\"$this->PanelPole\", InputAmperage=$this->InputAmperage,
 			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2
 			WHERE PDUID=$this->PDUID;";
 
@@ -226,7 +226,7 @@ class PowerDistribution {
 
 		return $r->PanelID;
 	}
-	
+
 	function GetPDU(){
 		$this->MakeSafe();
 
@@ -260,7 +260,7 @@ class PowerDistribution {
 
 		return $PDUList;
 	}
-	
+
 	function GetPDUbyCabinet(){
 		$this->MakeSafe();
 
@@ -273,7 +273,7 @@ class PowerDistribution {
 
 		return $PDUList;
 	}
-	
+
 	function SearchByPDUName(){
 		$this->MakeSafe();
 
@@ -311,27 +311,27 @@ class PowerDistribution {
 		if($dc==null){
 			$sql="SELECT COUNT(Wattage) FROM fac_PDUStats;";
 		}else{
-			$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID IN 
-			(SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID IN 
+			$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID IN
+			(SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID IN
 			(SELECT CabinetID FROM fac_Cabinet WHERE DataCenterID=".intval($dc)."))";
-		}		
-		
+		}
+
 		return $this->query($sql)->fetchColumn();
 	}
-	
+
 	function GetWattageByCabinet($CabinetID){
 		$CabinetID=intval($CabinetID);
 		if($CabinetID <1){
 			return 0;
 		}
-		
-		$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID 
+
+		$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID
 			IN (SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID=$CabinetID);";
 
 		if(!$wattage=$this->query($sql)->fetchColumn()){
 			$wattage=0;
 		}
-		
+
 		return $wattage;
 	}
 
@@ -347,23 +347,23 @@ class PowerDistribution {
 
 		$Wattage=intval($Wattage);
 		$this->Wattage=$Wattage;
-	
-		$sql="INSERT INTO fac_PDUStats SET Wattage=$Wattage, PDUID=$this->PDUID, 
+
+		$sql="INSERT INTO fac_PDUStats SET Wattage=$Wattage, PDUID=$this->PDUID,
 			LastRead=NOW() ON DUPLICATE KEY UPDATE Wattage=$Wattage, LastRead=NOW();";
-		
+
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldpdu):'';
 		return ($this->query($sql))?$this->GetLastReading():false;
 	}
-	
+
 	function UpdateStats(){
 		global $config;
 		global $dbh;
-		
-		$sql="SELECT a.PDUID, d.SNMPVersion, b.Multiplier, b.OID1, 
-			b.OID2, b.OID3, b.ProcessingProfile, b.Voltage, c.SNMPFailureCount FROM fac_PowerDistribution a, 
-			fac_CDUTemplate b, fac_Device c, fac_DeviceTemplate d WHERE a.PDUID=c.DeviceID and a.TemplateID=b.TemplateID 
+
+		$sql="SELECT a.PDUID, d.SNMPVersion, b.Multiplier, b.OID1,
+			b.OID2, b.OID3, b.ProcessingProfile, b.Voltage, c.SNMPFailureCount FROM fac_PowerDistribution a,
+			fac_CDUTemplate b, fac_Device c, fac_DeviceTemplate d WHERE a.PDUID=c.DeviceID and a.TemplateID=b.TemplateID
 			AND a.TemplateID=d.TemplateID AND b.Managed=true AND c.PrimaryIP>'' and c.SNMPFailureCount<3";
-		
+
 		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
 		foreach($this->query($sql) as $row){
 			if(!$dev=PowerDistribution::BasicTests($row['PDUID'])){
@@ -383,7 +383,7 @@ class PowerDistribution {
 				if ($pollValue2<0) $pollValue2=0;
 				if ($pollValue3<0) $pollValue3=0;
 			}
-			
+
 			// Have to reset this every time, otherwise the exec() will append
 			unset($statsOutput);
 			$amps=0;
@@ -420,14 +420,14 @@ class PowerDistribution {
 			// Make the float safe for insert into mysql
 			$watts=float_sqlsafe($watts);
 
-			$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts, 
+			$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts,
 				LastRead=now() ON DUPLICATE KEY UPDATE Wattage=$watts, LastRead=now();";
 
 			if(!$dbh->query($sql)){
 				$info=$dbh->errorInfo();
 				error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
 			}
-			
+
 			$this->PDUID=$row["PDUID"];
 			if($ver=$this->GetSmartCDUVersion()){
 				$sql="UPDATE fac_PowerDistribution SET FirmwareVersion=\"$ver\" WHERE PDUID=$this->PDUID;";
@@ -438,7 +438,7 @@ class PowerDistribution {
 			}
 		}
 	}
-	
+
 	function getATSStatus() {
 		if(!$dev=PowerDistribution::BasicTests($this->PDUID)){
 			return false;
@@ -469,16 +469,16 @@ class PowerDistribution {
 
 		return ($test)?ticksToTime($test):$test;
 	}
-	
+
 	function GetSmartCDUVersion(){
 		if(!$dev=PowerDistribution::BasicTests($this->PDUID)){
 			return false;
 		}
-		
+
 		if(!$this->GetPDU()){
 			return false;
 		}
-		
+
 		$template=new CDUTemplate();
 		$template->TemplateID=$this->TemplateID;
 		if(!$template->GetTemplate()){
@@ -526,7 +526,7 @@ class PowerDistribution {
 		$tmpConn=new PowerConnection();
 		$tmpConn->PDUID=$this->PDUID;
 		$connList=$tmpConn->GetConnectionsByPDU();
-		
+
 		foreach($connList as $delConn){
 			$delConn->RemoveConnection();
 		}

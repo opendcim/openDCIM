@@ -38,7 +38,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.twitter.com/1.1/account/verify_credentials.json', 
+					'https://api.twitter.com/1.1/account/verify_credentials.json',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 
 /*
@@ -46,14 +46,14 @@
 					'status'=>str_repeat('x', 140)
 				);
 				$success = $client->CallAPI(
-					'https://api.twitter.com/1.1/statuses/update.json', 
+					'https://api.twitter.com/1.1/statuses/update.json',
 					'POST', $values, array('FailOnAccessError'=>true), $update);
 				if(!$success)
 					error_log(print_r($update->errors[0]->code, 1));
 */
 
 /* Tweet with an attached image
- 
+
 				$success = $client->CallAPI(
 					"https://api.twitter.com/1.1/statuses/update_with_media.json",
 					'POST', array(
@@ -83,7 +83,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>', HtmlSpecialChars($user->name), 
+		echo '<h1>', HtmlSpecialChars($user->name),
 			' you have logged in successfully with Twitter!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>

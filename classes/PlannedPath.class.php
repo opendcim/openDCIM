@@ -25,8 +25,8 @@
 
 class PlannedPath {
 	/* PlannedPath:		Search a minimun weight connection path between two endpoint devices.
-	 					It use the panels to reach the goal. 
-	 					From each device, first it try connecting patch panels or final device on actual cabinet, 
+	 					It use the panels to reach the goal.
+	 					From each device, first it try connecting patch panels or final device on actual cabinet,
 	 					and if is not posible, in the actual row of cabinets.
 	 					Initial info are devID1, port1, devID2, port2.
 	 					It use "MediaEnforce" configuration parameter for connections.
@@ -36,20 +36,20 @@ class PlannedPath {
 						The "MakePath" method leaves a log file (ppath.log) on the server with the execution of the algorithm, for testing.
 	 					Contribution of Jose Miguel Gomez Apesteguia (July 2013)
 	*/
-	
+
 	//Device info for output
 	var $DeviceID;
 	var $PortNumber; //The sign of PortNumber indicate if the path continue to front port (>0) or rear port (<0)
 
-	//initial device info input   
-	var $devID1; 	
+	//initial device info input
+	var $devID1;
 	var $port1;
 
 	//final device info input
-	var $devID2; 	
+	var $devID2;
 	var $port2;
-	
-	//aux info	
+
+	//aux info
 	private $cab2;		//Cabinet of final device
 	private $row2;		//row of final device
 	private $espejo2; 	//for ports protected by a panel in devID2 (port2 connected to rear connection of panel)
@@ -58,37 +58,37 @@ class PlannedPath {
 	private $candidates;	//array of candidate nodes: [dev]{[port]}
 							//an array smaller than $nodes, so the selection of the next node is faster
 	private $used_candidates;	//array of used candidates
-	
-	//Path for output 
+
+	//Path for output
 	var $Path; 			//array with created Path
 	private $acti;  	//index of actual dev in $Path
-	
+
 	//error output
 	var $PathError;
-	
+
 	private function escribe_log($texto){
 		//remove next line if you want a log file on server
 		//return;
-		
+
 	    $ddf = fopen('ppath.log','ab');
         fwrite($ddf,$texto."\r\n");
 	    fclose($ddf);
 	}
-	
+
 	private function MakeSafe(){
 		$this->devID1=intval($this->devID1);
 		$this->port1=intval($this->port1);
 		$this->devID2=intval($this->devID2);
 		$this->port2=intval($this->port2);
 	}
-	
+
 	private function ClearPath(){
 		$this->Path=array();
 		$this->nodes=array();
 		$this->candidates=array();
 		$this->used_candidates=array();
 	}
-	
+
 	private function AddNodeToList ($dev,$port,$weight,$prev_dev,$prev_port) {
 		//Trato distinto las conexiones traseras y las frontales: las traseras nunca van a ser candidatos
 		//Separate treatment for rear and front connections: the rear will never be candidates
@@ -132,7 +132,7 @@ class PlannedPath {
 			}
 		}
 	}
-	
+
 	private function SelectNode () {
 		//Busco el  nodo de la lista de candidatos el nodo con peso minimo
 		//search node in candidate list with min weight
@@ -150,27 +150,27 @@ class PlannedPath {
 		$this->escribe_log("");
 		return ($this->DeviceID<>0);
 	}
-	
+
 	private function UpdateList () {
 		global $config;
-		//find posible next devices with lower weight in list from actual node 
+		//find posible next devices with lower weight in list from actual node
 		//for each device found, if already it exists and it is not useded, update it if (new weight) < (old weight)
 		//if it does not exist, insert in list with his actual weight and $used=false
 		//Destination device is $this->devID2
-		
+
 		//weights
 		$weight_cabinet=$config->ParameterArray["path_weight_cabinet"]; 	//weight for patches on actual cabinet
 		$weight_rear=$config->ParameterArray["path_weight_rear"];		//weight fot rear connetcion between panels
 		$weight_row=$config->ParameterArray["path_weight_row"];		//weigth for patches on same row of cabinets (except actual cabinet)
-		//It is possible to assign a weight proportional to the distance between the actual cabinet and each cabinet of actual row, 
+		//It is possible to assign a weight proportional to the distance between the actual cabinet and each cabinet of actual row,
 		//so you can prioritize closest cabinets in the actual row. In the future...
-		
+
 		$this->escribe_log("\nSelected node: D=".$this->DeviceID.
 						"; P=".$this->PortNumber.
 						"; W=".$this->nodes[$this->DeviceID][$this->PortNumber]["weight"].
 						"; PD=".$this->nodes[$this->DeviceID][$this->PortNumber]["prev_dev"].
-						"; PP=".$this->nodes[$this->DeviceID][$this->PortNumber]["prev_port"]);;	
-			
+						"; PP=".$this->nodes[$this->DeviceID][$this->PortNumber]["prev_port"]);;
+
 		//Compruebo si el puerto del dispositivo actual esta conectado a la conexion trasera de un panel
 		//I check if the port of this device is connected to a rear-panel connection
 		$port=new DevicePorts();
@@ -180,7 +180,7 @@ class PlannedPath {
 			$this->escribe_log("ERROR GETTING PORT");
 			exit;
 		}
-		
+
 		if ($port->ConnectedDeviceID<>0){
 			if ($port->ConnectedPort<0){
 				//It's a port of the first device connected to rear panel connection or it's a rear port of a panel.
@@ -205,7 +205,7 @@ class PlannedPath {
 			$cabrow=new CabRow();
 			$cabrow->CabRowID = $cabinet->CabRowID;
 			$cabrow->GetCabRow();
-			
+
 			//busco el dispositivo final en el mismo armario (si no esta reflejado en un panel)
 			//looking for the end device in the same cabinet (if not reflected in a panel)
 			if ($cab==$this->cab2 && !$this->espejo2){
@@ -218,7 +218,7 @@ class PlannedPath {
 				$this->escribe_log(" DEV2 found in actual row (".$cabrow->CabRowID."-'".$cabrow->Name."')");
 				$this->AddNodeToList($this->devID2,-$this->port2,$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_row,$this->DeviceID, $this->PortNumber);
 			}
-			
+
 			//busco paneles con puertos libres en el armario actual
 			//Look for panels with free ports on actual cabinet
 			$this->escribe_log("Look for panels with free ports on actual cabinet (".$cab."-'".$cabinet->Location."')");
@@ -232,12 +232,12 @@ class PlannedPath {
 			$sql="SELECT af.DeviceID AS DeviceID1,
 						af.PortNumber AS PortNumber1,
 						bf.DeviceID AS DeviceID2,
-						bf.PortNumber AS PortNumber2	 
-				FROM fac_Ports af, fac_Ports ar, fac_Ports bf, fac_Device d 
-				WHERE d.Cabinet=".$cab." AND 
-					af.DeviceID=d.DeviceID AND 
+						bf.PortNumber AS PortNumber2
+				FROM fac_Ports af, fac_Ports ar, fac_Ports bf, fac_Device d
+				WHERE d.Cabinet=".$cab." AND
+					af.DeviceID=d.DeviceID AND
 					af.DeviceID!=".$this->DeviceID." AND
-					af.ConnectedDeviceID IS NULL".$mediaenforce." AND 
+					af.ConnectedDeviceID IS NULL".$mediaenforce." AND
 					d.DeviceType='Patch Panel' AND
 					af.PortNumber>0 AND
 					ar.DeviceID=af.DeviceID AND ar.PortNumber=-af.PortNumber AND
@@ -247,7 +247,7 @@ class PlannedPath {
 			foreach($dbh->query($sql) as $row){
 				//Compruebo si tengo que anadir esta pareja
 				//I check if I have to add this pair of nodes
-				if (isset($this->candidates[$row["DeviceID2"]]) 
+				if (isset($this->candidates[$row["DeviceID2"]])
 					&& $this->nodes[$row["DeviceID2"]][$this->candidates[$row["DeviceID2"]]]["weight"]>$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_cabinet+$weight_rear
 					|| !isset($this->candidates[$row["DeviceID2"]]) && !isset($this->used_candidates[$row["DeviceID2"]])){
 					$this->AddNodeToList($row["DeviceID1"],-$row["PortNumber1"],$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_cabinet, $this->DeviceID, $this->PortNumber);
@@ -256,21 +256,21 @@ class PlannedPath {
 					$this->AddNodeToList($row["DeviceID2"],$row["PortNumber2"],$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_cabinet+$weight_rear, $row["DeviceID1"],-$row["PortNumber1"]);
 				}
 			}
-			
+
 			//busco paneles con puertos libres en la fila actual
 			//Look for panels with free ports on actual row
 			$this->escribe_log("Look for panels with free ports on actual row (".$cabrow->CabRowID."-'".$cabrow->Name."')");
 			$sql="SELECT af.DeviceID AS DeviceID1,
 						af.PortNumber AS PortNumber1,
 						bf.DeviceID AS DeviceID2,
-						bf.PortNumber AS PortNumber2 
-				FROM fac_Ports af, fac_Ports ar, fac_Ports bf, fac_Device d, fac_Cabinet c 
-				WHERE af.DeviceID=d.DeviceID AND 
+						bf.PortNumber AS PortNumber2
+				FROM fac_Ports af, fac_Ports ar, fac_Ports bf, fac_Device d, fac_Cabinet c
+				WHERE af.DeviceID=d.DeviceID AND
 					af.DeviceID!=".$this->DeviceID." AND
 					d.Cabinet=c.CabinetID AND
 					d.Cabinet<>".$cab." AND
-					c.CabRowID=".$cabrow->CabRowID." AND 
-					af.ConnectedDeviceID IS NULL".$mediaenforce." AND 
+					c.CabRowID=".$cabrow->CabRowID." AND
+					af.ConnectedDeviceID IS NULL".$mediaenforce." AND
 					d.DeviceType='Patch Panel' AND
 					af.PortNumber>0 AND
 					ar.DeviceID=af.DeviceID AND ar.PortNumber=-af.PortNumber AND
@@ -280,7 +280,7 @@ class PlannedPath {
 			foreach($dbh->query($sql) as $row){
 				//Compruebo si tengo que anadir esta pareja
 				//I check if I have to add this pair of nodes
-				if (isset($this->candidates[$row["DeviceID2"]]) 
+				if (isset($this->candidates[$row["DeviceID2"]])
 					&& $this->nodes[$row["DeviceID2"]][$this->candidates[$row["DeviceID2"]]]["weight"]>$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_row+$weight_rear
 					|| !isset($this->candidates[$row["DeviceID2"]]) && !isset($this->used_candidates[$row["DeviceID2"]])){
 					$this->AddNodeToList($row["DeviceID1"],-$row["PortNumber1"],$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_row,$this->DeviceID, $this->PortNumber);
@@ -296,13 +296,13 @@ class PlannedPath {
 		unset($this->candidates[$this->DeviceID]);
 		$this->used_candidates[$this->DeviceID]=true; //any value
 	}
-	
+
 	function MakePath () {
 		$this->MakeSafe();
-		
+
 		//reset PathError
 		$this->PathError=0;
-		
+
 		//check devices/ports
 		$device=new Device();
 		$device->DeviceID=$this->devID1;
@@ -347,17 +347,17 @@ class PlannedPath {
 			$this->PathError=8;  //dev2,port2 is connected
 			return False;
 		}
-		
+
 		//get dev2 info
 		$this->cab2=$device->GetDeviceCabinetID();  //cab2
 		$cabinet=new Cabinet();
 		$cabinet->CabinetID=$this->cab2;
 		$cabinet->GetCabinet();
 		$this->row2=$cabinet->CabRowID;	//row2
-		
+
 		//if dev2 is panel protected device (connected to rear connection of a panel)
 		$this->espejo2=($port2->ConnectedDeviceID>0 && $port2->ConnectedPort<0);
-		
+
 		@unlink('ppath.log');
 		$this->escribe_log("**** NEW PATH ****");
 		$this->escribe_log("DEV1: ID=".$this->devID1."  PORT=".$this->port1);
@@ -368,7 +368,7 @@ class PlannedPath {
 		$this->ClearPath();
 		//initiate list with device1, port1, weitgh=0, prev_dev=0, prev_port=0
 		$this->AddNodeToList($this->devID1, $this->port1, 0, 0, 0);
-		
+
 		while ($this->SelectNode()){
 			if ($this->DeviceID==$this->devID2){
 				$this->escribe_log("Target found. Making the PATH...");
@@ -396,7 +396,7 @@ class PlannedPath {
 		$this->PathError=9;  //not found
 		return false;
 	}
-	
+
 	function GotoHeadDevice () {
 	//Pone el objeto en el primer dispositivo del Path, si no lo es ya
 	//Places the object in the first device of Path, if not already
@@ -407,9 +407,9 @@ class PlannedPath {
 			return true;
 		}else {
 			return false;
-		} 
+		}
 	}
-	
+
 	function GotoNextDevice () {
 	//Pone el objeto con el DeviceID, PortNumber y Front del dispositivo siguiente en el path.
 	//Si el dispositivo actual del objeto no esta conectado a nada, devuelve "false" y el objeto no cambia
@@ -422,9 +422,9 @@ class PlannedPath {
 			return true;
 		}else {
 			return false;
-		} 
-		
+		}
+
 	}
-	
+
 }
 ?>

@@ -26,7 +26,7 @@
 	*cursor: hand;
 }
 
-button.ColVis_Button::-moz-focus-inner { 
+button.ColVis_Button::-moz-focus-inner {
 	border: none !important;
 	padding: 0;
 }
@@ -81,7 +81,7 @@ button.ColVis_Button {
 
 div.ColVis_collection button.ColVis_Button:hover {
 	border: 1px solid #999;
-	background-color: #f0f0f0; 
+	background-color: #f0f0f0;
 }
 
 span.ColVis_radio {

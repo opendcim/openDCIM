@@ -33,7 +33,7 @@ if ((!empty($_FILES) || isset($_POST['filename']) ) && $_POST['token'] == $verif
 	$uploadDir  = '..'.DIRECTORY_SEPARATOR.$uploadDir;
 	// if a filename is set then we're looking to remove it
 	if(empty($_FILES)){
-		if(!preg_match('/^(\.*)?(\/|\\\)/',$_POST['filename'])){	
+		if(!preg_match('/^(\.*)?(\/|\\\)/',$_POST['filename'])){
 			$targetFile=$uploadDir.DIRECTORY_SEPARATOR.$_POST['filename'];
 			unlink($targetFile);
 		}

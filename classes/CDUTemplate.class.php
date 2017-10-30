@@ -97,26 +97,26 @@ class CDUTemplate {
 
 		return $template;
 	}
-	
+
 	function GetTemplateList(){
 		global $dbh;
-		
-		$sql="SELECT a.* FROM fac_CDUTemplate a, fac_Manufacturer b WHERE 
+
+		$sql="SELECT a.* FROM fac_CDUTemplate a, fac_Manufacturer b WHERE
 			a.ManufacturerID=b.ManufacturerID ORDER BY b.Name ASC,a.Model ASC;";
-		
+
 		$tmpList=array();
 		foreach($dbh->query($sql) as $row){
 			$tmpList[]=CDUTemplate::RowToObject($row);
 		}
-		
+
 		return $tmpList;
 	}
-	
+
 	function GetTemplate(){
 		global $dbh;
 
 		$this->MakeSafe();
-		
+
 		$sql="SELECT * FROM fac_CDUTemplate WHERE TemplateID=$this->TemplateID";
 
 		if($row=$dbh->query($sql)->fetch()){
@@ -129,29 +129,29 @@ class CDUTemplate {
 			return false;
 		}
 	}
-	
+
 	function CreateTemplate($templateid) {
 		global $dbh;
 
 		$this->MakeSafe();
-		
-		$sql="INSERT INTO fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
+
+		$sql="INSERT INTO fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID,
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
-			VersionOID=\"$this->VersionOID\", 
-			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
+			VersionOID=\"$this->VersionOID\",
+			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\",
 			OID3=\"$this->OID3\", ATSStatusOID=\"$this->ATSStatusOID\", ATSDesiredResult=\"$this->ATSDesiredResult\",
-			ProcessingProfile=\"$this->ProcessingProfile\", 
+			ProcessingProfile=\"$this->ProcessingProfile\",
 			Voltage=$this->Voltage, Amperage=$this->Amperage, NumOutlets=$this->NumOutlets, TemplateID=$templateid";
-		
+
 		if(!$dbh->exec($sql)){
 			// A combination of this Mfg + Model already exists most likely
 			return false;
 		}
-		
+
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->TemplateID;
 	}
-	
+
 	function UpdateTemplate() {
 		global $dbh;
 
@@ -160,16 +160,16 @@ class CDUTemplate {
 		$oldtemplate=new CDUTemplate();
 		$oldtemplate->TemplateID=$this->TemplateID;
 		$oldtemplate->GetTemplate();
-		
-		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
+
+		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID,
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
-			VersionOID=\"$this->VersionOID\", 
-			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
+			VersionOID=\"$this->VersionOID\",
+			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\",
 			OID3=\"$this->OID3\", ATSStatusOID=\"$this->ATSStatusOID\", ATSDesiredResult=\"$this->ATSDesiredResult\",
-			ProcessingProfile=\"$this->ProcessingProfile\", 
+			ProcessingProfile=\"$this->ProcessingProfile\",
 			Voltage=$this->Voltage, Amperage=$this->Amperage, NumOutlets=$this->NumOutlets
 			WHERE TemplateID=$this->TemplateID;";
-		
+
 		if(!$dbh->query($sql)){
 			return false;
 		}else{
@@ -177,19 +177,19 @@ class CDUTemplate {
 			return true;
 		}
 	}
-	
+
 	function DeleteTemplate() {
 		global $dbh;
 
 		$this->MakeSafe();
-		
+
 		// First step is to clear any power strips referencing this template
 		$sql="UPDATE fac_PowerDistribution SET CDUTemplateID=0 WHERE TemplateID=$this->TemplateID;";
 		$dbh->query($sql);
-		
+
 		$sql="DELETE FROM fac_CDUTemplate WHERE TemplateID=$this->TemplateID;";
 		$dbh->exec($sql);
-		
+
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}

@@ -13,5 +13,5 @@
 		$tagList[]=$row[1];
 	}
 	header('Content-Type: application/json');
-	echo json_encode($tagList);  
+	echo json_encode($tagList);
 ?>

@@ -3,7 +3,7 @@
 	/*	Even though we're including these files in to an upstream index.php that already declares
 		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
 		included file.
-	
+
 		Framework v3 Specific
 
 	use Psr\Http\Message\ServerRequestInterface as Request;
@@ -14,7 +14,7 @@
   *
   *		API DELETE Methods go here
   *
-  *		DELETE Methods are for removing records 
+  *		DELETE Methods are for removing records
   *
   **/
 
@@ -22,7 +22,7 @@
 //
 //	URL:	/api/v1/powerport/:deviceid
 //	Method:	DELETE
-//	Params:	
+//	Params:
 //		required: DeviceID, PortNumber
 //		optional: Label, ConnectedDeviceID, ConnectedPort, Notes
 //	Returns:  true/false on update operation
@@ -95,7 +95,7 @@ $app->delete( '/colorcode/:colorid', function( $colorid ) use($person) {
 	} else {
 		$cc=new ColorCoding();
 		$cc->ColorID=$colorid;
-		
+
 		if(!$cc->DeleteCode()){
 			$r['error']=true;
 			$r['errorcode']=404;
@@ -119,7 +119,7 @@ $app->delete( '/colorcode/:colorid', function( $colorid ) use($person) {
 $app->delete( '/device/:deviceid', function( $deviceid ) {
 	$dev=new Device();
 	$dev->DeviceID=$args['deviceid'];
-	
+
 	if(!$dev->GetDevice()){
 		$r['error']=true;
 		$r['errorcode']=404;
@@ -146,9 +146,9 @@ $app->delete( '/device/:deviceid', function( $deviceid ) {
 //
 //	URL:	/api/v1/devicestatus/:statusid
 //	Method:	DELETE
-//	Params: 
+//	Params:
 //		Required: StatusID
-//	Returns: true/false on update operations 
+//	Returns: true/false on update operations
 //
 
 $app->delete( '/devicestatus/:statusid', function($statusid) use ($person) {

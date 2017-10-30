@@ -5,7 +5,7 @@
 
     require_once( "db.inc.php" );
     require_once( "facilities.inc.php" );
-    
+
     if(!$person->ReadAccess){
         // No soup for you.
         header('Location: '.redirect());
@@ -13,7 +13,7 @@
     }
 
     $subheader = __("Cabinet Report");
-    
+
     if (!isset($_REQUEST['action'])){
         $datacenter = new DataCenter();
         $dcList = $datacenter->GetDCList();
@@ -110,7 +110,7 @@
         foreach ( $cabList as $cab ) {
             print "<div><div><input type=\"checkbox\" class=\"selectedId\" id=\"selectedId\" name=\"cabinetid[]\" value=\"$cab->CabinetID\">$cab->Location</input></div></div>\n";
         }
-    }        
+    }
 ?>
 </div>
 </form>
@@ -321,7 +321,7 @@
                     $body.="\t\t<tr><td class=\"cabpos freespace\">$i</td><td class=\"freespace\" rowspan=$blankHeight>&nbsp;</td></tr>\n";
                 }else{
                     $body.="\t\t<tr><td class=\"cabpos freespace\">$i</td></tr>\n";
-                }                
+                }      
             }
         } else {
             for($i=$currentHeight;$i>0;$i--){
@@ -345,10 +345,10 @@
     $templ = new DeviceTemplate();
     $tempDept = new Department();
     $dc = new DataCenter();
-    
+
     $dc->DataCenterID = intval( $_REQUEST['datacenterid'] );
     $dc->GetDataCenter();
-    
+
     $skipNormal = false;
 
     if (isset( $_REQUEST["skipnormal"] ) ) {
@@ -360,7 +360,7 @@
     if ( count( $cabArray ) > 0 ) {
         // Need to build an array of Panel Objects (what we got from input was just the IDs)
         $cabList = array();
-        
+
         foreach ( $cabArray as $cabID ) {
             $cabCount = count( $cabList );
             $cabList[$cabCount] = new Cabinet();
@@ -384,7 +384,7 @@
         $devList=$dev->ViewDevicesByCabinet();
         $currentHeight=$cabinet->CabinetHeight;
         $cab_color=get_cabinet_owner_color($cabinet, $deptswithcolor);
-        
+
         if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
             $head.=".reserved{background-color: {$config->ParameterArray['ReservedColor']};}\n";
             $head.=".freespace{background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
@@ -393,7 +393,7 @@
         // these directly alter the $body variable
         // wrap it all in a table so both sides of a cabinet get on the same page
 
-        $body .= "<table style=\"border:0px;\" width=\"100%\"><tr><td width=\"50%\" align=\"center\">"; 
+        $body .= "<table style=\"border:0px;\" width=\"100%\"><tr><td width=\"50%\" align=\"center\">";
         MakeCabinet();
         $body .= "</td><td width=\"50%\" align=\"center\">";
         MakeCabinet("rear");

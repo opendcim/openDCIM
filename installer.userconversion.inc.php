@@ -81,7 +81,7 @@ class Contact {
 		}
 		return true;
 	}
-	
+
 	function GetContactByUserID(){
 		$sql="SELECT * FROM fac_Contact WHERE UserID=\"$this->UserID\";";
 
@@ -104,9 +104,9 @@ class Contact {
 		global $dbh;
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_Contact SET UserID=\"$this->UserID\", 
-			LastName=\"$this->LastName\", FirstName=\"$this->FirstName\", 
-			Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", Phone3=\"$this->Phone3\", 
+		$sql="INSERT INTO fac_Contact SET UserID=\"$this->UserID\",
+			LastName=\"$this->LastName\", FirstName=\"$this->FirstName\",
+			Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", Phone3=\"$this->Phone3\",
 			Email=\"$this->Email\";";
 
 		if($this->exec($sql)){
@@ -126,13 +126,13 @@ class Contact {
 		$oldcontact->ContactID=$this->ContactID;
 		$oldcontact->GetContactById();
 
-		$sql="UPDATE fac_Contact SET UserID=\"$this->UserID\", 
-			LastName=\"$this->LastName\", FirstName=\"$this->FirstName\", 
-			Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\",	Phone3=\"$this->Phone3\", 
+		$sql="UPDATE fac_Contact SET UserID=\"$this->UserID\",
+			LastName=\"$this->LastName\", FirstName=\"$this->FirstName\",
+			Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\",	Phone3=\"$this->Phone3\",
 			Email=\"$this->Email\" WHERE ContactID=$this->ContactID;";
-       
+
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldcontact):'';
-		$this->query($sql); 
+		$this->query($sql);
 		$this->MakeDisplay();
 	}
 	function DeleteContact(){
@@ -163,7 +163,7 @@ class Contact {
 
     /**
      * Return the list of all contacts indexed by ContactID
-     * 
+     *
      * @global PDO $dbh
      * @return (Contact)[]
      */
@@ -180,7 +180,7 @@ class Contact {
     }
 
 	function GetContactsForDepartment($DeptID){
-		$sql="SELECT a.* FROM fac_Contact a, fac_DeptContacts b WHERE 
+		$sql="SELECT a.* FROM fac_Contact a, fac_DeptContacts b WHERE
 			a.ContactID=b.ContactID AND b.DeptID=".intval($DeptID)." ORDER BY a.LastName ASC;";
 
 		$contactList=array();
@@ -199,7 +199,7 @@ class User {
 				access to the DCIM software, and are primary contacts for
 				assets located within the data center(s).
 	*/
-	
+
 	var $UserID;
 	var $Name;
 	var $AdminOwnDevices;
@@ -253,7 +253,7 @@ class User {
 		global $dbh;
 		return $dbh->query($sql);
 	}
-	
+
 	function exec($sql){
 		global $dbh;
 		return $dbh->exec($sql);
@@ -264,20 +264,20 @@ class User {
 		if ( $this->ReadAccess ) {
 			return true;
 		}
-		
+
 		if ( in_array( $Owner, $this->isMemberOf() ) ) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	function canWrite( $Owner ) {
 		// If the user has Global rights, don't wast compute cycles on more granular checks
 		if ( $this->WriteAccess ) {
 			return true;
 		}
-		
+
 		if ( in_array( $Owner, $this->isMemberOf() ) && $this->AdminOwnDevices ) {
 			return true;
 		} else {
@@ -287,7 +287,7 @@ class User {
 
 	function GetUserRights(){
 		$this->MakeSafe();
-		
+
 		/* Clear out all rights in case the object calling this has been called before */
 		foreach($this as $prop => $value){
 			if($prop!='Name' && $prop!='UserID'){
@@ -312,16 +312,16 @@ class User {
 				}
 			}
 		}
-		
+
 		return;
 	}
 
 	function GetUserList(){
 		/* Return an array of objects relating to all defined users. */
 		global $dbh;
-		
+
 		$sql="SELECT * FROM fac_User ORDER BY Name ASC;";
-		
+
 		$userList=array();
 		foreach($dbh->query($sql) as $row){
 			$userList[]=User::RowToObject($row);
@@ -329,11 +329,11 @@ class User {
 
 		return $userList;
 	}
-	
+
 	function isMemberOf(){
 		$this->GetUserRights();
-		
-		$sql="SELECT DeptID FROM fac_DeptContacts WHERE ContactID IN 
+
+		$sql="SELECT DeptID FROM fac_DeptContacts WHERE ContactID IN
 			(SELECT ContactID FROM fac_Contact WHERE UserID=\"$this->UserID\");";
 
 		$deptList=array();
@@ -351,11 +351,11 @@ class User {
 		global $dbh;
 
 		$this->MakeSafe();
-		
+
 		/* Create a user record based upon the current object attribute values. */
-		$sql="INSERT INTO fac_User VALUES (\"$this->UserID\", \"$this->Name\", 
-			$this->AdminOwnDevices, $this->ReadAccess, $this->WriteAccess, 
-			$this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin, 
+		$sql="INSERT INTO fac_User VALUES (\"$this->UserID\", \"$this->Name\",
+			$this->AdminOwnDevices, $this->ReadAccess, $this->WriteAccess,
+			$this->DeleteAccess, $this->ContactAdmin, $this->RackRequest, $this->RackAdmin,
 			$this->SiteAdmin, $this->Disabled);";
 
 		$this->MakeDisplay();
@@ -366,7 +366,7 @@ class User {
 
 	function UpdateUser(){
 		global $dbh;
-		
+
 		$this->MakeSafe();
 
 		$olduser=new User();
@@ -374,11 +374,11 @@ class User {
 		$olduser->GetUserRights();
 
 		/* Update a user record based upon the current object attribute values, with UserID as key. */
-		$sql="UPDATE fac_User SET Name=\"$this->Name\", ReadAccess=$this->ReadAccess, 
-			AdminOwnDevices=$this->AdminOwnDevices, WriteAccess=$this->WriteAccess, 
-			DeleteAccess=$this->DeleteAccess, ContactAdmin=$this->ContactAdmin, 
-			RackRequest=$this->RackRequest, RackAdmin=$this->RackAdmin, 
-			SiteAdmin=$this->SiteAdmin, Disabled=$this->Disabled 
+		$sql="UPDATE fac_User SET Name=\"$this->Name\", ReadAccess=$this->ReadAccess,
+			AdminOwnDevices=$this->AdminOwnDevices, WriteAccess=$this->WriteAccess,
+			DeleteAccess=$this->DeleteAccess, ContactAdmin=$this->ContactAdmin,
+			RackRequest=$this->RackRequest, RackAdmin=$this->RackAdmin,
+			SiteAdmin=$this->SiteAdmin, Disabled=$this->Disabled
 			WHERE UserID=\"$this->UserID\";";
 
 		$this->MakeDisplay();

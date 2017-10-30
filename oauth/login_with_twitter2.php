@@ -24,7 +24,7 @@
 
 	/*
 	 *  Set the grant_type to client_credentials to obtain application only authorization
-	 */ 
+	 */
 	$client->grant_type = 'client_credentials';
 
 	if(strlen($client->client_id) == 0
@@ -42,7 +42,7 @@
 			if(strlen($client->access_token))
 			{
 				$success = $client->CallAPI(
-					'https://api.twitter.com/1.1/users/show.json?screen_name=phpclasses', 
+					'https://api.twitter.com/1.1/users/show.json?screen_name=phpclasses',
 					'GET', array(), array('FailOnAccessError'=>true), $user);
 			}
 			else
@@ -62,7 +62,7 @@
 </head>
 <body>
 <?php
-		echo '<h1>Retrieved the Twitter profile of ', HtmlSpecialChars($user->name), 
+		echo '<h1>Retrieved the Twitter profile of ', HtmlSpecialChars($user->name),
 			' successfully!</h1>';
 		echo '<pre>', HtmlSpecialChars(print_r($user, 1)), '</pre>';
 ?>
