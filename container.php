@@ -96,6 +96,9 @@
 		$('#containerid').change(function(e){
 			location.href='container.php?containerid='+this.value;
 		});
+
+		$("#containerid").combobox();
+		$("#parentid").combobox();
 		$('#datacenterform').validationEngine({});
 		$('#drawingfilename').click(function(){
 			$("#imageselection").dialog({
@@ -158,7 +161,7 @@ print '		dialog.find("span + span").html("'.__("This container will be deleted a
 <?php echo '				',__("Yes"),': function(){'; ?>
 						$(this).dialog("destroy");
 						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
-						form.submit();
+							form.submit();
 					},
 <?php echo '				',__("No"),': function(){'; ?>
 						$(this).dialog("destroy");

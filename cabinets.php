@@ -202,6 +202,14 @@
 		// Init form
 		$('#datacenterid').trigger('change');
 
+		$("#cabinetid").combobox();
+		$("#datacenterid").combobox();
+		$("#assignedto").combobox();
+		$("#zoneid").combobox();
+		$("#cabrowid").combobox();
+
+		$('span.custom-combobox').width($('span.custom-combobox').width()+2);
+
 		$('#rackform').validationEngine({});
 		$('input[name="installationdate"]').datepicker({dateFormat: "yy-mm-dd"});
 		$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
@@ -232,7 +240,7 @@ echo '<div class="main">
 <div class="table">
 <div>
    <div>',__("Cabinet"),'</div>
-   <div><select name="cabinetid">
+   <div><select name="cabinetid" id="cabinetid">
    <option value=0>',__("New Cabinet"),'</option>';
 
 	foreach($cabList as $cabRow){
@@ -262,7 +270,7 @@ echo '		</select>
 </div>
 <div>
   <div>',__("Assigned To"),':</div>
-  <div><select name="assignedto">
+  <div><select name="assignedto" id="assignedto">
     <option value=0>',__("General Use"),'</option>';
 
 	foreach($deptList as $deptRow){
