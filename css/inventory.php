@@ -1062,6 +1062,8 @@ ul.nav li {padding: .5em;}
 
 /* Search Export */
 div.center div table#export { margin: auto; max-width: none; }
+#export_wrapper a.dt-button { margin-right: 0px; }
+
 
 /* Paths */
 /* Paths form */

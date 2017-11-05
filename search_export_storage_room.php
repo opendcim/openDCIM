@@ -173,9 +173,7 @@
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
-  <link rel="stylesheet" href="css/jquery.dataTables.css" type="text/css">
-  <link rel="stylesheet" href="css/ColVis.css" type="text/css">
-  <link rel="stylesheet" href="css/TableTools.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery.dataTables.min.css" type="text/css">
   <style type="text/css"></style>
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
@@ -183,19 +181,28 @@
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.dataTables.min.js"></script>
-  <script type="text/javascript" src="scripts/ColVis.min.js"></script>
-  <script type="text/javascript" src="scripts/TableTools.min.js"></script>
+  <script type="text/javascript" src="scripts/pdfmake.min.js"></script>
+  <script type="text/javascript" src="scripts/vfs_fonts.js"></script>
   
   <script type="text/javascript">
 	$(document).ready(function(){
 		var rows;
 		function dt(){
+			var title=$("#datacenterid option:selected").text() + ' export'
 			$('#export').dataTable({
-				"iDisplayLength": 25,
-				"sDom": 'CT<"clear">lfrtip',
-				"oTableTools": {
-					"sSwfPath": "scripts/copy_csv_xls.swf",
-					"aButtons": ["copy","csv","xls","print"]
+				dom: 'B<"clear">lfrtip',
+				buttons:{
+					buttons: [
+						'copy',
+						{
+							extend: 'excel',
+							title: title
+						},
+						{
+							extend: 'pdf',
+							title: title
+						},'csv', 'colvis', 'print'
+					]
 				}
 			});
 			redraw();
