@@ -270,15 +270,15 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 					rackhtmlright+='<div val='+ucount+' class="'+cssclass+'"></div>';
 				}
 				var rackhtml='<div class="table border positionselector"><div><div>'+rackhtmlleft+'</div><div>'+rackhtmlright+'</div></div></div>';
-				$('#positionselector').html(rackhtml);
+				$('#Positionselector').html(rackhtml);
 				setTimeout(function(){
 					var divwidth=$('.positionselector').width();
-					$('#positionselector').width(divwidth);
-					$('#CabinetID').focus(function(){$('#positionselector').css({'left': '-1000px'});});
-					$('#specialinstructions').focus(function(){$('#positionselector').css({'left': '-1000px'});});
-					$('#positionselector').css({'left':(($('#position').position().left)+(divwidth+20))});
-					$('#positionselector').mouseleave(function(){
-						$('#positionselector').css({'left': '-1000px'});
+					$('#Positionselector').width(divwidth);
+					$('#CabinetID').focus(function(){$('#Positionselector').css({'left': '-1000px'});});
+					$('#specialinstructions').focus(function(){$('#Positionselector').css({'left': '-1000px'});});
+					$('#Positionselector').css({'left':(($('#position').position().left)+(divwidth+20))});
+					$('#Positionselector').mouseleave(function(){
+						$('#Positionselector').css({'left': '-1000px'});
 					});
 					$('.positionselector > div > div + div > div').mouseover(function(){
 						$('.positionselector > div > div + div > div').each(function(){
@@ -308,7 +308,7 @@ print "			$('#deviceform').validationEngine({'custom_error_messages' : {
 									if(background=='green'){
 										$(this).click(function(){
 											$('#position').val($(this).attr('val'));
-											$('#positionselector').css({'left': '-1000px'});
+											$('#Positionselector').css({'left': '-1000px'});
 										});
 									}
 								}
@@ -337,7 +337,7 @@ echo '<div class="main">';
 if($error!=""){echo '<fieldset class="exception border error"><legend>Errors</legend>'.$error.'</fieldset>';}
 
 echo '<div class="center"><div>
-<div id="positionselector"></div>
+<div id="Positionselector"></div>
 <form name="deviceform" id="deviceform" action="',$_SERVER["SCRIPT_NAME"],$formfix,'" method="POST">
 	<input type="hidden" name="requestid" value="',$req->RequestID,'">';
 
