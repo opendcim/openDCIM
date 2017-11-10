@@ -99,7 +99,7 @@ class RackRequest {
 
     $sql="INSERT INTO fac_RackRequest SET RequestTime=now(), RequestorID=$this->RequestorID,
 		Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", MfgDate=\"$this->MfgDate\", 
-		AssetTag=\"$this->AssetTag\", Hypervisor=$this->Hypervisor, Owner=$this->Owner, 
+		AssetTag=\"$this->AssetTag\", Hypervisor=\"$this->Hypervisor\", Owner=$this->Owner, 
 		DeviceHeight=\"$this->DeviceHeight\", EthernetCount=$this->EthernetCount, 
 		VLANList=\"$this->VLANList\", SANCount=$this->SANCount, SANList=\"$this->SANList\",
 		DeviceClass=\"$this->DeviceClass\", DeviceType=\"$this->DeviceType\",
@@ -221,7 +221,7 @@ class RackRequest {
 
     $sql="UPDATE fac_RackRequest SET RequestTime=now(), RequestorID=$this->RequestorID,
 		Label=\"$this->Label\", SerialNo=\"$this->SerialNo\", MfgDate=\"$this->MfgDate\", 
-		AssetTag=\"$this->AssetTag\", Hypervisor=$this->Hypervisor, Owner=$this->Owner, 
+		AssetTag=\"$this->AssetTag\", Hypervisor=\"$this->Hypervisor\", Owner=$this->Owner, 
 		DeviceHeight=\"$this->DeviceHeight\", EthernetCount=$this->EthernetCount, 
 		VLANList=\"$this->VLANList\", SANCount=$this->SANCount, SANList=\"$this->SANList\",
 		DeviceClass=\"$this->DeviceClass\", DeviceType=\"$this->DeviceType\",

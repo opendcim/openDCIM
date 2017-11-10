@@ -3,7 +3,7 @@
 	require_once( 'facilities.inc.php' );
 
 	$subheader=__("Data Center Rack Request");
-	
+
 	if($config->ParameterArray["RackRequests"] != "enabled" || !$person->RackRequest){
 		// No soup for you.
 		header('Location: '.redirect());
@@ -18,6 +18,8 @@
 	$tmpContact=new People();
 	$formfix=$error='';	
 	$contactList=$person->GetUserList();
+	# defaulting to None
+	$validHypervisors=array( "None", "ESX", "ProxMox");
 
 	//We only need to worry about sending email in the event this is a new submission and no other time.
 	if(isset($_POST["action"])){
@@ -95,6 +97,8 @@
 			$req->SpecialInstructions=$_POST['specialinstructions'];
 
 			$req->CreateRequest();
+			$contact->PersonID=$req->RequestorID;
+			$contact->GetPerson();
 
 			$htmlMessage.="<p>".sprintf(__('Your request for racking up the device labeled %1$s has been received.
 			The Network Operations Center will examine the request and contact you if more information is needed
@@ -381,10 +385,13 @@ echo '			</select>
 		<div><input type="text" name="assettag" id="assettag" size="20" value="',$req->AssetTag,'"></div>
 	</div>
 	<div>
-		<div><label for="esx">',__("ESX Server?"),'</label></div>
-		<div><select name="esx" id="esx">
-			<option value="1"'.(($req->Hypervisor)?' selected':'').'>',__("True"),'</option>
-			<option value="0"'.((!$req->Hypervisor)?' selected':'').'>',__("False"),'</option>
+		<div><label for="Hypervisor">',__("Hypervisor?"),'</label></div>
+		<div><select name="hypervisor" id="hypervisor">';
+	foreach($validHypervisors as $h){
+		$selected=($req->Hypervisor==$h)?" selected":"";
+		print "\t\t\t<option value=\"$h\" $selected>$h</option>\n";
+	}
+echo '
 		</select></div>
 	</div>
 	<div>
