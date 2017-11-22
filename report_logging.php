@@ -154,14 +154,24 @@ if(isset($_POST['refresh'])){
 
 	function dt(rows){
 		var num_rows=(typeof rows=="undefined")?25:rows;
+		var title='action_log'
 		$('#export').dataTable({
 			"iDisplayLength": num_rows,
-			"sDom": 'CT<"clear">lfrtip',
 			"order": [[ 0, 'desc' ]],
 			"columnDefs": [{"width": "115px", "targets": 0}],
-			"oTableTools": {
-				"sSwfPath": "scripts/copy_csv_xls.swf",
-				"aButtons": ["copy","csv","xls","print"]
+			dom: 'B<"clear">lfrtip',
+			buttons:{
+				buttons: [
+					'copy',
+					{
+						extend: 'excel',
+						title: title
+					},
+					{
+						extend: 'pdf',
+						title: title
+					},'csv', 'colvis', 'print'
+				]
 			}
 		});
 		resize();
