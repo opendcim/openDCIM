@@ -310,6 +310,24 @@ class LogActions {
 
 	// This is only gonna be used for sanitizing data used for searching
 	function MakeSafe(){
+		// Nasty hack to load all of our classes so the make safe can function correctly
+		// and the get_declared_classes will list all of our classes and not just what
+		// the autoloader has declared available
+		$res=get_declared_classes();
+		$autoloaderClassName='';
+		foreach($res as $className){
+			if(strpos($className,'ComposerAutoloaderInit')===0){
+				$autoloaderClassName = $className;
+				break;
+			}
+		}
+		$classLoader=$autoloaderClassName::getLoader();
+		foreach($classLoader->getClassMap() as $path){
+			if(!strpos($path, 'vendor') >0){
+				require_once $path;
+			}
+		}
+
 		$p=new People();
 		// If we want to really sanitize this list uncomment the function below
 //		$this->UserID=(ArraySearchRecursive($this->UserID,$p->GetUserList(),'UserID'))?$this->UserID:'';
