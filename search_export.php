@@ -56,8 +56,8 @@
 			\t<th>".__("Template")."</th>
 			\t<th>".__("Tags")."</th>
 			\t<th>".__("Owner")."</th>
-			\t<th>".__("Installation Date")."</th>
 			\t<th>".__("Warranty Expiration")."</th>
+			\t<th>".__("Installation Date")."</th>
 			{$ca_headers}
 			</tr>\n\t</thead>\n\t<tbody>\n";
 
