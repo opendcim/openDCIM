@@ -56,7 +56,7 @@ if (php_sapi_name()!="cli" && !isset($_GET["stage"])) {
   <![endif]-->
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/common.js?v<?php echo filemtime('scripts/common.js');?>"></script>
   <script type="text/javascript" src="scripts/gauge.min.js"></script>
 
 <SCRIPT type="text/javascript" >

@@ -44,7 +44,7 @@
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.uploadifive.js"></script>
-  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/common.js?v<?php echo filemtime('scripts/common.js');?>"></script>
 </head>
 <body>
 <?php include( 'header.inc.php' ); ?>

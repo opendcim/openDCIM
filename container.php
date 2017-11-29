@@ -89,7 +89,7 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
-  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/common.js?v<?php echo filemtime('scripts/common.js');?>"></script>
 
   <script type="text/javascript">
 	$(document).ready(function() {

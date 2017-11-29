@@ -163,7 +163,7 @@ $(document).ready(function() {
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/common.js?v<?php echo filemtime('scripts/common.js');?>"></script>
   <script type="text/javascript" src="scripts/jquery.ui-contextmenu.js"></script>
   <script type="text/javascript">
   	var js_outlinecabinets = <?php print $config->ParameterArray["OutlineCabinets"] == 'enabled'?1:0; ?>;
