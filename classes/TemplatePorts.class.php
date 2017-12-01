@@ -102,11 +102,13 @@ class TemplatePorts {
 		
 		$this->MakeSafe();
 
-		$sql="INSERT INTO fac_TemplatePorts SET TemplateID=$this->TemplateID, PortNumber=$this->PortNumber, 
-			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
-			Notes=\"$this->Notes\";";
-			
-		if(!$dbh->query($sql)){
+		$st = $dbh->prepare( "insert into fac_TemplatePorts set TemplateID=:TemplateID, PortNumber=:PortNumber, Label=:Label, MediaID=:MediaID, ColorID=:ColorID, Notes=:Notes" );
+		if ( ! $st->execute( array( ":TemplateID"=>$this->TemplateID,
+							":PortNumber"=>$this->PortNumber,
+							":Label"=>$this->Label,
+							":MediaID"=>$this->MediaID,
+							":ColorID"=>$this->ColorID,
+							":Notes"=>$this->Notes )) ) {
 			$info=$dbh->errorInfo();
 
 			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
