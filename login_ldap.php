@@ -38,6 +38,7 @@
 
       if ( ! $ldapBind ) {
         $content = "<h3>Login failed.  Incorrect username, password, or rights.</h3>";
+        error_log( __("Unable to bind to specified LDAP server with specified username/password.  Username:") . $ldapUser );
       } else {
         // User was able to authenticate, but might not have authorization to access openDCIM.  Here we check for those rights.
         /* If this install doesn't have the new parameter, use the old default */
@@ -69,6 +70,9 @@
             $_SESSION['userid'] = $ldapUser;
             $_SESSION['LoginTime'] = time();
             session_commit();
+            error_log( __("LDAP authentication successful, granted site access based on required group membership.  Username:") . $ldapUser);
+          } else {
+            error_log( __("LDAP authentication successful, but access denied based on lacking group membership.  Username:") . $ldapUser);
           }
 
           if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPReadAccess'] ) {
@@ -137,6 +141,7 @@
           exit;
         } else {
           $content .= "<h3>Login failed.  Incorrect username, password, or rights.</h3>";
+          error_log( __("LDAP Authentication failed for username:") . $ldapUser);
         }
 
       }
