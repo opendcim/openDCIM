@@ -26,15 +26,22 @@
 		$cabinets=array_reverse($cabinets);
 	}
 
+	// Set up the classes for color coding based upon status
+	$dsList=DeviceStatus::getStatusList();
+
+	$head.="		<style type=\"text/css\">\n";
+	foreach($dsList as $stat){
+		if($stat->ColorCode != "#FFFFFF"){
+			$stName=str_replace(' ','_',$stat->Status);
+			$important=($stName == 'Reserved')?' !important':'';
+
+			$head.="\t\t\t.$stName {background-color: {$stat->ColorCode}$important;}\n";
+		}
+	}
+
 	//start loop to parse all cabinets in the row
 	foreach($cabinets as $index => $cabinet){
 		$currentHeight=$cabinet->CabinetHeight;
-
-		if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
-			$head.="		<style type=\"text/css\">
-			.reserved{background-color: {$config->ParameterArray['ReservedColor']} !important;}
-			.freespace{background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
-		}
 
 		$side=null;
 		if($frontedge=="Top" || $frontedge=="Bottom"){
