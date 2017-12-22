@@ -155,38 +155,51 @@ function editnotes(button){
 	button.val('preview').text('Preview');
 	var a=button.next('div');
 	button.next('div').remove();
-	button.next('textarea').htmlarea({
-		toolbar: [
-		"link", "unlink", "image"
-		],
-		css: 'css/jHtmlArea.Editor.css'
+	button.next('textarea').jqte({
+		b: false,
+		i: false,
+		center: false,
+		color: false,
+		fsize: false,
+		format: false,
+		indent: false,
+		link: true,
+		left: false,
+		ol: false,
+		outdent: false,
+		p: false,
+		remove: false,
+		right: false,
+		rule: false,
+		source: false,
+		status: true,
+		sub: false,
+		strike: false,
+		sup: false,
+		title: false,
+		u: false,
+		ul: false
 	});
-	$('.jHtmlArea div iframe').height(a.innerHeight());
+	$('.jqte').show();
+	resize();
 }
 
 function rendernotes(button){
 	button.val('edit').text('Edit');
 	var w=button.next('div').outerWidth();
-	var h=$('.jHtmlArea').outerHeight();
+	var h=$('.jqte').outerHeight();
 	if(h>0){
 		h=h+'px';
 	}else{
 		h="auto";
 	}
-	$('#Notes,#notes').htmlarea('dispose');
+	$('.jqte').hide();
 	button.after('<div id="preview">'+$('#Notes,#notes').val()+'</div>');
 	button.next('div').css({'width': w+'px', 'height' : h}).find('a').each(function(){
 		$(this).attr('target', '_new');
 	});
 	$('#Notes,#notes').html($('#Notes,#notes').val()).hide(); // we still need this field to submit it with the form
-	h=0; // recalculate height in case they added an image that is gonna hork the layout
-	// need a slight delay here to allow the load of large images before the height calculations are done
-	setTimeout(function(){
-		$('#preview').find("*").each(function(){
-			h+=$(this).outerHeight();
-		});
-		$('#preview').height(h);
-	},2000);
+	resize();
 }
 
 /*!
@@ -243,8 +256,10 @@ $(document).ready(function(){
 	$('#Notes,#notes').each(function(){
 		$(this).before('<button type="button" id="editbtn"></button>');
 		if($(this).val()!=''){
+console.log('calling rendernotes');
 			rendernotes($('#editbtn'));
 		}else{
+console.log('calling editnotes');
 			editnotes($('#editbtn'));
 		}
 	});

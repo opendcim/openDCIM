@@ -838,7 +838,6 @@ div.cabinet {
 #editbtn { display: block; margin-bottom: 5px;}
 #preview { width: 340px; min-height: 130px; background-color: white; border: 1px solid grey; padding: 5px;}
 #preview img { display: block; border: 0px; max-width: 330px;}
-.jHtmlArea iframe { background-color: white; border: 1px inset; min-height: 100px;}
 
 /* hey I do something function */
 .wade{
