@@ -256,10 +256,8 @@ $(document).ready(function(){
 	$('#Notes,#notes').each(function(){
 		$(this).before('<button type="button" id="editbtn"></button>');
 		if($(this).val()!=''){
-console.log('calling rendernotes');
 			rendernotes($('#editbtn'));
 		}else{
-console.log('calling editnotes');
 			editnotes($('#editbtn'));
 		}
 	});
