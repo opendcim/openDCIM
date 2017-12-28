@@ -854,6 +854,7 @@ INSERT INTO fac_Config VALUES
   ('LDAPServer', 'localhost', 'URI', 'string', 'localhost'),
   ('LDAPBaseDN', 'dc=opendcim,dc=org', 'DN', 'string', 'dc=opendcim,dc=org'),
   ('LDAPBindDN', 'cn=%userid%,ou=users,dc=opendcim,dc=org', 'DN', 'string', 'cn=%userid%,ou=users,dc=opendcim,dc=org'),
+  ('LDAPBindPassword', '', 'Password', 'string', ''),
   ('LDAPBaseSearch', '(&(objectClass=posixGroup)(memberUid=%userid%))', 'DN', 'string', '(&(objectClass=posixGroup)(memberUid=%userid%))'),
   ('LDAPUserSearch', '(|(uid=%userid%))', 'DN', 'string', '(|(uid=%userid%))'),
   ('LDAPSessionExpiration', '0', 'Seconds', 'int', '0'),

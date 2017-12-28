@@ -5,7 +5,7 @@
 	// Not really a loginPage, but this variable will keep us from getting redirected when
 	// using LDAP auth and there's no session (so true RESTful API capability)
 	//
-	if ( AUTHENTICATION == "LDAP" ) {
+	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD") {
 		$loginPage = true;
 	}
 

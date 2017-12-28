@@ -3,6 +3,12 @@
 
 /* Create a quick reference for datacenter data */
 $_SESSION['datacenters']=DataCenter::GetDCList(true);
+$AUTH_SCRIPT = '';
+if ( AUTHENTICATION == 'LDAP' ) {
+  $AUTH_SCRIPT = 'login_ldap.php';
+} else if ( AUTHENTICATION == 'AD' ) {
+  $AUTH_SCRIPT = 'login_ad.php';
+}
 
 /* Generic html sanitization routine */
 
@@ -12,7 +18,7 @@ if(!function_exists("sanitize")){
 		if ( is_null($string) ) {
 			$string = "";
 		}
-		
+
 		// Trim any leading or trailing whitespace
 		$clean=trim($string);
 
@@ -24,7 +30,7 @@ if(!function_exists("sanitize")){
 
 		// Strip out the shit we don't allow
 		$clean=strip_tags($clean, $allowedtags);
-		// If we decide to strip double quotes instead of encoding them uncomment the 
+		// If we decide to strip double quotes instead of encoding them uncomment the
 		//	next line
 	//	$clean=($stripall)?str_replace('"','',$clean):$clean;
 		// What is this gonna do ?
@@ -45,7 +51,7 @@ if (!function_exists('curl_file_create')) {
     }
 }
 
-/* 
+/*
 Regex to make sure a valid URL is in the config before offering options for contact lookups
 http://www.php.net/manual/en/function.preg-match.php#93824
 
@@ -60,7 +66,7 @@ function isValidURL($url){
 	$urlregex.="(\:[0-9]{2,5})?"; // Port
 	$urlregex.="(\/([a-z0-9+\$_-]\.?)+)*\/?"; // Path
 	$urlregex.="(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?"; // GET Query
-	$urlregex.="(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor 
+	$urlregex.="(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor
 // Testing out the php url validation, leaving the regex for now
 //	if(preg_match("/^$urlregex$/",$url)){return true;}
 	return filter_var($url, FILTER_VALIDATE_URL);
@@ -187,7 +193,7 @@ function sort2d ($array, $index){
 	//Rebuild original array using the newly sorted order.
 	foreach(array_keys($temp) as $key){$sorted[$key]=$array[$key];}
 	return $sorted;
-}  
+}
 /*
  * Sort multidimentional array in reverse order
  *
@@ -201,7 +207,7 @@ function arsort2d ($array, $index){
 	//Rebuild original array using the newly sorted order.
 	foreach(array_keys($temp) as $key){$sorted[$key]=$array[$key];}
 	return $sorted;
-}  
+}
 
 /*
  * Extend sql queries
@@ -724,7 +730,7 @@ if(!function_exists("buildNavTreeArray")){
 }
 
 // This will format the array above into the format needed for the side bar navigation
-// menu. 
+// menu.
 if(!function_exists("buildNavTreeHTML")){
 	function buildNavTreeHTML($menu=null){
 		$tl=1; //tree level
@@ -794,7 +800,7 @@ if(!function_exists("buildNavTreeHTML")){
 
 
 /*
-	Check if we are doing a new install or an upgrade has been applied.  
+	Check if we are doing a new install or an upgrade has been applied.
 	If found then force the user into only running that function.
 
 	To bypass the installer check from running, simply add
@@ -836,16 +842,16 @@ if( AUTHENTICATION=="Oauth" && !isset($_SESSION['userid']) && php_sapi_name()!="
 // Just to keep things from getting extremely wonky and complicated, even though this COULD be in one giant
 // if/then/else stanza, I'm breaking it into two
 
-if( AUTHENTICATION=="LDAP" && $config->ParameterArray["LDAPSessionExpiration"] > 0 && isset($_SESSION['userid']) && ((time() - $_SESSION['LoginTime']) > $config->ParameterArray['LDAPSessionExpiration'])) {
+if( (AUTHENTICATION=="LDAP" || AUTHENTICATION == "AD") && $config->ParameterArray["LDAPSessionExpiration"] > 0 && isset($_SESSION['userid']) && ((time() - $_SESSION['LoginTime']) > $config->ParameterArray['LDAPSessionExpiration'])) {
 	session_unset();
 	session_destroy();
 	session_start();
 }
 
-if( AUTHENTICATION=="LDAP" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)) {
+if( (AUTHENTICATION=="LDAP" || AUTHENTICATION == "AD") && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)) {
 	$savedurl = $_SERVER['SCRIPT_NAME'] . "?" . $_SERVER['QUERY_STRING'];
 	setcookie( 'targeturl', $savedurl, time()+60 );
-	header("Location: ".redirect('login_ldap.php'));
+  header("Location: ".redirect($AUTH_SCRIPT));
 	exit;
 }
 
@@ -857,8 +863,8 @@ if(!People::Current()){
 	} elseif ( AUTHENTICATION=="Saml"){
 		header("Location: ".redirect('saml/login.php'));
 		exit;
-	} elseif ( AUTHENTICATION=="LDAP" && !isset($loginPage) ) {
-		header("Location: ".redirect('login_ldap.php'));
+	} elseif ( (AUTHENTICATION=="LDAP" || AUTHENTICATION=="AD") && !isset($loginPage) ) {
+		header("Location: ".redirect($AUTH_SCRIPT));
 		exit;
 	} elseif(AUTHENTICATION=="Apache"){
 		print "<h1>You must have some form of Authentication enabled to use openDCIM.</h1>";
@@ -880,10 +886,10 @@ if(($person->Disabled || ($person->PersonID==0 && $person->UserID!="cli_admin"))
 	exit;
 }
 
-/* 
+/*
  * This is an attempt to be sane about the rights management and the menu.
  * The menu will be built off a master array that is a merger of what options
- * the user has available.  
+ * the user has available.
  *
  * Array structure:
  * 	[]->Top Level Menu Item
@@ -941,12 +947,12 @@ if ( $person->SiteAdmin ) {
 	$samenu[__("Path Connections")][]='<a href="pathmaker.php"><span>'.__("Make Path Connection").'</span></a>';
 	$samenu[]='<a href="configuration.php"><span>'.__("Edit Configuration").'</span></a>';
 }
-if( AUTHENTICATION == "LDAP" ) {
+if((AUTHENTICATION=="LDAP" || AUTHENTICATION == "AD")) {
 	// Clear out the Reports menu button and create the Login menu button when not logged in
 	if ( isset($loginPage) ) {
 		$rmenu = array();
 	}
-	$lmenu[]='<a href="login_ldap.php?logout"><span>'.__("Logout").'</span></a>';
+	$lmenu[]='<a href="'.$AUTH_SCRIPT.'?logout"><span>'.__("Logout").'</span></a>';
 }
 
 function download_file($archivo, $downloadfilename = null) {
@@ -980,7 +986,7 @@ function download_file_from_string($string, $downloadfilename) {
 }
 
 /*
- * In an attempt to keep html generation out of the primary class definitions 
+ * In an attempt to keep html generation out of the primary class definitions
  * this function is being put here to make a quick convenient method of drawing
  * racks.  This will NOT put the devices in the rack.
  *
