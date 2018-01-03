@@ -204,7 +204,7 @@
        *  Section for looking up the Row by DataCenterID + name and setting the true RowID
        *
        */
-      if ( $row["Row"] !- "" ) {
+      if ( $row["Row"] != "" ) {
         $st = $dbh->prepare( "select count(*) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ucase(Name)=ucase(:Row)" );
         $st->execute( array( ":DataCenterID"=>$cab->DataCenterID, ":Row"=>$row["Row"] ));
         if ( ! $val = $st->fetch() ) {
