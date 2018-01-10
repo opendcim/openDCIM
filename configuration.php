@@ -1682,24 +1682,8 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Online Repository"),'</h3>
-			<h5><u>',__("Default Behavior for Site (Can Override Per Template)"),'</u></h5>
+			<h5>',__("UserID and Key are not needed to pull from the repository, only to send."),'</h5>
 			<div class="table" id="repository">
-				<div>
-					<div><label for="ShareToRepo">',__("Share your templates to the repository"),'</label></div>
-					<div><select name="ShareToRepo" id="ShareToRepo" defaultvalue="',$config->defaults["ShareToRepo"],'" data="',$config->ParameterArray["ShareToRepo"],'">
-						<option value="disabled">',__("Disabled"),'</option>
-						<option value="enabled">',__("Enabled"),'</option>
-						</select>
-					</div>
-				</div>
-				<div>
-					<div><label for="keep_local">',__("Keep local values when synchronizing"),'</label></div>
-					<div><select name="KeepLocal" id="KeepLocal" defaultvalue="',$config->defaults["KeepLocal"],'" data="',$config->ParameterArray["KeepLocal"],'">
-						<option value="disabled">',__("Disabled"),'</option>
-						<option value="enabled">',__("Enabled"),'</option>
-						</select>
-					</div>
-				</div>
 				<div>
 					<div><label for="APIUserID">',__("API UserID"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["APIUserID"],'" name="APIUserID" value="',$config->ParameterArray["APIUserID"],'"></div>

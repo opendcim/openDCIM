@@ -40,8 +40,6 @@ class DeviceTemplate {
 	var $SNMPVersion;
 	var $CustomValues;
 	var $GlobalID;
-	var $ShareToRepo;
-	var $KeepLocal;
     
 	public function __construct($dtid=false){
 		if($dtid){
@@ -73,8 +71,6 @@ class DeviceTemplate {
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
 		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:$config->ParameterArray["SNMPVersion"];
 		$this->GlobalID=intval($this->GlobalID);
-		$this->ShareToRepo=intval($this->ShareToRepo);
-		$this->KeepLocal=intval($this->KeepLocal);
 	}
 
 	function MakeDisplay(){
@@ -102,8 +98,6 @@ class DeviceTemplate {
 		$Template->RearChassisSlots=$row["RearChassisSlots"];
 		$Template->SNMPVersion=$row["SNMPVersion"];
 		$Template->GlobalID = $row["GlobalID"];
-		$Template->ShareToRepo = $row["ShareToRepo"];
-		$Template->KeepLocal = $row["KeepLocal"];
         $Template->MakeDisplay();
 		$Template->GetCustomValues();
 
@@ -143,12 +137,7 @@ class DeviceTemplate {
 		global $dbh;
 		return $dbh->prepare( $sql );
 	}
-	
-	function clearShareFlag() {
-		$st = $this->prepare( "update fac_DeviceTemplate set ShareToRepo=0 where TemplateID=:TemplateID" );
-		$st->execute( array( ":TemplateID"=>$this->TemplateID ) );
-	}
-	
+		
 	function CreateTemplate(){
 		global $dbh;
 		
@@ -160,7 +149,7 @@ class DeviceTemplate {
 			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
 			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
 			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\",
-			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal;";
+			GlobalID=$this->GlobalID;";
 
 		if(!$dbh->exec($sql)){
 			error_log( "SQL Error: " . $sql );
@@ -203,7 +192,7 @@ class DeviceTemplate {
 			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
 			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
 			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\",
-			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal
+			GlobalID=$this->GlobalID
 			WHERE TemplateID=$this->TemplateID;";
 
 		$old=new DeviceTemplate();
@@ -319,8 +308,6 @@ class DeviceTemplate {
 		$this->RearChassisSlots=0;
 		$this->SNMPVersion="";
 		$this->GlobalID=0;
-		$this->ShareToRepo=false;
-		$this->KeepLocal=false;
 		// Reset object in case of a lookup failure
 		//foreach($this as $prop => $value){
 		//	$value=($prop!='TemplateID')?null:$value;
@@ -366,17 +353,6 @@ class DeviceTemplate {
 			$templateList[]=DeviceTemplate::RowToObject($row);
 		}
 
-		return $templateList;
-	}
-
-	function GetTemplateShareList() {
-		$sql = "select * from fac_DeviceTemplate where ManufacturerID in (select ManufacturerID from fac_Manufacturer where GlobalID>0) and ShareToRepo=true order by ManufacturerID ASC";
-		
-		$templateList = array();
-		foreach( $this->query($sql) as $row ) {
-			$templateList[]=DeviceTemplate::RowToObject($row);
-		}
-		
 		return $templateList;
 	}
 
