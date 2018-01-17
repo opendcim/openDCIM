@@ -154,21 +154,6 @@ if(!function_exists("ldap_escape")){
           }
         }
 
-        // Now get some more info about the user
-        // Insert the default 4.2 UserSearch string in case this is an upgrade instance
-        if ( ! isset($config->ParameterArray['LDAPUserSearch'])) {
-          $config->ParameterArray['LDAPUserSearch'] = "(|(uid=%userid%))";
-        }
-        $userSearch = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPUserSearch']));
-        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $userSearch );
-        $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
-
-        // These are standard schema items, so they aren't configurable
-        // However, suppress any errors that may crop up from not finding them
-        $person->FirstName = @$ldapResults[0]['givenname'][0];
-        $person->LastName = @$ldapResults[0]['sn'][0];
-        $person->Email = @$ldapResults[0]['mail'][0];
-
         if ( isset($_SESSION['userid']) ) {
           if ( $person->PersonID > 0 ) {
             $person->UpdatePerson();
