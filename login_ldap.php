@@ -107,7 +107,7 @@ if(!function_exists("ldap_escape")){
           //
           // So, here we are with a ton of if/then statements.
 
-          if ( $config->ParameterArray['LDAPSiteAccess'] == "" || $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPSiteAccess'] ) {
+          if ( $config->ParameterArray['LDAPSiteAccess'] == "" || !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPSiteAccess']) ) {
             // No specific group membership required to access openDCIM or they have a match to the group required
             $_SESSION['userid'] = $ldapUser;
             $_SESSION['LoginTime'] = time();
@@ -117,39 +117,39 @@ if(!function_exists("ldap_escape")){
             error_log( __("LDAP authentication successful, but access denied based on lacking group membership.  Username:") . $ldapUser);
           }
 
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPReadAccess'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'],$config->ParameterArray['LDAPReadAccess'])) {
               $person->ReadAccess = true;
           }
           
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPWriteAccess'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPWriteAccess'] )) {
               $person->WriteAccess = true;
           }
 
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPDeleteAccess'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPDeleteAccess'] )) {
               $person->DeleteAccess = true;
           }
           
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPAdminOwnDevices'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPAdminOwnDevices'] )) {
               $person->AdminOwnDevices = true;
           }
           
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPRackRequest'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPRackRequest'] )) {
               $person->RackRequest = true;
           }
           
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPRackAdmin'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPRackAdmin'] )) {
               $person->RackAdmin = true;
           }
           
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPContactAdmin'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPContactAdmin'] )) {
               $person->ContactAdmin = true;
           }
           
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPBulkOperations'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPBulkOperations'] )) {
               $person->BulkOperations = true;
           }
 
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPSiteAdmin'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPSiteAdmin'] )) {
               $person->SiteAdmin = true;
           }
         }
