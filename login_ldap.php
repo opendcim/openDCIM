@@ -82,7 +82,7 @@ if(!function_exists("ldap_escape")){
 
         // These are standard schema items, so they aren't configurable
         // However, suppress any errors that may crop up from not finding them
- 	 $found_dn = @$ldapResults[0]['cn'][0];
+	$found_dn = @$ldapResults[0]['cn'][0];
         $person->FirstName = @$ldapResults[0]['givenname'][0];
         $person->LastName = @$ldapResults[0]['sn'][0];
         $person->Email = @$ldapResults[0]['mail'][0];
