@@ -1,5 +1,30 @@
 <?php
 
+
+if(!function_exists("ldap_escape")){
+	function ldap_escape($str = '') {
+		$metaChars = array(
+			chr(0x5c), // \
+			chr(0x2a), // *
+			chr(0x28), // (
+			chr(0x29), // )
+			chr(0x00) // NUL
+		);
+
+		// Build the list of the escaped versions of those characters.
+		$quotedMetaChars = array ();
+		foreach ($metaChars as $key => $value) {
+			$quotedMetaChars[$key] = '\\' .
+			str_pad(dechex(ord($value)), 2, '0', STR_PAD_LEFT);
+		}
+
+		// Make all the necessary replacements in the input string and return
+		// the result.
+		return str_replace($metaChars, $quotedMetaChars, $str);
+	}
+}
+
+
   // Set a variable so that misc.inc.php knows not to throw us into an infinite redirect loop
   $loginPage = true;
 
@@ -30,9 +55,9 @@
       ldap_set_option( $ldapConn, LDAP_OPT_PROTOCOL_VERSION, 3 );
       ldap_set_option( $ldapConn, LDAP_OPT_REFERRALS, 0 );
 
-      $ldapUser = htmlspecialchars($_POST['username']);
+      $ldapUser = ldap_escape(htmlspecialchars($_POST['username']));
       $ldapDN = str_replace( "%userid%", $ldapUser, $config->ParameterArray['LDAPBindDN']);
-      $ldapPassword = $_POST['password'];
+      $ldapPassword = ldap_escape($_POST['password']);
 
       $ldapBind = ldap_bind( $ldapConn, $ldapDN, $ldapPassword );
 
