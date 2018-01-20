@@ -23,6 +23,16 @@ DELETE FROM fac_Config WHERE Parameter='ShareToRepo';
 DELETE FROM fac_Config WHERE Parameter='KeepLocal';
 
 --
+-- Create a table for things that we want to cache, such as the Navigation Menu
+--
+
+CREATE TABLE fac_DataCache (
+	ItemType varchar(80) not null,
+	Value text not null, primary key (ItemType)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 

@@ -170,7 +170,9 @@ class Cabinet {
 		}else{
 			$this->CabinetID=$dbh->lastInsertID();
 		}
-		
+
+		updateNavTreeHTML();
+				
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->CabinetID;
 	}
@@ -202,6 +204,8 @@ class Cabinet {
 			return false;
 		}
 
+		updateNavTreeHTML();
+				
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 		return true;
 	}
@@ -481,6 +485,8 @@ class Cabinet {
 			return false;
 		}
 	
+		updateNavTreeHTML();
+				
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}

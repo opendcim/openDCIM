@@ -68,6 +68,9 @@ class CabRow {
 			DataCenterID=$this->DataCenterID, ZoneID=$this->ZoneID;";
 		if($dbh->exec($sql)){
 			$this->CabRowID=$dbh->lastInsertId();
+
+			updateNavTreeHTML();
+				
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->CabRowID;
 		}else{
@@ -94,6 +97,8 @@ class CabRow {
 			return false;
 		}
 		
+		updateNavTreeHTML();
+				
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldcabrow):'';
 		return true;
 	}
@@ -118,6 +123,8 @@ class CabRow {
 			return false;
 		}
 
+		updateNavTreeHTML();
+				
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}

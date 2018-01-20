@@ -725,13 +725,29 @@ if(!function_exists("buildNavTreeArray")){
 
 // This will format the array above into the format needed for the side bar navigation
 // menu. 
-if(!function_exists("buildNavTreeHTML")){
-	function buildNavTreeHTML($menu=null){
+
+if(!function_exists("buildNavTreeHTML")) {
+	function buildNavTreeHTML(){
+		global $dbh;
+
+		$st = $dbh->prepare( "select * from fac_DataCache where ItemType='NavMenu'" );
+		$st->execute();
+
+		if ( $row = $st->fetch() ) {
+			return $row["Value"];
+		}
+	}
+}
+if(!function_exists("updateNavTreeHTML")){
+	function updateNavTreeHTML($menu=null){
+		global $dbh;
+
 		$tl=1; //tree level
 
 		$menu=(is_null($menu))?buildNavTreeArray():$menu;
 
 		function buildnavmenu($ma,&$tl){
+			$menuCode = "";
 			foreach($ma as $i => $level){
 				if(is_object($level)){
 					if(isset($level->Name)){
@@ -768,27 +784,32 @@ if(!function_exists("buildNavTreeHTML")){
 						$id="cr$ObjectID";
 					}
 
-					print str_repeat("\t",$tl).'<li class="liClosed" id="'.$id.'"><a class="'.$class.'" href="'.$href.$ObjectID."\">$name</a>$cabclose\n";
+					$menuCode .= str_repeat("\t",$tl).'<li class="liClosed" id="'.$id.'"><a class="'.$class.'" href="'.$href.$ObjectID."\">$name</a>$cabclose\n";
 					if($i==0){
 						++$tl;
-						print str_repeat("\t",$tl)."<ul>\n";
+						$menuCode .= str_repeat("\t",$tl)."<ul>\n";
 					}
 				}else{
 					$tl++;
-					buildnavmenu($level,$tl);
+					$menuCode .= buildnavmenu($level,$tl);
 					if(get_class($level[0])=="DataCenter"){
-						print str_repeat("\t",$tl).'<li id="dc-'.$level[0]->DataCenterID.'"><a href="storageroom.php?dc='.$level[0]->DataCenterID.'">Storage Room</a></li>'."\n";
+						$menuCode .= str_repeat("\t",$tl).'<li id="dc-'.$level[0]->DataCenterID.'"><a href="storageroom.php?dc='.$level[0]->DataCenterID.'">Storage Room</a></li>'."\n";
 					}
-					print str_repeat("\t",$tl)."</ul>\n";
+					$menuCode .= str_repeat("\t",$tl)."</ul>\n";
 					$tl--;
-					print str_repeat("\t",$tl)."</li>\n";
+					$menuCode .= str_repeat("\t",$tl)."</li>\n";
 				}
 			}
+
+			return $menuCode;
 		}
 
-		print '<ul class="mktree" id="datacenters">'."\n";
-		buildnavmenu($menu,$tl);
-		print '<li id="dc-1"><a href="storageroom.php">'.__("General Storage Room")."</a></li>\n</ul>";
+		$menuCode  = '<ul class="mktree" id="datacenters">'."\n";
+		$menuCode .= buildnavmenu($menu,$tl);
+		$menuCode .=  '<li id="dc-1"><a href="storageroom.php">'.__("General Storage Room")."</a></li>\n</ul>";
+
+		$st = $dbh->prepare( "insert into fac_DataCache set ItemType='NavMenu', Value=:Value on duplicate key update Value=:Value" );
+		$st->execute( array( ":Value"=>$menuCode ));
 	}
 }
 

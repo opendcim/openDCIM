@@ -82,6 +82,8 @@ class Container {
 			$this->ContainerID = $dbh->lastInsertID();
 		}
 
+		updateNavTreeHTML();
+				
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->ContainerID;
 	}
@@ -98,8 +100,12 @@ class Container {
 			WHERE ContainerID=$this->ContainerID;";
 		
 		if(!$this->query($sql)){
+			updateNavTreeHTML();
+				
 			return false;
 		}else{
+			updateNavTreeHTML();			
+
 			(class_exists('LogActions'))?LogActions::LogThis($this,$oldcontainer):'';
 			return true;
 		}
@@ -130,6 +136,8 @@ class Container {
 			return false;
 		}
 
+		updateNavTreeHTML();
+				
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return;
 	}
