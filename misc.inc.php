@@ -735,6 +735,16 @@ if(!function_exists("buildNavTreeHTML")) {
 
 		if ( $row = $st->fetch() ) {
 			return $row["Value"];
+		} else {
+			// Oops, there's no tree because this is the first time it's being run.
+			updateNavTreeHTML();
+			// Don't blindly risk a stuck forever loop (blank database) and only try to go one level deep
+			if ( $tree = buildNavTreeHTML() ) {
+				return $tree;
+			} else {
+				// Missing or blank database!   We might be in the installer phase, so just chill.
+				return false;
+			}
 		}
 	}
 }
