@@ -46,11 +46,18 @@
 			$userRights->Disabled=(isset($_POST['Disabled']))?1:0;
 
 			if($_POST['action']=='Create'){
-  				$userRights->CreatePerson();
-
-				// We've, hopefully, successfully created a new device. Force them to the new device page.
-				header('Location: '.redirect("usermgr.php?PersonID=$userRights->PersonID"));
-				exit;
+  				if ( $userRights->CreatePerson() ) {
+					// We've, hopefully, successfully created a new device. Force them to the new device page.
+					header('Location: '.redirect("usermgr.php?PersonID=$userRights->PersonID"));
+					exit;
+				} else {
+					// Likely the UserID already exists
+					if ( $userRights->GetPersonByUserID() ) {
+						$status=__("Existing UserID account displayed.");
+					} else {
+						$status=__("Something is broken.   Unable to create Person account.");
+					}
+				}
 			}else{
 				$status=__("Updated");
 				$userRights->UpdatePerson();
