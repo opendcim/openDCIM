@@ -1371,15 +1371,20 @@ $(document).ready(function(){
 				}
 			// else we're dealing with a row so don't calculate moment, etc
 			}else{
-				var cabrowid=getParameterByName('row');
-				if(cabrowid!=''){
-					// draw all the devices on the screen
-					for(var x in devices){
-						if(devices[x].ParentDevice==0){
-							InsertDevice(devices[x]);
+				var devloaddelay=setInterval(function(){
+					if(typeof devices!="undefined"){
+						var cabrowid=getParameterByName('row');
+						if(cabrowid!=''){
+							// draw all the devices on the screen
+							for(var x in devices){
+								if(devices[x].ParentDevice==0){
+									InsertDevice(devices[x]);
+								}
+							}
 						}
+						clearInterval(devloaddelay);
 					}
-				}
+				}, 10);
 			}
 			clearInterval(picloaddelay);
 		}
