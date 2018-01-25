@@ -249,6 +249,32 @@ $app->get( '/cabinet/:cabinetid', function( $cabinetid ) {
 });
 
 //
+//	URL:	/api/v1/cabinet/:cabinetid/getpictures
+//	Method:	GET
+//	Params: cabinetid (passed in URL)
+//	Returns:  HTML representation of a device
+//
+
+$app->get( '/cabinet/:cabinetid/getpictures', function( $cabinetid ) {
+	$cab=new Cabinet($cabinetid);
+	
+	$r['error']=true;
+	$r['errorcode']=404;
+	$r['message']=__("Unknown error");
+
+	if(!$cab->GetCabinet()){
+		$r['message']=__("Cabinet not found");
+	}else{
+		$r['error']=false;
+		$r['errorcode']=200;
+		$r['message']="";
+		$r['pictures']=$cab->getPictures();
+	}
+
+	echoResponse( $r );
+});
+
+//
 //	URL:	/api/v1/cabinet/bydc/:datacenterid
 //	Method:	GET
 //	Params: datacenterid (passed in URL)
@@ -1065,6 +1091,19 @@ $app->get( '/cabrow', function() {
 	echoResponse( $r );
 });
 
+//
+//	URL:	/api/v1/cabrow/:cabrowid/devices
+//	Method:	GET
+//	Params:	none
+//	Returns:  All devices in the cabinet row 
+//
+
+$app->get( '/cabrow/:cabrowid/devices', function($cabrowid) {
+	$r['error']=false;
+	$r['errorcode']=200;
+	$r['device']=Device::SearchDevicebyCabRow($cabrowid);
+	echoResponse( $r );
+});
 
 
 ?>

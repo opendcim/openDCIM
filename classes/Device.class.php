@@ -1402,6 +1402,20 @@ class Device {
 
 	}
   
+	static function SearchDevicebyCabRow( $CabRowID ) {
+		// Simple call to reset all counters
+		global $dbh;
+
+		$sql=sprintf("SELECT * FROM fac_Device WHERE Cabinet IN (SELECT CabinetID from fac_Cabinet WHERE CabRowID=%d);",$CabRowID);
+		$deviceList=array();
+
+		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[]=Device::RowToObject($deviceRow);
+		}
+
+		return $deviceList;
+	}
+
 	function SearchByCustomTag($tag=null){
 		global $dbh;
 		
@@ -2187,6 +2201,23 @@ class Device {
 			$resp.="\t</div>\n";
 		}
 		return $resp;
+	}
+
+	function UpdateDeviceCache(){
+		global $dbh;
+
+		$front=htmlentities($this->GetDevicePicture());
+		$rear=htmlentities($this->GetDevicePicture(true));
+
+		$sql="INSERT INTO fac_DeviceCache SET DeviceID=\"$this->DeviceID\", 
+			Front=\"$front\", Rear=\"$rear\" ON DUPLICATE KEY UPDATE Front=\"$front\", 
+			Rear=\"$rear\";";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log( "UpdateDeviceCache::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
 	}
 
 	function GetCustomValues() {

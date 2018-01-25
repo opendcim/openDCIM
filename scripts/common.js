@@ -16,6 +16,16 @@ function getISODateTime(d){
 		s(d.getSeconds(),2);
 }
 
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
 // Function to convert an image to base64 for submission to the repo
 /**
  * convertImgToBase64
@@ -1253,6 +1263,7 @@ function cabinetimagecontrols(){
 
 // Cabinet device population
 $(document).ready(function(){
+	resize();
 	// Make an array to store all the unique cabinet id's shown on the page
 	var cabs=new Array();
 	// Find all the tables that are labeled as cabinetX and add them to the array
@@ -1261,78 +1272,118 @@ $(document).ready(function(){
 	});
 	// Strip out the duplicates
 	cabs=$.unique(cabs);
-	// Add the devices to the page
-	for(var id in cabs){
-		var totalmoment=0;
-		var totalweight=0;
-		var arr_position=[];
-		var arr_weightbyu=[];
-		var arr_parents=[];
-		var rackbottom=$('#'+cabs[id]+' tr:last-child').prop('id').replace('pos','');
-		// we don't want to include devices that could be below the floor in the moment calcs
-		rackbottom=(rackbottom < 1)?'1':rackbottom;
-		$.get('api/v1/device?Cabinet='+cabs[id].replace('cabinet','')).done(function(data){
-			// draw all the devices on the screen
-			for(var x in data.device){
-				if(data.device[x].ParentDevice==0){
-					InsertDevice(data.device[x]);
-				}
+	var cab_picture_count=0;
+	// Get all the image data for the racks
+//	for(var id in cabs){
+	cabs.forEach(function(item, id) {
+		var cabid=cabs[id].replace('cabinet','');
+		if (typeof window.pictures=='undefined'){
+			window.pictures=new Array();
+		}
+		$.ajax({url: 'api/v1/cabinet/'+cabid+'/getpictures',type: "get",async: true,success: function(data){
+			window.pictures[cabid]=data.pictures;
+			cab_picture_count++;
 			}
-			// make an index of all non-children and their rack position
-			for(var x in data.device){
-				if(data.device[x].ParentDevice==0){
-					arr_position[data.device[x].DeviceID]=data.device[x].Position;
-				}
-				arr_parents[data.device[x].DeviceID]=data.device[x].ParentDevice;
-			}
-			// iterate over all the devices again for figuring weight by u 
-			for(var x in data.device){
-				totalweight += data.device[x].Weight;
-				if(data.device[x].ParentDevice==0){
-					if(typeof arr_weightbyu[data.device[x].Position]=='undefined'){
-						arr_weightbyu[data.device[x].Position]=data.device[x].Weight;
-					}else{
-						arr_weightbyu[data.device[x].Position]+=data.device[x].Weight;
-					}
-				}else{ // add children into their parent
-					function findrootparent(devid){
-						while(arr_parents[devid]!=0 && typeof devid!='undefined'){
-							devid=arr_parents[devid];
-						}
-						return devid;
-					}
-					var parentid=findrootparent(data.device[x].DeviceID);
-					if(typeof arr_weightbyu[arr_position[parentid]]=='undefined'){
-						arr_weightbyu[arr_position[parentid]]=data.device[x].Weight;
-					}else{
-						arr_weightbyu[arr_position[parentid]]+=data.device[x].Weight;
-					}
-				}
-			}
-// console.log(arr_weightbyu);
-			// one last time to go over all the devices to figure moment.
-			for(var x in data.device){
-				if(data.device[x].ParentDevice==0){
-					var devheight=data.device[x].Height/2;
-					var posfromfloor=(data.device[x].Position < rackbottom)?rackbottom - data.device[x].Position:data.device[x].Position;
-// console.log('totalmoment : '+totalmoment+' totalweight : '+totalweight);
-					totalmoment += arr_weightbyu[data.device[x].Position] * (posfromfloor + devheight);
-				}
-			}
-			var rackpositions=$('table#'+cabs[id]+' tr[id^=pos]');
-// console.log(rackpositions);
-			var numu=rackpositions.length;
-// console.log('numu : '+numu);
-			var tippingpoint=Math.round(totalmoment/totalweight);
-// console.log('tipping point : '+tippingpoint);
-			var tpobj={id:"0"};
-			tpobj=(typeof rackpositions[tippingpoint]=='undefined')?tpobj:rackpositions[rackpositions.length-tippingpoint];
-			$('#tippingpoint').text(tpobj.id.replace('pos','')+'U');
-			// $('#tippingpoint').text(tippingpoint+'U');
-// Debug info
-			// console.log(cabs[id]+' totalmoment: '+totalmoment+' totalweight: '+totalweight+' tipping point: '+tippingpoint);
-		}).then(initdrag);
+		});
+	});
+	if(cabs.length > 1){
+		var devices;
+		var cabrowid=getParameterByName('row');
+		$.get('api/v1/cabrow/'+cabrowid+'/devices').done(function(data){
+			devices=data.device;
+		});
 	}
+	var picloaddelay=setInterval(function(){
+		if(cab_picture_count>=cabs.length){
+			// Add the devices to the page
+			if(cabs.length == 1){
+				for(var id in cabs){
+					var totalmoment=0;
+					var totalweight=0;
+					var arr_position=[];
+					var arr_weightbyu=[];
+					var arr_parents=[];
+					var cabid=cabs[id].replace('cabinet','');
+					var rackbottom=$('#'+cabs[id]+' tr:last-child').prop('id').replace('pos','');
+					// we don't want to include devices that could be below the floor in the moment calcs
+					rackbottom=(rackbottom < 1)?'1':rackbottom;
+					$.get('api/v1/device?Cabinet='+cabs[id].replace('cabinet','')).done(function(data){
+						// draw all the devices on the screen
+						for(var x in data.device){
+							if(data.device[x].ParentDevice==0){
+								InsertDevice(data.device[x]);
+							}
+						}
+						// make an index of all non-children and their rack position
+						for(var x in data.device){
+							if(data.device[x].ParentDevice==0){
+								arr_position[data.device[x].DeviceID]=data.device[x].Position;
+							}
+							arr_parents[data.device[x].DeviceID]=data.device[x].ParentDevice;
+						}
+						// iterate over all the devices again for figuring weight by u 
+						for(var x in data.device){
+							totalweight += data.device[x].Weight;
+							if(data.device[x].ParentDevice==0){
+								if(typeof arr_weightbyu[data.device[x].Position]=='undefined'){
+									arr_weightbyu[data.device[x].Position]=data.device[x].Weight;
+								}else{
+									arr_weightbyu[data.device[x].Position]+=data.device[x].Weight;
+								}
+							}else{ // add children into their parent
+								function findrootparent(devid){
+									while(arr_parents[devid]!=0 && typeof devid!='undefined'){
+										devid=arr_parents[devid];
+									}
+									return devid;
+								}
+								var parentid=findrootparent(data.device[x].DeviceID);
+								if(typeof arr_weightbyu[arr_position[parentid]]=='undefined'){
+									arr_weightbyu[arr_position[parentid]]=data.device[x].Weight;
+								}else{
+									arr_weightbyu[arr_position[parentid]]+=data.device[x].Weight;
+								}
+							}
+						}
+			// console.log(arr_weightbyu);
+						// one last time to go over all the devices to figure moment.
+						for(var x in data.device){
+							if(data.device[x].ParentDevice==0){
+								var devheight=data.device[x].Height/2;
+								var posfromfloor=(data.device[x].Position < rackbottom)?rackbottom - data.device[x].Position:data.device[x].Position;
+			// console.log('totalmoment : '+totalmoment+' totalweight : '+totalweight);
+								totalmoment += arr_weightbyu[data.device[x].Position] * (posfromfloor + devheight);
+							}
+						}
+						var rackpositions=$('table#'+cabs[id]+' tr[id^=pos]');
+			// console.log(rackpositions);
+						var numu=rackpositions.length;
+			// console.log('numu : '+numu);
+						var tippingpoint=Math.round(totalmoment/totalweight);
+			// console.log('tipping point : '+tippingpoint);
+						var tpobj={id:"0"};
+						tpobj=(typeof rackpositions[tippingpoint]=='undefined')?tpobj:rackpositions[rackpositions.length-tippingpoint];
+						$('#tippingpoint').text(tpobj.id.replace('pos','')+'U');
+						// $('#tippingpoint').text(tippingpoint+'U');
+			// Debug info
+						// console.log(cabs[id]+' totalmoment: '+totalmoment+' totalweight: '+totalweight+' tipping point: '+tippingpoint);
+					}).then(initdrag);
+				}
+			// else we're dealing with a row so don't calculate moment, etc
+			}else{
+				var cabrowid=getParameterByName('row');
+				if(cabrowid!=''){
+					// draw all the devices on the screen
+					for(var x in devices){
+						if(devices[x].ParentDevice==0){
+							InsertDevice(devices[x]);
+						}
+					}
+				}
+			}
+			clearInterval(picloaddelay);
+		}
+	}, 10)
 });
 
 // function to determine if two objects overlap
@@ -1527,17 +1578,14 @@ function InsertDevice(obj){
 	if(obj.Position!=0 && obj.Height!=0){
 		function getPic(insertobj,rear){
 			var showrear=(rear)?'?rear':'';
-			$.get('api/v1/device/'+obj.DeviceID+'/getpicture'+showrear).done(function(data){
-				if(!data.error){
-					insertobj.append(data.picture).css('border','');
-				}else{ // We didn't get a picture back from the function to give it a text link
-					var label=(obj.Label)?obj.Label:'no label';
-					insertobj.append($('<a>').prop('href','devices.php?DeviceID='+obj.DeviceID).text(label));
-				}
-				if(typeof bindworkorder=='function'){
-					bindworkorder(insertobj);
-				}
-			});
+			if(rear){
+				insertobj.html(window.pictures[obj.Cabinet][obj.DeviceID]['Rear']).css('border','');
+			}else{
+				insertobj.html(window.pictures[obj.Cabinet][obj.DeviceID]['Front']).css('border','');
+			}
+			if(typeof bindworkorder=='function'){
+				bindworkorder(insertobj);
+			}
 		}
 
 		var racktop=parseInt($('#cabinet'+obj.Cabinet+' tr:nth-child(3)').prop('id').replace('pos',''));

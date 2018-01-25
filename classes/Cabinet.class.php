@@ -608,5 +608,16 @@ class Cabinet {
 
 		return $cabstats;
 	}
+	function getPictures(){
+		global $dbh;
+		$sql="SELECT * FROM fac_DeviceCache WHERE DeviceID IN (SELECT DeviceID FROM 
+			fac_Device WHERE Cabinet=$this->CabinetID AND ParentDevice=0);";
+		$devarray=array();
+		foreach($dbh->query($sql) as $row){
+			$devarray[$row['DeviceID']]['Front']=html_entity_decode($row['Front']);
+			$devarray[$row['DeviceID']]['Rear']=html_entity_decode($row['Rear']);
+		}
+		return $devarray;
+	}
 }
 ?>

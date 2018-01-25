@@ -33,6 +33,18 @@ CREATE TABLE fac_DataCache (
 
 
 --
+-- Create a table specifically for device image caching, optimize later 
+--
+
+DROP TABLE IF EXISTS fac_DeviceCache;
+CREATE TABLE fac_DeviceCache (
+  DeviceID int(11) NOT NULL,
+  Front mediumtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  Rear mediumtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  UNIQUE KEY DeviceID (DeviceID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 
