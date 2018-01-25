@@ -1100,7 +1100,7 @@ function bindmaptooltips(){
 
 // Cabinet image / label controls
 function cabinetimagecontrols(){
-	var controlrow=$('<tr>').append($('<td>').attr('colspan','4').css('text-align','left')).addClass('noprint');
+	var controlrow=$('<tr>').append($('<td>').attr({'colspan':'4','id':'cabinetimagecontrols'}).css('text-align','left')).addClass('noprint');
 	controlrow.td=controlrow.find('td');
 	var imgbtn=$('<button>').attr('type','button').css({'line-height': '1em', 'height': '1.5em'}).data('show',false).text('Images');
 	var lblbtn=imgbtn.clone().text('Labels');
@@ -1313,6 +1313,8 @@ $(document).ready(function(){
 								InsertDevice(data.device[x]);
 							}
 						}
+						// Add controls to the rack
+						cabinetimagecontrols();
 						// make an index of all non-children and their rack position
 						for(var x in data.device){
 							if(data.device[x].ParentDevice==0){
@@ -1382,6 +1384,8 @@ $(document).ready(function(){
 							}
 						}
 						clearInterval(devloaddelay);
+						// Add controls to the rack
+						cabinetimagecontrols();
 					}
 				}, 10);
 			}

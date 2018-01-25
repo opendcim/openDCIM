@@ -201,7 +201,7 @@ $('#centeriehack').width($('#centeriehack div.cabinet').length * 278);
 		opentree();
 
 		// Add controls to the rack
-		cabinetimagecontrols();
+		//cabinetimagecontrols();
 	});
 </script>
 </body>

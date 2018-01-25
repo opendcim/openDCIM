@@ -706,9 +706,6 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 			$('#centeriehack > .cabinet:first-child').remove();
 			$('.cabinet').width(width*2).css('max-width',width*2+'px');
 		}
-		// Add controls to the rack
-		cabinetimagecontrols();
-
 		// Damn translators not using abreviations
 		// This will lock the cabinet into the correct size
 		$('.cabinet #cabid').parent('tr').next('tr').find('.cabpos').css('padding','0px').wrapInner($('<div>').css({'overflow':'hidden','width':'30px'}));
