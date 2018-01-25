@@ -1274,7 +1274,6 @@ $(document).ready(function(){
 	cabs=$.unique(cabs);
 	var cab_picture_count=0;
 	// Get all the image data for the racks
-//	for(var id in cabs){
 	cabs.forEach(function(item, id) {
 		var cabid=cabs[id].replace('cabinet','');
 		if (typeof window.pictures=='undefined'){
@@ -1589,7 +1588,13 @@ function InsertDevice(obj){
 				insertobj.html(window.pictures[obj.Cabinet][obj.DeviceID]['Front']).css('border','');
 			}
 			if(typeof bindworkorder=='function'){
-				bindworkorder(insertobj);
+				// need a delay to wait for the dom to react to the insert from above
+				var domloaddelay=setInterval(function(){
+					if(insertobj.html()!=""){
+						bindworkorder(insertobj);
+						clearInterval(domloaddelay);
+					}
+				}, 100)
 			}
 		}
 
