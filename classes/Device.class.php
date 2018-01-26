@@ -434,6 +434,10 @@ class Device {
 			$this->InsertCustomValue($dcaList[$label]->AttributeID, $this->$label);
 		}
 
+		// Update the device image cache
+		$updatethis=$this->WhosYourDaddy(true);
+		$updatethis->UpdateDeviceCache();
+
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 
 		return $this->DeviceID;
@@ -904,6 +908,10 @@ class Device {
 			$this->Position = 0;
 		}
 		
+		// Update the device image cache
+		$updatethis=$this->WhosYourDaddy(true);
+		$updatethis->UpdateDeviceCache();
+
 		(class_exists('LogActions'))?LogActions::LogThis($this,$tmpDev):'';
 		return true;
 	}
@@ -1151,15 +1159,19 @@ class Device {
 		return $devList;
 	}
 	
-	function WhosYourDaddy(){
-		$dev=new Device();
-		
+	// Calling this as is will return one level up
+	// calling it true will go all the way up the tree
+	function WhosYourDaddy($recurse=false){
 		if($this->ParentDevice==0){
-			return $dev;
+			return $this;
 		}else{
-			$dev->DeviceID=$this->ParentDevice;
+			$dev=new Device($this->ParentDevice);
 			$dev->GetDevice();
-			return $dev;
+			if($recurse){
+				return $dev->WhosYourDaddy(true);
+			}else{
+				return $dev;
+			}
 		}
 	}
 
