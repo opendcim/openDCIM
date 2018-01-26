@@ -239,6 +239,8 @@
       }
     }
 
+    updateNavTreeHTML();
+
     if ( ! $errors ) {
       $content = __("All records imported successfully.") . "<ul>" . $content . "</ul>";
     } else {

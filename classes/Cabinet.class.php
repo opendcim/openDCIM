@@ -146,7 +146,7 @@ class Cabinet {
 		}
 	}
 
-	function CreateCabinet(){
+	function CreateCabinet($deferTreeRebuild=false){
 		global $dbh;
 		
 		$this->MakeSafe();
@@ -171,7 +171,9 @@ class Cabinet {
 			$this->CabinetID=$dbh->lastInsertID();
 		}
 
-		updateNavTreeHTML();
+		if ( ! $deferTreeRebuild ) {
+			updateNavTreeHTML();
+		}
 				
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->CabinetID;
