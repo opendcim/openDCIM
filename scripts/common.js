@@ -1193,12 +1193,20 @@ function cabinetimagecontrols(){
 		NoPictures();
 	}
 		
+	/*
+	 * Ignore the cookie for the positions
+	 *
+	 * We're gonna leave this code here for now but it's problematic for
+	 * the image loading.  It is still useful for the printing function
+	 * to be able to hide them so the button will remain
+	 *
 	// Read the cookie and do stuff
 	if(typeof $.cookie('cabpos')=='undefined' || $.cookie('cabpos')=='show'){
 		snoitisoPoN();
 	}else{
 		NoPositions();
 	}
+	*/
 		
 	function serutciPoN(){
 		// We're showing device images so labels are optional
@@ -1246,9 +1254,9 @@ function cabinetimagecontrols(){
 		$('.cabinet').css({'transform':'scale(1.5)','transform-origin':'left top'});
 		$('.main').css({'width':'','border':'0','background-color':'#fff'});
 		$('.cabinet td').css('border','1px solid black');
-		$('.cabinet').insertBefore('.center');
+		$('table[id^=cabinet]').insertBefore('.center');
 		window.print();
-		$('#centeriehack').prepend($('.cabinet'));
+		$('div.cabinet').append($('table[id^=cabinet]'));
 		$('.cabinet td').css('border','');
 		$('.main').css({'border':'','background-color':''});
 		$('div#infopanel,div#sidebar,div#header,h2,h3,.center ~ a').show();
