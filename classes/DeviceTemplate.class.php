@@ -228,6 +228,17 @@ class DeviceTemplate {
 		if(!$this->query($sql)){
 			return false;
 		}else{
+			// If we update the picture then update all device pictures so they get the 
+			// new value none of the other values getting updated directly apply to the 
+			// devices so we shouldn't have to call this that often.
+			if($this->FrontPictureFile!=$old->FrontPictureFile || $this->RearPictureFile!=$old->RearPictureFile){
+				$dev=new Device();
+				$dev->TemplateID=$this->TemplateID;
+				foreach($dev->search() as $i => $d){
+					$d->UpdateDeviceCache();
+				}
+			}
+
 			(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 			$this->MakeDisplay();
 			return true;
