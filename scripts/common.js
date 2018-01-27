@@ -1269,6 +1269,18 @@ function cabinetimagecontrols(){
 }
 // END = Cabinet image / label controls
 
+// Make some generic loading place holders that we can call from anything else
+// https://codepen.io/halvves/pen/RaVxJR
+var spinningsquares=$('<div>').addClass('dizzy-gillespie').addClass('loadingplaceholder');
+// https://codepen.io/michaeldeboeve/pen/ojLQLw
+var flippingpostits=$('<div>').addClass('loader').addClass('loadingplaceholder');
+for (i = 1; i < 10; i++) {
+	flippingpostits.append($('<i>').addClass('loader__tile loader__tile__'+i));
+}
+var multiaxistrainer=$('<i>').addClass('preloader').addClass('loadingplaceholder');
+var loaders=[ 'spinningsquares', 'flippingpostits', 'multiaxistrainer' ]
+var loaders=[ spinningsquares, flippingpostits, multiaxistrainer ]
+
 // Cabinet device population
 $(document).ready(function(){
 	resize();
@@ -1283,6 +1295,8 @@ $(document).ready(function(){
 	var cab_picture_count=0;
 	// Get all the image data for the racks
 	cabs.forEach(function(item, id) {
+		var rand=Math.floor(Math.random() * loaders.length);
+		$('#'+cabs[id]+' div[id^=servercontainer]').append(loaders[rand].clone());
 		var cabid=cabs[id].replace('cabinet','');
 		if (typeof window.pictures=='undefined'){
 			window.pictures=new Array();
@@ -1323,6 +1337,8 @@ $(document).ready(function(){
 						}
 						// Add controls to the rack
 						cabinetimagecontrols();
+						// clean up the loading animations from any empty cabinets
+						$('.cabinet .loadingplaceholder').remove();
 						// make an index of all non-children and their rack position
 						for(var x in data.device){
 							if(data.device[x].ParentDevice==0){
@@ -1394,6 +1410,8 @@ $(document).ready(function(){
 						clearInterval(devloaddelay);
 						// Add controls to the rack
 						cabinetimagecontrols();
+						// clean up the loading animations from any empty cabinets
+						$('.cabinet .loadingplaceholder').remove();
 					}
 				}, 10);
 			}
@@ -1592,6 +1610,7 @@ function initdrag(){
 
 function InsertDevice(obj){
 	if(obj.Position!=0 && obj.Height!=0){
+		$('#cabinet'+obj.Cabinet+' .loadingplaceholder').remove();
 		function getPic(insertobj,rear){
 			var showrear=(rear)?'?rear':'';
 			if(rear){
