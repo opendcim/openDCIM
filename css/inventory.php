@@ -537,7 +537,7 @@ div.cabinet {
 .rowview div.cabinet { vertical-align: bottom; }
 .cabinet .error { background-color: <?php echo $config->ParameterArray['CriticalColor']; ?> !important; }
 
-/* loading animation test */
+/* flippingpostits - START */
 .loader {
   width: 100px;
   height: 100px;
@@ -589,6 +589,9 @@ div.cabinet {
 	0%  {-webkit-transform: rotateY(0deg);  transform: rotateY(0deg);  }
 	11% {-webkit-transform: rotateY(180deg);transform: rotateY(180deg);}
 }
+
+/* flippingpostits - END */
+/* spinningsquares - START */
 
 .dizzy-gillespie {
   -webkit-filter: saturate(3);
@@ -658,6 +661,9 @@ div.cabinet {
   0%   {-webkit-transform: rotate(0deg);   transform: rotate(0deg);}
   100% {-webkit-transform: rotate(-360deg);transform: rotate(-360deg);}
 }
+
+/* spinningsquares - END */
+/* multiaxistrainer - START */
 
 .preloader {
   position: absolute;
@@ -731,6 +737,83 @@ div.cabinet {
   50% {-webkit-transform: scale(-1, -1)}
   75% {-webkit-transform: scale(1.2, -1.2)}
 }
+
+/* multiaxistrainer - END */
+/* rotatingloader - START */
+
+@-webkit-keyframes rotate {
+  from {transform: rotate(0deg);}
+  to   {transform: rotate(360deg);}
+}
+@-moz-keyframes rotate {
+  from {transform: rotate(0deg);}
+  to   {transform: rotate(360deg);}
+}
+@-o-keyframes rotate {
+  from {transform: rotate(0deg);}
+  to   {transform: rotate(360deg);}
+}
+@keyframes rotate {
+  from {transform: rotate(0deg);}
+  to   {transform: rotate(360deg);}
+}
+@-webkit-keyframes rotateCounter {
+  from {transform: rotate(0deg);}
+  to   {transform: rotate(-360deg);}
+}
+@-moz-keyframes rotateCounter {
+  from {transform: rotate(0deg);}
+  to   {transform: rotate(-360deg);}
+}
+@-o-keyframes rotateCounter {
+  from {transform: rotate(0deg);}
+  to   {transform: rotate(-360deg);}
+}
+@keyframes rotateCounter {
+  from {transform: rotate(0deg);}
+  to   {transform: rotate(-360deg);}
+}
+
+.rotateloader {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  max-width: 200px;
+  margin: 5em;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  position: absolute;
+  top: 15%;
+}
+.rotateloader.one            {animation-duration: 3s;animation-name: rotate;}
+.rotateloader.one .row .box  {animation-duration: 1.5s;animation-name: rotateCounter;}
+.rotateloader.two            {animation-duration: 3s;animation-name: rotate;}
+.rotateloader.two .row       {animation-duration: 1.5s;animation-name: rotateCounter;}
+.rotateloader.two .row .box  {animation-duration: 3s;}
+.rotateloader.three .row     {animation-duration: 2s;animation-name: rotateCounter;}
+.rotateloader.four           {animation-name: rotate;}
+.rotateloader.four .row      {animation-duration: 10s;animation-name: rotate;}
+.rotateloader.four .row .box {animation-duration: 4s;animation-name: rotateCounter;transform-origin: 50% 75%;}
+
+.rotateloader .row      {animation-duration: 1s;animation-iteration-count: infinite;animation-timing-function: linear;display: flex;justify-content: center;flex-direction: row;}
+.rotateloader .row .box {animation-duration: 2s;animation-iteration-count: infinite;animation-timing-function: linear;animation-name: rotate;}
+
+.box {
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+  border-radius: 5px;
+  margin: 0.2em;
+  text-align: center;
+}
+.box.white {background-color: white;}
+.box.red   {background-color: <?php echo $config->ParameterArray['BodyColor']; ?>;}
+.box.blue  {background-color: <?php echo $config->ParameterArray['HeaderColor']; ?>;}
+
+/* rotatingloader - END */
+
 
 
 /* PICTURES */

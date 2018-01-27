@@ -1277,9 +1277,23 @@ var flippingpostits=$('<div>').addClass('loader').addClass('loadingplaceholder')
 for (i = 1; i < 10; i++) {
 	flippingpostits.append($('<i>').addClass('loader__tile loader__tile__'+i));
 }
+// https://codepen.io/deineko/pen/EPwPNV
 var multiaxistrainer=$('<i>').addClass('preloader').addClass('loadingplaceholder');
-var loaders=[ 'spinningsquares', 'flippingpostits', 'multiaxistrainer' ]
-var loaders=[ spinningsquares, flippingpostits, multiaxistrainer ]
+// https://codepen.io/rlo206/pen/GppXPM
+var rotatingloader=$('<div>').addClass('rotateloader').addClass('loadingplaceholder').html('<div class="row"><div class="box blue"></div><div class="box red"></div><div class="box blue"></div></div><div class="row"><div class="box red"></div><div class="box white"></div><div class="box red"></div></div><div class="row"><div class="box blue"></div><div class="box red"></div><div class="box blue"></div></div></div>');
+var rotatingloader1=rotatingloader.clone().addClass('one');
+var rotatingloader2=rotatingloader.clone().addClass('two');
+var rotatingloader3=rotatingloader.clone().addClass('three');
+var rotatingloader4=rotatingloader.clone().addClass('four');
+//
+// Uncomment whichever set of loaders we decide to use
+//
+// -=- all -=-
+//var loaders=[ spinningsquares, flippingpostits, multiaxistrainer, rotatingloader1, rotatingloader2, rotatingloader3, rotatingloader4 ]
+// -=- fun -=-
+//var loaders=[ spinningsquares, flippingpostits, multiaxistrainer ]
+// -=- semi-professional? -=-
+var loaders=[ rotatingloader1, rotatingloader2, rotatingloader3, rotatingloader4 ]
 
 // Cabinet device population
 $(document).ready(function(){
