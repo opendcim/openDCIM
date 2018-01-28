@@ -690,6 +690,23 @@
 			});
 	});
 
+		// Add some logic to the enabled / required checkboxes so users aren't confused
+
+		// An attribute cannot be required if it isn't enabled so make sure that 
+		// required is turned off when enabled is
+		$('input[name*=enabled]').on('click',function(e){
+			if(!e.currentTarget.checked){
+				e.currentTarget.nextElementSibling.checked=false;
+			}
+		});
+		// if a user clicks required it has to be enabled for that to be valid
+		// this will make sure that the enabled box is ticked
+		$('input[name*=required]').on('click',function(e){
+			if(e.currentTarget.checked){
+				e.currentTarget.previousElementSibling.checked=true;
+			}
+		});
+
 
 	});/* END of $(document).ready function() */
 </script>
