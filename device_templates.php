@@ -789,14 +789,6 @@ echo '</select>
 </div>
 
 <div>
-	<div><label>',__("Share to Repository"),'</label></div>
-	<div><input type="checkbox" id="ShareToRepo" name="ShareToRepo" ',$template->ShareToRepo ? 'checked' : '','></div>
-</div>
-<div>
-	<div><label>',__("Keep Local (Ignore Repository)"),'</label></div>
-	<div><input type="checkbox" id="KeepLocal" name="KeepLocal" ',$template->KeepLocal ? 'checked' : '','></div>
-</div>
-<div>
    <div><label for="FrontPictureFile">',__("Front Picture File"),'</label></div>
    <div><input type="text" name="FrontPictureFile" id="FrontPictureFile" value="',$template->FrontPictureFile,'"></div>
 </div>

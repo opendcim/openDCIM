@@ -254,6 +254,12 @@ class LogActions {
 		if(is_array($this->NewVal)){
 			$this->NewVal='array()';
 		}
+		// Same problem as above except this time it's an object.  Prepared statements
+		// are a real motherfucker to try and debug.  We should avoid these. Same work
+		// around as above.  If we want the value print_r($this->NewVal,TRUE).
+		if(is_object($this->NewVal)){
+			$this->NewVal='stdClass Object';
+		}
 		$stmt->bindParam(':NewVal', $this->NewVal);
 		// These values can't be null and the PDO statement was being a bitch about it
 		$this->Action=(is_null($this->Action))?'':$this->Action;
