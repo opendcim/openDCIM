@@ -1156,6 +1156,14 @@ function mangleDate($dateString) {
 	}
 }
 
+function pdo_debugParams($stmt) {
+	ob_start();
+	$stmt->debugDumpParams();
+	$r = ob_get_contents();
+	ob_end_clean();
+	return $r;
+}
+
 class JobQueue {
 	var $SessionID;
 	var $Percentage;
