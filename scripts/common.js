@@ -1285,15 +1285,19 @@ var rotatingloader1=rotatingloader.clone().addClass('one');
 var rotatingloader2=rotatingloader.clone().addClass('two');
 var rotatingloader3=rotatingloader.clone().addClass('three');
 var rotatingloader4=rotatingloader.clone().addClass('four');
+// https://codepen.io/dicson/pen/vOxZjM
+var rollingbox=$('<div>').addClass('boxLoading').addClass('loadingplaceholder');
 //
 // Uncomment whichever set of loaders we decide to use
 //
 // -=- all -=-
-//var loaders=[ spinningsquares, flippingpostits, multiaxistrainer, rotatingloader1, rotatingloader2, rotatingloader3, rotatingloader4 ]
+//var loaders=[ spinningsquares, flippingpostits, multiaxistrainer, rotatingloader1, rotatingloader2, rotatingloader3, rotatingloader4, rollingbox ]
 // -=- fun -=-
 //var loaders=[ spinningsquares, flippingpostits, multiaxistrainer ]
 // -=- semi-professional? -=-
-var loaders=[ rotatingloader1, rotatingloader2, rotatingloader3, rotatingloader4 ]
+//var loaders=[ rotatingloader1, rotatingloader2, rotatingloader3, rotatingloader4 ]
+// -=- stupid simple rolling box -=-
+var loaders=[ rollingbox ]
 
 // Cabinet device population
 $(document).ready(function(){

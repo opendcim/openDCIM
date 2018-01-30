@@ -673,6 +673,7 @@ class DeviceTemplate {
 			a.AttributeID=v.AttributeID AND TemplateID=$this->TemplateID ORDER BY Label, 
 			AttributeID;";
 		foreach($this->query($sql) as $tdcrow) {
+			$this->{$tdcrow["Label"]}=$tdcrow["Value"];
 			$tdca[$tdcrow["AttributeID"]]["value"]=$tdcrow["Value"];
 			$tdca[$tdcrow["AttributeID"]]["required"]=$tdcrow["Required"];
 		}	
