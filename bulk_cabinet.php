@@ -231,7 +231,7 @@
         $cab->AssignedTo = $val["DeptID"];
       }
 
-      if ( ! $errors && ! $cab->CreateCabinet() ) {
+      if ( ! $errors && ! $cab->CreateCabinet(true) ) {
         $errors = true;
         $content .= "<li><strong>" . __("Error adding cabinet on Row $n of the spreadsheet.") . "</strong>";
       } else {
