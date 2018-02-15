@@ -234,7 +234,11 @@ overlap = scale;
                          'MediaID'=>$port->MediaID,
                          'Label'=>$port->Label
                     );
-                    $c_port_list[]="<".$port->Label."> ".$port->Label;
+                    if ( $port->PortNumber < 0 ) {
+                        $c_port_list[]="<".$port->Label."> (Rear)".$port->Label;
+                    } else {
+                        $c_port_list[]="<".$port->Label."> ".$port->Label;
+                    }
                 }
                 $p_count = count($c_port_list);
                 $n_dev_label = "{";
