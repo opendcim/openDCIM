@@ -949,6 +949,7 @@ if ( $person->WriteAccess ) {
 if ($person->BulkOperations) {
 	$wamenu[__("Bulk Importer")][]='<a href="bulk_container.php"><span>'.__("Import Container/Datacenter/Zone/Row").'</span></a>';
 	$wamenu[__("Bulk Importer")][]='<a href="bulk_users.php"><span>'.__("Import User Accounts").'</span></a>';
+	$wamenu[__("Bulk Importer")][]='<a href="bulk_departments.php"><span>'.__("Import Departments/Customers").'</span></a>';
 	$wamenu[__("Bulk Importer")][]='<a href="bulk_templates.php"><span>'.__("Import Device Templates").'</span></a>';
 	$wamenu[__("Bulk Importer")][]='<a href="bulk_cabinet.php"><span>'.__("Import New Cabinets").'</span></a>';
 	$wamenu[__("Bulk Importer")][]='<a href="bulk_importer.php"><span>'.__("Import New Devices").'</span></a>';
