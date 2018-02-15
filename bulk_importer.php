@@ -335,6 +335,8 @@
 
     $sheet = $objXL->getSheet(0);
     $highestRow = $sheet->getHighestRow();
+    $trueArray = array( "1", "Y", "YES" );
+
 
     // Also make sure we start with an empty string to display
     $content = "";
@@ -412,8 +414,8 @@
       $dev->PrimaryIP = $row["Hostname"];
       $dev->SerialNo = $row["SerialNo"];
       $dev->AssetTag = $row["AssetTag"];
-      $dev->BackSide = ($row["BackSide"] == 1 || strtoupper($row["BackSide"] == "Y"))?1:0;
-      $dev->HalfDepth = ($row["HalfDepth"] == 1 || strtoupper($row["HalfDepth"] == "Y"))?1:0;
+      $dev->BackSide = in_array( strtoupper($row["BackSide"], $trueArray));
+      $dev->HalfDepth = in_array( strtoupper($row["HalfDepth"], $trueArray));
       $dev->Hypervisor = (in_array( $row["Hypervisor"], array( "ESX", "ProxMox")))?$row["Hypervisor"]:"None";
       if ( $row["InstallDate"] != "" ) {
         $dev->InstallDate = date( "Y-m-d", strtotime( $row["InstallDate"]));
