@@ -1,5 +1,5 @@
 <?php
-$codeversion="4.4.1";
+$codeversion="18.01";
 
 require_once( "preflight.inc.php" );
 
@@ -1137,6 +1137,13 @@ function upgrade(){
 
 		// Now shit can the old table
 		$dbh->query( "DROP TABLE fac_Decommission" );
+
+		$config->rebuild();
+	}
+	if($version=="4.5"){
+		$results[]=applyupdate("db-4.5-to-18.01.sql");
+
+		print '<iframe src="build_image_cache.php" height="250" width="220" scrolling="no" style="border: 0px;"></iframe>';
 
 		$config->rebuild();
 	}
