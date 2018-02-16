@@ -99,6 +99,9 @@
 
 		$("#containerid").combobox();
 		$("#parentid").combobox();
+
+		$('span.custom-combobox').width($('span.custom-combobox').width()+2);
+
 		$('#datacenterform').validationEngine({});
 		$('#drawingfilename').click(function(){
 			$("#imageselection").dialog({

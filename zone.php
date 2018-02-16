@@ -256,6 +256,8 @@ print "		dialog.find('span + span').html('".__("This Zone will be deleted and th
 
 		$("#zoneid").combobox();
 		$("#datacenterid").combobox();
+
+		$('span.custom-combobox').width($('span.custom-combobox').width()+2);
 	});
 </script>
 </body>

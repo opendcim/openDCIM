@@ -87,6 +87,8 @@
 		$("#datacenterid").combobox();
 		$("#zoneid").combobox();
 
+		$('span.custom-combobox').width($('span.custom-combobox').width()+2);
+
 		// Input options that are disabled don't submit
 		$('.caption > button').on('click',function(e){
 			$('#datacenterid').removeAttr('disabled');
