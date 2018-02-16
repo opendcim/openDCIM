@@ -2272,7 +2272,7 @@ echo '<div class="main">
 </div> <!-- END div.table -->
 </form>
 </div>
-   <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
+   <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a><span class="hide"><!-- hiding these two phrases here to make sure they get translated for use in the asset tracking status fields -->',__("Reserved"),'',__("Disposed"),'</span>'; ?>
 </div>
   </div>
   </div>
