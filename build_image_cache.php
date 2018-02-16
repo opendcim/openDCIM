@@ -21,6 +21,7 @@ session_write_close();
 if (php_sapi_name()!="cli" && !isset($_GET["stage"]) && !isset($_GET["gauge"])) {
 	JobQueue::startJob( $sessID );
 ?>
+<center>
 <iframe src="?gauge" height="250" width="220" scrolling="no" style="border: 0px;"></iframe> 
 <?php
 }elseif (php_sapi_name()!="cli" && isset($_GET["gauge"]) && !isset($_GET["stage"])){
@@ -91,7 +92,7 @@ $(document).ready( function() {
 </script>
 </head>
 <body>
-<div><canvas id="power-gauge" width="200" height="200"></canvas><h3>Building device image cache</h3</div>
+<div><canvas id="power-gauge" width="200" height="200"></canvas><h3><?php echo __("Building device image cache");?></h3</div>
 </body>
 </html>
 

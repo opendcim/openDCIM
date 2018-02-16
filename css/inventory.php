@@ -1017,7 +1017,7 @@ div.cabinet {
 .imagem .heading { border-bottom: 1px solid; font-size: 2em; margin-bottom: 5px; text-align: right; }
 
 .uploadifive-queue-item .close { cursor: pointer; }
-
+.uploadifive-button { padding: 0 8px; }
 
 /* devices.php  Device Detail */
 .device fieldset {
