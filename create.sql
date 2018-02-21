@@ -183,6 +183,16 @@ CREATE TABLE fac_ColorCoding (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
+-- Create a table for things that we want to cache, such as the Navigation Menu
+--
+
+CREATE TABLE fac_DataCache (
+  ItemType varchar(80) not null,
+  Value text not null, primary key (ItemType)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+--
 -- Table structure for table fac_DataCenter
 --
 
@@ -300,6 +310,18 @@ CREATE TABLE fac_Device (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Create a table specifically for device image caching, optimize later 
+--
+
+DROP TABLE IF EXISTS fac_DeviceCache;
+CREATE TABLE fac_DeviceCache (
+  DeviceID int(11) NOT NULL,
+  Front mediumtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  Rear mediumtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  UNIQUE KEY DeviceID (DeviceID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for table fac_DeviceTags
 --
 
@@ -402,7 +424,6 @@ CREATE TABLE fac_Ports (
   Label varchar(40) NOT NULL,
   MediaID int(11) NOT NULL DEFAULT '0',
   ColorID int(11) NOT NULL DEFAULT '0',
-  Notes varchar(80) NOT NULL,
   ConnectedDeviceID int(11) DEFAULT NULL,
   ConnectedPort int(11) DEFAULT NULL,
   Notes varchar(80) NOT NULL,
@@ -575,7 +596,7 @@ CREATE TABLE fac_RackRequest (
   SerialNo varchar(40) NOT NULL,
   MfgDate date NOT NULL,
   AssetTag varchar(40) NOT NULL,
-  ESX tinyint(1) NOT NULL,
+  Hypervisor varchar(40) NOT NULL,
   Owner int(11) NOT NULL,
   DeviceHeight int(11) NOT NULL,
   EthernetCount int(11) NOT NULL,
