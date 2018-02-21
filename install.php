@@ -1752,9 +1752,7 @@ echo '<div id="ldap">
 <p>Be sure to visit the <a href="configuration.php">Configuration</a> page to set any new defaults that may have been introduced.</p>
 
 <h2>Online Repository</h2>
-<p>If you wish to synchronize with the online repository, you must first pull the current listing of Manufacturer Names, which requires an active connection to the internet
-from the server running openDCIM.  In order to allow you to restrict connections as much as possible, the entire process runs across an SSL connection to
-https://repository.opendcim.org.  This process is managed through the Template Management -> Repository Sync interface.  Once you have a manufacturer synchronized, you may download individual templates for that manufacturer.</p>
+<p>If you wish to synchronize with the online repository, you must first pull the current listing of Manufacturer Names, which requires an active connection to the internet from your browser (not the server running openDCIM).  Go to Template Management -> Repository Sync and then choose Manufacturers, first.   Once you have synchronized manufacturer names, you may choose individual templates associated with those manufacturers to download into your local installation.</p>
 </form>
 
 </div></div>

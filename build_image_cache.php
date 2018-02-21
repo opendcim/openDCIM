@@ -1,6 +1,6 @@
 <?php
-	$devMode=true;
 	require_once( 'db.inc.php' );
+	$devMode=true;
 	require_once( 'facilities.inc.php' );
 
 #	$sql="Select DeviceID from fac_Device WHERE DeviceID>=5000;";

@@ -28,7 +28,7 @@ DELETE FROM fac_Config WHERE Parameter='KeepLocal';
 
 CREATE TABLE fac_DataCache (
 	ItemType varchar(80) not null,
-	Value text not null, primary key (ItemType)
+	Value mediumtext not null, primary key (ItemType)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -48,4 +48,4 @@ CREATE TABLE fac_DeviceCache (
 -- Bump up the database version (uncomment below once released)
 --
 
--- UPDATE fac_Config set Value="18.01" WHERE Parameter="Version";
+UPDATE fac_Config set Value="18.01" WHERE Parameter="Version";

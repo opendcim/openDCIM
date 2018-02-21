@@ -188,7 +188,7 @@ CREATE TABLE fac_ColorCoding (
 
 CREATE TABLE fac_DataCache (
   ItemType varchar(80) not null,
-  Value text not null, primary key (ItemType)
+  Value mediumtext not null, primary key (ItemType)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
