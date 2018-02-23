@@ -1335,6 +1335,9 @@ if(isset($results)){
 	
 //Installation Complete
 	if($nodept=="" && $nodc=="" && $nocab==""){ // All three primary sections have had at least one item created
+		if(!isset($_REQUEST['complete']) && !isset($_REQUEST['dept']) && !isset($_REQUEST['cab']) && !isset($_REQUEST['dc'])){
+			header('Location: '.redirect("install.php?complete&preflight-ok"));
+		}
 		//enable the finish menu option
 		$complete=true;
 	}
