@@ -130,7 +130,7 @@ class CabRow {
 	}
 
 	function GetCabRow(){
-		$this-<MakeSafe();
+		$this->MakeSafe();
 		
 		$sql="SELECT * FROM fac_CabRow WHERE CabRowID=$this->CabRowID;";
 
