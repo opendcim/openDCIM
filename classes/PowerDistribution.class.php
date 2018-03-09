@@ -143,6 +143,29 @@ class PowerDistribution {
 		$caller=debug_backtrace();
 		$caller=$caller[1]['function'];
 
+
+        /*****************************************************************************************************
+         * BEGIN - Support for SNMP Data Concentrators
+         *****************************************************************************************************/
+        // If the OID path specifies a placeholder, then the device must "provide" a custom attribute's value for it
+        if (preg_match('/(?<placeholder>\{(?<tag>[^\}]+)+\})/i', $oid, $oid_matches))
+        {
+            // Look for numeric custom attribute that matches the pattern found on the oid path
+            if (isset($dev->{$oid_matches['tag']}) && is_numeric($dev->{$oid_matches['tag']}))
+            {
+                $oid = str_replace($oid_matches['placeholder'], $dev->{$oid_matches['tag']}, $oid);
+            }
+            else
+            {
+                error_log("PowerDistribution::$caller($dev->DeviceID) Inconsistent OID information for device '$dev->Label'. Cannot proceed with SNMP lookup.");
+                return false; // Do not increment failures in this case (configuration issue, not a failure to respond)
+            }
+        }
+        /*****************************************************************************************************
+         * END - Support for SNMP Data Concentrators
+         *****************************************************************************************************/
+
+        
 		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,$dev->SNMPVersion,$dev->v3SecurityLevel,$dev->v3AuthProtocol,$dev->v3AuthPassphrase,$dev->v3PrivProtocol,$dev->v3PrivPassphrase);
 		$snmpresult=false;
 		try {
