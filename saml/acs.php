@@ -4,7 +4,7 @@ $loginPage = true;
 
 require_once('../db.inc.php');
 
-define("TOOLKIT_PATH", '/var/www/opendcim/vendor/onelogin/php-saml/');
+define("TOOLKIT_PATH", '../vendor/onelogin/php-saml/');
 require_once(TOOLKIT_PATH . '_toolkit_loader.php');
 
 require_once('settings.php');
