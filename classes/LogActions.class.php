@@ -366,7 +366,7 @@ class LogActions {
 			}
 		}
 
-		$sql="SELECT DISTINCT CAST($sqlcolumn AS CHAR(20)) AS Search FROM fac_GenericLog WHERE $sqlcolumn!=\"\"$sqlextend ORDER BY $sqlcolumn ASC;";
+		$sql="SELECT DISTINCT CAST($sqlcolumn AS CHAR(80)) AS Search FROM fac_GenericLog WHERE $sqlcolumn!=\"\"$sqlextend ORDER BY $sqlcolumn ASC;";
 		$values=array();
 		foreach($this->query($sql) as $row){
 			$values[]=$row['Search'];
