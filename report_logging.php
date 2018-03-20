@@ -102,6 +102,7 @@ if(isset($_POST['refresh'])){
 <!doctype html>
 <html>
 <head>
+  <title><?php echo __("Activity Log");?></title>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <link rel="stylesheet" href="css/inventory.php" type="text/css">

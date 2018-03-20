@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-15 21:08-0600\n"
+"POT-Creation-Date: 2018-03-20 07:42-0500\n"
 "PO-Revision-Date: 2014-03-24 08:48-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -11,51 +11,60 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: openDCIM/bulk_container.php:12
-msgid "Bulk Container/Datacenter Importer"
-msgstr ""
+#: openDCIM/bulk_cabinet.php:12
+#, fuzzy
+msgid "Bulk Cabinet Importer"
+msgstr "Departament Adı"
 
-#: openDCIM/bulk_container.php:60 openDCIM/bulk_importer.php:60
-#: openDCIM/bulk_moves.php:60 openDCIM/bulk_network.php:60
-#: openDCIM/bulk_power.php:60
+#: openDCIM/bulk_cabinet.php:60 openDCIM/bulk_container.php:60
+#: openDCIM/bulk_importer.php:60 openDCIM/bulk_moves.php:60
+#: openDCIM/bulk_network.php:60 openDCIM/bulk_power.php:60
 msgid ""
 "Pick the appropriate column header (line 1) for each field name listed below."
 msgstr ""
 
-#: openDCIM/bulk_container.php:61 openDCIM/bulk_departments.php:61
-#: openDCIM/bulk_importer.php:61 openDCIM/bulk_moves.php:61
-#: openDCIM/bulk_network.php:61 openDCIM/bulk_power.php:61
-#: openDCIM/bulk_templates.php:61 openDCIM/bulk_users.php:61
+#: openDCIM/bulk_cabinet.php:61 openDCIM/bulk_container.php:61
+#: openDCIM/bulk_departments.php:61 openDCIM/bulk_importer.php:61
+#: openDCIM/bulk_moves.php:61 openDCIM/bulk_network.php:61
+#: openDCIM/bulk_power.php:61 openDCIM/bulk_templates.php:61
+#: openDCIM/bulk_users.php:61
 msgid "Mouse over each field for help text."
 msgstr ""
 
-#: openDCIM/bulk_container.php:100 openDCIM/bulk_departments.php:100
-#: openDCIM/bulk_importer.php:315 openDCIM/bulk_moves.php:261
-#: openDCIM/bulk_network.php:107 openDCIM/bulk_power.php:107
-#: openDCIM/bulk_templates.php:100 openDCIM/bulk_users.php:100
+#: openDCIM/bulk_cabinet.php:100 openDCIM/bulk_container.php:100
+#: openDCIM/bulk_departments.php:100 openDCIM/bulk_importer.php:315
+#: openDCIM/bulk_moves.php:261 openDCIM/bulk_network.php:107
+#: openDCIM/bulk_power.php:107 openDCIM/bulk_templates.php:100
+#: openDCIM/bulk_users.php:100
 msgid "Process"
 msgstr ""
 
-#: openDCIM/bulk_container.php:243 openDCIM/bulk_departments.php:186
-#: openDCIM/bulk_importer.php:462 openDCIM/bulk_network.php:280
-#: openDCIM/bulk_power.php:256 openDCIM/bulk_templates.php:208
-#: openDCIM/bulk_users.php:196
+#: openDCIM/bulk_cabinet.php:245 openDCIM/bulk_container.php:243
+#: openDCIM/bulk_departments.php:186 openDCIM/bulk_importer.php:462
+#: openDCIM/bulk_network.php:280 openDCIM/bulk_power.php:256
+#: openDCIM/bulk_templates.php:208 openDCIM/bulk_users.php:196
 msgid "All records imported successfully."
 msgstr ""
 
-#: openDCIM/bulk_container.php:245 openDCIM/bulk_departments.php:188
-#: openDCIM/bulk_importer.php:464 openDCIM/bulk_moves.php:380
-#: openDCIM/bulk_network.php:282 openDCIM/bulk_power.php:258
-#: openDCIM/bulk_templates.php:210 openDCIM/bulk_users.php:198
+#: openDCIM/bulk_cabinet.php:247 openDCIM/bulk_container.php:245
+#: openDCIM/bulk_departments.php:188 openDCIM/bulk_importer.php:464
+#: openDCIM/bulk_moves.php:380 openDCIM/bulk_network.php:282
+#: openDCIM/bulk_power.php:258 openDCIM/bulk_templates.php:210
+#: openDCIM/bulk_users.php:198
 msgid ""
 "At least one error was encountered processing the file.  Please see below."
 msgstr ""
 
-#: openDCIM/bulk_container.php:255 openDCIM/bulk_departments.php:198
-#: openDCIM/bulk_importer.php:474 openDCIM/bulk_moves.php:390
-#: openDCIM/bulk_network.php:292 openDCIM/bulk_power.php:268
-#: openDCIM/bulk_templates.php:220 openDCIM/bulk_users.php:208
+#: openDCIM/bulk_cabinet.php:257 openDCIM/bulk_container.php:255
+#: openDCIM/bulk_departments.php:198 openDCIM/bulk_importer.php:474
+#: openDCIM/bulk_moves.php:390 openDCIM/bulk_network.php:292
+#: openDCIM/bulk_power.php:268 openDCIM/bulk_templates.php:220
+#: openDCIM/bulk_users.php:208
 msgid "Select file to upload:"
+msgstr ""
+
+#: openDCIM/bulk_container.php:12
+msgid "Bulk Container/Datacenter Importer"
 msgstr ""
 
 #: openDCIM/bulk_departments.php:12
@@ -105,7 +114,7 @@ msgid ""
 msgstr ""
 
 #: openDCIM/bulk_importer.php:199 openDCIM/cabinets.php:254
-#: openDCIM/cabnavigator.php:51 openDCIM/cabrow.php:164
+#: openDCIM/cabnavigator.php:51 openDCIM/cabrow.php:166
 #: openDCIM/pathmaker.php:495 openDCIM/pathmaker.php:507 openDCIM/paths.php:614
 #: openDCIM/report_cabinets.php:70
 #: openDCIM/report_diverse_power_exceptions.php:163
@@ -488,9 +497,9 @@ msgstr ""
 msgid "Notes"
 msgstr "Qeyd"
 
-#: openDCIM/cabinets.php:341 openDCIM/cabrow.php:194
+#: openDCIM/cabinets.php:341 openDCIM/cabrow.php:196
 #: openDCIM/cdu_templates.php:211 openDCIM/configuration.php:2270
-#: openDCIM/container.php:282 openDCIM/datacenter.php:313
+#: openDCIM/container.php:285 openDCIM/datacenter.php:313
 #: openDCIM/departments.php:214 openDCIM/device_manufacturers.php:203
 #: openDCIM/devices.php:2473 openDCIM/disposition.php:115
 #: openDCIM/escalations.php:86 openDCIM/power_panel.php:344
@@ -499,7 +508,7 @@ msgstr "Qeyd"
 msgid "Update"
 msgstr ""
 
-#: openDCIM/cabinets.php:342 openDCIM/cabrow.php:195 openDCIM/container.php:283
+#: openDCIM/cabinets.php:342 openDCIM/cabrow.php:197 openDCIM/container.php:286
 #: openDCIM/datacenter.php:319 openDCIM/datacenter.php:334
 #: openDCIM/departments.php:214 openDCIM/device_manufacturers.php:204
 #: openDCIM/devices.php:2482 openDCIM/escalations.php:87
@@ -518,8 +527,8 @@ msgstr ""
 msgid "Map Coordinates"
 msgstr ""
 
-#: openDCIM/cabinets.php:346 openDCIM/cabrow.php:190
-#: openDCIM/cdu_templates.php:213 openDCIM/container.php:285
+#: openDCIM/cabinets.php:346 openDCIM/cabrow.php:192
+#: openDCIM/cdu_templates.php:213 openDCIM/container.php:288
 #: openDCIM/datacenter.php:315 openDCIM/departments.php:216
 #: openDCIM/device_manufacturers.php:206 openDCIM/devices.php:2477
 #: openDCIM/device_templates.php:385 openDCIM/device_templates.php:918
@@ -536,12 +545,12 @@ msgstr "Yarat"
 msgid "Return to Navigator"
 msgstr ""
 
-#: openDCIM/cabinets.php:356 openDCIM/cabrow.php:202
+#: openDCIM/cabinets.php:356 openDCIM/cabrow.php:204
 #: openDCIM/cdu_templates.php:220 openDCIM/configuration.php:2275
-#: openDCIM/container.php:296 openDCIM/datacenter.php:339
+#: openDCIM/container.php:299 openDCIM/datacenter.php:339
 #: openDCIM/departments.php:225 openDCIM/device_manufacturers.php:218
 #: openDCIM/device_templates.php:1103 openDCIM/disposition.php:121
-#: openDCIM/escalations.php:96 openDCIM/image_management.php:151
+#: openDCIM/escalations.php:96 openDCIM/image_management.php:163
 #: openDCIM/pathmaker.php:522 openDCIM/paths.php:626
 #: openDCIM/power_panel.php:427 openDCIM/project_mgr.php:185
 #: openDCIM/rackrequest.php:502 openDCIM/reports.php:85
@@ -560,7 +569,7 @@ msgid ""
 "<br><br><b>THERE IS NO UNDO</b>"
 msgstr ""
 
-#: openDCIM/cabinets.php:378 openDCIM/cabrow.php:120 openDCIM/container.php:161
+#: openDCIM/cabinets.php:378 openDCIM/cabrow.php:122 openDCIM/container.php:164
 #: openDCIM/datacenter.php:163 openDCIM/devices.php:1452
 #: openDCIM/devices.php:1605 openDCIM/power_panel.php:440
 #: openDCIM/project_mgr.php:103 openDCIM/report_exception.php:261
@@ -568,7 +577,7 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: openDCIM/cabinets.php:389 openDCIM/cabrow.php:125 openDCIM/container.php:166
+#: openDCIM/cabinets.php:389 openDCIM/cabrow.php:127 openDCIM/container.php:169
 #: openDCIM/datacenter.php:175 openDCIM/devices.php:1456
 #: openDCIM/devices.php:1611 openDCIM/power_panel.php:452
 #: openDCIM/project_mgr.php:114 openDCIM/report_exception.php:263
@@ -580,7 +589,7 @@ msgstr ""
 msgid "Install Date"
 msgstr "Qurulma Tarixi"
 
-#: openDCIM/cabnavigator.php:64 openDCIM/cabrow.php:146
+#: openDCIM/cabnavigator.php:64 openDCIM/cabrow.php:148
 #: openDCIM/dc_stats.php:312 openDCIM/rowview.php:94
 #: openDCIM/zone_stats.php:308
 msgid "Row"
@@ -731,25 +740,25 @@ msgstr "Həqiqətən əminsiniz ? Geri dönüş YOXDUR !"
 msgid "Rows of Cabinets"
 msgstr ""
 
-#: openDCIM/cabrow.php:112
+#: openDCIM/cabrow.php:114
 msgid "Verify Delete Row"
 msgstr ""
 
-#: openDCIM/cabrow.php:113
+#: openDCIM/cabrow.php:115
 msgid ""
 "This Row will be deleted and there is no undo.  Assets within the row will "
 "remain as members of the Data Center."
 msgstr ""
 
-#: openDCIM/cabrow.php:113 openDCIM/container.php:154 openDCIM/zone.php:237
+#: openDCIM/cabrow.php:115 openDCIM/container.php:157 openDCIM/zone.php:237
 msgid "Are you sure?"
 msgstr ""
 
-#: openDCIM/cabrow.php:149
+#: openDCIM/cabrow.php:151
 msgid "New Row"
 msgstr ""
 
-#: openDCIM/cabrow.php:160 openDCIM/container.php:238
+#: openDCIM/cabrow.php:162 openDCIM/container.php:241
 #: openDCIM/datacenter.php:252 openDCIM/device_manufacturers.php:193
 #: openDCIM/disposition.php:90 openDCIM/report_surplus.php:134
 #: openDCIM/search_export.php:51 openDCIM/search_export_storage_room.php:53
@@ -757,7 +766,7 @@ msgstr ""
 msgid "Name"
 msgstr "Ad"
 
-#: openDCIM/cabrow.php:176
+#: openDCIM/cabrow.php:178
 msgid "Data Center Zone"
 msgstr ""
 
@@ -835,7 +844,7 @@ msgstr ""
 msgid "Data Center Configuration"
 msgstr ""
 
-#: openDCIM/configuration.php:497 openDCIM/container.php:110
+#: openDCIM/configuration.php:497 openDCIM/container.php:113
 #: openDCIM/datacenter.php:124 openDCIM/device_templates.php:402
 #: openDCIM/rackrequest.php:458
 msgid "Select"
@@ -1496,15 +1505,15 @@ msgstr ""
 msgid "Device Status"
 msgstr "Cihaz tapılmadı"
 
-#: openDCIM/configuration.php:2096 openDCIM/install.php:1659
+#: openDCIM/configuration.php:2096 openDCIM/install.php:1669
 msgid "LDAP Authentication and Authorization Configuration"
 msgstr ""
 
-#: openDCIM/configuration.php:2099 openDCIM/install.php:1662
+#: openDCIM/configuration.php:2099 openDCIM/install.php:1672
 msgid "LDAP Server URI"
 msgstr ""
 
-#: openDCIM/configuration.php:2103 openDCIM/install.php:1666
+#: openDCIM/configuration.php:2103 openDCIM/install.php:1676
 msgid "Base DN"
 msgstr ""
 
@@ -1512,7 +1521,7 @@ msgstr ""
 msgid "Base Search"
 msgstr ""
 
-#: openDCIM/configuration.php:2111 openDCIM/install.php:1670
+#: openDCIM/configuration.php:2111 openDCIM/install.php:1680
 msgid "Bind DN"
 msgstr ""
 
@@ -1520,43 +1529,43 @@ msgstr ""
 msgid "User Search"
 msgstr ""
 
-#: openDCIM/configuration.php:2119 openDCIM/install.php:1674
+#: openDCIM/configuration.php:2119 openDCIM/install.php:1684
 msgid "LDAP Session Expiration (Seconds)"
 msgstr ""
 
-#: openDCIM/configuration.php:2123 openDCIM/install.php:1678
+#: openDCIM/configuration.php:2123 openDCIM/install.php:1688
 msgid "Group Distinguished Names"
 msgstr ""
 
-#: openDCIM/configuration.php:2126 openDCIM/install.php:1681
+#: openDCIM/configuration.php:2126 openDCIM/install.php:1691
 msgid "Site Access"
 msgstr ""
 
-#: openDCIM/configuration.php:2130 openDCIM/install.php:1685
+#: openDCIM/configuration.php:2130 openDCIM/install.php:1695
 msgid "Global Read"
 msgstr ""
 
-#: openDCIM/configuration.php:2134 openDCIM/install.php:1689
+#: openDCIM/configuration.php:2134 openDCIM/install.php:1699
 msgid "Global Write"
 msgstr ""
 
-#: openDCIM/configuration.php:2138 openDCIM/install.php:1693
+#: openDCIM/configuration.php:2138 openDCIM/install.php:1703
 msgid "Global Delete"
 msgstr ""
 
-#: openDCIM/configuration.php:2142 openDCIM/install.php:1697
+#: openDCIM/configuration.php:2142 openDCIM/install.php:1707
 msgid "Admin Owned Devices"
 msgstr ""
 
-#: openDCIM/configuration.php:2146 openDCIM/install.php:1701
+#: openDCIM/configuration.php:2146 openDCIM/install.php:1711
 msgid "Enter Rack Request"
 msgstr ""
 
-#: openDCIM/configuration.php:2150 openDCIM/install.php:1705
+#: openDCIM/configuration.php:2150 openDCIM/install.php:1715
 msgid "Complete Rack Request"
 msgstr ""
 
-#: openDCIM/configuration.php:2154 openDCIM/install.php:1709
+#: openDCIM/configuration.php:2154 openDCIM/install.php:1719
 msgid "Contact Admin"
 msgstr ""
 
@@ -1564,7 +1573,7 @@ msgstr ""
 msgid "Bulk Operations"
 msgstr ""
 
-#: openDCIM/configuration.php:2162 openDCIM/install.php:1713
+#: openDCIM/configuration.php:2162 openDCIM/install.php:1723
 msgid "Site Admin"
 msgstr ""
 
@@ -1746,40 +1755,40 @@ msgstr ""
 msgid "Container Detail"
 msgstr ""
 
-#: openDCIM/container.php:153
+#: openDCIM/container.php:156
 msgid "Verify Delete Container"
 msgstr ""
 
-#: openDCIM/container.php:154
+#: openDCIM/container.php:157
 msgid ""
 "This container will be deleted and there is no undo. Their direct "
 "descendants will be moved to \\'home\\'."
 msgstr ""
 
-#: openDCIM/container.php:226 openDCIM/datacenter.php:277
+#: openDCIM/container.php:229 openDCIM/datacenter.php:277
 #: openDCIM/report_network_map.php:622
 msgid "Container"
 msgstr ""
 
-#: openDCIM/container.php:228
+#: openDCIM/container.php:231
 msgid "New Container"
 msgstr ""
 
-#: openDCIM/container.php:242 openDCIM/datacenter.php:268
+#: openDCIM/container.php:245 openDCIM/datacenter.php:268
 msgid "Drawing URL"
 msgstr ""
 
-#: openDCIM/container.php:247
+#: openDCIM/container.php:250
 msgid "Parent Container"
 msgstr ""
 
-#: openDCIM/container.php:249 openDCIM/datacenter.php:279
+#: openDCIM/container.php:252 openDCIM/datacenter.php:279
 #: openDCIM/classes/Cabinet.class.php:355
 #: openDCIM/classes/Cabinet.class.php:423
 msgid "None"
 msgstr ""
 
-#: openDCIM/container.php:274
+#: openDCIM/container.php:277
 msgid "Click on the image to select container coordinates"
 msgstr ""
 
@@ -1790,7 +1799,7 @@ msgstr "Ümumi Məlumat"
 
 #: openDCIM/container_stats.php:43 openDCIM/datacenter.php:76
 #: openDCIM/dc_dashboard.php:46 openDCIM/dc_stats.php:144
-#: openDCIM/install.php:1489 openDCIM/zone_stats.php:153
+#: openDCIM/install.php:1499 openDCIM/zone_stats.php:153
 msgid "Square Feet"
 msgstr ""
 
@@ -1801,7 +1810,7 @@ msgstr ""
 
 #: openDCIM/container_stats.php:46 openDCIM/datacenter.php:78
 #: openDCIM/dc_dashboard.php:49 openDCIM/dc_stats.php:148
-#: openDCIM/install.php:1491 openDCIM/zone_stats.php:157
+#: openDCIM/install.php:1501 openDCIM/zone_stats.php:157
 msgid "Square Meters"
 msgstr ""
 
@@ -2936,15 +2945,19 @@ msgstr ""
 msgid "Device Pictures"
 msgstr ""
 
-#: openDCIM/image_management.php:112
+#: openDCIM/image_management.php:65
+msgid "Rebuild Image Cache"
+msgstr ""
+
+#: openDCIM/image_management.php:124
 msgid "Infrastructure Drawings"
 msgstr ""
 
-#: openDCIM/image_management.php:159
+#: openDCIM/image_management.php:171
 msgid "Delete image file?"
 msgstr ""
 
-#: openDCIM/image_management.php:160
+#: openDCIM/image_management.php:172
 msgid ""
 "This image will be permanently deleted and cannot be recovered. Are you sure?"
 msgstr ""
@@ -4304,6 +4317,10 @@ msgstr ""
 
 #: openDCIM/report_logging.php:60
 msgid "New Value"
+msgstr ""
+
+#: openDCIM/report_logging.php:105
+msgid "Activity Log"
 msgstr ""
 
 #: openDCIM/report_network_map.php:5
