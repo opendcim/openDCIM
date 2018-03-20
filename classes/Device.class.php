@@ -120,7 +120,7 @@ class Device {
 		$this->v3PrivPassphrase=sanitize($this->v3PrivPassphrase);
 		$this->SNMPFailureCount=intval($this->SNMPFailureCount);
 		$this->Hypervisor=(in_array($this->Hypervisor, $validHypervisors))?$this->Hypervisor:'None';
-		$this->APIUserName=sanitize($this->APIUsername);
+		$this->APIUsername=sanitize($this->APIUsername);
 		$this->APIPassword=sanitize($this->APIPassword);
 		$this->APIPort = intval($this->APIPort);
 		$this->ProxMoxRealm=sanitize($this->ProxMoxRealm);
