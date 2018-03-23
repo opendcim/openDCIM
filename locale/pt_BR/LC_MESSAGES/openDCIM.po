@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-20 07:42-0500\n"
+"POT-Creation-Date: 2018-03-23 10:39-0500\n"
 "PO-Revision-Date: 2014-03-24 08:48-0500\n"
 "Last-Translator: Wilbur Longwisch <wilbur@wilpig.org>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -2237,7 +2237,7 @@ msgid "ERROR: No ports found"
 msgstr "ERRO: Nenhuma porta encontrada"
 
 #: openDCIM/devices.php:380 openDCIM/devices.php:2186 openDCIM/devices.php:2449
-#: openDCIM/device_templates.php:939 openDCIM/misc.inc.php:1068
+#: openDCIM/device_templates.php:939 openDCIM/misc.inc.php:1072
 #: openDCIM/report_cabinets.php:179 openDCIM/report_cabinets.php:251
 #: openDCIM/report_cabinets.php:292 openDCIM/rowview.php:94
 #: openDCIM/classes/Device.class.php:2057
@@ -3165,191 +3165,191 @@ msgstr ""
 msgid "Selection Preview"
 msgstr "Prévia de seleção"
 
-#: openDCIM/misc.inc.php:819 openDCIM/storageroom.php:44
+#: openDCIM/misc.inc.php:823 openDCIM/storageroom.php:44
 #: openDCIM/classes/Container.class.php:207
 msgid "General Storage Room"
 msgstr "Área de armazenamento geral"
 
-#: openDCIM/misc.inc.php:927
+#: openDCIM/misc.inc.php:931
 msgid "Reports"
 msgstr "Relatórios"
 
-#: openDCIM/misc.inc.php:931
+#: openDCIM/misc.inc.php:935
 msgid "Work Order"
 msgstr "Ordem de Serviço"
 
-#: openDCIM/misc.inc.php:935
+#: openDCIM/misc.inc.php:939
 msgid "Rack Request Form"
 msgstr "Formulário de requisição de rack"
 
-#: openDCIM/misc.inc.php:938 openDCIM/misc.inc.php:939
+#: openDCIM/misc.inc.php:942 openDCIM/misc.inc.php:943
 msgid "User Administration"
 msgstr "Administração de Usuários"
 
-#: openDCIM/misc.inc.php:939
+#: openDCIM/misc.inc.php:943
 msgid "Dept. Administration"
 msgstr "Administração de departamento"
 
-#: openDCIM/misc.inc.php:940 openDCIM/misc.inc.php:941
+#: openDCIM/misc.inc.php:944 openDCIM/misc.inc.php:945
 msgid "Issue Escalation"
 msgstr "Escalonamento de problemas"
 
-#: openDCIM/misc.inc.php:940
+#: openDCIM/misc.inc.php:944
 msgid "Time Periods"
 msgstr "Períodos de tempo"
 
-#: openDCIM/misc.inc.php:941
+#: openDCIM/misc.inc.php:945
 msgid "Escalation Rules"
 msgstr "Regras de escalonamento"
 
-#: openDCIM/misc.inc.php:942
+#: openDCIM/misc.inc.php:946
 msgid "Project Catalog"
 msgstr "Catalogo do Projeto"
 
-#: openDCIM/misc.inc.php:945 openDCIM/misc.inc.php:947
-#: openDCIM/misc.inc.php:961 openDCIM/misc.inc.php:962
+#: openDCIM/misc.inc.php:949 openDCIM/misc.inc.php:951
+#: openDCIM/misc.inc.php:965 openDCIM/misc.inc.php:966
 msgid "Template Management"
 msgstr "Gerenciamento de Modelos"
 
-#: openDCIM/misc.inc.php:945
+#: openDCIM/misc.inc.php:949
 msgid "Edit Device Templates"
 msgstr "Editar Modelos de Equipamentos"
 
-#: openDCIM/misc.inc.php:946 openDCIM/misc.inc.php:966
-#: openDCIM/misc.inc.php:967 openDCIM/misc.inc.php:968
-#: openDCIM/misc.inc.php:969 openDCIM/misc.inc.php:970
+#: openDCIM/misc.inc.php:950 openDCIM/misc.inc.php:970
+#: openDCIM/misc.inc.php:971 openDCIM/misc.inc.php:972
+#: openDCIM/misc.inc.php:973 openDCIM/misc.inc.php:974
 msgid "Infrastructure Management"
 msgstr "Gerenciamento de Infraestrutura"
 
-#: openDCIM/misc.inc.php:946
+#: openDCIM/misc.inc.php:950
 msgid "Edit Cabinets"
 msgstr "Editar Armários"
 
-#: openDCIM/misc.inc.php:947
+#: openDCIM/misc.inc.php:951
 msgid "Device Image Management"
 msgstr "Gerenciamento das Imagem de Dispositivos"
 
-#: openDCIM/misc.inc.php:950 openDCIM/misc.inc.php:951
-#: openDCIM/misc.inc.php:952 openDCIM/misc.inc.php:953
 #: openDCIM/misc.inc.php:954 openDCIM/misc.inc.php:955
 #: openDCIM/misc.inc.php:956 openDCIM/misc.inc.php:957
-#: openDCIM/misc.inc.php:958
+#: openDCIM/misc.inc.php:958 openDCIM/misc.inc.php:959
+#: openDCIM/misc.inc.php:960 openDCIM/misc.inc.php:961
+#: openDCIM/misc.inc.php:962
 msgid "Bulk Importer"
 msgstr "Importação em Massa"
 
-#: openDCIM/misc.inc.php:950
+#: openDCIM/misc.inc.php:954
 msgid "Import Container/Datacenter/Zone/Row"
 msgstr ""
 
-#: openDCIM/misc.inc.php:951
+#: openDCIM/misc.inc.php:955
 #, fuzzy
 msgid "Import User Accounts"
 msgstr "Importar Conexões Elétricas"
 
-#: openDCIM/misc.inc.php:952
+#: openDCIM/misc.inc.php:956
 msgid "Import Departments/Customers"
 msgstr ""
 
-#: openDCIM/misc.inc.php:953
+#: openDCIM/misc.inc.php:957
 #, fuzzy
 msgid "Import Device Templates"
 msgstr "Editar Modelos de Equipamentos"
 
-#: openDCIM/misc.inc.php:954
+#: openDCIM/misc.inc.php:958
 msgid "Import New Cabinets"
 msgstr "Importar Novos Racks"
 
-#: openDCIM/misc.inc.php:955
+#: openDCIM/misc.inc.php:959
 msgid "Import New Devices"
 msgstr "Importar Novos Equipamentos"
 
-#: openDCIM/misc.inc.php:956
+#: openDCIM/misc.inc.php:960
 msgid "Import Network Connections"
 msgstr "Importar Conexões de Rede"
 
-#: openDCIM/misc.inc.php:957
+#: openDCIM/misc.inc.php:961
 msgid "Import Power Connections"
 msgstr "Importar Conexões Elétricas"
 
-#: openDCIM/misc.inc.php:958
+#: openDCIM/misc.inc.php:962
 msgid "Process Bulk Moves"
 msgstr "Processar Movimentações em Massa"
 
-#: openDCIM/misc.inc.php:961
+#: openDCIM/misc.inc.php:965
 msgid "Edit Manufacturers"
 msgstr "Editar Fabricantes"
 
-#: openDCIM/misc.inc.php:962
+#: openDCIM/misc.inc.php:966
 msgid "Repository Sync"
 msgstr "Sincronizar com o Repositório "
 
-#: openDCIM/misc.inc.php:963 openDCIM/misc.inc.php:964
-#: openDCIM/misc.inc.php:965
+#: openDCIM/misc.inc.php:967 openDCIM/misc.inc.php:968
+#: openDCIM/misc.inc.php:969
 #, fuzzy
 msgid "Materiel Management"
 msgstr "Gerenciamento de energia"
 
-#: openDCIM/misc.inc.php:963
+#: openDCIM/misc.inc.php:967
 msgid "Manage Supply Bins"
 msgstr "Gerenciar Escaninhos de Consumíveis"
 
-#: openDCIM/misc.inc.php:964
+#: openDCIM/misc.inc.php:968
 msgid "Manage Supplies"
 msgstr "Gerenciar Consumíveis"
 
-#: openDCIM/misc.inc.php:965
+#: openDCIM/misc.inc.php:969
 msgid "Manage Disposal Methods"
 msgstr ""
 
-#: openDCIM/misc.inc.php:966
+#: openDCIM/misc.inc.php:970
 msgid "Edit Data Centers"
 msgstr "Editar Data Centers"
 
-#: openDCIM/misc.inc.php:967
+#: openDCIM/misc.inc.php:971
 msgid "Edit Containers"
 msgstr "Editar Containers"
 
-#: openDCIM/misc.inc.php:968
+#: openDCIM/misc.inc.php:972
 msgid "Edit Zones"
 msgstr "Editar Zonas"
 
-#: openDCIM/misc.inc.php:969
+#: openDCIM/misc.inc.php:973
 msgid "Edit Rows of Cabinets"
 msgstr "Editar Fileiras de Armários"
 
-#: openDCIM/misc.inc.php:970
+#: openDCIM/misc.inc.php:974
 msgid "Facilities Image Management"
 msgstr "Gerenciamento de Imagem dos Prédios"
 
-#: openDCIM/misc.inc.php:971
+#: openDCIM/misc.inc.php:975
 msgid "Power Management"
 msgstr "Gerenciamento de energia"
 
-#: openDCIM/misc.inc.php:971
+#: openDCIM/misc.inc.php:975
 msgid "Edit Power Panels"
 msgstr "Editar Painéis de Energia"
 
-#: openDCIM/misc.inc.php:972 openDCIM/misc.inc.php:973
+#: openDCIM/misc.inc.php:976 openDCIM/misc.inc.php:977
 msgid "Path Connections"
 msgstr "Caminho de Conexões"
 
-#: openDCIM/misc.inc.php:972
+#: openDCIM/misc.inc.php:976
 msgid "View Path Connection"
 msgstr "Visualizar Caminho de Conexões"
 
-#: openDCIM/misc.inc.php:973
+#: openDCIM/misc.inc.php:977
 msgid "Make Path Connection"
 msgstr "Criar Caminho de Conexões"
 
-#: openDCIM/misc.inc.php:974
+#: openDCIM/misc.inc.php:978
 msgid "Edit Configuration"
 msgstr "Editar Configuração"
 
-#: openDCIM/misc.inc.php:981
+#: openDCIM/misc.inc.php:985
 msgid "Logout"
 msgstr "Encerrar"
 
-#: openDCIM/misc.inc.php:1071 openDCIM/report_cabinets.php:182
+#: openDCIM/misc.inc.php:1075 openDCIM/report_cabinets.php:182
 msgid "Side"
 msgstr "Lateral"
 

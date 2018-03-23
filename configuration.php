@@ -600,7 +600,7 @@
 										$(this).remove();
 									});
 								}else{ // failed to delete
-									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+									$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>");
 									$('#modal').dialog('option','buttons',cancelbutton);
 								}
 							});
@@ -616,7 +616,7 @@
 										$(this).remove();
 									});
 								}else{ // failed to delete
-									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+									$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>");
 									$('#modal').dialog('option','buttons',cancelbutton);
 								}
 							});
@@ -791,7 +791,7 @@
 											$(this).remove();
 										});
 									}else{ // failed to delete
-										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+										$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>");
 										$('#modal').dialog('option','buttons',cancelbutton);
 									}
 								});
@@ -812,7 +812,7 @@
 										// color so they will display the new color
 										$('#mediatypes > div ~ div:not(:last-child) input').val('').change();
 									}else{ // failed to delete
-										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+										$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>");
 										$('#modal').dialog('option','buttons',cancelbutton);
 									}
 								});
@@ -1035,7 +1035,7 @@
 										$(this).dialog("destroy");
 									}
 								}
-								<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Type Change Error")."'}).html('<div id=\"modaltext\">AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>".__("Something just went horribly wrong.")."</div>').dialog({"; ?>
+								<?php echo "				var modal=$('<div />', {id: 'modal', title: \"".__("Custom Device Attribute Type Change Error")."\"}).html(\"<div id=\\\"modaltext\\\">AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>".__("Something just went horribly wrong.")."</div>\").dialog({"; ?>
 								dialogClass: 'no-close',
 								appendTo: 'body',
 								modal: true,
@@ -1049,7 +1049,7 @@
 												$('#modal').dialog("destroy");
 												processChange();
 											}else{ // failed to delete
-												$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+												$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>");
 												$('#modal').dialog('option','buttons',cancelbutton);
 												revertdefault(row,true);
 											}
@@ -1062,7 +1062,7 @@
 										$(this).dialog("destroy");
 									}
 								}
-								<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Type Change Override")."'}).html('<div id=\"modaltext\">".__("This custom device attribute is in use somewhere. If you choose to change the attribute type, it will be cleared from all devices and device templates.")."</div>').dialog({"; ?>
+								<?php echo "				var modal=$('<div />', {id: 'modal', title: \"".__("Custom Device Attribute Type Change Override")."\"}).html(\"<div id=\\\"modaltext\\\">".__("This custom device attribute is in use somewhere. If you choose to change the attribute type, it will be cleared from all devices and device templates.")."</div>\").dialog({"; ?>
 								dialogClass: 'no-close',
 								appendTo: 'body',
 								modal: true,
@@ -1148,7 +1148,7 @@
 							$(this).dialog("destroy");
 						}
 					}
-<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Delete Error")."'}).html('<div id=\"modaltext\">AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>".__("Something just went horribly wrong.")."</div>').dialog({"; ?>
+<?php echo "				var modal=$('<div />', {id: 'modal', title: \"".__("Custom Device Attribute Delete Error")."\"}).html(\"<div id=\\\"modaltext\\\">AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>".__("Something just went horribly wrong.")."</div>\").dialog({"; ?>
 					dialogClass: 'no-close',
 					appendTo: 'body',
 					modal: true,
@@ -1165,7 +1165,7 @@
 										$(this).remove();
 									});
 								}else{ // failed to delete
-									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
+									$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>");
 									$('#modal').dialog('option','buttons',cancelbutton);
 								}
 							});
@@ -1176,7 +1176,7 @@
 							$(this).dialog("destroy");
 						}
 					}
-<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Delete Override")."'}).html('<div id=\"modaltext\">".__("This custom device attribute is in use somewhere. If you choose to delete the attribute, it will be removed from all devices and device templates.")."</div>').dialog({"; ?>
+<?php echo "				var modal=$('<div />', {id: 'modal', title: \"".__("Custom Device Attribute Delete Override")."\"}).html(\"<div id=\\\"modaltext\\\">".__("This custom device attribute is in use somewhere. If you choose to delete the attribute, it will be removed from all devices and device templates.")."</div>\").dialog({"; ?>
 					dialogClass: 'no-close',
 					appendTo: 'body',
 					modal: true,
