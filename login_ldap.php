@@ -1,5 +1,30 @@
 <?php
 
+
+if(!function_exists("ldap_escape")){
+	function ldap_escape($str = '') {
+		$metaChars = array(
+			chr(0x5c), // \
+			chr(0x2a), // *
+			chr(0x28), // (
+			chr(0x29), // )
+			chr(0x00) // NUL
+		);
+
+		// Build the list of the escaped versions of those characters.
+		$quotedMetaChars = array ();
+		foreach ($metaChars as $key => $value) {
+			$quotedMetaChars[$key] = '\\' .
+			str_pad(dechex(ord($value)), 2, '0', STR_PAD_LEFT);
+		}
+
+		// Make all the necessary replacements in the input string and return
+		// the result.
+		return str_replace($metaChars, $quotedMetaChars, $str);
+	}
+}
+
+
   // Set a variable so that misc.inc.php knows not to throw us into an infinite redirect loop
   $loginPage = true;
 
@@ -30,9 +55,9 @@
       ldap_set_option( $ldapConn, LDAP_OPT_PROTOCOL_VERSION, 3 );
       ldap_set_option( $ldapConn, LDAP_OPT_REFERRALS, 0 );
 
-      $ldapUser = htmlspecialchars($_POST['username']);
+      $ldapUser = ldap_escape(htmlspecialchars($_POST['username']));
       $ldapDN = str_replace( "%userid%", $ldapUser, $config->ParameterArray['LDAPBindDN']);
-      $ldapPassword = $_POST['password'];
+      $ldapPassword = ldap_escape($_POST['password']);
 
       $ldapBind = ldap_bind( $ldapConn, $ldapDN, $ldapPassword );
 
@@ -45,9 +70,26 @@
         if ( !isset($config->ParameterArray['LDAPBaseSearch'])) {
           $config->ParameterArray['LDAPBaseSearch'] = "(&(objectClass=posixGroup)(memberUid=%userid%))";
         }
+        // Now get some more info about the user
+	//Get the DN so I can use the LDAP_MATCHING_RULE_IN_CHAIN function
+        // Insert the default 4.2 UserSearch string in case this is an upgrade instance
+        if ( ! isset($config->ParameterArray['LDAPUserSearch'])) {
+          $config->ParameterArray['LDAPUserSearch'] = "(|(uid=%userid%))";
+        }
+        $userSearch = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPUserSearch']));
+        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $userSearch );
+        $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
 
-        $ldapSearchDN = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
-        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $ldapSearchDN );
+        // These are standard schema items, so they aren't configurable
+        // However, suppress any errors that may crop up from not finding them
+	$found_dn = @$ldapResults[0]['cn'][0];
+        $person->FirstName = @$ldapResults[0]['givenname'][0];
+        $person->LastName = @$ldapResults[0]['sn'][0];
+        $person->Email = @$ldapResults[0]['mail'][0];
+
+
+        $ldapSearchDN = str_replace( "%userid%", $found_dn, html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
+        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $ldapSearchDN);
         $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
 
         // Because we have audit logs to maintain, we need to make a local copy of the User's record
@@ -65,7 +107,7 @@
           //
           // So, here we are with a ton of if/then statements.
 
-          if ( $config->ParameterArray['LDAPSiteAccess'] == "" || $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPSiteAccess'] ) {
+          if ( $config->ParameterArray['LDAPSiteAccess'] == "" || !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPSiteAccess']) ) {
             // No specific group membership required to access openDCIM or they have a match to the group required
             $_SESSION['userid'] = $ldapUser;
             $_SESSION['LoginTime'] = time();
@@ -75,57 +117,42 @@
             error_log( __("LDAP authentication successful, but access denied based on lacking group membership.  Username:") . $ldapUser);
           }
 
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPReadAccess'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'],$config->ParameterArray['LDAPReadAccess'])) {
               $person->ReadAccess = true;
           }
           
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPWriteAccess'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPWriteAccess'] )) {
               $person->WriteAccess = true;
           }
 
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPDeleteAccess'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPDeleteAccess'] )) {
               $person->DeleteAccess = true;
           }
           
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPAdminOwnDevices'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPAdminOwnDevices'] )) {
               $person->AdminOwnDevices = true;
           }
           
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPRackRequest'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPRackRequest'] )) {
               $person->RackRequest = true;
           }
           
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPRackAdmin'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPRackAdmin'] )) {
               $person->RackAdmin = true;
           }
           
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPContactAdmin'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPContactAdmin'] )) {
               $person->ContactAdmin = true;
           }
           
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPBulkOperations'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPBulkOperations'] )) {
               $person->BulkOperations = true;
           }
 
-          if ( $ldapResults[$i]['dn'] == $config->ParameterArray['LDAPSiteAdmin'] ) {
+          if ( !strcasecmp($ldapResults[$i]['dn'], $config->ParameterArray['LDAPSiteAdmin'] )) {
               $person->SiteAdmin = true;
           }
         }
-
-        // Now get some more info about the user
-        // Insert the default 4.2 UserSearch string in case this is an upgrade instance
-        if ( ! isset($config->ParameterArray['LDAPUserSearch'])) {
-          $config->ParameterArray['LDAPUserSearch'] = "(|(uid=%userid%))";
-        }
-        $userSearch = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPUserSearch']));
-        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $userSearch );
-        $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
-
-        // These are standard schema items, so they aren't configurable
-        // However, suppress any errors that may crop up from not finding them
-        $person->FirstName = @$ldapResults[0]['givenname'][0];
-        $person->LastName = @$ldapResults[0]['sn'][0];
-        $person->Email = @$ldapResults[0]['mail'][0];
 
         if ( isset($_SESSION['userid']) ) {
           if ( $person->PersonID > 0 ) {
