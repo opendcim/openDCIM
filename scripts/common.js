@@ -1592,8 +1592,19 @@ function initdrag(){
 								data: devcopy,
 								success: function(data){
 									if(!data.error){
-										InsertDevice(data.device);
-										initdrag();
+										$.get("api/v1/device/"+data.device.DeviceID+"/getpicture",function(picdata){
+											// Make a new cached image for our copied device
+											window.pictures[data.device.Cabinet][data.device.DeviceID]={};
+											// Save the front picture
+											window.pictures[data.device.Cabinet][data.device.DeviceID]['Front']=picdata.picture;
+											// Get the rear image
+											$.get("api/v1/device/"+data.device.DeviceID+"/getpicture?rear",function(picdata){
+												window.pictures[data.device.Cabinet][data.device.DeviceID]['Rear']=picdata.picture;
+												// Add the copy to the rack
+												InsertDevice(data.device);
+												initdrag();
+											});
+										});
 									}
 								},
 								error: function(data){
