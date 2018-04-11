@@ -2516,7 +2516,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 </div><!-- END div.page -->
 <script type="text/javascript">
 	var portrights=$.parseJSON('<?php echo json_encode($jsondata); ?>');
-	portrights['admin']=<?php echo ($person->SiteAdmin)?'true':'false'; ?>;
+	portrights['admin']=<?php echo ($person->WriteAccess)?'true':'false'; ?>;
 <?php
 	if(!$write){
 		print "\t\t//Disable all input if they don't have rights.
