@@ -202,14 +202,6 @@
 		// Init form
 		$('#datacenterid').trigger('change');
 
-		$("#cabinetid").combobox();
-		$("#datacenterid").combobox();
-		$("#assignedto").combobox();
-		$("#zoneid").combobox();
-		$("#cabrowid").combobox();
-
-		$('span.custom-combobox').width($('span.custom-combobox').width()+2);
-
 		$('#rackform').validationEngine({});
 		$('input[name="installationdate"]').datepicker({dateFormat: "yy-mm-dd"});
 		$('#tags').width($('#tags').parent('div').parent('div').innerWidth()-$('#tags').parent('div').prev('div').outerWidth()-5);
@@ -398,6 +390,13 @@ $('button[value=Delete]').click(function(){
 	});
 });
 
+	$("#cabinetid").combobox();
+	$("#datacenterid").combobox();
+	$("#assignedto").combobox();
+	$("#zoneid").combobox();
+	$("#cabrowid").combobox();
+
+	$('span.custom-combobox').width($('span.custom-combobox').width()+2);
 </script>
 </body>
 </html>
