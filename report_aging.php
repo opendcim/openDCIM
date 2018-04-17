@@ -54,13 +54,19 @@ class DeviceAge extends Device
             $previous_year = $year - 1;
             $selectSQL = sprintf("SELECT * FROM fac_Device WHERE (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)<%d AND (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>=%d ORDER BY Owner, MfgDate ASC, Label", $year, $previous_year);
             foreach ($dbh->query($selectSQL) as $deviceRow) {
-                $deviceList[$deviceRow['DeviceID']] = Device::RowToObject($deviceRow);
+                $dev = new Device();
+                $dev->DeviceID = $deviceRow['DeviceID'];
+                $dev->GetDevice();
+                $deviceList[$deviceRow['DeviceID']] = $dev;
             }
         }
         else {
             $selectSQL = "SELECT * FROM fac_Device WHERE (DATEDIFF(NOW(), (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END))/365)>5 AND (CASE WHEN MfgDate>'1969-12-31' THEN MfgDate ELSE InstallDate END)>'1970-01-01' ORDER BY Owner, MfgDate ASC, Label";
             foreach ($dbh->query($selectSQL) as $deviceRow) {
-                $deviceList[$deviceRow['DeviceID']] = Device::RowToObject($deviceRow);
+                $dev = new Device();
+                $dev->DeviceID = $deviceRow['DeviceID'];
+                $dev->GetDevice();
+                $deviceList[$deviceRow['DeviceID']] = $dev;
             }
         }
         return $deviceList;
