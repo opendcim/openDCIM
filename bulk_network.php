@@ -217,29 +217,55 @@
        *  Section for looking up the SourcePort by name and setting the true PortNumber in the devPort variable
        *
        */
-      $st = $dbh->prepare( "select count(*) as TotalMatches, Label, PortNumber from fac_Ports where DeviceID=:DeviceID and PortNumber>0 and ucase(Label)=ucase(:SourcePort)" );
-      $st->execute( array( ":DeviceID"=>$devPort->DeviceID, ":SourcePort"=>$row["SourcePort"] ));
+      // if label specified in the input import file is appended with '|rear' ,
+      // then the source port is a rear port ( negative port id), so we adapt query 
+      // to find it
+      if ( strpos($row["SourcePort"],'|rear') !== false ){
+        $rearPortOpt=" PortNumber < 0";
+        $sourcePortLabel=explode('|',$row["SourcePort"])[0];
+      } else {
+        $rearPortOpt=" PortNumber > 0";
+        $sourcePortLabel=$row["SourcePort"];
+      }
+      
+     $st = $dbh->prepare( "select count(*) as TotalMatches, Label, PortNumber from fac_Ports where DeviceID=:DeviceID  and Label=:SourcePort  and ".$rearPortOpt." ;" );
+
+      $st->execute( array(  ":DeviceID"=>$devPort->DeviceID, 
+                            ":SourcePort"=>$sourcePortLabel
+                             )
+                  );
+
       if ( ! $val = $st->fetch() ) {
         $info = $dbh->errorInfo();
         error_log( "PDO Error: {$info[2]}");
-      }
+      } 
 
       if ( $val["TotalMatches"] == 1 ) {
         $devPort->PortNumber = $val["PortNumber"];
         $devPort->Label = $val["Label"];
       } else {
         $errors = true;
-        $content .= "<li>Source Port: " . $row["SourcePort"] . " is not unique or not found.  Total = " . $val["TotalMatches"];
+        $content .= "<li>Source Port: " . $sourcePortLabel . " is not unique or not found.  Total = " . $val["TotalMatches"];
       }
-
       /*
        *
        *  Section for looking up the TargetPort by name and setting the true PortNumber in the devPort variable
        *  Limits to positive port numbers so that you can match Patch Panel frontside ports
        *
        */
-      $st = $dbh->prepare( "select count(*) as TotalMatches, Label, PortNumber from fac_Ports where DeviceID=:DeviceID and PortNumber>0 and ucase(Label)=ucase(:TargetPort)" );
-      $st->execute( array( ":DeviceID"=>$devPort->ConnectedDeviceID, ":TargetPort"=>$row["TargetPort"] ));
+      // if label specified in the input import file is appended with '|rear' ,
+      // then the source port is a rear port ( negative port id), so we adapt query 
+      // to find it
+      if ( strpos($row["TargetPort"],'|rear') !== false ){
+        $rearPortOpt=" PortNumber < 0";
+        $targetPortLabel=explode('|',$row["TargetPort"])[0];
+      } else {
+        $rearPortOpt=" PortNumber > 0";
+        $targetPortLabel=$row["TargetPort"];
+      }
+      
+      $st = $dbh->prepare( "select count(*) as TotalMatches, Label, PortNumber from fac_Ports where DeviceID=:DeviceID and Label=:TargetPort and ".$rearPortOpt  .";" );
+      $st->execute( array( ":DeviceID"=>$devPort->ConnectedDeviceID, ":TargetPort"=>$targetPortLabel));
       if ( ! $val = $st->fetch() ) {
         $info = $dbh->errorInfo();
         error_log( "PDO Error: {$info[2]}");
@@ -249,7 +275,8 @@
         $devPort->ConnectedPort = $val["PortNumber"];
       } else {
         $errors = true;
-        $content .= "<li>Target Port: " . $row["TargetDeviceID"] . "::" . $row["TargetPort"] . " is not unique or not found.  Total = " . $val["TotalMatches"];
+        $content .= "<li>Target Port: " . $row["TargetDeviceID"] . "::" . $targetPortLabel . " is not unique or not found.  Total = " . $val["TotalMatches"];
+         
       }
 
       // Do not fail if the Color Code or Media Type are not defined for the site.
