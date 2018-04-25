@@ -1175,7 +1175,7 @@ class Device {
 		}
 	}
 
-	function ViewDevicesByCabinet($includechildren=false){
+	function ViewDevicesByCabinet($includechildren=false,$sort=false){
 	//this function should be a method of class "cabinet", not "device"	
 		global $dbh;
 
@@ -1204,6 +1204,11 @@ class Device {
 		}
 		
 		$deviceList = array();
+
+		// Use this to sort the storage room my label instead of rack position
+		if($sort){
+			$sql=str_replace($order," ORDER BY Label ASC, DeviceID ASC",$sql);
+		}
 
 		foreach($dbh->query($sql) as $deviceRow){
 			$deviceList[]=Device::RowToObject($deviceRow);

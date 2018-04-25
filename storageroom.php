@@ -43,7 +43,7 @@
 		$dev->Position=0;
 		$srname=__("General Storage Room");
 	}
-	$devList=$dev->ViewDevicesByCabinet();
+	$devList=$dev->ViewDevicesByCabinet(false,true);
 ?>
 <!doctype html>
 <html>
