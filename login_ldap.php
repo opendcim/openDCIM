@@ -114,9 +114,9 @@ function setRights($group,&$person){
       ldap_set_option( $ldapConn, LDAP_OPT_PROTOCOL_VERSION, 3 );
       ldap_set_option( $ldapConn, LDAP_OPT_REFERRALS, 0 );
 
-      $ldapUser = ldap_escape(htmlspecialchars($_POST['username']));
+      $ldapUser = htmlspecialchars($_POST['username']);
       $ldapDN = str_replace( "%userid%", $ldapUser, $config->ParameterArray['LDAPBindDN']);
-      $ldapPassword = ldap_escape($_POST['password']);
+      $ldapPassword = $_POST['password'];
 
       $ldapBind = ldap_bind( $ldapConn, $ldapDN, $ldapPassword );
 
