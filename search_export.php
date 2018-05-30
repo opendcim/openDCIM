@@ -80,7 +80,7 @@
 			$Model="";
 			$Department="";
 			
-			if($row["TemplateID"]>0){
+			if($row["TemplateID"]>0 && array_key_exists( $row["TemplateID"], $tpList )){
 				$Model="<a href=\"device_templates.php?TemplateID=".$row["TemplateID"]."\" target=\"template\">" . $tpList[$row["TemplateID"]]->Model . "</a>";
 			}
 			
