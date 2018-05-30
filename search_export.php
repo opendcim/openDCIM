@@ -7,11 +7,20 @@
 	$datacenter=new DataCenter();
 	$dcList=$datacenter->GetDCList();
 	
-	$templ=new DeviceTemplate();
 	$dept=new Department();
 	$dev=new Device();
 	
 	$body="";
+
+	/* Preloading the entire array of templates and manufacturers should fit into memory, even for large
+		installations.   It reduces the complexity of the SQL query, too.   Previous SQL that we had
+		was doing a RIGHT JOIN, meaning devices with no template specified were missed in the result set.
+		This is much simpler than making multiple complicated LEFT JOIN statements and stitching the
+		result set together.
+	*/
+
+	$tpList = DeviceTemplate::GetTemplateList( true );
+	$mfList = Manufacturer::GetManufacturerList( true );
 
 	if(isset($_REQUEST['datacenterid'])){
 		$dc=isset($_POST['datacenterid'])?$_POST['datacenterid']:$_GET['datacenterid'];
@@ -27,10 +36,10 @@
 
 			$sql="SELECT a.Name AS DataCenter, b.DeviceID, c.Location, b.Position, 
 				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.WarrantyExpire, b.PrimaryIP, b.ParentDevice,
-				b.TemplateID, b.Owner, c.CabinetID, c.DataCenterID, f.Name as Manufacturer $custom_concat FROM fac_DataCenter a,
-				fac_Cabinet c, fac_DeviceTemplate e, fac_Manufacturer f, fac_Device b  LEFT OUTER JOIN fac_DeviceCustomValue d on
-				b.DeviceID=d.DeviceID WHERE b.Cabinet=c.CabinetID AND c.DataCenterID=a.DataCenterID AND b.TemplateID=e.TemplateID
-				AND e.ManufacturerID=f.ManufacturerID AND f.Name!='Virtual' $dclimit
+				b.TemplateID, b.Owner, c.CabinetID, c.DataCenterID $custom_concat FROM fac_DataCenter a,
+				fac_Cabinet c, fac_Device b  LEFT OUTER JOIN fac_DeviceCustomValue d on
+				b.DeviceID=d.DeviceID WHERE b.Cabinet=c.CabinetID AND c.DataCenterID=a.DataCenterID
+				$dclimit
 				GROUP BY DeviceID ORDER BY DataCenter ASC, Location ASC, Position ASC;";
 			$result=$dbh->query($sql);
 		
@@ -71,10 +80,8 @@
 			$Model="";
 			$Department="";
 			
-			if($row["TemplateID"] >0){
-				$templ->TemplateID=$row["TemplateID"];
-				$templ->GetTemplateByID();
-				$Model="<a href=\"device_templates.php?TemplateID=$templ->TemplateID\" target=\"template\">$templ->Model</a>";
+			if($row["TemplateID"]>0){
+				$Model="<a href=\"device_templates.php?TemplateID=".$row["TemplateID"]."\" target=\"template\">" . $tpList[$row["TemplateID"]]->Model . "</a>";
 			}
 			
 			if($row["Owner"] >0){
@@ -125,9 +132,7 @@
 
 					$ctags=implode(",", $child->GetTags());
 					if($child->TemplateID >0){
-						$templ->TemplateID=$child->TemplateID;
-						$templ->GetTemplateByID();
-						$cModel="<a href=\"device_templates.php?TemplateID=$templ->TemplateID\" target=\"template\">$templ->Model</a>";
+						$cModel="<a href=\"device_templates.php?TemplateID=".$child->TemplateID."\" target=\"template\">" . $tpList[$child->TemplateID]->Model . "</a>";
 					}
 					
 					if($child->Owner >0){
