@@ -2,6 +2,16 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
+	// This is really intended to be run from the command line, not in a browser.   However, just to be safe...
+
+	$person = People::Current();
+    
+    if(!$person->SiteAdmin){
+        // No soup for you.
+        header('Location: '.redirect());
+        exit;
+    }
+
 	$targetList = Device::getDevicesByTemplate(0);
 
 	$sql = "select * from fac_GenericLog where Class='Device' and Property='Height' and ObjectID=:DeviceID order by Time Desc limit 1";
