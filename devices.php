@@ -7,7 +7,7 @@
 	$dev=new Device();
 	$cab=new Cabinet();
 
-	$validHypervisors=array( "ESX", "ProxMox", "None" );
+	$validHypervisors=array( "None", "ESX", "ProxMox" );
 
 	$taginsert="";
 
