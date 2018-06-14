@@ -2,6 +2,8 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+	$subheader=__("Data Center Cabinet Inventory");
+
 	$cab=new Cabinet();
 	$dept=new Department();
 
@@ -224,8 +226,6 @@
 	include( 'sidebar.inc.php' );
 
 echo '<div class="main">
-<h2>',$config->ParameterArray["OrgName"],'</h2>
-<h3>',__("Data Center Cabinet Inventory"),'</h3>
 <h3>',$status,'</h3>
 <div class="center"><div>
 <form id="rackform" method="POST">
