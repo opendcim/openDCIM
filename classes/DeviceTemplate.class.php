@@ -40,8 +40,6 @@ class DeviceTemplate {
 	var $SNMPVersion;
 	var $CustomValues;
 	var $GlobalID;
-	var $ShareToRepo;
-	var $KeepLocal;
     
 	public function __construct($dtid=false){
 		if($dtid){
@@ -73,8 +71,6 @@ class DeviceTemplate {
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
 		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:$config->ParameterArray["SNMPVersion"];
 		$this->GlobalID=intval($this->GlobalID);
-		$this->ShareToRepo=intval($this->ShareToRepo);
-		$this->KeepLocal=intval($this->KeepLocal);
 	}
 
 	function MakeDisplay(){
@@ -102,8 +98,6 @@ class DeviceTemplate {
 		$Template->RearChassisSlots=$row["RearChassisSlots"];
 		$Template->SNMPVersion=$row["SNMPVersion"];
 		$Template->GlobalID = $row["GlobalID"];
-		$Template->ShareToRepo = $row["ShareToRepo"];
-		$Template->KeepLocal = $row["KeepLocal"];
         $Template->MakeDisplay();
 		$Template->GetCustomValues();
 
@@ -143,12 +137,7 @@ class DeviceTemplate {
 		global $dbh;
 		return $dbh->prepare( $sql );
 	}
-	
-	function clearShareFlag() {
-		$st = $this->prepare( "update fac_DeviceTemplate set ShareToRepo=0 where TemplateID=:TemplateID" );
-		$st->execute( array( ":TemplateID"=>$this->TemplateID ) );
-	}
-	
+		
 	function CreateTemplate(){
 		global $dbh;
 		
@@ -160,7 +149,7 @@ class DeviceTemplate {
 			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
 			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
 			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\",
-			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal;";
+			GlobalID=$this->GlobalID;";
 
 		if(!$dbh->exec($sql)){
 			error_log( "SQL Error: " . $sql );
@@ -203,7 +192,7 @@ class DeviceTemplate {
 			PSCount=$this->PSCount, NumPorts=$this->NumPorts, Notes=\"$this->Notes\", 
 			FrontPictureFile=\"$this->FrontPictureFile\", RearPictureFile=\"$this->RearPictureFile\",
 			ChassisSlots=$this->ChassisSlots, RearChassisSlots=$this->RearChassisSlots, SNMPVersion=\"$this->SNMPVersion\",
-			GlobalID=$this->GlobalID, ShareToRepo=$this->ShareToRepo, KeepLocal=$this->KeepLocal
+			GlobalID=$this->GlobalID
 			WHERE TemplateID=$this->TemplateID;";
 
 		$old=new DeviceTemplate();
@@ -239,6 +228,17 @@ class DeviceTemplate {
 		if(!$this->query($sql)){
 			return false;
 		}else{
+			// If we update the picture then update all device pictures so they get the 
+			// new value none of the other values getting updated directly apply to the 
+			// devices so we shouldn't have to call this that often.
+			if($this->FrontPictureFile!=$old->FrontPictureFile || $this->RearPictureFile!=$old->RearPictureFile){
+				$dev=new Device();
+				$dev->TemplateID=$this->TemplateID;
+				foreach($dev->search() as $i => $d){
+					$d->UpdateDeviceCache();
+				}
+			}
+
 			(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 			$this->MakeDisplay();
 			return true;
@@ -298,6 +298,11 @@ class DeviceTemplate {
 		return $this->Search($indexedbyid,true);
 	}
 
+	// Add a wrapper so we get templates like devices and other stuff, generic
+	function GetTemplate(){
+		return $this->GetTemplateByID();
+	}
+
 	function GetTemplateByID(){
 		$this->MakeSafe();
 
@@ -319,8 +324,6 @@ class DeviceTemplate {
 		$this->RearChassisSlots=0;
 		$this->SNMPVersion="";
 		$this->GlobalID=0;
-		$this->ShareToRepo=false;
-		$this->KeepLocal=false;
 		// Reset object in case of a lookup failure
 		//foreach($this as $prop => $value){
 		//	$value=($prop!='TemplateID')?null:$value;
@@ -366,17 +369,6 @@ class DeviceTemplate {
 			$templateList[]=DeviceTemplate::RowToObject($row);
 		}
 
-		return $templateList;
-	}
-
-	function GetTemplateShareList() {
-		$sql = "select * from fac_DeviceTemplate where ManufacturerID in (select ManufacturerID from fac_Manufacturer where GlobalID>0) and ShareToRepo=true order by ManufacturerID ASC";
-		
-		$templateList = array();
-		foreach( $this->query($sql) as $row ) {
-			$templateList[]=DeviceTemplate::RowToObject($row);
-		}
-		
 		return $templateList;
 	}
 
@@ -465,198 +457,117 @@ class DeviceTemplate {
 	}
 	
 	function ExportTemplate(){
-		$this->MakeSafe();
+		if($this->GetTemplate()){
+			//Get manufacturer name
+			$manufacturer=new Manufacturer($this->ManufacturerID);
+			$manufacturer->GetManufacturer();
+			$this->ManufacturerName=$manufacturer->Name;
 
-		//Get manufacturer name
-		$manufacturer=new Manufacturer();
-		$manufacturer->ManufacturerID=$this->ManufacturerID;
-		$manufacturer->GetManufacturerByID();
-		
-		$fileContent='<?xml version="1.0" encoding="UTF-8"?>
-<Template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
-	<ManufacturerName>'.$manufacturer->Name.'</ManufacturerName>
-	<TemplateReg>
-		<Model>'.$this->Model.'</Model> 
-	  <Height>'.$this->Height.'</Height> 
-	  <Weight>'.$this->Weight.'</Weight> 
-	  <Wattage>'.$this->Wattage.'</Wattage> 
-	  <DeviceType>'.$this->DeviceType.'</DeviceType> 
-	  <PSCount>'.$this->PSCount.'</PSCount> 
-	  <NumPorts>'.$this->NumPorts.'</NumPorts> 
-	  <Notes>'.$this->Notes.'</Notes> 
-	  <FrontPictureFile>'.$this->FrontPictureFile.'</FrontPictureFile> 
-	  <RearPictureFile>'.$this->RearPictureFile.'</RearPictureFile> 
-	  <SNMPVersion>'.$this->SNMPVersion.'</SNMPVersion>
-	  <ChassisSlots>'.$this->ChassisSlots.'</ChassisSlots> 
-	  <RearChassisSlots>'.$this->RearChassisSlots.'</RearChassisSlots> 
-	</TemplateReg>';
+			$dp=new TemplatePorts($this->TemplateID);
+			$dpp=new TemplatePowerPorts($this->TemplateID);
+			$this->ports=$dp->getPorts();
+			$this->powerports=$dpp->getPorts();
+			$this->slots=Slot::getSlots($this->TemplateID);
 
-		//Slots
-		for ($i=1; $i<=$this->ChassisSlots;$i++){
-			$slot=new Slot();
-			$slot->TemplateID=$this->TemplateID;
-			$slot->Position=$i;
-			$slot->BackSide=False;
-			$slot->GetSlot();
-			$fileContent.='
-	<SlotReg>
-		<Position>'.$slot->Position.'</Position>
-		<BackSide>0</BackSide>
-		<X>'.$slot->X.'</X>
-		<Y>'.$slot->Y.'</Y>
-		<W>'.$slot->W.'</W>
-		<H>'.$slot->H.'</H>
-	</SlotReg>';
+			$colorcodes=ColorCoding::GetCodeList();
+			$mediatypes=MediaTypes::GetMediaTypeList();
+			foreach($this->ports as $i => $p){
+				if($p->MediaID>0){
+					$p->MediaType=$mediatypes[$p->MediaID]->MediaType;
+				}
+				if($p->ColorID>0){
+					$p->Name=$colorcodes[$p->ColorID]->Name;
+				}
+			}
+
+			foreach(array('FrontPictureFile','RearPictureFile') as $pic){
+				$path='./pictures';
+				$file=$path.DIRECTORY_SEPARATOR.$this->$pic;
+				if(is_file($file)){
+					$type = pathinfo($file, PATHINFO_EXTENSION);
+					$data = file_get_contents($file);
+					$base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+					$this->$pic=$base64;
+				}
+			}
+
+			header('Content-Type: application/json');
+			$fileContent=json_encode($this);
+			//download file
+			download_file_from_string($fileContent, str_replace(' ', '', $manufacturer->Name."-".$this->Model).".json");
+			
+			return true;
+		}else{
+			// tried to export a template that doesn't exist
+			return false;
 		}
-		for ($i=1; $i<=$this->RearChassisSlots;$i++){
-			$slot=new Slot();
-			$slot->TemplateID=$this->TemplateID;
-			$slot->Position=$i;
-			$slot->BackSide=True;
-			$slot->GetSlot();
-			$fileContent.='
-	<SlotReg>
-		<Position>'.$slot->Position.'</Position>
-		<BackSide>1</BackSide>
-		<X>'.$slot->X.'</X>
-		<Y>'.$slot->Y.'</Y>
-		<W>'.$slot->W.'</W>
-		<H>'.$slot->H.'</H>
-	</SlotReg>';
-		}
-		//Ports
-		for ($i=1; $i<=$this->NumPorts;$i++){
-			$tport=new TemplatePorts();
-			$tport->TemplateID=$this->TemplateID;
-			$tport->PortNumber=$i;
-			$tport->GetPort();
-			//Get media name
-			$mt=new MediaTypes();
-			$mt->MediaID=$tport->MediaID;
-			$mt->GetType();
-			//Get color name
-			$cc=new ColorCoding();
-			$cc->ColorID=$tport->ColorID;
-			$cc->GetCode();
-			$fileContent.='
-	<PortReg>
-		<PortNumber>'.$tport->PortNumber.'</PortNumber>
-		<Label>'.$tport->Label.'</Label>
-		<PortMedia>'.$mt->MediaType.'</PortMedia>
-		<PortColor>'.$cc->Name.'</PortColor>
-		<Notes>'.$tport->Notes.'</Notes>
-	</PortReg>';
-		}
-		//Pictures
-		if ($this->FrontPictureFile!="" && file_exists("pictures/".$this->FrontPictureFile)){
-			$im=file_get_contents("pictures/".$this->FrontPictureFile);
-			$fileContent.='
-	<FrontPicture>
-'.base64_encode($im).'
-	</FrontPicture>';
-		}
-		if ($this->RearPictureFile!="" && file_exists("pictures/".$this->RearPictureFile)){
-			$im=file_get_contents("pictures/".$this->RearPictureFile);
-			$fileContent.='
-	<RearPicture>
-'.base64_encode($im).'
-	</RearPicture>';
-		}
-		
-		//End of template
-		$fileContent.='
-</Template>';
-		
-		//download file
-		download_file_from_string($fileContent, str_replace(' ', '', $manufacturer->Name."-".$this->Model).".xml");
-		
-		return true;
 	}
 
 	function ImportTemplate($file){
 		$result=array();
 		$result["status"]="";
 		$result["log"]=array();
-		$ierror=0;
-		
-		//validate xml template file with openDCIMdevicetemplate.xsd
-		libxml_use_internal_errors(true);
-		$xml=new XMLReader();
-		$xml->open($file);
-		$resp=$xml->setSchema ("openDCIMdevicetemplate.xsd");
-		while (@$xml->read()) {}; // empty loop
-		$errors = libxml_get_errors();
-		if (count($errors)>0){
-			$result["status"]=__("No valid file");
-			foreach ($errors as $error) {
-				$result["log"][$ierror++]=$error->message;
-			}
-			return $result;
-		}
-    libxml_clear_errors();
-		$xml->close();
-		
-		//read xml template file
-		$xmltemplate=simplexml_load_file($file);
-		
+
+		$templatefile=json_decode(file_get_contents($file));
+
 		//manufacturer
 		$manufacturer=new Manufacturer();
-		$manufacturer->Name=transform($xmltemplate->ManufacturerName);
+		$manufacturer->Name=$templatefile->ManufacturerName;
 		if (!$manufacturer->GetManufacturerByName()){
 			//New Manufacturer
 			$manufacturer->CreateManufacturer();
 		}
+		$templatefile->ManufacturerID=$manufacturer->ManufacturerID;
+
 		$template=new DeviceTemplate();
-		$template->ManufacturerID=$manufacturer->ManufacturerID;
-		$template->Model=transform($xmltemplate->TemplateReg->Model);
-		$template->Height=$xmltemplate->TemplateReg->Height;
-		$template->Weight=$xmltemplate->TemplateReg->Weight;
-		$template->Wattage=$xmltemplate->TemplateReg->Wattage;
-		$template->DeviceType=$xmltemplate->TemplateReg->DeviceType;
-		$template->PSCount=$xmltemplate->TemplateReg->PSCount;
-		$template->NumPorts=$xmltemplate->TemplateReg->NumPorts;
-		$template->Notes=trim($xmltemplate->TemplateReg->Notes);
-		$template->Notes=($template->Notes=="<br>")?"":$template->Notes;
-		$template->FrontPictureFile=$xmltemplate->TemplateReg->FrontPictureFile;
-		$template->RearPictureFile=$xmltemplate->TemplateReg->RearPictureFile;
-		$template->SNMPVersion=$xmltemplate->TemplateReg->SNMPVersion;
-		$template->ChassisSlots=($template->DeviceType=="Chassis")?$xmltemplate->TemplateReg->ChassisSlots:0;
-		$template->RearChassisSlots=($template->DeviceType=="Chassis")?$xmltemplate->TemplateReg->RearChassisSlots:0;
-		
-		//Check if picture files exist
-		if ($template->FrontPictureFile!="" && file_exists("pictures/".$template->FrontPictureFile)){
-			$result["status"]=__("Import Error");
-			$result["log"][0]= __("Front picture file already exists");
-			return $result;
+		foreach($template as $prop => $val){
+			$template->$prop=$templatefile->$prop;
 		}
-		if ($template->RearPictureFile!="" && file_exists("pictures/".$template->RearPictureFile)){
-			$result["status"]=__("Import Error");
-			$result["log"][0]= __("Rear picture file already exists");
-			return $result;
+
+		if($template->FrontPictureFile!='' && preg_match("/^data/i",$template->FrontPictureFile)){
+			preg_match("/image\/([a-zA-Z0-9]{1,5})/i",$template->FrontPictureFile,$ext_matches);
+			list($type, $template->FrontPictureFile) = explode(';', $template->FrontPictureFile);
+			list(, $template->FrontPictureFile)      = explode(',', $template->FrontPictureFile);
+			$front_file = base64_decode($template->FrontPictureFile);
+			$frontfilename=filter_var("{$templatefile->ManufacturerID}.{$templatefile->ManufacturerName}-{$templatefile->Model}-FRONT.{$ext_matches[1]}", FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW);
+			$frontfilename=str_replace(" ","-",$frontfilename);
+			$template->FrontPictureFile=$frontfilename;
+		}else{
+			$template->FrontPictureFile="";
+			$front_file=false;
 		}
-		
+
+		if($template->RearPictureFile!='' && preg_match("/^data/i",$template->RearPictureFile)){
+			preg_match("/image\/([a-zA-Z0-9]{1,5})/i",$template->RearPictureFile,$ext_matches);
+			list($type, $template->RearPictureFile) = explode(';', $template->RearPictureFile);
+			list(, $template->RearPictureFile)      = explode(',', $template->RearPictureFile);
+			$rear_file = base64_decode($template->RearPictureFile);
+			$rearfilename=filter_var("{$templatefile->ManufacturerID}.{$templatefile->ManufacturerName}-{$templatefile->Model}-REAR.{$ext_matches[1]}", FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW);
+			$rearfilename=str_replace(" ","-",$rearfilename);
+			$template->RearPictureFile=$rearfilename;
+		}else{
+			$template->RearPictureFile="";
+			$rear_file=false;
+		}
+
 		//create the template
 		if (!$template->CreateTemplate()){
 			$result["status"]=__("Import Error");
 			$result["log"][0]=__("An error has occurred creating the template.<br>Possibly there is already a template of the same manufacturer and model");
 			return $result;
 		}
-		
+
 		//get template to this object
 		$this->TemplateID=$template->TemplateID;
-		$this->GetTemplateByID();
-		
+		$this->GetTemplate();
+
 		//slots
-		foreach ($xmltemplate->SlotReg as $xmlslot){
+		foreach ($templatefile->slots as $i => $s){
 			$slot=new Slot();
+			foreach($slot as $prop => $val){
+				$slot->$prop=$s->$prop;
+			}
 			$slot->TemplateID=$this->TemplateID;
-			$slot->Position=intval($xmlslot->Position);
-			$slot->BackSide=intval($xmlslot->BackSide);
-			$slot->X=intval($xmlslot->X);
-			$slot->Y=intval($xmlslot->Y);
-			$slot->W=intval($xmlslot->W);
-			$slot->H=intval($xmlslot->H);
 			if (($slot->Position<=$this->ChassisSlots && !$slot->BackSide) || ($slot->Position<=$this->RearChassisSlots && $slot->BackSide)){
 				if(!$slot->CreateSlot()){
 					$result["status"]=__("Import Warning");
@@ -667,51 +578,87 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 				$result["log"][$ierror++]=sprintf(__("Ignored slot %s"),$slot->Position."-".($slot->BackSide)?__("Rear"):__("Front"));
 			}
 		}
-		
+
 		//ports
-		foreach ($xmltemplate->PortReg as $xmlport){
-			//media type
-			$mt=new MediaTypes();
-			$mt->MediaType=transform($xmlport->PortMedia);
-			if (!$mt->GetTypeByName()){
-				//New media type
-				$mt->CreateType();
+		$colorcodes=ColorCoding::GetCodeList('Name');
+		$mediatypes=MediaTypes::GetMediaTypeList('MediaType');
+		foreach ($templatefile->ports as $p){
+			$tp=new TemplatePorts();
+			foreach($tp as $prop => $val){
+				$tp->$prop=$p->$prop;
 			}
-			
-			//color
-			$cc=new ColorCoding();
-			$cc->Name=transform($xmlport->PortColor);
-			if (!$cc->GetCodeByName()){
-				//New color
-				$cc->CreateCode();
+			$tp->TemplateID=$this->TemplateID;
+
+			// deal with any potential color codes
+			if($tp->ColorID>0 && (isset($tp->Name) && $tp->Name!='')){
+				if(array_key_exists($tp->Name, $colorcodes)){
+					$tp->ColorID=$colorcodes[$tp->Name]->ColorID;
+				}else{
+					$cc=new ColorCoding();
+					$cc->Name=$tp->Name;
+					if(!$cc->CreateCode()){
+						$cc->ColorID=0;
+						$result["status"]=__("Import Warning");
+						$result["log"][$ierror++]=sprintf(__("An error has occurred creating the color code %s"),$cc->Name);
+					}
+					$colorcodes["$cc->Name"]=$cc;
+					$tp->ColorID=$cc->ColorID;
+				}
 			}
-			
-			$tport=new TemplatePorts();
-			$tport->TemplateID=$this->TemplateID;
-			$tport->PortNumber=intval($xmlport->PortNumber);
-			$tport->Label=$xmlport->Label;
-			$tport->MediaID=$mt->MediaID; 
-			$tport->ColorID=$cc->ColorID;
-			$tport->Notes=$xmlport->Notes;
-			if ($tport->PortNumber<=$this->NumPorts){
-				if(!$tport->CreatePort()){
+
+			// deal with any potential media types
+			if($tp->MediaID>0 && (isset($tp->MediaType) && $tp->MediaType!='')){
+				if(array_key_exists($tp->MediaType, $mediatypes)){
+					$tp->MediaID=$mediatypes[$tp->MediaType]->MediaID;
+				}else{
+					$mt=new MediaTypes();
+					$mt->MediaType=$tp->MediaType;
+					$mt->ColorID=$tp->ColorID;
+					if(!$mt->CreateType()){
+						$mt->MediaID=0;
+						$result["status"]=__("Import Warning");
+						$result["log"][$ierror++]=sprintf(__("An error has occurred creating the media type %s"),$mt->MediaType);
+					}
+					$mediatypes[$mt->MediaType]=$mt;
+					$tp->MediaID=$mt->MediaID;
+				}
+			}
+
+			// now try to actually create the template port
+			if ($tp->PortNumber<=$this->NumPorts){
+				if(!$tp->CreatePort()){
 					$result["status"]=__("Import Warning");
-					$result["log"][$ierror++]=sprintf(__("An error has occurred creating the port %s"),$tport->PortNumber);
+					$result["log"][$ierror++]=sprintf(__("An error has occurred creating the port %s"),$tp->PortNumber);
 				}
 			}else{
 				$result["status"]=__("Import Warning");
-				$result["log"][$ierror++]=sprintf(__("Ignored port %s"),$tport->PortNumber);
+				$result["log"][$ierror++]=sprintf(__("Ignored port %s"),$tp->PortNumber);
 			}
 		}
 
-		//files
-		if($this->FrontPictureFile!=""){
-			$im=base64_decode($xmltemplate->FrontPicture);
-			file_put_contents("pictures/".$this->FrontPictureFile, $im);
+		foreach ($templatefile->powerports as $p){
+			$tp=new TemplatePowerPorts();
+			foreach($tp as $prop => $val){
+				$tp->$prop=$p->$prop;
+			}
+			$tp->TemplateID=$this->TemplateID;
+			if ($tp->PortNumber<=$this->PSCount){
+				if(!$tp->CreatePort()){
+					$result["status"]=__("Import Warning");
+					$result["log"][$ierror++]=sprintf(__("An error has occurred creating the port %s"),$tp->PortNumber);
+				}
+			}else{
+				$result["status"]=__("Import Warning");
+				$result["log"][$ierror++]=sprintf(__("Ignored port %s"),$tp->PortNumber);
+			}
 		}
-		if($this->RearPictureFile!="" && $this->RearPictureFile!=$this->FrontPictureFile){
-			$im=base64_decode($xmltemplate->RearPicture);
-			file_put_contents("pictures/".$this->RearPictureFile, $im);
+		//only write out a file if they don't already exist
+		$path='./pictures';
+		if($front_file && !is_file($path.DIRECTORY_SEPARATOR.$frontfilename)){
+			file_put_contents($path.DIRECTORY_SEPARATOR.$frontfilename, $front_file);
+		}
+		if($rear_file && !is_file($path.DIRECTORY_SEPARATOR.$rearfilename)){
+			file_put_contents($path.DIRECTORY_SEPARATOR.$rearfilename, $rear_file);
 		}
 		return $result;
 	}
@@ -726,6 +673,7 @@ xsi:noNamespaceSchemaLocation="openDCIMdevicetemplate.xsd">
 			a.AttributeID=v.AttributeID AND TemplateID=$this->TemplateID ORDER BY Label, 
 			AttributeID;";
 		foreach($this->query($sql) as $tdcrow) {
+			$this->{$tdcrow["Label"]}=$tdcrow["Value"];
 			$tdca[$tdcrow["AttributeID"]]["value"]=$tdcrow["Value"];
 			$tdca[$tdcrow["AttributeID"]]["required"]=$tdcrow["Required"];
 		}	

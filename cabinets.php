@@ -127,7 +127,7 @@
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
-  <link rel="stylesheet" href="css/jHtmlArea.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery-te-1.4.0.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
@@ -135,9 +135,9 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
-  <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-te-1.4.0.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
-  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/common.js?v<?php echo filemtime('scripts/common.js');?>"></script>
 
   <script type="text/javascript">
 	$(document).ready(function() {
@@ -201,14 +201,6 @@
 
 		// Init form
 		$('#datacenterid').trigger('change');
-
-		$("#cabinetid").combobox();
-		$("#datacenterid").combobox();
-		$("#assignedto").combobox();
-		$("#zoneid").combobox();
-		$("#cabrowid").combobox();
-
-		$('span.custom-combobox').width($('span.custom-combobox').width()+2);
 
 		$('#rackform').validationEngine({});
 		$('input[name="installationdate"]').datepicker({dateFormat: "yy-mm-dd"});
@@ -398,6 +390,13 @@ $('button[value=Delete]').click(function(){
 	});
 });
 
+	$("#cabinetid").combobox();
+	$("#datacenterid").combobox();
+	$("#assignedto").combobox();
+	$("#zoneid").combobox();
+	$("#cabrowid").combobox();
+
+	$('span.custom-combobox').width($('span.custom-combobox').width()+2);
 </script>
 </body>
 </html>

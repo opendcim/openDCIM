@@ -91,6 +91,9 @@ class Zone {
 			return false;
 		}else{
 			$this->ZoneID=$dbh->lastInsertID();
+
+			updateNavTreeHTML();
+				
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->ZoneID;
 		}
@@ -123,6 +126,8 @@ class Zone {
 			return false;
 		}
 
+		updateNavTreeHTML();
+				
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldzone):'';
 		return true;
 	}
@@ -155,6 +160,9 @@ class Zone {
 		if(!$this->query($sql)){
 			return false;
 		}
+
+		updateNavTreeHTML();
+				
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}

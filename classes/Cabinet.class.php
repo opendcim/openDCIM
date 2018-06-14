@@ -146,7 +146,7 @@ class Cabinet {
 		}
 	}
 
-	function CreateCabinet(){
+	function CreateCabinet($deferTreeRebuild=false){
 		global $dbh;
 		
 		$this->MakeSafe();
@@ -170,7 +170,11 @@ class Cabinet {
 		}else{
 			$this->CabinetID=$dbh->lastInsertID();
 		}
-		
+
+		if ( ! $deferTreeRebuild ) {
+			updateNavTreeHTML();
+		}
+				
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return $this->CabinetID;
 	}
@@ -202,6 +206,8 @@ class Cabinet {
 			return false;
 		}
 
+		updateNavTreeHTML();
+				
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 		return true;
 	}
@@ -481,6 +487,8 @@ class Cabinet {
 			return false;
 		}
 	
+		updateNavTreeHTML();
+				
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		return true;
 	}
@@ -601,6 +609,17 @@ class Cabinet {
 		}
 
 		return $cabstats;
+	}
+	function getPictures(){
+		global $dbh;
+		$sql="SELECT * FROM fac_DeviceCache WHERE DeviceID IN (SELECT DeviceID FROM 
+			fac_Device WHERE Cabinet=$this->CabinetID AND ParentDevice=0);";
+		$devarray=array();
+		foreach($dbh->query($sql) as $row){
+			$devarray[$row['DeviceID']]['Front']=html_entity_decode($row['Front']);
+			$devarray[$row['DeviceID']]['Rear']=html_entity_decode($row['Rear']);
+		}
+		return $devarray;
 	}
 }
 ?>

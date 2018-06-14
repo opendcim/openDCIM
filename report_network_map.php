@@ -234,7 +234,11 @@ overlap = scale;
                          'MediaID'=>$port->MediaID,
                          'Label'=>$port->Label
                     );
-                    $c_port_list[]="<".$port->Label."> ".$port->Label;
+                    if ( $port->PortNumber < 0 ) {
+                        $c_port_list[]="<".$port->PortNumber."> (Rear)".$port->Label;
+                    } else {
+                        $c_port_list[]="<".$port->PortNumber."> ".$port->Label;
+                    }
                 }
                 $p_count = count($c_port_list);
                 $n_dev_label = "{";
@@ -321,8 +325,9 @@ overlap = scale;
             if(!isset($devportmapping[$tkey][$pkey])) {
                $devportmapping[$tkey][$pkey] = array();
             }
-            # grab the current devices label for the port, allows cleaner labeling of connections
-            $devportmapping[$tkey][$pkey][$port['DeviceID']] = $port['Label'];
+            # grab the current device's label and portnumber for the port, allows cleaner labeling of connections
+            # used in $devid below
+            $devportmapping[$tkey][$pkey][$port['DeviceID']] = array($port['Label'], $port['PortNumber']);
             # 0: tries to use the color from the db, if we can identify it.
             # otherwise uses a random color from the list above.
             # 1: randomizes the colors by colorid
@@ -358,7 +363,6 @@ overlap = scale;
         foreach ($devportmapping as $tkey => $value){
             $tkeypair = explode(":", $tkey, 2);
             foreach($value as $pkey => $devid) {
-                $pkeys = explode(":", $pkey);
                 # choose the style of connection. just went with a modulus to keep things simple.
                 # Only modify the style if the colors can't distinguish media id.
                 if(($colorType == 1 )||($colorType == 2)) {
@@ -370,21 +374,21 @@ overlap = scale;
                 # if we can't find a label for either side, the side without is considered outside
                 # the filter specified within your view.
                 if(!isset($devid[$tkeypair[0]])) {
-                    $devid[$tkeypair[0]] = "outside filter";
+                    $devid[$tkeypair[0]][0] = "outside filter";
                     $style = ",style=dotted";
                 }
                 if(!isset($devid[$tkeypair[1]])) {
-                    $devid[$tkeypair[1]] = "outside filter";
+                    $devid[$tkeypair[1]][0] = "outside filter";
                     $style = ",style=dotted";
                 }
                 # add the connection to the dotfile.
-                $graphstr .= "\t".$tkeypair[0].":\"".$devid[$tkeypair[0]]."\" -- "
-                        .$tkeypair[1].":\"".$devid[$tkeypair[1]]
+                $graphstr .= "\t".$tkeypair[0].":\"".$devid[$tkeypair[0]][1]."\" -- "
+                        .$tkeypair[1].":\"".$devid[$tkeypair[1]][1]
                         ."\" [color=".$devid['color'].$style;
                 # label the connections if so desired.
                 if (isset($_REQUEST["edgelabels"])) {
-                    $graphstr .= ",label=\"".$devid[$tkeypair[0]]."--"
-                    .$devid[$tkeypair[1]]."\"";
+                    $graphstr .= ",label=\"".$devid[$tkeypair[0]][0]."--"
+                    .$devid[$tkeypair[1]][0]."\"";
                 }
                 $graphstr .= "];\n";
             }

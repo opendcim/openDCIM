@@ -7,7 +7,7 @@
 	$dev=new Device();
 	$cab=new Cabinet();
 
-	$validHypervisors=array( "ESX", "ProxMox", "None" );
+	$validHypervisors=array( "None", "ESX", "ProxMox" );
 
 	$taginsert="";
 
@@ -496,7 +496,11 @@
 		}else{
 			$dev->DeviceID = $_POST['refreshswitch'];
 			$tagList = $dev->GetTags();
-			if( ! in_array( "NoPoll", $tagList )) {
+			// The logic here is:
+			//	If you select to OptIn switch polling, only poll if you have the Poll tag assigned to this device
+			//	but if you are an OptOut site, poll everything unless it has the NoPoll tag assigned
+			//
+			if( ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" && in_array( "Poll", $tagList ) || ( $config->ParameterArray["NetworkCapacityReportOptOut"] == "OptOut" && ! in_array( "NoPoll", $tagList )))) {
 				echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
 			} else {
 				echo json_encode(array());
@@ -983,7 +987,7 @@ $write=($dev->Rights=="Write")?true:$write;
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
-  <link rel="stylesheet" href="css/jHtmlArea.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery-te-1.4.0.css" type="text/css">
   <style type="text/css"></style>
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
@@ -993,9 +997,9 @@ $write=($dev->Rights=="Write")?true:$write;
   <script type="text/javascript" src="scripts/mdetect.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
-  <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-te-1.4.0.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
-  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/common.js?v<?php echo filemtime('scripts/common.js');?>"></script>
 
 <SCRIPT type="text/javascript" >
 var nextField;
@@ -2516,7 +2520,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 </div><!-- END div.page -->
 <script type="text/javascript">
 	var portrights=$.parseJSON('<?php echo json_encode($jsondata); ?>');
-	portrights['admin']=<?php echo ($person->SiteAdmin)?'true':'false'; ?>;
+	portrights['admin']=<?php echo ($person->WriteAccess)?'true':'false'; ?>;
 <?php
 	if(!$write){
 		print "\t\t//Disable all input if they don't have rights.

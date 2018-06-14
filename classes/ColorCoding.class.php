@@ -109,14 +109,14 @@ class ColorCoding {
 	}
 	
 	
-	static function GetCodeList() {
+	static function GetCodeList($indexedby="ColorID") {
 		global $dbh;
 		
 		$sql="SELECT * FROM fac_ColorCoding ORDER BY Name ASC";
 		
 		$codeList=array();
 		foreach($dbh->query($sql) as $row){
-			$n=$row["ColorID"]; // index array by id
+			$n=$row[$indexedby]; // index array by id
 			$codeList[$n]=new ColorCoding();
 			$codeList[$n]->ColorID=$row["ColorID"];
 			$codeList[$n]->Name=$row["Name"];

@@ -379,16 +379,23 @@
 
     $head="\n<style type=\"text/css\">\n";
 
+	// Set up the classes for color coding based upon status
+	$dsList=DeviceStatus::getStatusList();
+
+	foreach($dsList as $stat){
+		if($stat->ColorCode != "#FFFFFF"){
+			$stName=str_replace(' ','_',$stat->Status);
+			$important=($stName == 'Reserved')?' !important':'';
+
+			$head.="\t\t\t.$stName {background-color: {$stat->ColorCode}$important;}\n";
+		}
+	}
     foreach ( $cabList as $cabinet) {
         $dev->Cabinet=$cabinet->CabinetID;
         $devList=$dev->ViewDevicesByCabinet();
         $currentHeight=$cabinet->CabinetHeight;
         $cab_color=get_cabinet_owner_color($cabinet, $deptswithcolor);
         
-        if($config->ParameterArray["ReservedColor"] != "#FFFFFF" || $config->ParameterArray["FreeSpaceColor"] != "#FFFFFF"){
-            $head.=".reserved{background-color: {$config->ParameterArray['ReservedColor']};}\n";
-            $head.=".freespace{background-color: {$config->ParameterArray['FreeSpaceColor']};}\n";
-        }
         // build out the front and rear of the cabinet
         // these directly alter the $body variable
         // wrap it all in a table so both sides of a cabinet get on the same page

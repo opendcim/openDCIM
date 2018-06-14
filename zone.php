@@ -92,7 +92,7 @@
   <script type="text/javascript" src="scripts/jquery.imgareaselect.pack.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
-  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/common.js?v<?php echo filemtime('scripts/common.js');?>"></script>
 
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
@@ -256,6 +256,8 @@ print "		dialog.find('span + span').html('".__("This Zone will be deleted and th
 
 		$("#zoneid").combobox();
 		$("#datacenterid").combobox();
+
+		$('span.custom-combobox').width($('span.custom-combobox').width()+2);
 	});
 </script>
 </body>

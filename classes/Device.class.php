@@ -120,7 +120,7 @@ class Device {
 		$this->v3PrivPassphrase=sanitize($this->v3PrivPassphrase);
 		$this->SNMPFailureCount=intval($this->SNMPFailureCount);
 		$this->Hypervisor=(in_array($this->Hypervisor, $validHypervisors))?$this->Hypervisor:'None';
-		$this->APIUserName=sanitize($this->APIUsername);
+		$this->APIUsername=sanitize($this->APIUsername);
 		$this->APIPassword=sanitize($this->APIPassword);
 		$this->APIPort = intval($this->APIPort);
 		$this->ProxMoxRealm=sanitize($this->ProxMoxRealm);
@@ -346,6 +346,20 @@ class Device {
 		$caller=debug_backtrace();
 		$caller=$caller[1]['function'];
 
+		if (preg_match('/(?<placeholder>\{(?<tag>[^\}]+)+\})/i', $oid, $oid_matches))
+        {
+            // Look for numeric custom attribute that matches the pattern found on the oid path
+            if (isset($dev->{$oid_matches['tag']}) && is_numeric($dev->{$oid_matches['tag']}))
+            {
+                $oid = str_replace($oid_matches['placeholder'], $dev->{$oid_matches['tag']}, $oid);
+            }
+            else
+            {
+                error_log("Device::$caller($dev->DeviceID) Inconsistent OID information for device '$dev->Label'. Cannot proceed with SNMP lookup.");
+                return false; // Do not increment failures in this case (configuration issue, not a failure to respond)
+            }
+        }
+
 		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,$dev->SNMPVersion,$dev->v3SecurityLevel,$dev->v3AuthProtocol,$dev->v3AuthPassphrase,$dev->v3PrivProtocol,$dev->v3PrivPassphrase);
 		$snmpresult=false;
 		try {
@@ -433,6 +447,10 @@ class Device {
 		foreach(array_intersect_key((array) $this, $dcaList) as $label=>$value){
 			$this->InsertCustomValue($dcaList[$label]->AttributeID, $this->$label);
 		}
+
+		// Update the device image cache
+		$updatethis=$this->WhosYourDaddy(true);
+		$updatethis->UpdateDeviceCache();
 
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
 
@@ -904,6 +922,10 @@ class Device {
 			$this->Position = 0;
 		}
 		
+		// Update the device image cache
+		$updatethis=$this->WhosYourDaddy(true);
+		$updatethis->UpdateDeviceCache();
+
 		(class_exists('LogActions'))?LogActions::LogThis($this,$tmpDev):'';
 		return true;
 	}
@@ -1151,19 +1173,23 @@ class Device {
 		return $devList;
 	}
 	
-	function WhosYourDaddy(){
-		$dev=new Device();
-		
+	// Calling this as is will return one level up
+	// calling it true will go all the way up the tree
+	function WhosYourDaddy($recurse=false){
 		if($this->ParentDevice==0){
-			return $dev;
+			return $this;
 		}else{
-			$dev->DeviceID=$this->ParentDevice;
+			$dev=new Device($this->ParentDevice);
 			$dev->GetDevice();
-			return $dev;
+			if($recurse){
+				return $dev->WhosYourDaddy(true);
+			}else{
+				return $dev;
+			}
 		}
 	}
 
-	function ViewDevicesByCabinet($includechildren=false){
+	function ViewDevicesByCabinet($includechildren=false,$sort=false){
 	//this function should be a method of class "cabinet", not "device"	
 		global $dbh;
 
@@ -1192,6 +1218,11 @@ class Device {
 		}
 		
 		$deviceList = array();
+
+		// Use this to sort the storage room my label instead of rack position
+		if($sort){
+			$sql=str_replace($order," ORDER BY Label ASC, DeviceID ASC",$sql);
+		}
 
 		foreach($dbh->query($sql) as $deviceRow){
 			$deviceList[]=Device::RowToObject($deviceRow);
@@ -1402,6 +1433,20 @@ class Device {
 
 	}
   
+	static function SearchDevicebyCabRow( $CabRowID ) {
+		// Simple call to reset all counters
+		global $dbh;
+
+		$sql=sprintf("SELECT * FROM fac_Device WHERE Cabinet IN (SELECT CabinetID from fac_Cabinet WHERE CabRowID=%d);",$CabRowID);
+		$deviceList=array();
+
+		foreach($dbh->query($sql) as $deviceRow){
+			$deviceList[]=Device::RowToObject($deviceRow);
+		}
+
+		return $deviceList;
+	}
+
 	function SearchByCustomTag($tag=null){
 		global $dbh;
 		
@@ -2187,6 +2232,23 @@ class Device {
 			$resp.="\t</div>\n";
 		}
 		return $resp;
+	}
+
+	function UpdateDeviceCache(){
+		global $dbh;
+
+		$front=htmlentities($this->GetDevicePicture());
+		$rear=htmlentities($this->GetDevicePicture(true));
+
+		$sql="INSERT INTO fac_DeviceCache SET DeviceID=\"$this->DeviceID\", 
+			Front=\"$front\", Rear=\"$rear\" ON DUPLICATE KEY UPDATE Front=\"$front\", 
+			Rear=\"$rear\";";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			error_log( "UpdateDeviceCache::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
 	}
 
 	function GetCustomValues() {

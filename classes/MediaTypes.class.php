@@ -101,7 +101,7 @@ class MediaTypes {
 		}
 	}
 	
-	static function GetMediaTypeList() {
+	static function GetMediaTypeList($indexedby="MediaID") {
 		global $dbh;
 		
 		$sql = "SELECT * FROM fac_MediaTypes ORDER BY MediaType ASC";
@@ -109,7 +109,7 @@ class MediaTypes {
 		$mediaList = array();
 	
 		foreach ( $dbh->query( $sql ) as $row ) {
-			$n=$row["MediaID"];
+			$n=$row[$indexedby];
 			$mediaList[$n] = new MediaTypes();
 			$mediaList[$n]->MediaID = $row["MediaID"];
 			$mediaList[$n]->MediaType = $row["MediaType"];

@@ -30,6 +30,13 @@ class TemplatePorts {
 	var $ColorID;
 	var $Notes;
 	
+	public function __construct($templateid=false){
+		if($templateid){
+			$this->TemplateID=$templateid;
+		}
+		return $this;
+	}
+
 	function MakeSafe() {
 		$this->TemplateID=intval($this->TemplateID);
 		$this->PortNumber=intval($this->PortNumber);
@@ -101,7 +108,6 @@ class TemplatePorts {
 		global $dbh;
 		
 		$this->MakeSafe();
-
 		$sql="INSERT INTO fac_TemplatePorts SET TemplateID=$this->TemplateID, PortNumber=$this->PortNumber, 
 			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
 			Notes=\"$this->Notes\";";

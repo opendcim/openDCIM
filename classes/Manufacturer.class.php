@@ -28,6 +28,13 @@ class Manufacturer {
 	var $GlobalID;
 	var $SubscribeToUpdates;
 
+	public function __construct($manufacturerid=false){
+		if($manufacturerid){
+			$this->ManufacturerID=$manufacturerid;
+		}
+		return $this;
+	}
+
 	function MakeSafe(){
 		$this->ManufacturerID=intval($this->ManufacturerID);
 		$this->Name=sanitize($this->Name);
@@ -79,6 +86,11 @@ class Manufacturer {
 		} else {
 			return false;
 		}
+	}
+
+	// Wrapper to make this method like the other classes
+	function GetManufacturer(){
+		return $this->GetManufacturerByID();
 	}
 	
 	function GetManufacturerByID(){

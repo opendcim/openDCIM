@@ -68,7 +68,7 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
-  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/common.js?v<?php echo filemtime('scripts/common.js');?>"></script>
 
 
 <script type="text/javascript">
@@ -86,6 +86,8 @@
 		$("#cabrowid").combobox();
 		$("#datacenterid").combobox();
 		$("#zoneid").combobox();
+
+		$('span.custom-combobox').width($('span.custom-combobox').width()+2);
 
 		// Input options that are disabled don't submit
 		$('.caption > button').on('click',function(e){

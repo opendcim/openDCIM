@@ -435,7 +435,7 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.cookie.js"></script>
   <script type="text/javascript" src="scripts/jquery-json.min.js"></script>
-  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/common.js?v',filemtime('scripts/common.js'),'"></script>
   <script type="text/javascript" src="scripts/masonry.pkgd.min.js"></script>
   <script type="text/javascript">
 	window.weight=',$totalWeight,';
@@ -706,9 +706,6 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 			$('#centeriehack > .cabinet:first-child').remove();
 			$('.cabinet').width(width*2).css('max-width',width*2+'px');
 		}
-		// Add controls to the rack
-		cabinetimagecontrols();
-
 		// Damn translators not using abreviations
 		// This will lock the cabinet into the correct size
 		$('.cabinet #cabid').parent('tr').next('tr').find('.cabpos').css('padding','0px').wrapInner($('<div>').css({'overflow':'hidden','width':'30px'}));

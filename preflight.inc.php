@@ -194,6 +194,7 @@
 	}else{
 		$tests['directory_rights']['state']="fail";
 		$tests['directory_rights']['message']='Some paths are not writable please check <a href="rightscheck.php" target="_new">rightscheck.php</a> and correct any issues present.';
+		$errors++;
 	}
 
 

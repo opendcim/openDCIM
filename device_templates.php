@@ -335,7 +335,7 @@
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/imgareaselect-default.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
-  <link rel="stylesheet" href="css/jHtmlArea.css" type="text/css">
+  <link rel="stylesheet" href="css/jquery-te-1.4.0.css" type="text/css">
   <link rel="stylesheet" href="css/uploadifive.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
@@ -350,10 +350,10 @@
   <script type="text/javascript" src="scripts/jquery.uploadifive.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
-  <script type="text/javascript" src="scripts/jHtmlArea-0.8.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-te-1.4.0.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
   <script type="text/javascript" src="scripts/jquery.imgareaselect.pack.js"></script>
-  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/common.js?v<?php echo filemtime('scripts/common.js');?>"></script>
   <script type="text/javascript">
 	timestamp="<?php echo $timestamp; ?>";
 	token="<?php echo $salt; ?>";
@@ -690,6 +690,23 @@
 			});
 	});
 
+		// Add some logic to the enabled / required checkboxes so users aren't confused
+
+		// An attribute cannot be required if it isn't enabled so make sure that 
+		// required is turned off when enabled is
+		$('input[name*=enabled]').on('click',function(e){
+			if(!e.currentTarget.checked){
+				e.currentTarget.nextElementSibling.checked=false;
+			}
+		});
+		// if a user clicks required it has to be enabled for that to be valid
+		// this will make sure that the enabled box is ticked
+		$('input[name*=required]').on('click',function(e){
+			if(e.currentTarget.checked){
+				e.currentTarget.previousElementSibling.checked=true;
+			}
+		});
+
 
 	});/* END of $(document).ready function() */
 </script>
@@ -788,14 +805,6 @@ echo '</select>
 	</div>
 </div>
 
-<div>
-	<div><label>',__("Share to Repository"),'</label></div>
-	<div><input type="checkbox" id="ShareToRepo" name="ShareToRepo" ',$template->ShareToRepo ? 'checked' : '','></div>
-</div>
-<div>
-	<div><label>',__("Keep Local (Ignore Repository)"),'</label></div>
-	<div><input type="checkbox" id="KeepLocal" name="KeepLocal" ',$template->KeepLocal ? 'checked' : '','></div>
-</div>
 <div>
    <div><label for="FrontPictureFile">',__("Front Picture File"),'</label></div>
    <div><input type="text" name="FrontPictureFile" id="FrontPictureFile" value="',$template->FrontPictureFile,'"></div>

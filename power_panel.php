@@ -74,7 +74,7 @@
 		$decimalplaces=0;
 		function FindTicks(&$decimalplaces,$panelCap,&$dataMajorTicks){
 			$err=false;
-			for ( $i = 0; $i < $panelCap; $i+=( $panelCap / 10 ) ) {
+			for ( $i = 0; ($i - $panelCap) < 1; $i+=( $panelCap / 10 ) ) {
 				$tick = sprintf( "%.0${decimalplaces}lf ", $i / 1000 );
 				if(preg_match("/$tick/",$dataMajorTicks)){
 					$err=true;

@@ -6,6 +6,17 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 18.01
+----------------
+* Nomenclature for releases has changed to YY.nn, as this ends the debate over what warrants a major vs minor number change
+* Added some error logging for LDAP authentication failures
+* Added in more bulk import functions - Users and Departments
+* Converted some more reports over to Excel as we move away from PDF reports
+* Network map updated to differentiate between front and rear ports
+* Updated DataTables to the latest compatible release
+* HUGE performance improvements by caching device imaging and the navigation tree HTML, rather than building on the fly
+* Other bug fixes, as usual.
+
 Changes in 4.5
 --------------
 * Reservation is no longer a yes/no field.  Has been replaced with a user customizable list of Device Status values.

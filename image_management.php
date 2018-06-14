@@ -44,7 +44,7 @@
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.uploadifive.js"></script>
-  <script type="text/javascript" src="scripts/common.js"></script>
+  <script type="text/javascript" src="scripts/common.js?v<?php echo filemtime('scripts/common.js');?>"></script>
 </head>
 <body>
 <?php include( 'header.inc.php' ); ?>
@@ -62,7 +62,7 @@ if($person->SiteAdmin || $person->WriteAccess){
 <div class="center"><div>
 <div class="heading"><?php print __("Device Pictures");?></div>
 <input type="file" name="dev_file_upload" data-dir="pictures" id="dev_file_upload" />
-
+<div id="rebuild_image_cache" class="uploadifive-button" style="height: 30px; line-height: 30px; overflow: hidden; width: auto;display: inline-block; cursor: default;"><?php print __("Rebuild Image Cache");?></div>
 <script type="text/javascript">
 $(function() {
     $('#dev_file_upload').uploadifive({
@@ -92,6 +92,18 @@ $(function() {
 			}
 		}
     });
+});
+$(document).ready(function(){
+	$('#uploadifive-dev_file_upload')[0].style.display="inline-block";
+	$('#uploadifive-dev_file_upload-queue').before($('#rebuild_image_cache'));
+
+	$('#rebuild_image_cache').on('click', function(){
+		$('<div>').append($('<iframe>').attr('src','build_image_cache.php').css({'max-width':'600px','max-height':'400px','min-height':'300px','align':'middle'})).attr('title','Rebuild device image cache').dialog({
+			width: 'auto',
+			modal: true
+		});
+	});
+
 });
 </script>
 </div><div>

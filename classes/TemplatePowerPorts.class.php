@@ -28,6 +28,13 @@ class TemplatePowerPorts {
 	var $Label;
 	var $PortNotes;
 	
+	public function __construct($templateid=false){
+		if($templateid){
+			$this->TemplateID=$templateid;
+		}
+		return $this;
+	}
+	
 	function MakeSafe() {
 		$this->TemplateID=intval($this->TemplateID);
 		$this->PortNumber=intval($this->PortNumber);
@@ -51,7 +58,7 @@ class TemplatePowerPorts {
 
 		return $tp;
 	}
-	
+
 	function prepare( $sql ) {
 		global $dbh;
 		return $dbh->prepare( $sql );

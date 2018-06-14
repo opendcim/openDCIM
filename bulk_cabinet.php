@@ -204,7 +204,7 @@
        *  Section for looking up the Row by DataCenterID + name and setting the true RowID
        *
        */
-      if ( $row["Row"] !- "" ) {
+      if ( $row["Row"] != "" ) {
         $st = $dbh->prepare( "select count(*) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ucase(Name)=ucase(:Row)" );
         $st->execute( array( ":DataCenterID"=>$cab->DataCenterID, ":Row"=>$row["Row"] ));
         if ( ! $val = $st->fetch() ) {
@@ -231,13 +231,15 @@
         $cab->AssignedTo = $val["DeptID"];
       }
 
-      if ( ! $errors && ! $cab->CreateCabinet() ) {
+      if ( ! $errors && ! $cab->CreateCabinet(true) ) {
         $errors = true;
         $content .= "<li><strong>" . __("Error adding cabinet on Row $n of the spreadsheet.") . "</strong>";
       } else {
         $content .= "<li>Added cabinet " . $cab->Location . "(" . $cab->CabinetID . ")";
       }
     }
+
+    updateNavTreeHTML();
 
     if ( ! $errors ) {
       $content = __("All records imported successfully.") . "<ul>" . $content . "</ul>";
