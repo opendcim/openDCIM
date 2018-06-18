@@ -663,52 +663,62 @@ if(!function_exists("buildNavTreeArray")){
 
 		$menu=array();
 
-		function processcontainer($container,$cabs){
-			$menu=array($container);
-			foreach($container->GetChildren() as $child){
-				if(get_class($child)=='Container'){
-					$menu[]=processcontainer($child,$cabs);
-				}elseif(get_class($child)=='DataCenter'){
-					$menu[]=processdatacenter($child,$cabs);
+		if(!function_exists("processcontainer")){
+			function processcontainer($container,$cabs){
+				$menu=array($container);
+				foreach($container->GetChildren() as $child){
+					if(get_class($child)=='Container'){
+						$menu[]=processcontainer($child,$cabs);
+					}elseif(get_class($child)=='DataCenter'){
+						$menu[]=processdatacenter($child,$cabs);
+					}
 				}
+				return $menu;
 			}
-			return $menu;
 		}
-		function processdatacenter($dc,$cabs){
-			$menu=array($dc);
-			foreach($dc->GetChildren() as $child){
-				if(get_class($child)=='Zone'){
-					$menu[]=processzone($child,$cabs);
-				}elseif(get_class($child)=='CabRow'){
-					$menu[]=processcabrow($child,$cabs);
-				}else{
-					$menu[]=processcab($child,$cabs);
+		if(!function_exists("processdatacenter")){
+			function processdatacenter($dc,$cabs){
+				$menu=array($dc);
+				foreach($dc->GetChildren() as $child){
+					if(get_class($child)=='Zone'){
+						$menu[]=processzone($child,$cabs);
+					}elseif(get_class($child)=='CabRow'){
+						$menu[]=processcabrow($child,$cabs);
+					}else{
+						$menu[]=processcab($child,$cabs);
+					}
 				}
+				return $menu;
 			}
-			return $menu;
 		}
-		function processzone($zone,$cabs){
-			$menu=array($zone);
-			foreach($zone->GetChildren() as $child){
-				if(get_class($child)=='CabRow'){
-					$menu[]=processcabrow($child,$cabs);
-				}else{
-					$menu[]=processcab($child,$cabs);
+		if(!function_exists("processzone")){
+			function processzone($zone,$cabs){
+				$menu=array($zone);
+				foreach($zone->GetChildren() as $child){
+					if(get_class($child)=='CabRow'){
+						$menu[]=processcabrow($child,$cabs);
+					}else{
+						$menu[]=processcab($child,$cabs);
+					}
 				}
+				return $menu;
 			}
-			return $menu;
 		}
-		function processcabrow($row,$cabs){
-			$menu=array($row);
-			foreach($cabs as $cab){
-				if($cab->CabRowID==$row->CabRowID){
-					$menu[]=processcab($cab,$cabs);
+		if(!function_exists("processcabrow")){
+			function processcabrow($row,$cabs){
+				$menu=array($row);
+				foreach($cabs as $cab){
+					if($cab->CabRowID==$row->CabRowID){
+						$menu[]=processcab($cab,$cabs);
+					}
 				}
+				return $menu;
 			}
-			return $menu;
 		}
-		function processcab($cab,$cabs){
-			return $cab;
+		if(!function_exists("processcab")){
+			function processcab($cab,$cabs){
+				return $cab;
+			}
 		}
 
 		foreach($con->GetChildren() as $child){
@@ -756,62 +766,64 @@ if(!function_exists("updateNavTreeHTML")){
 
 		$menu=(is_null($menu))?buildNavTreeArray():$menu;
 
-		function buildnavmenu($ma,&$tl){
-			$menuCode = "";
-			foreach($ma as $i => $level){
-				if(is_object($level)){
-					if(isset($level->Name)){
-						$name=$level->Name;
-					}elseif(isset($level->Location)){
-						$name=$level->Location;
-					}else{
-						$name=$level->Description;
-					}
-					if($i==0){--$tl;}
-					foreach($level as $prop => $value){
-						if(preg_match("/id/i", $prop)){
-							$ObjectID=$value;
-							break;
+		if(!function_exists("buildnavmenu")){
+			function buildnavmenu($ma,&$tl){
+				$menuCode = "";
+				foreach($ma as $i => $level){
+					if(is_object($level)){
+						if(isset($level->Name)){
+							$name=$level->Name;
+						}elseif(isset($level->Location)){
+							$name=$level->Location;
+						}else{
+							$name=$level->Description;
 						}
-					}
-					$class=get_class($level);
-					$cabclose='';
-					if($class=="Container"){
-						$href="container_stats.php?container=";
-						$id="c$ObjectID";
-					}elseif($class=="Cabinet"){
-						$href="cabnavigator.php?cabinetid=";
-						$id="cab$ObjectID";
-						$cabclose="</li>";
-					}elseif($class=="Zone"){
-						$href="zone_stats.php?zone=";
-						$id="zone$ObjectID";
-					}elseif($class=="DataCenter"){
-						$href="dc_stats.php?dc=";
-						$id="dc$ObjectID";
-					}elseif($class=="CabRow"){
-						$href="rowview.php?row=";
-						$id="cr$ObjectID";
-					}
+						if($i==0){--$tl;}
+						foreach($level as $prop => $value){
+							if(preg_match("/id/i", $prop)){
+								$ObjectID=$value;
+								break;
+							}
+						}
+						$class=get_class($level);
+						$cabclose='';
+						if($class=="Container"){
+							$href="container_stats.php?container=";
+							$id="c$ObjectID";
+						}elseif($class=="Cabinet"){
+							$href="cabnavigator.php?cabinetid=";
+							$id="cab$ObjectID";
+							$cabclose="</li>";
+						}elseif($class=="Zone"){
+							$href="zone_stats.php?zone=";
+							$id="zone$ObjectID";
+						}elseif($class=="DataCenter"){
+							$href="dc_stats.php?dc=";
+							$id="dc$ObjectID";
+						}elseif($class=="CabRow"){
+							$href="rowview.php?row=";
+							$id="cr$ObjectID";
+						}
 
-					$menuCode .= str_repeat("\t",$tl).'<li class="liClosed" id="'.$id.'"><a class="'.$class.'" href="'.$href.$ObjectID."\">$name</a>$cabclose\n";
-					if($i==0){
-						++$tl;
-						$menuCode .= str_repeat("\t",$tl)."<ul>\n";
+						$menuCode .= str_repeat("\t",$tl).'<li class="liClosed" id="'.$id.'"><a class="'.$class.'" href="'.$href.$ObjectID."\">$name</a>$cabclose\n";
+						if($i==0){
+							++$tl;
+							$menuCode .= str_repeat("\t",$tl)."<ul>\n";
+						}
+					}else{
+						$tl++;
+						$menuCode .= buildnavmenu($level,$tl);
+						if(get_class($level[0])=="DataCenter"){
+							$menuCode .= str_repeat("\t",$tl).'<li id="dc-'.$level[0]->DataCenterID.'"><a href="storageroom.php?dc='.$level[0]->DataCenterID.'">Storage Room</a></li>'."\n";
+						}
+						$menuCode .= str_repeat("\t",$tl)."</ul>\n";
+						$tl--;
+						$menuCode .= str_repeat("\t",$tl)."</li>\n";
 					}
-				}else{
-					$tl++;
-					$menuCode .= buildnavmenu($level,$tl);
-					if(get_class($level[0])=="DataCenter"){
-						$menuCode .= str_repeat("\t",$tl).'<li id="dc-'.$level[0]->DataCenterID.'"><a href="storageroom.php?dc='.$level[0]->DataCenterID.'">Storage Room</a></li>'."\n";
-					}
-					$menuCode .= str_repeat("\t",$tl)."</ul>\n";
-					$tl--;
-					$menuCode .= str_repeat("\t",$tl)."</li>\n";
 				}
-			}
 
-			return $menuCode;
+				return $menuCode;
+			}
 		}
 
 		$menuCode  = '<ul class="mktree" id="datacenters">'."\n";
