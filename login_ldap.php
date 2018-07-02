@@ -135,21 +135,6 @@ function setRights($group,&$person){
         if ( ! isset($config->ParameterArray['LDAPUserSearch'])) {
           $config->ParameterArray['LDAPUserSearch'] = "(|(uid=%userid%))";
         }
-        $userSearch = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPUserSearch']));
-        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $userSearch );
-        $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
-
-        // These are standard schema items, so they aren't configurable
-        // However, suppress any errors that may crop up from not finding them
-	$found_dn = @$ldapResults[0]['cn'][0];
-        $person->FirstName = @$ldapResults[0]['givenname'][0];
-        $person->LastName = @$ldapResults[0]['sn'][0];
-        $person->Email = @$ldapResults[0]['mail'][0];
-
-
-        $ldapSearchDN = str_replace( "%userid%", $found_dn, html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
-        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $ldapSearchDN);
-        $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
 
         // Because we have audit logs to maintain, we need to make a local copy of the User's record
         // to keep in the openDCIM database just in case the user gets removed from LDAP.  This also
@@ -158,6 +143,22 @@ function setRights($group,&$person){
         $person->UserID = $ldapUser;
         $person->GetPersonByUserID();
         $person->revokeAll();
+        
+        $userSearch = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPUserSearch']));
+        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $userSearch );
+        $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
+
+        // These are standard schema items, so they aren't configurable
+        // However, suppress any errors that may crop up from not finding them
+	// $found_dn = @$ldapResults[0]['cn'][0];
+        $person->FirstName = @$ldapResults[0]['givenname'][0];
+        $person->LastName = @$ldapResults[0]['sn'][0];
+        $person->Email = @$ldapResults[0]['mail'][0];
+
+
+        $ldapSearchDN = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
+        $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $ldapSearchDN);
+        $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
 
         for ( $i = 0; $i < $ldapResults['count']; $i++ ) {
           if($config->ParameterArray['LDAPSiteAccess'] == "" || checkAccess($ldapResults[$i])) {
