@@ -135,6 +135,15 @@ function setRights($group,&$person){
         if ( ! isset($config->ParameterArray['LDAPUserSearch'])) {
           $config->ParameterArray['LDAPUserSearch'] = "(|(uid=%userid%))";
         }
+
+        // Because we have audit logs to maintain, we need to make a local copy of the User's record
+        // to keep in the openDCIM database just in case the user gets removed from LDAP.  This also
+        // makes it easier to check access rights by replicating the user's rights from LDAP into the
+        // local db for the session.  Revoke all rights every login and pull a fresh set from LDAP.
+        $person->UserID = $ldapUser;
+        $person->GetPersonByUserID();
+        $person->revokeAll();
+        
         $userSearch = str_replace( "%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPUserSearch']));
         $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $userSearch );
         $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
@@ -150,14 +159,6 @@ function setRights($group,&$person){
         $ldapSearchDN = str_replace( "%userid%", $found_dn, html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
         $ldapSearch = ldap_search( $ldapConn, $config->ParameterArray['LDAPBaseDN'], $ldapSearchDN);
         $ldapResults = ldap_get_entries( $ldapConn, $ldapSearch );
-
-        // Because we have audit logs to maintain, we need to make a local copy of the User's record
-        // to keep in the openDCIM database just in case the user gets removed from LDAP.  This also
-        // makes it easier to check access rights by replicating the user's rights from LDAP into the
-        // local db for the session.  Revoke all rights every login and pull a fresh set from LDAP.
-        $person->UserID = $ldapUser;
-        $person->GetPersonByUserID();
-        $person->revokeAll();
 
         for ( $i = 0; $i < $ldapResults['count']; $i++ ) {
           if($config->ParameterArray['LDAPSiteAccess'] == "" || checkAccess($ldapResults[$i])) {
