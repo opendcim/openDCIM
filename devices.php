@@ -7,7 +7,7 @@
 	$dev=new Device();
 	$cab=new Cabinet();
 
-	$validHypervisors=array( "ESX", "ProxMox", "None" );
+	$validHypervisors=array( "None", "ESX", "ProxMox" );
 
 	$taginsert="";
 
@@ -496,7 +496,11 @@
 		}else{
 			$dev->DeviceID = $_POST['refreshswitch'];
 			$tagList = $dev->GetTags();
-			if( ! in_array( "NoPoll", $tagList )) {
+			// The logic here is:
+			//	If you select to OptIn switch polling, only poll if you have the Poll tag assigned to this device
+			//	but if you are an OptOut site, poll everything unless it has the NoPoll tag assigned
+			//
+			if( ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" && in_array( "Poll", $tagList ) || ( $config->ParameterArray["NetworkCapacityReportOptOut"] == "OptOut" && ! in_array( "NoPoll", $tagList )))) {
 				echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
 			} else {
 				echo json_encode(array());

@@ -414,8 +414,8 @@
       $dev->PrimaryIP = $row["Hostname"];
       $dev->SerialNo = $row["SerialNo"];
       $dev->AssetTag = $row["AssetTag"];
-      $dev->BackSide = in_array( strtoupper($row["BackSide"], $trueArray));
-      $dev->HalfDepth = in_array( strtoupper($row["HalfDepth"], $trueArray));
+      $dev->BackSide = in_array( strtoupper($row["BackSide"]), $trueArray);
+      $dev->HalfDepth = in_array( strtoupper($row["HalfDepth"]), $trueArray);
       $dev->Hypervisor = (in_array( $row["Hypervisor"], array( "ESX", "ProxMox")))?$row["Hypervisor"]:"None";
       if ( $row["InstallDate"] != "" ) {
         $dev->InstallDate = date( "Y-m-d", strtotime( $row["InstallDate"]));
