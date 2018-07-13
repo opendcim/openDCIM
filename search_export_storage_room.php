@@ -17,7 +17,7 @@
 		$dc=isset($_POST['datacenterid'])?$_POST['datacenterid']:$_GET['datacenterid'];
 		if($dc!=''){
 			$dc=intval($dc);
-			$dclimit=($dc==0)?'':" and b.Position=$dc ";
+			$dclimit=($dc==0)?'':" and ABS(b.Cabinet)=$dc ";
 			$ca_sql="SELECT AttributeID, Label, AttributeType from fac_DeviceCustomAttribute ORDER BY AttributeID ASC;";
 			$custom_concat = '';
 			$ca_result=$dbh->query($ca_sql)->fetchAll();
@@ -25,15 +25,15 @@
 				$custom_concat .= ", GROUP_CONCAT(IF(d.AttributeID={$ca_row["AttributeID"]},value,NULL)) AS Attribute{$ca_row["AttributeID"]} ";
 			} 
 
-			$sql="SELECT a.Name AS DataCenter, b.DeviceID, 'Storage Room' as Location, '' as Position,
+			$sql="SELECT a.DataCenterID, a.Name AS DataCenter, b.DeviceID,
 				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.WarrantyExpire, b.PrimaryIP, b.ParentDevice,
 				b.TemplateID, b.Owner, b.Cabinet, b.Position $custom_concat FROM fac_DataCenter a,
 				fac_Device b  LEFT JOIN fac_DeviceCustomValue d on
-				(b.DeviceID=d.DeviceID) LEFT JOIN fac_DeviceTemplate e on (b.TemplateID = e.TemplateID) WHERE b.Cabinet < 0 AND b.Position=a.DataCenterID 
+				(b.DeviceID=d.DeviceID) LEFT JOIN fac_DeviceTemplate e on (b.TemplateID = e.TemplateID) WHERE b.Cabinet <= 0 AND ABS(b.Cabinet)=a.DataCenterID 
  			 $dclimit
-				GROUP BY DeviceID ORDER BY DataCenter ASC, Location ASC, Position ASC;";
+				GROUP BY DeviceID ORDER BY DataCenter ASC, Cabinet ASC;";
 //select b.Label from fac_Device b Left join fac_DeviceCustomValue d on (b.DeviceID = d.DeviceID ) LEFT JOIN fac_DeviceTemplate t on (b.TemplateID = t.TemplateID) where b.cabinet <0 and b.Position = 1
-
+                        
 			$result=$dbh->query($sql);
 		
 			$ca_headers = '';
@@ -47,8 +47,6 @@
 		// Left these expanded in case we need to add or remove columns.  Otherwise I would have just collapsed entirely.
 		$body="<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
 			\t<th>".__("Data Center")."</th>
-			\t<th>".__("Location")."</th>
-			\t<th>".__("Position")."</th>
 			\t<th>".__("Height")."</th>
 			\t<th>".__("Name")."</th>
 			\t<th>".__("Serial Number")."</th>
@@ -100,8 +98,6 @@
 			$tags=implode(",", $dev->GetTags());
 			$body.="\t\t<tr>
 			\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
-			\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
-			\t<td></td>
 			\t<td>{$row["Height"]}</td>
 			\t<td><a href=\"devices.php?DeviceID=$dev->DeviceID\" target=\"device\">{$row["Label"]}</a></td>
 			\t<td>{$row["SerialNo"]}</td>

@@ -436,11 +436,19 @@ class Cabinet {
 		global $dbh;
 		global $person;
 		
+		$dc=new DataCenter();
+		$dcList=$dc->GetDCList();
+		
+		$selectList="<select name=\"CabinetID\" id=\"CabinetID\"><option value=\"0\">".__("General Storage Room")."</option>";
+		
+		foreach($dcList as $dcRow){
+			$selected=("-".$dcRow->DataCenterID==$this->CabinetID)?' selected':'';
+			$selectList.="<option value=\"-{$dcRow->DataCenterID}\"$selected>".$dcRow->Name." / ".__("Storage Room")."</option>";	
+		}
+                
 		$sql="SELECT Name, CabinetID, Location, AssignedTo FROM fac_DataCenter, fac_Cabinet WHERE 
 			fac_DataCenter.DataCenterID=fac_Cabinet.DataCenterID ORDER BY Name ASC, 
 			Location ASC, LENGTH(Location);";
-
-		$selectList="<select name=\"CabinetID\" id=\"CabinetID\"><option value=\"-1\">Storage Room</option>";
 
 		foreach($dbh->query($sql) as $selectRow){
 			if($selectRow["CabinetID"]==$this->CabinetID || $person->canWrite($selectRow["AssignedTo"])){

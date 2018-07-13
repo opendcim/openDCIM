@@ -6,6 +6,8 @@
 
 	$dev=new Device();
 	$cab=new Cabinet();
+	
+	$dev->Cabinet = isset($_REQUEST['dc'])?($_REQUEST['dc']*-1):0;
 
 	$validHypervisors=array( "None", "ESX", "ProxMox" );
 
@@ -500,7 +502,7 @@
 			//	If you select to OptIn switch polling, only poll if you have the Poll tag assigned to this device
 			//	but if you are an OptOut site, poll everything unless it has the NoPoll tag assigned
 			//
-			if( ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" && in_array( "Poll", $tagList ) || ( $config->ParameterArray["NetworkCapacityReportOptOut"] == "OptOut" && ! in_array( "NoPoll", $tagList )))) {
+			if( ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" && in_array( "Poll", $tagList ) || ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptOut" && ! in_array( "NoPoll", $tagList )))) {
 				echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
 			} else {
 				echo json_encode(array());
@@ -677,11 +679,10 @@
 							}
 
 							$dev->SetTags($tagarray);
-							if($dev->Cabinet <0){
+							if($dev->Cabinet <=0){
 								$dev->MoveToStorage();
-							}else{
-								$dev->UpdateDevice();
 							}
+							$dev->UpdateDevice();
 							break;
 						case 'Delete':
 							$dev->DeleteDevice();
@@ -689,8 +690,8 @@
 							if($dev->ParentDevice >0){
 								header('Location: '.redirect("devices.php?DeviceID=$dev->ParentDevice"));
 							}else{
-								if($dev->Cabinet==-1){
-									header('Location: '.redirect("storageroom.php?dc=$dev->Position"));
+								if($dev->Cabinet<=0){
+									header('Location: '.redirect("storageroom.php?dc=".abs($dev->Cabinet)));
 								}else{
 									header('Location: '.redirect("cabnavigator.php?cabinetid=$dev->Cabinet"));
 								}
@@ -1289,7 +1290,7 @@ $(document).ready(function() {
 	// Need to make some changes to the UI for the storage room
 	$('#CabinetID').change(function(){
 		var Positionrow=$('#Position').parent('div').parent('div');
-		if($(this).val()==-1){
+		if($(this).val()<=0){
 			Positionrow.hide();
 		}else{
 			Positionrow.show();
@@ -1953,8 +1954,8 @@ echo '
 		$frontpic=($templ->FrontPictureFile!='')?' src="pictures/'.$templ->FrontPictureFile.'"':'';
 		$rearpic=($templ->RearPictureFile!='')?' src="pictures/'.$templ->RearPictureFile.'"':'';
 echo '
-		<img id="devicefront" src="pictures/'.$templ->FrontPictureFile.'" alt="front of device">
-		<img id="devicerear" src="pictures/'.$templ->RearPictureFile.'" alt="rear of device">
+		<img id="devicefront"'.$frontpic.' alt="front of device">
+		<img id="devicerear"'.$rearpic.' alt="rear of device">
 	</div>
 </fieldset>
 <fieldset id="proxmoxblock" class="hide">
@@ -2503,8 +2504,8 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 	}elseif($dev->Cabinet >0){
 		print "   <a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">[ ".__("Return to Navigator")." ]</a>";
 	}else{
-		if ($dev->Position>0){
-			print "   <div><a href=\"storageroom.php?dc=$dev->Position\">[ ".__("Return to Storage Room")." ]</a></div>";
+		if ($dev->Cabinet<0){
+			print "   <div><a href=\"storageroom.php?dc=".abs($dev->Cabinet)."\">[ ".__("Return to Storage Room")." ]</a></div>";
 		}
 		print "   <div><a href=\"storageroom.php\">[ ".__("Return to General Storage Room")." ]</a></div>";
 	}

@@ -669,11 +669,6 @@ class Device {
 	}
   
 	function MoveToStorage() {
-		// Cabinet ID of -1 means that the device is in the storage area
-		$this->Cabinet=-1;
-		$this->Position=$this->GetDeviceDCID();
-		$this->UpdateDevice();
-		
 		// While the child devices will automatically get moved to storage as part of the UpdateDevice() call above, it won't sever their network connections
 		// Multilevel chassis
 		if ($this->ChassisSlots>0 || $this->RearChassisSlots>0){
@@ -727,7 +722,7 @@ class Device {
 			$cab->GetCabinet();
 			// Make sure the user has rights to save a device into the new cabinet
 			// Cabinet 0 is for disposed devices, Cabinet -1 is storage rooms
-			if($this->Cabinet!='-1' && $this->Cabinet!=0 && $cab->Rights!="Write" ){return false;}
+			if($this->Cabinet>0 && $cab->Rights!="Write" ){return false;}
 
 			// Clear the power connections
 			PowerPorts::removeConnections($this->DeviceID);
@@ -1204,14 +1199,9 @@ class Device {
 
 		if($includechildren){
 			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet$order;";
-		}elseif ($this->Cabinet<0){
+		}elseif ($this->Cabinet<=0){
 			//StorageRoom
-			if($this->Position>0){
-				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND 
-					Position=$this->Position$order;";
-			}else{
-				$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet$order;";
-			}
+			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet$order;";	
 		}else{
 			$sql="SELECT * FROM fac_Device WHERE Cabinet=$this->Cabinet AND 
 				ParentDevice=0$order;";
