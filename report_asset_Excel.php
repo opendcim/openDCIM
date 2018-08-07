@@ -285,7 +285,7 @@ $DProps = array(
             array('Warranty End', 'D', 11, null),
             array('Owner', '', 11, null),
             array('Power (W)', '', 11, null),
-            array('Reservation', '', null, null),
+            array('Status', '', null, null),
             array('Contact', '', null, null),
             array('Tags', '', null, null),
             array('Notes', '', 40, 'wrap')),
@@ -1066,7 +1066,7 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
                 $invData[] = $devSpec;
                 $idx = $child->Position;
             }
-            $reserved = $child->Reservation ? 'reserved' : null;
+            $Status = $child->Status;
             list($manufacturer, $model) = getDeviceTemplateName($devTemplates,
                 $child);
             $devSpec = makeEmptySpec($sheetColumns, $dcContainerList);
@@ -1088,7 +1088,7 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
             $devSpec['Warranty End'] = $child->WarrantyExpire;
             $devSpec['Owner'] = getOwnerName($child, $deptList);
             $devSpec['Power (W)'] = $child->NominalWatts;
-            $devSpec['Reservation'] = $reserved;
+            $devSpec['Status'] = $Status;
             $devSpec['Contact'] = getContactName($contactList, $child->PrimaryContact);
             $devSpec['Tags'] = getTagsString($child);
             $devSpec['Notes'] = html_entity_decode(strip_tags($child->Notes),
@@ -1270,7 +1270,7 @@ function computeSheetBodyDCInventory($DProps)
                             $low_idx = $dev->Position;
                         }
                         // device in cabinet
-                        $reserved = $dev->Reservation ? 'reserved' : null;
+                        $Status = $dev->Status;
                         list($manufacturer, $model) = getDeviceTemplateName(
                             $devTemplates, $dev);
                         $devSpec = makeEmptySpec($sheetColumns, $dcContainerList);
@@ -1293,7 +1293,7 @@ function computeSheetBodyDCInventory($DProps)
                         $devSpec['Warranty End'] = $dev->WarrantyExpire;
                         $devSpec['Owner'] = getOwnerName($dev, $deptList);
                         $devSpec['Power (W)'] = $dev->NominalWatts;
-                        $devSpec['Reservation'] = $reserved;
+                        $devSpec['Status'] = $Status;
                         $devSpec['Contact'] = getContactName($contactList, $dev->PrimaryContact);
                         $devSpec['Tags'] = getTagsString($dev);
                         $devSpec['Notes'] = html_entity_decode(strip_tags($dev->Notes),
