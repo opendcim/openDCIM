@@ -455,7 +455,7 @@
 				if (a.is("select")){
 					a.find('option').each(function (){
 						if ($(this).val().toLowerCase() === value_to_set.toLowerCase()){
-								value_to_set = $(this).val();
+							value_to_set = $(this).val();
 						}
 					});
 				}
