@@ -196,6 +196,13 @@
 		$contact->PersonID=$req->RequestorID;
 		$contact->GetPerson();
 	}
+
+	// When opening a new request, set the default value for the "Requestor" field's <select> to the logged in person
+	if (!isset($contact->UserID) && !isset($_POST["action"]))
+	{
+		$contact = $person;
+	}
+
 ?>
 <!doctype html>
 <html>
