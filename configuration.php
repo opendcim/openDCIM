@@ -452,18 +452,14 @@
 				var value_to_set = $(this).parent().next().children('span').text();
 
 				// Only for selects, try to assign an existing option, so to avoid to default to an empty value that cannot be saved
-		                if (a.is("select"))
-                		{
-			        	a.find('option').each(function ()
-                    			{
-						if ($(this).val().toLowerCase() === value_to_set.toLowerCase())
-                        			{
-			                            value_to_set = $(this).val();
-                        			}
-                    			});
-                		}
-
-		                a.val(value_to_set);
+				if (a.is("select")){
+					a.find('option').each(function (){
+						if ($(this).val().toLowerCase() === value_to_set.toLowerCase()){
+								value_to_set = $(this).val();
+						}
+					});
+				}
+				a.val(value_to_set);
 
 				if(a.hasClass('color-picker')){
 					a.minicolors('value', $(this).parent().next().children('span').text()).trigger('change');

@@ -198,8 +198,7 @@
 	}
 
 	// When opening a new request, set the default value for the "Requestor" field's <select> to the logged in person
-	if (!isset($contact->UserID) && !isset($_POST["action"]))
-	{
+	if(!isset($contact->UserID) && !isset($_POST["action"])){
 		$contact = $person;
 	}
 
