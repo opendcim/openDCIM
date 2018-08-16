@@ -281,12 +281,13 @@ class Cabinet {
 
 	function GetCabinetsByDept(){
 		global $dbh;
+		global $config;
 
 		$this->MakeSafe();
 
 		$cabinetList = array();
 
-		$sql = "select * from fac_Cabinet where AssignedTo='" . $this->AssignedTo . "'";
+		$sql = "select * from fac_Cabinet where AssignedTo='" . $this->DeptID . "'";
 		foreach( $dbh->query($sql) as $cabinetRow){
 			$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
 			$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);		
