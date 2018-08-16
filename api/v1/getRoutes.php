@@ -651,7 +651,7 @@ $app->get( '/devicestatus', function() {
 $app->get( '/devicestatus/:statusid', function($statusid) {
 	$r['error'] = false;
 	$r['errorcode'] = 200;
-	$ds=new DeviceStatus($statisid);
+	$ds=new DeviceStatus($statusid);
 	if(!$ds->getStatus()){
 		$r['error']=true;
 		$r['errorcode']=404;
