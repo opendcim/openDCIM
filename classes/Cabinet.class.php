@@ -281,6 +281,7 @@ class Cabinet {
 
 	function GetCabinetsByDept(){
 		global $dbh;
+		global $config;
 
 		$this->MakeSafe();
 
