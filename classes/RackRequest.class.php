@@ -58,6 +58,7 @@ class RackRequest {
 	function MakeSafe(){
 		//Keep weird values out of DeviceType
 		$validdevicetypes=array('Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU');
+		$validrequestactions=array('new', 'change', 'move', 'retire'); // Empty string is the default value, e.g. when actions are disabled
 
 		$this->RequestID=intval($this->RequestID);
 		$this->RequestorID=intval($this->RequestorID);
@@ -78,7 +79,7 @@ class RackRequest {
 		$this->LabelColor=sanitize($this->LabelColor);
 		$this->CurrentLocation=sanitize(transform($this->CurrentLocation));
 		$this->SpecialInstructions=sanitize($this->SpecialInstructions);
-		$this->RequestedAction=sanitize($this->RequestedAction);
+		$this->RequestedAction=(in_array($this->RequestedAction,$validrequestactions))?$this->RequestedAction:'';
 		$this->MfgDate=date("Y-m-d", strtotime($this->MfgDate)); //date
 	}
 
