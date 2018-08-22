@@ -1167,7 +1167,7 @@ msgid "Rack Requests Actions"
 msgstr ""
 
 #: openDCIM/rackrequest.php
-msgid "Rack Requests Action"
+msgid "Action"
 msgstr ""
 
 #: openDCIM/rackrequest.php
