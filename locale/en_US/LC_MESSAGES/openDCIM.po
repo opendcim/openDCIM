@@ -1158,6 +1158,38 @@ msgstr ""
 msgid "Rack Requests"
 msgstr ""
 
+
+#**************************************************************************
+#********** START - Add Action field to the Rack Request From page ********
+#**************************************************************************
+#: openDCIM/configuration.php
+msgid "Rack Requests Actions"
+msgstr ""
+
+#: openDCIM/rackrequest.php
+msgid "Rack Requests Action"
+msgstr ""
+
+#: openDCIM/rackrequest.php
+msgid "New"
+msgstr ""
+
+#: openDCIM/rackrequest.php
+msgid "Move"
+msgstr ""
+
+#: openDCIM/rackrequest.php
+msgid "Change"
+msgstr ""
+
+#: openDCIM/rackrequest.php
+msgid "Retire"
+msgstr ""
+#**************************************************************************
+#********** END - Add Action field to the Rack Request From page **********
+#**************************************************************************
+
+
 #: openDCIM/configuration.php:1672
 msgid "Mail Subject"
 msgstr ""

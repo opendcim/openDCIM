@@ -1680,6 +1680,22 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
+				
+				<!-- **********************************************************************
+                *********** START - Add Action field to the Rack Request From page ********
+                *********************************************************************** -->
+				<div>
+					<div><label for="RackRequestsActions">',__("Rack Requests Actions"),'</label></div>
+					<div><select id="RackRequestsActions" name="RackRequestsActions" defaultvalue="',$config->defaults["RackRequestsActions"],'" data="',$config->ParameterArray["RackRequestsActions"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+                <!-- **********************************************************************
+                *********** END - Add Action field to the Rack Request From page **********
+                *********************************************************************** -->
+				
 				<div>
 					<div><label for="MailSubject">',__("Mail Subject"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["MailSubject"],'" name="MailSubject" value="',$config->ParameterArray["MailSubject"],'"></div>

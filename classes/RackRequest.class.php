@@ -51,6 +51,7 @@ class RackRequest {
   var $LabelColor;
   var $CurrentLocation;
   var $SpecialInstructions;
+  var $RequestedAction;
   var $MfgDate;
 
 	// Create MakeSafe / MakeDisplay functions
@@ -77,6 +78,7 @@ class RackRequest {
 		$this->LabelColor=sanitize($this->LabelColor);
 		$this->CurrentLocation=sanitize(transform($this->CurrentLocation));
 		$this->SpecialInstructions=sanitize($this->SpecialInstructions);
+		$this->RequestedAction=sanitize($this->RequestedAction);
 		$this->MfgDate=date("Y-m-d", strtotime($this->MfgDate)); //date
 	}
 
@@ -104,7 +106,7 @@ class RackRequest {
 		VLANList=\"$this->VLANList\", SANCount=$this->SANCount, SANList=\"$this->SANList\",
 		DeviceClass=\"$this->DeviceClass\", DeviceType=\"$this->DeviceType\",
 		LabelColor=\"$this->LabelColor\", CurrentLocation=\"$this->CurrentLocation\",
-		SpecialInstructions=\"$this->SpecialInstructions\";";
+		SpecialInstructions=\"$this->SpecialInstructions\", RequestedAction=\"$this->RequestedAction\";";
 
 	if(!$dbh->exec($sql)){
 		$info=$dbh->errorInfo();
@@ -146,6 +148,7 @@ class RackRequest {
 		$requestList[$requestNum]->LabelColor=$row["LabelColor"];
 		$requestList[$requestNum]->CurrentLocation=$row["CurrentLocation"];
 		$requestList[$requestNum]->SpecialInstructions=$row["SpecialInstructions"];
+		$requestList[$requestNum]->RequestedAction=$row["RequestedAction"];
 		$requestList[$requestNum]->MakeDisplay();
     }
     
@@ -176,6 +179,7 @@ class RackRequest {
 		$this->LabelColor=$row["LabelColor"];
 		$this->CurrentLocation=$row["CurrentLocation"];
 		$this->SpecialInstructions=$row["SpecialInstructions"];
+		$this->RequestedAction=$row["RequestedAction"];
 		$this->MakeDisplay();
 	}else{
 		//something bad happened maybe tell someone
@@ -226,7 +230,7 @@ class RackRequest {
 		VLANList=\"$this->VLANList\", SANCount=$this->SANCount, SANList=\"$this->SANList\",
 		DeviceClass=\"$this->DeviceClass\", DeviceType=\"$this->DeviceType\",
 		LabelColor=\"$this->LabelColor\", CurrentLocation=\"$this->CurrentLocation\",
-		SpecialInstructions=\"$this->SpecialInstructions\"
+		SpecialInstructions=\"$this->SpecialInstructions\", RequestedAction=\"$this->RequestedAction\"
 		WHERE RequestID=$this->RequestID;";
     
 	if($dbh->query($sql)){
