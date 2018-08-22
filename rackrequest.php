@@ -370,7 +370,7 @@ echo '			</select>
 	if(isset($config->ParameterArray['RackRequestsActions']) && $config->ParameterArray['RackRequestsActions'] == 'enabled') {
         echo '
             <div>
-		        <div><label for="requestedaction">',__("Rack Requests Action").'</label></div>
+		        <div><label for="requestedaction">',__("Action").'</label></div>
 		        <div>
 		            <select name="requestedaction" id="requestedaction" class="validate[required]">
 				        <option value="">',__("Select"),'...</option>
