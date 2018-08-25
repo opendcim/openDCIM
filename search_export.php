@@ -22,8 +22,68 @@
 	$tpList = DeviceTemplate::GetTemplateList( true );
 	$mfList = Manufacturer::GetManufacturerList( true );
 
+	/* This is a helper function to deal with nested devices aka russian nesting dolls */
+	function processChassis($dev,$dept,$row,$ca_result,$tpList){
+		// Find all of the children!
+		$childList=$dev->GetDeviceChildren();
+		
+		$body="";
+		foreach($childList as $child){
+			$cdate=date("Y-m-d",strtotime($child->InstallDate));
+			$cwarranty=date("Y-m-d",strtotime($child->WarrantyExpire));
+			$cModel="";
+			$cDepartment="";					
+
+			$ctags=implode(",", $child->GetTags());
+			if($child->TemplateID >0){
+				$cModel="<a href=\"device_templates.php?TemplateID=".$child->TemplateID."\" target=\"template\">" . $tpList[$child->TemplateID]->Model . "</a>";
+			}
+			
+			if($child->Owner >0){
+				$dept->DeptID=$child->Owner;
+				$dept->GetDeptByID();
+				$cDepartment=$dept->Name;
+			}
+
+			$ca_cells = '';
+			foreach($ca_result as $ca_row){
+				if($ca_row["AttributeType"] == "date" && is_null($child->$ca_row["Label"]) == FALSE){
+					$ca_date = date("d M Y",strtotime($child->$ca_row["Label"]));
+					$ca_cells .= "\t<td>{$ca_date}</td>";
+				}else{
+					$cadata=(isset($child->$ca_row["Label"]) && !is_null($child->$ca_row["Label"]))?$child->$ca_row["Label"]:"";
+					$ca_cells .= "\t<td>$cadata</td>";
+				}
+			}
+
+			$body .= "\t\t<tr>
+			\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
+			\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
+			\t<td>{$row["Position"]}</td>
+			\t<td>[-Child-]</td>
+			\t<td><a href=\"devices.php?DeviceID=$child->DeviceID\" target=\"device\">$child->Label</a></td>
+			\t<td>$child->SerialNo</td>
+			\t<td>$child->AssetTag</td>
+			\t<td>$child->PrimaryIP</td>
+			\t<td><a href=\"search.php?key=dev&DeviceType=$child->DeviceType&search\" target=\"search\">$child->DeviceType</a></td>
+			\t<td>$cModel</td>
+			\t<td>$ctags</td>
+			\t<td>$cDepartment</td>
+			\t<td>$cwarranty</td>
+			\t<td>$cdate</td>
+			\t{$ca_cells}\n\t\t</tr>\n";
+
+			if($child->DeviceType=="Chassis"){
+				$chassis=processChassis($child,$dept,$row,$ca_result,$tpList);
+				$body.=$chassis;
+			}
+		}
+		return $body;
+	}
+
 	if(isset($_REQUEST['datacenterid'])){
 		$dc=isset($_POST['datacenterid'])?$_POST['datacenterid']:$_GET['datacenterid'];
+		$ca_headers = '';
 		if($dc!=''){
 			$dc=intval($dc);
 			$dclimit=($dc==0)?'':" and c.DataCenterID=$dc ";
@@ -42,8 +102,7 @@
 				$dclimit
 				GROUP BY DeviceID ORDER BY DataCenter ASC, Location ASC, Position ASC;";
 			$result=$dbh->query($sql);
-		
-			$ca_headers = '';
+
 			foreach($ca_result as $ca_row){
 				$ca_headers .= "\t<th>{$ca_row["Label"]}</th>";
 			}
@@ -74,92 +133,57 @@
 		foreach($result as $row){
 			// Dont show devices in chassis, they are shown under each chassiss as a child device
 			if($row["ParentDevice"]=="0"){
-			// insert date formating later for regionalization settings
-			$date=date("Y-m-d",strtotime($row["InstallDate"]));
-      			$warranty=date("Y-m-d",strtotime($row["WarrantyExpire"]));
-			$Model="";
-			$Department="";
-			
-			if($row["TemplateID"]>0 && array_key_exists( $row["TemplateID"], $tpList )){
-				$Model="<a href=\"device_templates.php?TemplateID=".$row["TemplateID"]."\" target=\"template\">" . $tpList[$row["TemplateID"]]->Model . "</a>";
-			}
-			
-			if($row["Owner"] >0){
-				$dept->DeptID=$row["Owner"];
-				$dept->GetDeptByID();
-				$Department=$dept->Name;
-			}
-
-			$ca_cells = '';
-			foreach($ca_result as $ca_row){
-				$ca_num = "Attribute".$ca_row["AttributeID"];
-                                if($ca_row["AttributeType"] == "date" && is_null($row[$ca_num]) == FALSE){
-					$ca_date = date("d M Y",strtotime($row[$ca_num]));
-					$ca_cells .= "\t<td>{$ca_date}</td>";
-				}else{
-				$ca_cells .= "\t<td>{$row[$ca_num]}</td>";
-				}
-			}
-
-			$dev->DeviceID=$row["DeviceID"];
-			$tags=implode(",", $dev->GetTags());
-			$body.="\t\t<tr>
-			\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
-			\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
-			\t<td>{$row["Position"]}</td>
-			\t<td>{$row["Height"]}</td>
-			\t<td><a href=\"devices.php?DeviceID=$dev->DeviceID\" target=\"device\">{$row["Label"]}</a></td>
-			\t<td>{$row["SerialNo"]}</td>
-			\t<td>{$row["AssetTag"]}</td>
-      \t<td>{$row["PrimaryIP"]}</td>
-			\t<td><a href=\"search.php?key=dev&DeviceType={$row["DeviceType"]}&search\" target=\"search\">{$row["DeviceType"]}</a></td>
-			\t<td>$Model</td>
-			\t<td>$tags</td>
-			\t<td>$Department</td>
-      \t<td>$warranty</td>
-			\t<td>$date</td>
-			{$ca_cells}\t\n\t\t</tr>\n";
-			
-			if($row["DeviceType"]=="Chassis"){
-				// Find all of the children!
-				$childList=$dev->GetDeviceChildren();
+				// insert date formating later for regionalization settings
+				$date=date("Y-m-d",strtotime($row["InstallDate"]));
+				$warranty=date("Y-m-d",strtotime($row["WarrantyExpire"]));
+				$Model="";
+				$Department="";
 				
-				foreach($childList as $child){
-					$cdate=date("Y-m-d",strtotime($child->InstallDate));
-          $cwarranty=date("Y-m-d",strtotime($child->WarrantyExpire));
-					$cModel="";
-					$cDepartment="";					
+				if($row["TemplateID"]>0 && array_key_exists( $row["TemplateID"], $tpList )){
+					$Model="<a href=\"device_templates.php?TemplateID=".$row["TemplateID"]."\" target=\"template\">" . $tpList[$row["TemplateID"]]->Model . "</a>";
+				}
+				
+				if($row["Owner"] >0){
+					$dept->DeptID=$row["Owner"];
+					$dept->GetDeptByID();
+					$Department=$dept->Name;
+				}
 
-					$ctags=implode(",", $child->GetTags());
-					if($child->TemplateID >0){
-						$cModel="<a href=\"device_templates.php?TemplateID=".$child->TemplateID."\" target=\"template\">" . $tpList[$child->TemplateID]->Model . "</a>";
+				$ca_cells = '';
+				foreach($ca_result as $ca_row){
+					$ca_num = "Attribute".$ca_row["AttributeID"];
+					if($ca_row["AttributeType"] == "date" && is_null($row[$ca_num]) == FALSE){
+						$ca_date = date("d M Y",strtotime($row[$ca_num]));
+						$ca_cells .= "\t<td>{$ca_date}</td>";
+					}else{
+						$ca_cells .= "\t<td>{$row[$ca_num]}</td>";
 					}
-					
-					if($child->Owner >0){
-						$dept->DeptID=$child->Owner;
-						$dept->GetDeptByID();
-						$cDepartment=$dept->Name;
-					}
+				}
 
-					$body .= "\t\t<tr>
-					\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
-					\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
-					\t<td>{$row["Position"]}</td>
-					\t<td>[-Child-]</td>
-					\t<td><a href=\"devices.php?DeviceID=$child->DeviceID\" target=\"device\">$child->Label</a></td>
-					\t<td>$child->SerialNo</td>
-					\t<td>$child->AssetTag</td>
-          \t<td>$child->PrimaryIP</td>
-					\t<td><a href=\"search.php?key=dev&DeviceType=$child->DeviceType&search\" target=\"search\">$child->DeviceType</a></td>
-					\t<td>$cModel</td>
-					\t<td>$ctags</td>
-					\t<td>$cDepartment</td>
-          			\t<td>$cwarranty</td>
-					\t<td>$cdate</td>
-					\t{$ca_cells}\n\t\t</tr>\n";
+				$dev->DeviceID=$row["DeviceID"];
+				$tags=implode(",", $dev->GetTags());
+				$body.="\t\t<tr>
+				\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
+				\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
+				\t<td>{$row["Position"]}</td>
+				\t<td>{$row["Height"]}</td>
+				\t<td><a href=\"devices.php?DeviceID=$dev->DeviceID\" target=\"device\">{$row["Label"]}</a></td>
+				\t<td>{$row["SerialNo"]}</td>
+				\t<td>{$row["AssetTag"]}</td>
+				\t<td>{$row["PrimaryIP"]}</td>
+				\t<td><a href=\"search.php?key=dev&DeviceType={$row["DeviceType"]}&search\" target=\"search\">{$row["DeviceType"]}</a></td>
+				\t<td>$Model</td>
+				\t<td>$tags</td>
+				\t<td>$Department</td>
+				\t<td>$warranty</td>
+				\t<td>$date</td>
+				{$ca_cells}\t\n\t\t</tr>\n";
+
+				if($row["DeviceType"]=="Chassis"){
+					$chassis=processChassis($dev,$dept,$row,$ca_result,$tpList);
+					$body.=$chassis;
 				}
 			}
-		}
 		}
 		$body.="\t\t</tbody>\n\t</table>\n";
 		if(isset($_REQUEST['ajax'])){
@@ -207,7 +231,7 @@
 					]
 				}
 			});
-			redraw();
+			redraw();resize();
 		}
 		function redraw(){
 			if(($('#export').outerWidth()+$('#sidebar').outerWidth()+10)<$('.page').innerWidth()){
