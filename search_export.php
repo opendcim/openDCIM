@@ -216,6 +216,9 @@
 		function dt(){
 			var title=$("#datacenterid option:selected").text() + ' export'
 			$('#export').dataTable({
+				"drawCallback": function( settings ) {
+					redraw();resize();
+				},
 				dom: 'B<"clear">lfrtip',
 				buttons:{
 					buttons: [
@@ -231,7 +234,6 @@
 					]
 				}
 			});
-			redraw();resize();
 		}
 		function redraw(){
 			if(($('#export').outerWidth()+$('#sidebar').outerWidth()+10)<$('.page').innerWidth()){
