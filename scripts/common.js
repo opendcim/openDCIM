@@ -1731,7 +1731,13 @@ function InsertDevice(obj){
 			var stName=obj.Status.split(' ').join('_');
 			StartingU.find('.pos').addClass(stName);
 			$('#legend > .legenditem > span.'+stName).parent('div').removeClass('hide');
-			StartingU.find('.pos').addClass('dept'+obj.Owner);
+			if(obj.HalfDepth==1 && obj.BackSide==0){
+				StartingU.find('.pos:first-child').addClass('dept'+obj.Owner).addClass('damnit');
+			}else if(obj.HalfDepth==1 && obj.BackSide==1){
+				StartingU.find('.pos:last').addClass('dept'+obj.Owner).addClass('damnit');
+			}else{
+				StartingU.find('.pos').addClass('dept'+obj.Owner).addClass('damnit');
+			}
 			StartingU=StartingU.prev(); // move our pointer up a u
 		}
 	}
