@@ -128,12 +128,14 @@ function redirect($target = null) {
 			return $target;
 		}
 	}
-	if(array_key_exists('HTTPS', $_SERVER) && $_SERVER["HTTPS"]=='on') {
-		$url = "https://".$_SERVER['SERVER_NAME'].$target;
-	} else {
-		$url = "http://".@$_SERVER['SERVER_NAME'].$target;
-	}
-	return $url;
+
+	// Set HTTPS if server has enabled it
+	$url = (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http') .'://';
+
+	// Add host and custom port if is set
+	$url .= $_SERVER['SERVER_NAME'] . (!in_array($_SERVER['SERVER_PORT'], [80,443]) ? ':' .$_SERVER['SERVER_PORT'] : '');
+
+	return $url.$target;
 }
 
 // search haystack for needle and return an array of the key path,
