@@ -77,9 +77,9 @@ class PowerPanel {
 	function MakeSafe() {
 		$this->PanelID=intval($this->PanelID);
 		$this->PanelLabel=sanitize($this->PanelLabel);
-		$this->NumberOfPoles=intval($this->NumberOfPoles);
-		$this->MainBreakerSize=intval($this->MainBreakerSize);
-		$this->PanelVoltage=intval($this->PanelVoltage);
+		$this->NumberOfPoles=max(intval($this->NumberOfPoles), 0);
+		$this->MainBreakerSize=max(intval($this->MainBreakerSize), 0);
+		$this->PanelVoltage=max(intval($this->PanelVoltage), 0);
 		$this->NumberScheme=in_array($this->NumberScheme, array( "Odd/Even", "Sequential", "Busway"))?$this->NumberScheme:"Sequential";
 		$this->ParentPanelID=intval($this->ParentPanelID);
 		$this->ParentBreakerName=sanitize($this->ParentBreakerName);
