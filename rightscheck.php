@@ -109,6 +109,18 @@ foreach($scanned_directory as $i => $file){
 # Add in extra paths here that aren't part of the root loop.
 printrow('vendor'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'ttfontdata',$wantedpaths,$userid,$grpid);
 
+# Handle paths that may or may not be set in the configuration screen for docker
+# clowns.
+if(file_exists("db.inc.php")){
+	require_once("db.inc.php");
+	foreach($config->ParameterArray as $option => $value){
+		if(preg_match('/path$/',$option)){
+			array_push($wantedpaths,$value);
+			printrow($value,$wantedpaths,$userid,$grpid);
+		}
+	}
+}
+
 print "\n</table>
 <table>
 	<tr>
@@ -119,3 +131,4 @@ print "\n</table>
 	<tr><td>Normal and expected rights</td></tr>
 </table>
 <p>Script is being executed as owner: $userid group: $grpid</p>";
+
