@@ -14,7 +14,7 @@
 	$width=0;
 	$ie8fix="";
 	if(strlen($dc->DrawingFileName) >0){
-		$mapfile="drawings/$dc->DrawingFileName";
+		$mapfile=$config->ParameterArray["drawingpath"]."$dc->DrawingFileName";
 		if(file_exists($mapfile)){
 			if(mime_content_type($mapfile)=='image/svg+xml'){
 				$svgfile = simplexml_load_file($mapfile);
@@ -38,7 +38,7 @@
 		}
 	}
 	// If no mapfile is set then we don't need the buttons to control drawing the map.  Adjust the CSS to hide them and make the heading centered
-	if(strlen($dc->DrawingFileName) <1 || !file_exists("drawings/$dc->DrawingFileName")){
+	if(strlen($dc->DrawingFileName) <1 || !file_exists($config->ParameterArray["drawingpath"].$dc->DrawingFileName)){
 		$screenadjustment="<style type=\"text/css\">.dcstats .heading > div { width: 100% !important;} .dcstats .heading > div + div { display: none; }</style>";
 	}
 	

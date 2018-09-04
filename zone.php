@@ -57,7 +57,7 @@
 	$height=0;
 	$width=0;
 	if(strlen($dc_zone->DrawingFileName) >0){
-		$mapfile="drawings/$dc_zone->DrawingFileName";
+		$mapfile=$config->ParameterArray["drawingpath"] . "$dc_zone->DrawingFileName";
 		if(file_exists($mapfile)){
 			if(mime_content_type($mapfile)=='image/svg+xml'){
 				$svgfile = simplexml_load_file($mapfile);
@@ -195,7 +195,7 @@ if(strlen($dc_zone->DrawingFileName) >0){
 			<div style="float: left; ">
 				<p class="instructions">',__("Click and drag on the image to select an area for this zone"),'</p>
 				<div class="frame" style="margin: 0 0.3em; width: 300px; height: 300px;"> 
-			  	    <img id="map" height=',$height,' width=',$width,' src="drawings/',$dc_zone->DrawingFileName,'"> 
+			  	    <img id="map" height=',$height,' width=',$width,' src="',$config->ParameterArray["drawingpath"],$dc_zone->DrawingFileName,'"> 
 		 		</div>
 		 	</div>
 		</div>

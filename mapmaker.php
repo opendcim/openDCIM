@@ -70,7 +70,7 @@
 	$height=0;
 	$width=0;
 	if(strlen($dc->DrawingFileName) >0){
-		$mapfile="drawings/$dc->DrawingFileName";
+		$mapfile=$config->ParameterArray["drawingpath"] . "$dc->DrawingFileName";
 		if(file_exists($mapfile)){
 			if(mime_content_type($mapfile)=='image/svg+xml'){
 				$svgfile = simplexml_load_file($mapfile);
@@ -207,7 +207,7 @@
     <div class="frame" style="margin: 0 0.3em; width: 300px; height: 300px;">
 		<?php
 			$errors=array();
-			$mapfile="drawings/$dc->DrawingFileName";
+			$mapfile=$config->ParameterArray["drawingpath"] . "$dc->DrawingFileName";
 			if(!strlen($dc->DrawingFileName)>0){$errors[]=__("You must configure an image for this datacenter before attempting to place a cabinet on its map.");}
 			if(!is_file($mapfile)){$errors[]=sprintf(__("Please check that &quot;%s&quot; is actually a file."),$dc->DrawingFileName);}
 			if(!is_readable($mapfile)){$errors[]=sprintf(__("Please check the permissions on %s and make sure it is readable."),$dc->DrawingFileName);}
@@ -216,7 +216,7 @@
 					print "<p class=\"warning\">$error</p>\n";
 				}
 			}else{
-				print "<img id=\"map\" src=\"drawings/$dc->DrawingFileName\">";
+				print "<img id=\"map\" src=\"$mapfile\">";
 			}
 		?>			
     </div> 
