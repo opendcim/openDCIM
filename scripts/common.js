@@ -754,9 +754,9 @@ function buildpowerportstable(){
 		});
 		return test;
 	}
-	function reload(target){
+	function reload(imgdir,target){
 		$('#'+target).children().remove();
-		$.post('',{dir: target}).done(function(a){
+		$.post('',{dir: imgdir}).done(function(a){
 			$.each(a,function(dir,files){
 				$.each(files,function(i,file){
 					$('#'+target).append(makeThumb(dir,file));

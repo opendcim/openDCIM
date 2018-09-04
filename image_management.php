@@ -9,7 +9,7 @@
 
 	if(isset($_POST['dir'])){
 		$array=array();
-		$path=(in_array($_POST['dir'],array($config->ParameterArray["picturepath"],$config->ParameterArray["picturepath"])))?$_POST['dir']:'';
+		$path=(in_array($_POST['dir'],array($config->ParameterArray["picturepath"],$config->ParameterArray["drawingpath"])))?$_POST['dir']:'';
 		if(is_dir($path)){
 			$dir=scandir($path);
 			foreach($dir as $i => $f){
@@ -61,7 +61,7 @@ if($person->SiteAdmin || $person->WriteAccess){
 
 <div class="center"><div>
 <div class="heading"><?php print __("Device Pictures");?></div>
-<input type="file" name="dev_file_upload" data-dir="<?php echo $config->ParameterArray["picturepath"]; ?>" id="dev_file_upload" />
+<input type="file" name="dev_file_upload" data-thumbdiv="pictures" data-dir="<?php echo $config->ParameterArray["picturepath"]; ?>" id="dev_file_upload" />
 <div id="rebuild_image_cache" class="uploadifive-button" style="height: 30px; line-height: 30px; overflow: hidden; width: auto;display: inline-block; cursor: default;"><?php print __("Rebuild Image Cache");?></div>
 <script type="text/javascript">
 $(function() {
@@ -122,7 +122,7 @@ if($person->SiteAdmin){
 
 <div class="center"><div>
 <div class="heading"><?php print __("Infrastructure Drawings");?></div>
-<input type="file" name="drawing_file_upload" data-dir="<?php echo $config->ParameterArray["drawingpath"]; ?>" id="drawing_file_upload" />
+<input type="file" name="drawing_file_upload" data-thumbdiv="drawings" data-dir="<?php echo $config->ParameterArray["drawingpath"]; ?>" id="drawing_file_upload" />
 
 </div><div>
 
@@ -175,7 +175,7 @@ echo '<div id="delete-confirm" title="'.__("Delete image file?").'" class="hide"
 
 <script type="text/javascript">
 	$('.center input').each(function(){
-		reload($(this).data('dir'));
+		reload($(this).data('dir'),$(this).data('thumbdiv'));
 	});
 	timestamp="<?php echo $timestamp; ?>";
 	token="<?php echo $salt; ?>";
