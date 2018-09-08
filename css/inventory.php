@@ -1,5 +1,5 @@
 <?php
-	if(is_file(( '../db.inc.php'))) {
+	if(is_file( '../db.inc.php') && !empty($config->ParameterArray)) {
 		require_once('../db.inc.php');
 	} else {
 		$config->ParameterArray['HeaderColor'] = "#006633";
