@@ -1,5 +1,14 @@
 <?php
-	require_once( '../db.inc.php' );
+	if(is_file(( '../db.inc.php'))) {
+		require_once('../db.inc.php');
+	} else {
+		$config->ParameterArray['HeaderColor'] = "#006633";
+		$config->ParameterArray['PDFLogoFile'] = "logo.png";
+		$config->ParameterArray['LinkColor'] = "#000000";
+		$config->ParameterArray['VisitedLinkColor'] = "#8D90B3";
+		$config->ParameterArray['BodyColor'] = "#F0E0B2";
+		$config->ParameterArray['CriticalColor'] = "#cc0000";
+	}
 	header("Content-type: text/css");
 ?>
 
