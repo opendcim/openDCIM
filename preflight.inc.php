@@ -279,27 +279,39 @@
 				text-transform:uppercase;
 				border:2px solid;
 				background-color:green;
-			}.fail td:last-child{
+			}
+			.fail td:last-child{
 				font-weight: bold;
 				background-color: red;
-			}.hide{
+			}
+			.hide{
 				display: none;
 			}
 		</style>
 	</head>
 	<body>
-<div id="header">
+';
+if(!isset($_GET['configuration'])) {
+	echo '<div id="header">
 	<span id="header1">openDCIM Installation</span>
 	<span id="header2">&nbsp;</span>
 	<span id="version">Version: 18.01</span>
-</div>
-<div class="page index">
-		<div class="main" style="padding: 0; width: 100%; border: none;">
-<div class="center"><div>
+</div>';
+}
+echo '<div class="page index">';
+		if(!isset($_GET['configuration'])) {
+			echo '		<div class="main" style="padding: 0; width: 100%; border: none;">';
+		}
+echo '<div class="center"><div>
 		<h2>Pre-flight environment checks</h2>
-		<p style="text-align: center;">If you see any errors on this page then you must correct them before the installer can continue.<br /><br />
-			<a href="/">Run pre-flight checks again</a> |
-			<a href="https://wiki.opendcim.org/wiki/index.php/System_Requirements" target="_blank">System Requirements</a> |
+		<p style="text-align: center;">';
+		if(!isset($_GET['configuration'])) {
+			echo 'If you see any errors on this page then you must correct them before the installer can continue.<br /><br />';
+		}
+		if(!isset($_GET['configuration'])) {
+			echo '<a href="/">Run pre-flight checks again</a> |';
+		}
+		echo '<a href="https://wiki.opendcim.org/wiki/index.php/System_Requirements" target="_blank">System Requirements</a> |
 			<a href="https://wiki.opendcim.org/wiki/index.php/Installation" target="_blank">Installation Guide</a>
 			<span id="continue" class="hide"><br /><br />If the installer does not automatically continue,
 			<a href="?preflight-ok">click here</a><br />
