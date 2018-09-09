@@ -1,7 +1,5 @@
 <?php
-error_log('pre-db');
 	require_once( '../db.inc.php' );
-error_log('past db');
 	header("Content-type: text/css");
 ?>
 
