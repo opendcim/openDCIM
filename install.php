@@ -1,7 +1,7 @@
 <?php
 $codeversion="18.01";
 
-require_once( "preflight.inc.php" );
+require_once( "preflight.php" );
 
 // Make sure that a db.inc.php has been created
 	if(!file_exists("db.inc.php")){
@@ -1362,6 +1362,13 @@ if(isset($results)){
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
   <script type="text/javascript" src="scripts/jquery.ui.multiselect.js"></script>
   <script type="text/javascript">
+	if(window.location.href.indexOf("preflight-ok") == -1){
+		if(window.location.href.indexOf("?") == -1){
+			window.location.href=window.location.href+'?preflight-ok';
+		}else{
+			window.location.href=window.location.href+'&preflight-ok';
+		}
+	}
 	$(document).ready( function() {
 		$("select:not('#tooltip, #cdutooltip')").each(function(){
 			$(this).val($(this).attr('data'));
