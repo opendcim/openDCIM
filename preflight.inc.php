@@ -1,5 +1,4 @@
 <?php
-
 // Pre-Flight check
 	$tests=array();
 	$errors=0;
@@ -130,7 +129,7 @@
 		}
 	}else{
 		$tests['pdo']['state']="fail";
-		$tests['pdo']['message']='openDCIM requires the <a href="http://php.net/manual/pdo.installation.php">PDO extention</a> and you do not appear to have it loaded';
+		$tests['pdo']['message']='openDCIM requires the <a href="http://php.net/manual/pdo.installation.php">PDO extension</a> and you do not appear to have it loaded';
 		$tests['pdodrivers']['state']="fail";
 		$tests['pdodrivers']['message']='No PDO drivers have been detected';
 		$errors++;
@@ -244,46 +243,134 @@
 		$errors++;
 	}
 	if ($errors >0 || !isset($_GET['preflight-ok'])) {
-        echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}.hide{display: none;}</style></head><body><h2>Pre-flight environment checks</h2><table>';
+        echo '
+<!doctype html>
+<html>
+	<head>
+		<title>openDCIM :: pre-flight environment sanity check</title>
+
+		<link rel="stylesheet" href="css/inventory.php" type="text/css">
+		<link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+		<!--[if lt IE 9]>
+		<link rel="stylesheet"  href="css/ie.css" type="text/css" />
+		<![endif]-->
+
+		<script type="text/javascript" src="scripts/jquery.min.js"></script>
+		<script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
+		<style type="text/css">
+			table{
+				width:80%;
+				border-collapse:collapse;
+				border:3px solid black;
+			}
+			th{
+				text-align:left;
+				text-transform:uppercase;
+				border-right: 1px solid black;
+			}
+			th,td{
+				padding:5px;
+			}
+			tr:nth-child(even){
+				background-color:#d1e1f1;
+			}
+			td:last-child{
+				text-align:center;
+				text-transform:uppercase;
+				border:2px solid;
+				background-color:green;
+			}
+			.fail td:last-child{
+				font-weight: bold;
+				background-color: red;
+			}
+			.hide{
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+';
+if(!isset($_GET['configuration'])) {
+	echo '<div id="header">
+	<span id="header1">openDCIM Installation</span>
+	<span id="header2">&nbsp;</span>
+	<span id="version">Version: 18.01</span>
+</div>';
+}
+echo '<div class="page index">';
+		if(!isset($_GET['configuration'])) {
+			echo '		<div class="main" style="padding: 0; width: 100%; border: none;">';
+		}
+echo '<div class="center"><div>
+		<h2>Pre-flight environment checks</h2>
+		<p style="text-align: center;">';
+		if(!isset($_GET['configuration'])) {
+			echo 'If you see any errors on this page then you must correct them before the installer can continue.<br /><br />';
+		}
+		if(!isset($_GET['configuration'])) {
+			echo '<a href="/">Run pre-flight checks again</a> |';
+		}
+		echo '<a href="https://wiki.opendcim.org/wiki/index.php/System_Requirements" target="_blank">System Requirements</a> |
+			<a href="https://wiki.opendcim.org/wiki/index.php/Installation" target="_blank">Installation Guide</a>
+			<span id="continue" class="hide"><br /><br />If the installer does not automatically continue,
+			<a href="?preflight-ok">click here</a><br />
+			<br />Please wait a few minutes before attempting to continue if a conversion is going on you might get
+			unpredictable results by clicking</span>
+		</p>
+		<span id="errors" class="hide">'.$errors.'</span>
+		<table>';
 		foreach($tests as $test => $text){
 			$hide=($test=='api_test')?' class="hide"':'';
 			print "<tr id=\"$test\"$hide><th>$test</th><td>{$text['message']}</td><td>{$text['state']}</td></tr>";
 		}
-		echo '<tr><th>javascript</th><td>Javascript is used heavily for data validation and a more polished user experience.</td><td><script>document.write("good");document.getElementById("api_test").className=document.getElementById("api_test").className.replace(/\bhide\b/,"");</script><noscript>fail</noscript></td></tr>
-			</table>
-		<p>If you see any errors on this page then you must correct them before the installer can continue.&nbsp;&nbsp;&nbsp;<span id="continue" class="hide">If the installer does not auto-continue,<a href="?preflight-ok"> click here</a><br><br>Please wait a few minutes before attempting to continue if a conversion is going on you might get unpredictable results by clicking</span></p>
-		<span id="errors" class="hide">'.$errors.'</span>
-<script type="text/javascript">
-(function() {
-	var rows=document.getElementsByTagName("tr");
-	for(var row in rows){
-	  var cells=rows[row].childNodes;
-		if(typeof cells!="undefined"){
-			if(cells[cells.length-1].textContent=="fail"){
-				rows[row].className=rows[row].className + " fail";
+		echo '
+			<tr>
+				<th>javascript</th>
+				<td>Javascript is used heavily for data validation and a more polished user experience.</td>
+				<td>
+					<script>
+						document.write("good");
+						document.getElementById("api_test").className=document.getElementById("api_test").className.replace(/\bhide\b/,"");
+					</script>
+					<noscript>fail</noscript>
+				</td>
+			</tr>
+		</table>
+		<script type="text/javascript">
+		(function() {
+			var rows=document.getElementsByTagName("tr");
+			for(var row in rows){
+			  var cells=rows[row].childNodes;
+				if(typeof cells!="undefined"){
+					if(cells[cells.length-1].textContent=="fail"){
+						rows[row].className=rows[row].className + " fail";
+					}
+				}
 			}
-		}
-	}
 
-	var xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET","api/test/test",false);
-	xmlhttp.send();
-	if(xmlhttp.status==200){
-		var response=JSON.parse(xmlhttp.responseText);
-		if(!response.error){
-			var row=document.getElementById("api_test");
-			row.className="";
-			row.childNodes[1].textContent="";
-			row.childNodes[2].textContent="GOOD";
-			// only attempt to auto forward if we are in the installer and there are no errors
-			if(parseInt(document.getElementById("errors").textContent)==0 && location.href.search("install")!=-1){
-				document.getElementById("continue").className=document.getElementById("continue").className.replace(/\bhide\b/,"");
-				location.href="?preflight-ok";
+			var xmlhttp=new XMLHttpRequest();
+			xmlhttp.open("GET","api/test/test",false);
+			xmlhttp.send();
+			if(xmlhttp.status==200){
+				var response=JSON.parse(xmlhttp.responseText);
+				if(!response.error){
+					var row=document.getElementById("api_test");
+					row.className="";
+					row.childNodes[1].textContent="";
+					row.childNodes[2].textContent="GOOD";
+					// only attempt to auto forward if we are in the installer and there are no errors
+					if(parseInt(document.getElementById("errors").textContent)==0 && location.href.search("install")!=-1){
+						document.getElementById("continue").className=document.getElementById("continue").className.replace(/\bhide\b/,"");
+						location.href="?preflight-ok";
+					}
+				}
 			}
-		}
-	}
-})();
-</script>
-		</body></html>';
+		})();
+		</script>
+		</div>
+		</div>
+	</body>
+</html>';
 		exit;
 	}

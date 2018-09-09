@@ -2280,7 +2280,7 @@ echo '<div class="main">
 			</div>
 		</div>
 		<div id="preflight">
-			<iframe src="preflight.inc.php"></iframe>
+			<iframe src="preflight.inc.php?configuration=1"></iframe>
 		</div><!-- end preflight tab -->
 	</div>';
 
