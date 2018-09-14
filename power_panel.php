@@ -259,15 +259,15 @@ echo '	</select>
 </div>
 <div>
    <div><label for="NumberOfPoles">',__("Number of Poles"),'</label></div>
-   <div><input type="number" name="NumberOfPoles" id="NumberOfPoles" size="3" value="',$panel->NumberOfPoles,'"></div>
+   <div><input type="number" name="NumberOfPoles" id="NumberOfPoles" size="3" value="',$panel->NumberOfPoles,'" min="0"></div>
 </div>
 <div>
    <div><label for="MainBreakerSize">',__("Main Breaker Amperage"),'</label></div>
-   <div><input type="number" name="MainBreakerSize" id="MainBreakerSize" size="4" value="',$panel->MainBreakerSize,'"></div>
+   <div><input type="number" name="MainBreakerSize" id="MainBreakerSize" size="4" value="',$panel->MainBreakerSize,'" min="0"></div>
 </div>
 <div>
    <div><label for="PanelVoltage">',__("Panel Voltage"),'</label></div>
-   <div><input type="number" name="PanelVoltage" id="PanelVoltage" size="4" value="',$panel->PanelVoltage,'"></div>
+   <div><input type="number" name="PanelVoltage" id="PanelVoltage" size="4" value="',$panel->PanelVoltage,'" min="0"></div>
 </div>
 <div>
    <div><label for="NumberScheme">',__("Numbering Scheme"),'</label></div>

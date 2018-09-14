@@ -1527,6 +1527,18 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["DefaultPanelVoltage"],'" name="DefaultPanelVoltage" value="',$config->ParameterArray["DefaultPanelVoltage"],'"></div>
 				</div>
 			</div> <!-- end table -->
+			<h3>',__("Site Specific Paths"),'</h3>
+			<div class="table" id="sitepaths">
+				<div>
+					<div><label for="drawingpath">',__("Relative path for Drawings"),'</label></div>
+					<div><input type="text" id="drawingpath" defaultvalue="',$config->defaults["drawingpath"],'" name="drawingpath" value="',$config->ParameterArray["drawingpath"],'"></div>
+				</div>
+				<div>
+					<div><label for="picturepath">',__("Relative path for Pictures"),'</label></div>
+					<div><input type="text" id="picturepath" defaultvalue="',$config->defaults["picturepath"],'" name="picturepath" value="',$config->ParameterArray["picturepath"],'">
+					</div>
+				</div>
+			</div> <!-- end table -->			
 			<h3>',__("Time and Measurements"),'</h3>
 			<div class="table" id="timeandmeasurements">
 				<div>

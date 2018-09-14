@@ -1,7 +1,7 @@
 <?php
 	# catch for assholes that don't read the install instructions
 	if(!file_exists("db.inc.php")){
-		require_once( "preflight.inc.php" );
+		require_once( "preflight.php" );
 		exit;
 	}
 /*	if ( ! $_SERVER["HTTPS"] ) {

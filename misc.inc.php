@@ -114,9 +114,9 @@ function redirect($target = null) {
 		}
 	}else{
 		//Try to ensure that a properly formatted uri has been passed in.
-		if(substr($target, 4)!='http'){
+		if(substr($target, 0, 4)!='http'){
 			//doesn't start with http or https check to see if it is a path
-			if(substr($target, 1)!='/'){
+			if(substr($target, 0, 1)!='/'){
 				//didn't start with a slash so it must be a filename
 				$target=path()."/".$target;
 			}else{
@@ -128,10 +128,27 @@ function redirect($target = null) {
 			return $target;
 		}
 	}
-	if(array_key_exists('HTTPS', $_SERVER) && $_SERVER["HTTPS"]=='on') {
-		$url = "https://".$_SERVER['SERVER_NAME'].$target;
-	} else {
-		$url = "http://".@$_SERVER['SERVER_NAME'].$target;
+	// If we made it here we didn't return above so bring in the config values
+	$config=new Config();
+	// Write out the value of the InstallURL to a shorter variable and trim it of whitespace
+	// just in case some smart ass managed to get something weird in the value
+	$installURL=trim($config->ParameterArray['InstallURL']);
+	// Keep some smart ass admin from trying to use this to access weird things
+	$installURL=str_replace("..","",$installURL);
+	// Since we format our path above using a / trim any extras from the user supplied
+	// value or if they pull something cute and put ////
+	$installURL=rtrim($installURL,"/");
+	// Check if our $installURL value is blank
+	if($installURL!=""){
+		// $installURL isn't blank so combine it with the target to get a valid redirect target
+		$url = $installURL.$target;
+	}else{
+		// $installURL is blank so let's try to guess what the server will be for the redirect
+		if(array_key_exists('HTTPS', $_SERVER) && $_SERVER["HTTPS"]=='on') {
+			$url = "https://".$_SERVER['SERVER_NAME'].$target;
+		} else {
+			$url = "http://".@$_SERVER['SERVER_NAME'].$target;
+		}
 	}
 	return $url;
 }
