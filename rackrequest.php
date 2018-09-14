@@ -79,6 +79,7 @@
 
 		if($_POST['action'] == 'Create'){
 			$req->RequestorID=$_POST['requestorid'];
+			$req->RequestedAction=$_POST['requestedaction'];
 			$req->Label=$_POST['label'];
 			$req->SerialNo=$_POST['serialno'];
 			$req->MfgDate=$_POST['mfgdate'];
@@ -121,6 +122,7 @@
 			}
 		}elseif(($_POST['action']=='Update Request'||$_POST['action']=='Move to Rack') && (($person->RackRequest && $person->UserID==$contact->UserID)||$person->RackAdmin)){
 			$req->RequestorID=$_POST['requestorid'];
+			$req->RequestedAction=$_POST['requestedaction'];
 			$req->Label=$_POST['label'];
 			$req->SerialNo=$_POST['serialno'];
 			$req->MfgDate=date('Y-m-d',strtotime($_POST["mfgdate"]));
@@ -360,8 +362,37 @@ echo '<div class="table">
 
 echo '			</select>
 		</div>
-	</div>
-	<div>
+	</div>';
+	
+	/**************************************************************************
+    *********** START - Add Action field to the Rack Request From page ********
+    **************************************************************************/
+	if(isset($config->ParameterArray['RackRequestsActions']) && $config->ParameterArray['RackRequestsActions'] == 'enabled') {
+        echo '
+            <div>
+		        <div><label for="requestedaction">',__("Action").'</label></div>
+		        <div>
+		            <select name="requestedaction" id="requestedaction" class="validate[required]">
+				        <option value="">',__("Select"),'...</option>
+		                <option value="new" ',($req->RequestedAction == "new" ? "selected" : ""),'>',__("New"),'</option>
+		                <option value="move" ',($req->RequestedAction == "move" ? "selected" : ""),'>',__("Move"),'</option>
+		                <option value="change" ',($req->RequestedAction == "change" ? "selected" : ""),'>',__("Change"),'</option>
+		                <option value="retire" ',($req->RequestedAction == "retire" ? "selected" : ""),'>',__("Retire"),'</option>
+		            </select>
+                </div>
+	        </div>
+	        ';
+    } else {
+        echo '
+            <input type="hidden" name="requestedaction" value="',$req->RequestedAction,'" />
+        ';
+    }
+    /**************************************************************************
+    *********** END - Add Action field to the Rack Request From page ********
+    **************************************************************************/
+
+echo '
+    <div>
 		<div><label for="label">',__("Label").'</label></div>
 		<div><input type="text" name="label" id="label" class="validate[required,minSize[3],maxSize[50]]" size="50" value="',$req->Label,'"></div>
 	</div>
