@@ -2157,8 +2157,35 @@ echo '<div class="main">
 				</div>
 				<div>
 					<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>
-			<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
-		</div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
+				</div>
+			</div>
+			<h3>',__("User Attributes"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="LDAPFirstName">',__("First Name"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPFirstName"],'" name="LDAPFirstName" value="',$config->ParameterArray["LDAPFirstName"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPLastName">',__("Last Name"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPLastName"],'" name="LDAPLastName" value="',$config->ParameterArray["LDAPLastName"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPEmail">',__("Email"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPEmail"],'" name="LDAPEmail" value="',$config->ParameterArray["LDAPEmail"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPPhone1">',__("Phone1"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPPhone1"],'" name="LDAPPhone1" value="',$config->ParameterArray["LDAPPhone1"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPPhone2">',__("Phone2"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPPhone2"],'" name="LDAPPhone2" value="',$config->ParameterArray["LDAPPhone2"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPPhone3">',__("Phone3"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPPhone3"],'" name="LDAPPhone3" value="',$config->ParameterArray["LDAPPhone3"],'"></div>
+				</div>
 			</div>
 			<h3>',__("Group Distinguished Names"),'</h3>
 			<div class="table">
