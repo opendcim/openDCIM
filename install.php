@@ -1335,7 +1335,7 @@ if(isset($results)){
 	
 //Installation Complete
 	if($nodept=="" && $nodc=="" && $nocab==""){ // All three primary sections have had at least one item created
-		if(!isset($_REQUEST['complete']) && !isset($_REQUEST['dept']) && !isset($_REQUEST['cab']) && !isset($_REQUEST['dc'])){
+		if(!isset($_REQUEST['complete']) && !isset($_REQUEST['dept']) && !isset($_REQUEST['cab']) && !isset($_REQUEST['dc']) && !isset($_REQUEST['ldap'])){
 			header('Location: '.redirect("install.php?complete&preflight-ok"));
 		}
 		//enable the finish menu option
@@ -1812,6 +1812,13 @@ function resize(){
 	}
 }
 $(document).ready(function(){
+	// add some polish to the user experience, if a select box isn't set attempt
+	// to set it to whatever the value for 0 is, new cabinet, new dc, etc
+	$('select').each(function(key,element){
+		if($(element).find('option:selected').length==0){
+			element.value=0;
+		}
+	})
 	resize();
 	// redraw the screen if the window size changes for some reason
 	$(window).resize(function(){
