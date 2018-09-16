@@ -12,6 +12,7 @@
 	$devMode = false;
 
 	$dbhost = 'localhost';
+	$dbport = '3306';
 	$dbname = 'dcim';
 	$dbuser = 'dcim';
 	$dbpass = 'dcim';
@@ -25,7 +26,7 @@
 	);
 
 	try{
-			$pdoconnect="mysql:host=$dbhost;dbname=$dbname";
+			$pdoconnect="mysql:host=$dbhost;port=$dbport;dbname=$dbname";
 			$dbh=new PDO($pdoconnect,$dbuser,$dbpass,$pdo_options);
 	}catch(PDOException $e){
 			printf( "Error!  %s\n", $e->getMessage() );
