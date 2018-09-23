@@ -129,6 +129,10 @@
                     "regex": /^[0-9a-zA-Z_\ ]+$/,
                     "alertText": "* Alpha-numeric and underscores only"
                 },
+                "endWithSlashConfigurationPage": {
+                    "regex": /\/$/,
+                    "alertText": "Directory paths must end with a /"
+                },
                 // --- CUSTOM RULES -- Those are specific to the demos, they can be removed or changed to your likings
                 "ajaxUserCall": {
                     "url": "ajaxValidateFieldUser",

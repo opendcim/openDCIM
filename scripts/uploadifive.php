@@ -12,6 +12,11 @@ header('Content-Type: application/json');
 
 // Set the uplaod directory
 $validDir=array('pictures','drawings','images');
+foreach($config->ParameterArray as $option => $value){
+	if(preg_match('/path$/',$option)){
+		array_push($validDir,$value);
+	}
+}
 $uploadDir=(isset($_POST['dir']) && in_array($_POST['dir'], $validDir))?$_POST['dir']:'';
 
 $status['status']=0;

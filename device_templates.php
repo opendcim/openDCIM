@@ -309,7 +309,7 @@
 
 	$imageselect='<div id="preview"></div><div id="filelist">';
 
-	$path='./pictures';
+	$path=$config->ParameterArray['picturepath'];
 	$dir=scandir($path);
 	foreach($dir as $i => $f){
 		if(is_file($path.DIRECTORY_SEPARATOR.$f)){
@@ -599,8 +599,8 @@
 				$('#deviceimages img').css('max-width',$('#rightside').innerWidth());
 			}
 
-			fp_img.prop('src','pictures/'+fp_file.val());
-			rp_img.prop('src','pictures/'+rp_file.val());
+			fp_img.prop('src',"<?php echo $config->ParameterArray['picturepath'];?>"+fp_file.val());
+			rp_img.prop('src',"<?php echo $config->ParameterArray['picturepath'];?>"+rp_file.val());
 			if(fp_file.val()){
 				fp_img.parent('div').show();
 			}else{
@@ -930,12 +930,12 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 		<div>
 			<div class="center">
 				<!-- front image goes here -->
-				<img id="img_FrontPictureFile" src="pictures/',$template->FrontPictureFile,'">
+				<img id="img_FrontPictureFile" src="',$config->ParameterArray['picturepath'],'/',$template->FrontPictureFile,'">
 				<br><span>',__("Front"),'</span>
 			</div>
 			<div class="center">
 				<!-- rear image goes here -->
-				<img id="img_RearPictureFile" src="pictures/',$template->RearPictureFile,'">
+				<img id="img_RearPictureFile" src="',$config->ParameterArray['picturepath'],'/',$template->RearPictureFile,'">
 				<br><span>',__("Rear"),'</span>
 			</div>
 		</div>
@@ -1147,7 +1147,7 @@ function bindevents() {
 		var preview=$('#imageselection #preview');
 		$(this).click(function(){
 			preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
-			preview.html('<img src="pictures/'+$(this).text()+'" alt="preview">').attr('image',$(this).text());
+			preview.html('<img src="<?php echo $config->ParameterArray['picturepath'];?>/'+$(this).text()+'" alt="preview">').attr('image',$(this).text());
 			preview.children('img').load(function(){
 				var topmargin=0;
 				var leftmargin=0;
@@ -1178,7 +1178,7 @@ function uploadifive() {
 		'formData' : {
 				'timestamp' : '<?php echo $timestamp;?>',
 				'token'     : '<?php echo $salt;?>',
-				'dir'		: 'pictures'
+				'dir'		: "<?php echo $config->ParameterArray['picturepath'];?>"
 			},
 		'buttonText'		: 'Upload new image',
 		'width'				: '150',

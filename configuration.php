@@ -636,6 +636,8 @@
 				}).data('input',input);
 				binddirectoryselection();
 			});
+		}).on('change',function(){
+			$(".main form").validationEngine('validate');
 		});
 
 		// General - Time and Measurements
@@ -1461,16 +1463,18 @@
 
 		// Convert this bitch over to an ajax form submit
 		$('button[name="action"]').click(function(e){
-			// Clear the messages blank
-			$('#messages').text('');
-			// Don't let this button do a real form submit
-			e.preventDefault();
-			// Collect the config data
-			var formdata=$(".main form").serializeArray();
-			// Set the action of the form to Update
-			formdata.push({name:'action',value:"Update"});
-			// Post the config data then update the status message
-			$.post('',formdata).done(function(){$('#messages').text('Updated');}).error(function(){$('#messages').text('Something is broken');});
+			if($(".main form").validationEngine('validate')){
+				// Clear the messages blank
+				$('#messages').text('');
+				// Don't let this button do a real form submit
+				e.preventDefault();
+				// Collect the config data
+				var formdata=$(".main form").serializeArray();
+				// Set the action of the form to Update
+				formdata.push({name:'action',value:"Update"});
+				// Post the config data then update the status message
+				$.post('',formdata).done(function(){$('#messages').text('Updated');}).error(function(){$('#messages').text('Something is broken');});
+			}
 		});
 
 		$('.main form').submit(function(e){
@@ -1614,11 +1618,11 @@ echo '<div class="main">
 			<div class="table" id="sitepaths">
 				<div>
 					<div><label for="drawingpath">',__("Relative path for Drawings"),'</label></div>
-					<div><input type="text" id="drawingpath" defaultvalue="',$config->defaults["drawingpath"],'" name="drawingpath" value="',$config->ParameterArray["drawingpath"],'"></div>
+					<div><input type="text" id="drawingpath" defaultvalue="',$config->defaults["drawingpath"],'" name="drawingpath" value="',$config->ParameterArray["drawingpath"],'" class="validate[required,custom[endWithSlashConfigurationPage]]"></div>
 				</div>
 				<div>
 					<div><label for="picturepath">',__("Relative path for Pictures"),'</label></div>
-					<div><input type="text" id="picturepath" defaultvalue="',$config->defaults["picturepath"],'" name="picturepath" value="',$config->ParameterArray["picturepath"],'">
+					<div><input type="text" id="picturepath" defaultvalue="',$config->defaults["picturepath"],'" name="picturepath" value="',$config->ParameterArray["picturepath"],'" class="validate[required,custom[endWithSlashConfigurationPage]]">
 					</div>
 				</div>
 			</div> <!-- end table -->			

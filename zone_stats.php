@@ -88,6 +88,7 @@
 	$rciStats = RCI::GetStatistics( "zone", $zone->ZoneID );
 
 	function MakeImageMap($dc,$zone) {
+		global $config;
 		$zoom=$zone->MapZoom/100;
 		$mapHTML="";
 

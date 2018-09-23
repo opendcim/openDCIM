@@ -1306,8 +1306,8 @@ $(document).ready(function() {
 			$('#PowerSupplyCount').val(data['PSCount']);
 			$('select[name=DeviceType]').val(data['DeviceType']).trigger('change');
 			$('#Height').trigger('change');
-			(data['FrontPictureFile']!='')?$('#devicefront').attr('src','pictures/'+data['FrontPictureFile']):$('#devicefront').removeAttr('src').hide();
-			(data['RearPictureFile']!='')?$('#devicerear').attr('src','pictures/'+data['RearPictureFile']):$('#devicerear').removeAttr('src').hide();
+			(data['FrontPictureFile']!='')?$('#devicefront').attr('src',"<?php echo $config->ParameterArray['picturepath'];?>"+data['FrontPictureFile']):$('#devicefront').removeAttr('src').hide();
+			(data['RearPictureFile']!='')?$('#devicerear').attr('src',"<?php echo $config->ParameterArray['picturepath'];?>"+data['RearPictureFile']):$('#devicerear').removeAttr('src').hide();
 			toggledeviceimages();
 			customattrrefresh($('#TemplateID').val());
 		});
@@ -1950,11 +1950,11 @@ echo '
 <fieldset id="deviceimages">
 	<legend>'.__("Device Images").'</legend>
 	<div>';
-		$frontpic=($templ->FrontPictureFile!='')?' src="pictures/'.$templ->FrontPictureFile.'"':'';
-		$rearpic=($templ->RearPictureFile!='')?' src="pictures/'.$templ->RearPictureFile.'"':'';
+		$frontpic=($templ->FrontPictureFile!='')?' src="'.$config->ParameterArray['picturepath'].'/'.$templ->FrontPictureFile.'"':'';
+		$rearpic=($templ->RearPictureFile!='')?' src="'.$config->ParameterArray['picturepath'].'/'.$templ->RearPictureFile.'"':'';
 echo '
-		<img id="devicefront" src="pictures/'.$templ->FrontPictureFile.'" alt="front of device">
-		<img id="devicerear" src="pictures/'.$templ->RearPictureFile.'" alt="rear of device">
+		<img id="devicefront" src="'.$config->ParameterArray['picturepath'].'/'.$templ->FrontPictureFile.'" alt="front of device">
+		<img id="devicerear" src="'.$config->ParameterArray['picturepath'].'/'.$templ->RearPictureFile.'" alt="rear of device">
 	</div>
 </fieldset>
 <fieldset id="proxmoxblock" class="hide">

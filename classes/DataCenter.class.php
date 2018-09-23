@@ -333,11 +333,12 @@ class DataCenter {
     }
 
 	function GetOverview(){
+		global $config;
 		$this->MakeSafe();
 		$statusarray=array();	
 		// check to see if map was set
 		if(strlen($this->DrawingFileName)){
-			$mapfile="drawings".DIRECTORY_SEPARATOR.$this->DrawingFileName;
+			$mapfile=$config->ParameterArray['drawingpath'].DIRECTORY_SEPARATOR.$this->DrawingFileName;
 
 			$overview=array();
 			$space=array();

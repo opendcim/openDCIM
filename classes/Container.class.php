@@ -271,12 +271,13 @@ class Container {
     }
 
 	function MakeContainerImage(){
+		global $config;
 		$mapHTML="";
 		$mapfile="";
 		$tam=50;
 	 
 		if ( strlen($this->DrawingFileName) > 0 ) {
-			$mapfile = "drawings/" . $this->DrawingFileName;
+			$mapfile = $config->ParameterArray['drawingpath'] . $this->DrawingFileName;
 		}
 	   
 		if ( file_exists( $mapfile ) ) {
@@ -338,6 +339,7 @@ class Container {
 	}
 
 	function MakeContainerMiniImage($tipo="",$id=0) {
+		global $config;
 		$mapHTML = "";
 		$mapfile="";
 		$tam=50;
@@ -346,7 +348,7 @@ class Container {
 		$yo_ok=false;
 	 
 		if ( strlen($this->DrawingFileName) > 0 ) {
-			$mapfile = "drawings/" . $this->DrawingFileName;
+			$mapfile = $config->ParameterArray['drawingpath'] . $this->DrawingFileName;
 		}
 	   
 		if ( file_exists( $mapfile ) ) {
