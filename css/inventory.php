@@ -122,6 +122,10 @@ div.cp { position: relative;}
 
 #configtabs #reporting div:first-child + div > input {width: 20em; }
 
+div#directoryselection { display: none;}
+#directoryselection #filelist { position: absolute; top: 30px; left: 1em; height: 380px; width: 245px; overflow-y: scroll; overflow-x: hidden; white-space: nowrap;}
+#directoryselection #filelist a { line-height: 1.5em; }
+
 div#imageselection { display: none;}
 #imageselection span { display: block; padding: 0.25em 0 0.5em 0.5em; cursor: pointer; text-decoration: underline; border: 1px solid white;}
 #imageselection #preview { position: absolute; top: 0; right: 0; height: 340px; width: 340px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}

@@ -14,6 +14,42 @@
 		exit;
 	}
 
+	function BuildDirectoryList($returnjson=false,$path="."){
+		$path=trim($path);
+		# Make sure we don't have any path shenanigans going on
+		$path=str_replace(array("..","./"),"",$path);
+		# we don't need trailing slashes, and leading slashes are going to be invalid paths
+		$path=trim($path,"/");
+		# if path is empty revert to the current directory
+		$path=($path)?$path:'.';
+		$here=end(explode(DIRECTORY_SEPARATOR,getcwd()));
+		$breadcrumb="<a href=\"?dl=\">$here</a>/";
+		$breadcrumbpath="";
+		if($path!='.'){
+			foreach(explode("/",$path) as $i => $d) {
+				$breadcrumb.="<a href=\"?dl=$breadcrumbpath$d\">$d</a>/";
+				$breadcrumbpath.="$d/";
+			}
+		}
+		$imageselect=__("Current selection").': '.$breadcrumb.'<br><input type="hidden" id="directoryselectionvalue" value="'.$breadcrumbpath.'"><div id="filelist">';
+
+		$directoriesonly=array();
+		$dir=scandir($path);
+		foreach($dir as $i => $f){
+			if(is_dir($path.DIRECTORY_SEPARATOR.$f) && $f!="." && $f!=".." && !preg_match('/^\./', $f)){
+				$imageselect.="<a href=\"?dl=$path/$f\"><span data=\"$breadcrumbpath$f\">$f</span></a><br>\n";
+				$filesonly[]=$f;
+			}
+		}
+		$imageselect.="</div>";
+		if($returnjson){
+			header('Content-Type: application/json');
+			echo json_encode($filesonly);
+		}else{
+			return $imageselect;
+		}
+	}
+
 	function BuildFileList($returnjson=false){
 		$imageselect='<div id="preview"></div><div id="filelist">';
 
@@ -39,6 +75,10 @@
 	}
 
 	// AJAX Requests
+	if(isset($_GET['dl'])){
+		echo BuildDirectoryList(isset($_GET['json']),$_GET['dl']);
+		exit;
+	}
 	if(isset($_GET['fl'])){
 		echo BuildFileList(isset($_GET['json']));
 		exit;
@@ -236,6 +276,7 @@
 		$i++;
 	}
 
+	$directoryselect=BuildDirectoryList();
 	$imageselect=BuildFileList();
 
 	function formatOffset($offset) {
@@ -418,6 +459,17 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript">
+	function binddirectoryselection() {
+		$("#directoryselection a").each(function(){
+			$(this).click(function(e){
+				e.preventDefault();
+				$.get(this.href).done(function(data){
+					$("#directoryselection").html(data);
+					binddirectoryselection();
+				});
+			});
+		});
+	}
 	$(document).ready(function(){
 		// ToolTips
 		$('#tooltip, #cdutooltip').multiselect();
@@ -557,6 +609,34 @@
 		$('#SNMPCommunity,#v3AuthPassphrase,#v3PrivPassphrase')
 			.focus(function(){$(this).attr('type','text');})
 			.blur(function(){$(this).attr('type','password');});
+
+		// General - Site Specific Paths
+
+		$('#drawingpath, #picturepath').click(function(){
+			var input=this;
+			var originalvalue=this.value;
+			$.get('',{dl: this.value}).done(function(data){
+				$("#directoryselection").html(data);
+				$("#directoryselection").dialog({
+					resizable: false,
+					height:500,
+					width: 670,
+					modal: true,
+					buttons: {
+	<?php echo '					',__("Select"),': function() {'; ?>
+							input.value=$('#directoryselectionvalue').val();
+							$(this).dialog("destroy");
+						}
+					},
+					close: function(){
+							// they clicked the x, set the value back if something was uploaded
+							input.value=originalvalue;
+							$(this).dialog("destroy");
+						}
+				}).data('input',input);
+				binddirectoryselection();
+			});
+		});
 
 		// General - Time and Measurements
 
@@ -1528,6 +1608,9 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Site Specific Paths"),'</h3>
+			<div id="directoryselection" title="Image file directory selector">
+				',$directoryselect,'
+			</div>
 			<div class="table" id="sitepaths">
 				<div>
 					<div><label for="drawingpath">',__("Relative path for Drawings"),'</label></div>
