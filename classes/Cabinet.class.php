@@ -96,7 +96,7 @@ class Cabinet {
 		$cab->AssignedTo=$dbRow["AssignedTo"];
 		$dep->DeptID=$dbRow["AssignedTo"];
 		$dep->GetDeptByID();
-                $cab->AssignedToName=$dep->Name;
+               $cab->AssignedToName=$dep->Name;
 		$cab->ZoneID=$dbRow["ZoneID"];
 		$cab->CabRowID=$dbRow["CabRowID"];
 		$cab->CabinetHeight=$dbRow["CabinetHeight"];
