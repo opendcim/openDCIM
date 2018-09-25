@@ -989,9 +989,9 @@ if ($person->BulkOperations) {
 if ( $person->SiteAdmin ) {
 	$samenu[__("Template Management")][]='<a href="device_manufacturers.php"><span>'.__("Edit Manufacturers").'</span></a>';
 	$samenu[__("Template Management")][]='<a href="repository_sync_ui.php"><span>'.__("Repository Sync").'</span></a>';
-	$samenu[__("Material Management")][]='<a href="supplybin.php"><span>'.__("Manage Supply Bins").'</span></a>';
-	$samenu[__("Material Management")][]='<a href="supplies.php"><span>'.__("Manage Supplies").'</span></a>';
-	$samenu[__("Material Management")][]='<a href="disposition.php"><span>'.__("Manage Disposal Methods").'</span></a>';
+	$samenu[__("Materiel Management")][]='<a href="supplybin.php"><span>'.__("Manage Supply Bins").'</span></a>';
+	$samenu[__("Materiel Management")][]='<a href="supplies.php"><span>'.__("Manage Supplies").'</span></a>';
+	$samenu[__("Materiel Management")][]='<a href="disposition.php"><span>'.__("Manage Disposal Methods").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="datacenter.php"><span>'.__("Edit Data Centers").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="container.php"><span>'.__("Edit Containers").'</span></a>';
 	$samenu[__("Infrastructure Management")][]='<a href="zone.php"><span>'.__("Edit Zones").'</span></a>';
