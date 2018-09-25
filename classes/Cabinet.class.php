@@ -35,6 +35,7 @@ class Cabinet {
 	var $Location;
 	var $LocationSortable;
 	var $AssignedTo;
+        var $AssignedToName;
 	var $ZoneID;
 	var $CabRowID;      //JMGA: Row of this cabinet
 	var $CabinetHeight;
@@ -87,11 +88,15 @@ class Cabinet {
 		 * table and convert it to an object for use in array or other
 		 */
 		$cab=new Cabinet();
+                $dep=new Department();
 		$cab->CabinetID=$dbRow["CabinetID"];
 		$cab->DataCenterID=$dbRow["DataCenterID"];
 		$cab->Location=$dbRow["Location"];
 		$cab->LocationSortable=$dbRow["LocationSortable"];
 		$cab->AssignedTo=$dbRow["AssignedTo"];
+                $dep->DeptID=$dbRow["AssignedTo"];
+                $dep->GetDeptByID();
+                $cab->AssignedToName=$dep->Name;
 		$cab->ZoneID=$dbRow["ZoneID"];
 		$cab->CabRowID=$dbRow["CabRowID"];
 		$cab->CabinetHeight=$dbRow["CabinetHeight"];
@@ -281,13 +286,12 @@ class Cabinet {
 
 	function GetCabinetsByDept(){
 		global $dbh;
-		global $config;
 
 		$this->MakeSafe();
 
 		$cabinetList = array();
 
-		$sql = "select * from fac_Cabinet where AssignedTo='" . $this->DeptID . "'";
+		$sql = "select * from fac_Cabinet where AssignedTo='" . $this->AssignedTo . "'";
 		foreach( $dbh->query($sql) as $cabinetRow){
 			$filter = $config->ParameterArray["FilterCabinetList"] == 'Enabled' ? true:false;
 			$cabinetList[]=Cabinet::RowToObject($cabinetRow, $filter);		
