@@ -457,6 +457,7 @@ class DeviceTemplate {
 	}
 	
 	function ExportTemplate(){
+		global $config;
 		if($this->GetTemplate()){
 			//Get manufacturer name
 			$manufacturer=new Manufacturer($this->ManufacturerID);
@@ -481,7 +482,7 @@ class DeviceTemplate {
 			}
 
 			foreach(array('FrontPictureFile','RearPictureFile') as $pic){
-				$path='./pictures';
+				$path=$config->ParameterArray['picturepath'];
 				$file=$path.DIRECTORY_SEPARATOR.$this->$pic;
 				if(is_file($file)){
 					$type = pathinfo($file, PATHINFO_EXTENSION);
@@ -504,6 +505,7 @@ class DeviceTemplate {
 	}
 
 	function ImportTemplate($file){
+		global $config;
 		$result=array();
 		$result["status"]="";
 		$result["log"]=array();
@@ -653,7 +655,7 @@ class DeviceTemplate {
 			}
 		}
 		//only write out a file if they don't already exist
-		$path='./pictures';
+		$path=$config->ParameterArray['picturepath'];
 		if($front_file && !is_file($path.DIRECTORY_SEPARATOR.$frontfilename)){
 			file_put_contents($path.DIRECTORY_SEPARATOR.$frontfilename, $front_file);
 		}
@@ -711,8 +713,9 @@ class DeviceTemplate {
 	}
 
 	static function getAvailableImages(){
+		global $config;
 		$array=array();
-		$path='pictures';
+		$path=$config->ParameterArray['picturepath'];
 		if(preg_match('/api\//',str_replace(DIRECTORY_SEPARATOR, '/',getcwd()))){
 			$path="../../$path";
 		}

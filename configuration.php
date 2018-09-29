@@ -470,6 +470,15 @@
 			});
 		});
 	}
+
+	// fix this to trigger after the drawing path has been updated
+	function rebuildcache(){
+		$('<div>').append($('<iframe>').attr('src','build_image_cache.php').css({'max-width':'600px','max-height':'400px','min-height':'300px','align':'middle'})).attr('title','Rebuild device image cache').dialog({
+			width: 'auto',
+			modal: true
+		});
+	};
+
 	$(document).ready(function(){
 		// ToolTips
 		$('#tooltip, #cdutooltip').multiselect();
@@ -511,7 +520,7 @@
 						}
 					});
 				}
-				a.val(value_to_set);
+				a.val(value_to_set).trigger('change');
 
 				if(a.hasClass('color-picker')){
 					a.minicolors('value', $(this).parent().next().children('span').text()).trigger('change');
@@ -625,6 +634,7 @@
 					buttons: {
 	<?php echo '					',__("Select"),': function() {'; ?>
 							input.value=$('#directoryselectionvalue').val();
+							$(input).trigger('change');
 							$(this).dialog("destroy");
 						}
 					},
@@ -636,7 +646,10 @@
 				}).data('input',input);
 				binddirectoryselection();
 			});
-		}).on('change',function(){
+		}).on('change',function(e){
+			if(e.currentTarget.id=='picturepath'){
+				window.picturepathupdated=true;
+			}
 			$(".main form").validationEngine('validate');
 		});
 
@@ -1473,7 +1486,17 @@
 				// Set the action of the form to Update
 				formdata.push({name:'action',value:"Update"});
 				// Post the config data then update the status message
-				$.post('',formdata).done(function(){$('#messages').text('Updated');}).error(function(){$('#messages').text('Something is broken');});
+				$.post('',formdata).done(function(){
+						$('#messages').text('Updated');
+						if(typeof(window.picturepathupdated)==="boolean"){
+							if(window.picturepathupdated){
+								rebuildcache();
+								window.picturepathupdated=false;
+							}
+						}
+					}).error(function(){
+						$('#messages').text('Something is broken');
+					});
 			}
 		});
 
