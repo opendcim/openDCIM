@@ -69,7 +69,7 @@ $(function() {
 		'formData' : {
 			'timestamp' : '<?php echo $timestamp;?>',
 			'token'     : '<?php echo $salt;?>',
-			'dir'		: '<?php echo $config->ParameterArray["picturepath"]; ?>'
+			'dir'		: 'pictures'
 		},
 		'removeCompleted' : true,
 		'checkScript' : 'scripts/check-exists.php',
@@ -88,7 +88,7 @@ $(function() {
 				$('#uploadifive-'+this[0].id+'-queue').append(toast);
 			}else{
 				// fuck yeah, reload the thumbnails
-				reload($(this).data('dir'));
+				reload($(this).data('dir'),$(this).data('thumbdiv'));
 			}
 		}
     });
@@ -134,7 +134,7 @@ $(function() {
 		'formData' : {
 				'timestamp' : '<?php echo $timestamp;?>',
 				'token'     : '<?php echo $salt;?>',
-				'dir'		: '<?php echo $config->ParameterArray["drawingpath"];?>'
+				'dir'		: 'drawings'
 			},
 		'removeCompleted' : true,
 		'checkScript'		: 'scripts/check-exists.php',
@@ -153,7 +153,7 @@ $(function() {
 				$('#uploadifive-'+this[0].id+'-queue').append(toast);
 			}else{
 				// fuck yeah, reload the thumbnails
-				reload($(this).data('dir'));
+				reload($(this).data('dir'),$(this).data('thumbdiv'));
 			}
 		}
     });
