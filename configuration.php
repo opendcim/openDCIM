@@ -475,7 +475,28 @@
 	function rebuildcache(){
 		$('<div>').append($('<iframe>').attr('src','build_image_cache.php').css({'max-width':'600px','max-height':'400px','min-height':'300px','align':'middle'})).attr('title','Rebuild device image cache').dialog({
 			width: 'auto',
-			modal: true
+			modal: true,
+			open: function(e){
+				thismodal=this;
+				timer = setInterval( function() {
+					$.ajax({
+						type: 'GET',
+						url: 'scripts/ajax_progress.php',
+						dataType: 'json',
+						success: function(data) {
+							if ( data.Percentage >= 100 ) {
+								clearInterval(timer);
+								// wait 5 seconds after the rebuild completes and autoclose this dialog
+								timer = setInterval( function() {
+									$(thismodal).dialog('destroy');
+									clearInterval(timer);
+								}, 5000 );
+								// Reload with Stage 3 to send the file to the user
+							}
+						}
+					})
+				}, 1500 );
+			}
 		});
 	};
 
@@ -1490,6 +1511,9 @@
 						$('#messages').text('Updated');
 						if(typeof(window.picturepathupdated)==="boolean"){
 							if(window.picturepathupdated){
+								$('#messages').text("<?php echo __("Verify directory rights");?>");
+								$('a[href=#preflight]').trigger('click');
+								window.scrollTo(0,0);
 								rebuildcache();
 								window.picturepathupdated=false;
 							}
