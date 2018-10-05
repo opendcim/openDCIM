@@ -188,6 +188,9 @@ if($object>0){
 
 		$tooltip="<span>$pan->PanelLabel</span>\n";
 	}elseif(isset($_POST['cdu']) || isset($_POST['dev'])){
+		$dev=new Device();
+		$dev->DeviceID=$object;
+		$dev->GetDevice();
 		if(isset($_POST['cdu']) && $config->ParameterArray["CDUToolTips"]=='enabled'){
 			$pdu=new PowerDistribution();
 			$pdu->PDUID=$object;
@@ -195,10 +198,6 @@ if($object>0){
 			$ttconfig=$dbh->query("SELECT * FROM fac_CDUToolTip WHERE Enabled=1 ORDER BY SortOrder ASC, Enabled DESC, Label ASC;");
 			$tooltip = __("Name") . ": " . $pdu->Label . "<br>\n";
 		}elseif($config->ParameterArray["ToolTips"]=='enabled'){
-			$dev=new Device();
-			$dev->DeviceID=$object;
-			$dev->GetDevice();
-
 			if($dev->Rights=='None'){
 				print __("Details Restricted");
 				exit;
@@ -267,16 +266,9 @@ if($object>0){
 					$tooltip.=__($row["Label"]).": [$manufacturer->Name] $template->Model<br>\n";
 					break;
 				case "NumOutlets":
-					$template=new CDUTemplate();
-					$powerConn=new PowerConnection();
-
-					$template->TemplateID=$pdu->TemplateID;
-					$template->GetTemplate();
-
-					$powerConn->PDUID=$pdu->PDUID;
-					$connList=$powerConn->GetConnectionsByPDU();
-
-					$tooltip.=__($row["Label"]).": ".count($connList)."/".($template->NumOutlets+1)."<br>\n";
+					$sql="SELECT COUNT(*) AS usedOutlets FROM fac_PowerPorts WHERE DeviceID=$dev->DeviceID AND ConnectedDeviceID>0 AND ConnectedPort>0;";
+					$connList = $dbh->query($sql)->fetch();
+					$tooltip.=__($row["Label"]).": ({$connList["usedOutlets"]})/($dev->PowerSupplyCount)<br>\n";
 					break;
 				case "Uptime":
 					$tooltip.=__($row["Label"]).": ".$pdu->GetSmartCDUUptime()."<br>\n";
