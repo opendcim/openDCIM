@@ -35,6 +35,7 @@ class Cabinet {
 	var $Location;
 	var $LocationSortable;
 	var $AssignedTo;
+	var $ShowCabinetLabel;
 	var $ZoneID;
 	var $CabRowID;      //JMGA: Row of this cabinet
 	var $CabinetHeight;
@@ -107,6 +108,18 @@ class Cabinet {
 		$cab->FrontEdge=$dbRow["FrontEdge"];
 		$cab->Notes=$dbRow["Notes"];
 		$cab->U1Position=$dbRow["U1Position"];
+		
+	    global $config;
+	    if($config->ParameterArray["AssignCabinetLabels"]=="OwnerName"){
+	    $dep->DeptID=$dbRow["AssignedTo"];
+	    $dep->GetDeptByID();
+	    $cab->ShowCabinetLabel=$dep->Name;}
+
+	    if($config->ParameterArray["AssignCabinetLabels"]=="KeyLockInformation"){
+	       $cab->ShowCabinetLabel=$dbRow["Keylock"]; }
+
+	    if($config->ParameterArray["AssignCabinetLabels"]=="ModelNo"){
+	       $cab->ShowCabinetLabel=$dbRow["Model"];  }
 
 		if($filterrights){
 			$cab->FilterRights();
