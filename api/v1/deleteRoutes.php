@@ -118,7 +118,7 @@ $app->delete( '/colorcode/:colorid', function( $colorid ) use($person) {
 
 $app->delete( '/device/:deviceid', function( $deviceid ) {
 	$dev=new Device();
-	$dev->DeviceID=$args['deviceid'];
+	$dev->DeviceID=$deviceid;
 	
 	if(!$dev->GetDevice()){
 		$r['error']=true;
