@@ -1,4 +1,5 @@
 <?php
+require_once( "../db.inc.php" );
 /*
 UploadiFive
 Copyright (c) 2012 Reactive Apps, Ronnie Garcia

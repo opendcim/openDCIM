@@ -1883,6 +1883,7 @@ class Device {
 		 * - Child devices shouldn't need to conform to the 1.75:19 ratio we use for devices 
 		 *		directly in a cabinet they will target the slot that they are inside
 		 */
+		global $config;
 		$resp="";
 		
 		$templ=new DeviceTemplate();
@@ -1900,9 +1901,9 @@ class Device {
 
 		// We'll only consider checking a rear image on a child if it is sitting on a shelf
 		if(($parentTempl->Model=='HTRAY' || $parentTempl->Model=='VTRAY') && $rear){
-			$picturefile="pictures/$templ->RearPictureFile";
+			$picturefile=$config->ParameterArray['picturepath'].$templ->RearPictureFile;
 		}else{
-			$picturefile="pictures/$templ->FrontPictureFile";
+			$picturefile=$config->ParameterArray['picturepath'].$templ->FrontPictureFile;
 		}
 		if (!file_exists($path.$picturefile)){
 			$picturefile="pictures/P_ERROR.png";
@@ -2060,7 +2061,7 @@ class Device {
 			$label="";
 			$resp.="\t\t<div class=\"dept$this->Owner $rotar\" style=\"left: ".number_format(round($left/$parentDetails->targetWidth*100,2),2,'.','')."%; top: ".number_format(round($top/$parentDetails->targetHeight*100,2),2,'.','')."%; width: ".number_format(round($width/$parentDetails->targetWidth*100,2),2,'.','')."%; height:".number_format(round($height/$parentDetails->targetHeight*100,2),2,'.','')."%;\">\n$clickable";
 //			if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
-			if($picturefile!='pictures/'){
+			if($picturefile!=$config->ParameterArray['picturepath']){
 				// IMAGE
 				// this rotate should only happen for a horizontal slot with a vertical image
 				$rotateimage=($hor_slot && !$hor_blade)?" class=\"rotar_d rlt\"  style=\"height: ".number_format(round($width/$height*100,2),2,'.','')."%; left: 100%; width: ".number_format(round($height/$width*100,2),2,'.','')."%; top: 0; position: absolute;\"":"";
@@ -2105,6 +2106,7 @@ class Device {
 		return $resp;
 	}
 	function GetDevicePicture($rear=false,$targetWidth=220,$nolinks=false){
+		global $config;
 		// Just in case
 		$targetWidth=($targetWidth==0)?220:$targetWidth;
 		$rear=($rear==true || $rear==false)?$rear:true;
@@ -2116,7 +2118,7 @@ class Device {
 		$resp="";
 
 		if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
-			$picturefile="pictures/";
+			$picturefile=$config->ParameterArray['picturepath'];
 			$path="";
 			if(preg_match('/api\//',str_replace(DIRECTORY_SEPARATOR, '/',getcwd()))){
 				$path="../../";

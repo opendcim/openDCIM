@@ -125,6 +125,17 @@ div.cp { position: relative;}
 div#directoryselection { display: none;}
 #directoryselection #filelist { position: absolute; top: 30px; left: 1em; height: 380px; width: 245px; overflow-y: scroll; overflow-x: hidden; white-space: nowrap;}
 #directoryselection #filelist a { line-height: 1.5em; }
+#directoryselection #filelist a::before {
+	display: inline-block;
+	background-image: url(../images/folder.gif);
+	content: '';
+	background-size: 1.5em;
+	height: 1.75em;
+	width: 1.5em;
+	padding-right: 5px;
+	margin-bottom: -5px;
+	background-repeat: no-repeat;
+}
 
 div#imageselection { display: none;}
 #imageselection span { display: block; padding: 0.25em 0 0.5em 0.5em; cursor: pointer; text-decoration: underline; border: 1px solid white;}

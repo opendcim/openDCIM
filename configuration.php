@@ -418,6 +418,49 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript">
+
+	function binddirectoryselection() {
+		$("#directoryselection a").each(function(){
+			$(this).click(function(e){
+				e.preventDefault();
+				$.get(this.href).done(function(data){
+					$("#directoryselection").html(data);
+					binddirectoryselection();
+				});
+			});
+		});
+	}
+
+	// fix this to trigger after the drawing path has been updated
+	function rebuildcache(){
+		$('<div>').append($('<iframe>').attr('src','build_image_cache.php').css({'max-width':'600px','max-height':'400px','min-height':'300px','align':'middle'})).attr('title','Rebuild device image cache').dialog({
+			width: 'auto',
+			modal: true,
+			open: function(e){
+				thismodal=this;
+				timer = setInterval( function() {
+					$.ajax({
+						type: 'GET',
+						url: 'scripts/ajax_progress.php',
+						dataType: 'json',
+						success: function(data) {
+							if ( data.Percentage >= 100 ) {
+								clearInterval(timer);
+								// wait 5 seconds after the rebuild completes and autoclose this dialog
+								timer = setInterval( function() {
+									$(thismodal).dialog('destroy');
+									clearInterval(timer);
+								}, 5000 );
+								// Reload with Stage 3 to send the file to the user
+							}
+						}
+					})
+				}, 1500 );
+			}
+		});
+	};
+
+
 	$(document).ready(function(){
 		// ToolTips
 		$('#tooltip, #cdutooltip').multiselect();
@@ -448,7 +491,23 @@
 		$("#configtabs button").each(function(){
 			var a = $(this).parent().prev().find('input,select');
 			$(this).click(function(){
+
 				a.val($(this).parent().next().children('span').text());
+
+				
+				var value_to_set = $(this).parent().next().children('span').text();
+
+				// Only for selects, try to assign an existing option, so to avoid to default to an empty value that cannot be saved
+				if (a.is("select")){
+					a.find('option').each(function (){
+						if ($(this).val().toLowerCase() === value_to_set.toLowerCase()){
+							value_to_set = $(this).val();
+						}
+					});
+				}
+				a.val(value_to_set).trigger('change');
+
+
 				if(a.hasClass('color-picker')){
 					a.minicolors('value', $(this).parent().next().children('span').text()).trigger('change');
 				}
@@ -545,6 +604,42 @@
 		$('#SNMPCommunity,#v3AuthPassphrase,#v3PrivPassphrase')
 			.focus(function(){$(this).attr('type','text');})
 			.blur(function(){$(this).attr('type','password');});
+
+
+		// General - Site Specific Paths
+
+		$('#drawingpath, #picturepath').click(function(){
+			var input=this;
+			var originalvalue=this.value;
+			$.get('',{dl: this.value}).done(function(data){
+				$("#directoryselection").html(data);
+				$("#directoryselection").dialog({
+					resizable: false,
+					height:500,
+					width: 670,
+					modal: true,
+					buttons: {
+	<?php echo '					',__("Select"),': function() {'; ?>
+							input.value=$('#directoryselectionvalue').val();
+							$(input).trigger('change');
+							$(this).dialog("destroy");
+						}
+					},
+					close: function(){
+							// they clicked the x, set the value back if something was uploaded
+							input.value=originalvalue;
+							$(this).dialog("destroy");
+						}
+				}).data('input',input);
+				binddirectoryselection();
+			});
+		}).on('change',function(e){
+			if(e.currentTarget.id=='picturepath'){
+				window.picturepathupdated=true;
+			}
+			$(".main form").validationEngine('validate');
+		});
+
 
 		// General - Time and Measurements
 
@@ -1369,6 +1464,7 @@
 
 		// Convert this bitch over to an ajax form submit
 		$('button[name="action"]').click(function(e){
+
 			// Clear the messages blank
 			$('#messages').text('');
 			// Don't let this button do a real form submit
@@ -1379,6 +1475,33 @@
 			formdata.push({name:'action',value:"Update"});
 			// Post the config data then update the status message
 			$.post('',formdata).done(function(){$('#messages').text('Updated');}).error(function(){$('#messages').text('Something is broken');});
+
+			if($(".main form").validationEngine('validate')){
+				// Clear the messages blank
+				$('#messages').text('');
+				// Don't let this button do a real form submit
+				e.preventDefault();
+				// Collect the config data
+				var formdata=$(".main form").serializeArray();
+				// Set the action of the form to Update
+				formdata.push({name:'action',value:"Update"});
+				// Post the config data then update the status message
+				$.post('',formdata).done(function(){
+						$('#messages').text('Updated');
+						if(typeof(window.picturepathupdated)==="boolean"){
+							if(window.picturepathupdated){
+								$('#messages').text("<?php echo __("Verify directory rights");?>");
+								$('a[href=#preflight]').trigger('click');
+								window.scrollTo(0,0);
+								rebuildcache();
+								window.picturepathupdated=false;
+							}
+						}
+					}).error(function(){
+						$('#messages').text('Something is broken');
+					});
+			}
+
 		});
 
 		$('.main form').submit(function(e){
