@@ -101,7 +101,7 @@
 				$tests['db.inc']['message']="db.inc.php has been detected and in the proper place";
 				require_once("db.inc.php");
 				// check for strict_trans_tables
-				if(strpos(@end($dbh->query("select @@global.sql_mode;")->fetch()),'STRICT_TRANS_TABLES') === false){
+				if(strpos(@end($dbh->query("select @@session.sql_mode;")->fetch()),'STRICT_TRANS_TABLES') === false){
 					$tests['strictdb']['state']="good";
 					$tests['strictdb']['message']='';
 				}else{
