@@ -28,7 +28,6 @@
 //	Returns:  true/false on update operation
 //
 
-// $app->delete( '/powerport/{deviceid}', function( Request $request, Response $response, $args ) use ($person) {
 $app->delete( '/powerport/:deviceid', function( $deviceid ) use ($app) {
 	$pp=new PowerPorts();
 	$pp->DeviceID=$deviceid;
