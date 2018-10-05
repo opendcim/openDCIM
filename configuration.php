@@ -1940,6 +1940,17 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
+                                 <div>
+					<div><label for="AssignCabinetLabels">',__("Which Cabinet Label?"),'</label></div>
+					<div><select id="AssignCabinetLabels" name="AssignCabinetLabels" defaultvalue="',$config->defaults["AssignCabinetLabels"],'" data="',$config->ParameterArray["AssignCabinetLabels"],'">
+
+							<option value="OwnerName">',__("Owner Name"),'</option>
+							<option value="KeyLockInformation">',__("Key Lock Information"),'</option>
+							<option value="ModelNo">',__("Model No"),'</option> 
+						</select>
+					</div>
+				</div>
+				
 			</div> <!-- end table -->
 			<h3>',__("Site"),'</h3>
 			<div class="table">
