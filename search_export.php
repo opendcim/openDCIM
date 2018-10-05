@@ -19,11 +19,12 @@
 		result set together.
 	*/
 
-	$tpList = DeviceTemplate::GetTemplateList( true );
-	$mfList = Manufacturer::GetManufacturerList( true );
+	$tpList=DeviceTemplate::GetTemplateList(true);
+	$mfList=Manufacturer::GetManufacturerList(true);
+	$cList=$person->GetUserList(true);
 
 	/* This is a helper function to deal with nested devices aka russian nesting dolls */
-	function processChassis($dev,$dept,$row,$ca_result,$tpList){
+	function processChassis($dev,$dept,$row,$ca_result,$tpList,$cList){
 		// Find all of the children!
 		$childList=$dev->GetDeviceChildren();
 		
@@ -43,6 +44,12 @@
 				$dept->DeptID=$child->Owner;
 				$dept->GetDeptByID();
 				$cDepartment=$dept->Name;
+			}
+
+			if($child->PrimaryContact >0){
+				$contact="<a href=\"usermgr.php?PersonID=$child->PrimaryContact\">{$cList[$child->PrimaryContact]->LastName}, {$cList[$child->PrimaryContact]->FirstName}</a>";
+			}else{
+				$contact=__("Unassigned");
 			}
 
 			$ca_cells = '';
@@ -69,12 +76,13 @@
 			\t<td>$cModel</td>
 			\t<td>$ctags</td>
 			\t<td>$cDepartment</td>
+			\t<th>$contact</th>
 			\t<td>$cwarranty</td>
 			\t<td>$cdate</td>
 			\t{$ca_cells}\n\t\t</tr>\n";
 
 			if($child->DeviceType=="Chassis"){
-				$chassis=processChassis($child,$dept,$row,$ca_result,$tpList);
+				$chassis=processChassis($child,$dept,$row,$ca_result,$tpList,$cList);
 				$body.=$chassis;
 			}
 		}
@@ -95,8 +103,9 @@
 			} 
 
 			$sql="SELECT a.Name AS DataCenter, b.DeviceID, c.Location, b.Position, 
-				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.WarrantyExpire, b.PrimaryIP, b.ParentDevice,
-				b.TemplateID, b.Owner, c.CabinetID, c.DataCenterID $custom_concat FROM fac_DataCenter a,
+				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, 
+				b.WarrantyExpire, b.PrimaryIP, b.ParentDevice, b.PrimaryContact, b.TemplateID, 
+				b.Owner, c.CabinetID, c.DataCenterID $custom_concat FROM fac_DataCenter a,
 				fac_Cabinet c, fac_Device b  LEFT OUTER JOIN fac_DeviceCustomValue d on
 				b.DeviceID=d.DeviceID WHERE b.Cabinet=c.CabinetID AND c.DataCenterID=a.DataCenterID
 				$dclimit
@@ -119,11 +128,12 @@
 			\t<th>".__("Name")."</th>
 			\t<th>".__("Serial Number")."</th>
 			\t<th>".__("Asset Tag")."</th>
-      			\t<th>".__("Primary IP / Host Name")."</th>
+			\t<th>".__("Primary IP / Host Name")."</th>
 			\t<th>".__("Device Type")."</th>
 			\t<th>".__("Template")."</th>
 			\t<th>".__("Tags")."</th>
 			\t<th>".__("Owner")."</th>
+			\t<th>".__("Primary Contact")."</th>
 			\t<th>".__("Warranty Expiration")."</th>
 			\t<th>".__("Installation Date")."</th>
 			{$ca_headers}
@@ -147,6 +157,12 @@
 					$dept->DeptID=$row["Owner"];
 					$dept->GetDeptByID();
 					$Department=$dept->Name;
+				}
+
+				if($row["PrimaryContact"] >0){
+					$contact="<a href=\"usermgr.php?PersonID={$row["PrimaryContact"]}\">{$cList[$row["PrimaryContact"]]->LastName}, {$cList[$row["PrimaryContact"]]->FirstName}</a>";
+				}else{
+					$contact=__("Unassigned");
 				}
 
 				$ca_cells = '';
@@ -175,12 +191,13 @@
 				\t<td>$Model</td>
 				\t<td>$tags</td>
 				\t<td>$Department</td>
+				\t<th>$contact</th>
 				\t<td>$warranty</td>
 				\t<td>$date</td>
 				{$ca_cells}\t\n\t\t</tr>\n";
 
 				if($row["DeviceType"]=="Chassis"){
-					$chassis=processChassis($dev,$dept,$row,$ca_result,$tpList);
+					$chassis=processChassis($dev,$dept,$row,$ca_result,$tpList,$cList);
 					$body.=$chassis;
 				}
 			}
