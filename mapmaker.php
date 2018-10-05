@@ -208,7 +208,7 @@
 		<?php
 			$errors=array();
 			$mapfile=$config->ParameterArray["drawingpath"] . "$dc->DrawingFileName";
-			if(!strlen($dc->DrawingFileName)>0){$errors[]=__("You must configure an image for this datacenter before attempting to place a cabinet on its map.");}
+			if(!strlen($dc->DrawingFileName)>0){$errors[]=__("You must configure an image for this data center before attempting to place a cabinet on its map.");}
 			if(!is_file($mapfile)){$errors[]=sprintf(__("Please check that &quot;%s&quot; is actually a file."),$dc->DrawingFileName);}
 			if(!is_readable($mapfile)){$errors[]=sprintf(__("Please check the permissions on %s and make sure it is readable."),$dc->DrawingFileName);}
 			if(count($errors)>0){
