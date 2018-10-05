@@ -415,7 +415,6 @@ $app->get( '/device/:deviceid', function( $deviceid ) {
 		$r['error']=true;
 		$r['errorcode']=404;
 		$r['message']=__("No device found with DeviceID").$deviceid;
-		echoResponse( $r );
 	}else{
 		$r['error']=false;
 		$r['errorcode']=200;
