@@ -14,42 +14,6 @@
 		exit;
 	}
 
-	function BuildDirectoryList($returnjson=false,$path="."){
-		$path=trim($path);
-		# Make sure we don't have any path shenanigans going on
-		$path=str_replace(array("..","./"),"",$path);
-		# we don't need trailing slashes, and leading slashes are going to be invalid paths
-		$path=trim($path,"/");
-		# if path is empty revert to the current directory
-		$path=($path)?$path:'.';
-		$here=end(explode(DIRECTORY_SEPARATOR,getcwd()));
-		$breadcrumb="<a href=\"?dl=\">$here</a>/";
-		$breadcrumbpath="";
-		if($path!='.'){
-			foreach(explode("/",$path) as $i => $d) {
-				$breadcrumb.="<a href=\"?dl=$breadcrumbpath$d\">$d</a>/";
-				$breadcrumbpath.="$d/";
-			}
-		}
-		$imageselect=__("Current selection").': '.$breadcrumb.'<br><input type="hidden" id="directoryselectionvalue" value="'.$breadcrumbpath.'"><div id="filelist">';
-
-		$directoriesonly=array();
-		$dir=scandir($path);
-		foreach($dir as $i => $f){
-			if(is_dir($path.DIRECTORY_SEPARATOR.$f) && $f!="." && $f!=".." && !preg_match('/^\./', $f)){
-				$imageselect.="<a href=\"?dl=$path/$f\"><span data=\"$breadcrumbpath$f\">$f</span></a><br>\n";
-				$filesonly[]=$f;
-			}
-		}
-		$imageselect.="</div>";
-		if($returnjson){
-			header('Content-Type: application/json');
-			echo json_encode($filesonly);
-		}else{
-			return $imageselect;
-		}
-	}
-
 	function BuildFileList($returnjson=false){
 		$imageselect='<div id="preview"></div><div id="filelist">';
 
@@ -75,10 +39,6 @@
 	}
 
 	// AJAX Requests
-	if(isset($_GET['dl'])){
-		echo BuildDirectoryList(isset($_GET['json']),$_GET['dl']);
-		exit;
-	}
 	if(isset($_GET['fl'])){
 		echo BuildFileList(isset($_GET['json']));
 		exit;
@@ -276,7 +236,6 @@
 		$i++;
 	}
 
-	$directoryselect=BuildDirectoryList();
 	$imageselect=BuildFileList();
 
 	function formatOffset($offset) {
@@ -459,6 +418,7 @@
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
   <script type="text/javascript">
+
 	function binddirectoryselection() {
 		$("#directoryselection a").each(function(){
 			$(this).click(function(e){
@@ -500,6 +460,7 @@
 		});
 	};
 
+
 	$(document).ready(function(){
 		// ToolTips
 		$('#tooltip, #cdutooltip').multiselect();
@@ -530,6 +491,9 @@
 		$("#configtabs button").each(function(){
 			var a = $(this).parent().prev().find('input,select');
 			$(this).click(function(){
+
+				a.val($(this).parent().next().children('span').text());
+
 				
 				var value_to_set = $(this).parent().next().children('span').text();
 
@@ -542,6 +506,7 @@
 					});
 				}
 				a.val(value_to_set).trigger('change');
+
 
 				if(a.hasClass('color-picker')){
 					a.minicolors('value', $(this).parent().next().children('span').text()).trigger('change');
@@ -640,6 +605,7 @@
 			.focus(function(){$(this).attr('type','text');})
 			.blur(function(){$(this).attr('type','password');});
 
+
 		// General - Site Specific Paths
 
 		$('#drawingpath, #picturepath').click(function(){
@@ -673,6 +639,7 @@
 			}
 			$(".main form").validationEngine('validate');
 		});
+
 
 		// General - Time and Measurements
 
@@ -728,7 +695,7 @@
 										$(this).remove();
 									});
 								}else{ // failed to delete
-									$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>");
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
 									$('#modal').dialog('option','buttons',cancelbutton);
 								}
 							});
@@ -744,7 +711,7 @@
 										$(this).remove();
 									});
 								}else{ // failed to delete
-									$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>");
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
 									$('#modal').dialog('option','buttons',cancelbutton);
 								}
 							});
@@ -919,7 +886,7 @@
 											$(this).remove();
 										});
 									}else{ // failed to delete
-										$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>");
+										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
 										$('#modal').dialog('option','buttons',cancelbutton);
 									}
 								});
@@ -940,7 +907,7 @@
 										// color so they will display the new color
 										$('#mediatypes > div ~ div:not(:last-child) input').val('').change();
 									}else{ // failed to delete
-										$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>");
+										$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
 										$('#modal').dialog('option','buttons',cancelbutton);
 									}
 								});
@@ -1163,7 +1130,7 @@
 										$(this).dialog("destroy");
 									}
 								}
-								<?php echo "				var modal=$('<div />', {id: 'modal', title: \"".__("Custom Device Attribute Type Change Error")."\"}).html(\"<div id=\\\"modaltext\\\">AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>".__("Something just went horribly wrong.")."</div>\").dialog({"; ?>
+								<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Type Change Error")."'}).html('<div id=\"modaltext\">AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>".__("Something just went horribly wrong.")."</div>').dialog({"; ?>
 								dialogClass: 'no-close',
 								appendTo: 'body',
 								modal: true,
@@ -1177,7 +1144,7 @@
 												$('#modal').dialog("destroy");
 												processChange();
 											}else{ // failed to delete
-												$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>");
+												$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
 												$('#modal').dialog('option','buttons',cancelbutton);
 												revertdefault(row,true);
 											}
@@ -1190,7 +1157,7 @@
 										$(this).dialog("destroy");
 									}
 								}
-								<?php echo "				var modal=$('<div />', {id: 'modal', title: \"".__("Custom Device Attribute Type Change Override")."\"}).html(\"<div id=\\\"modaltext\\\">".__("This custom device attribute is in use somewhere. If you choose to change the attribute type, it will be cleared from all devices and device templates.")."</div>\").dialog({"; ?>
+								<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Type Change Override")."'}).html('<div id=\"modaltext\">".__("This custom device attribute is in use somewhere. If you choose to change the attribute type, it will be cleared from all devices and device templates.")."</div>').dialog({"; ?>
 								dialogClass: 'no-close',
 								appendTo: 'body',
 								modal: true,
@@ -1276,7 +1243,7 @@
 							$(this).dialog("destroy");
 						}
 					}
-<?php echo "				var modal=$('<div />', {id: 'modal', title: \"".__("Custom Device Attribute Delete Error")."\"}).html(\"<div id=\\\"modaltext\\\">AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>".__("Something just went horribly wrong.")."</div>\").dialog({"; ?>
+<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Delete Error")."'}).html('<div id=\"modaltext\">AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br>".__("Something just went horribly wrong.")."</div>').dialog({"; ?>
 					dialogClass: 'no-close',
 					appendTo: 'body',
 					modal: true,
@@ -1293,7 +1260,7 @@
 										$(this).remove();
 									});
 								}else{ // failed to delete
-									$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>");
+									$('#modaltext').html('AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>');
 									$('#modal').dialog('option','buttons',cancelbutton);
 								}
 							});
@@ -1304,7 +1271,7 @@
 							$(this).dialog("destroy");
 						}
 					}
-<?php echo "				var modal=$('<div />', {id: 'modal', title: \"".__("Custom Device Attribute Delete Override")."\"}).html(\"<div id=\\\"modaltext\\\">".__("This custom device attribute is in use somewhere. If you choose to delete the attribute, it will be removed from all devices and device templates.")."</div>\").dialog({"; ?>
+<?php echo "				var modal=$('<div />', {id: 'modal', title: '".__("Custom Device Attribute Delete Override")."'}).html('<div id=\"modaltext\">".__("This custom device attribute is in use somewhere. If you choose to delete the attribute, it will be removed from all devices and device templates.")."</div>').dialog({"; ?>
 					dialogClass: 'no-close',
 					appendTo: 'body',
 					modal: true,
@@ -1497,6 +1464,18 @@
 
 		// Convert this bitch over to an ajax form submit
 		$('button[name="action"]').click(function(e){
+
+			// Clear the messages blank
+			$('#messages').text('');
+			// Don't let this button do a real form submit
+			e.preventDefault();
+			// Collect the config data
+			var formdata=$(".main form").serializeArray();
+			// Set the action of the form to Update
+			formdata.push({name:'action',value:"Update"});
+			// Post the config data then update the status message
+			$.post('',formdata).done(function(){$('#messages').text('Updated');}).error(function(){$('#messages').text('Something is broken');});
+
 			if($(".main form").validationEngine('validate')){
 				// Clear the messages blank
 				$('#messages').text('');
@@ -1522,6 +1501,7 @@
 						$('#messages').text('Something is broken');
 					});
 			}
+
 		});
 
 		$('.main form').submit(function(e){
@@ -1658,21 +1638,6 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["DefaultPanelVoltage"],'" name="DefaultPanelVoltage" value="',$config->ParameterArray["DefaultPanelVoltage"],'"></div>
 				</div>
 			</div> <!-- end table -->
-			<h3>',__("Site Specific Paths"),'</h3>
-			<div id="directoryselection" title="Image file directory selector">
-				',$directoryselect,'
-			</div>
-			<div class="table" id="sitepaths">
-				<div>
-					<div><label for="drawingpath">',__("Relative path for Drawings"),'</label></div>
-					<div><input type="text" id="drawingpath" defaultvalue="',$config->defaults["drawingpath"],'" name="drawingpath" value="',$config->ParameterArray["drawingpath"],'" class="validate[required,custom[endWithSlashConfigurationPage]]"></div>
-				</div>
-				<div>
-					<div><label for="picturepath">',__("Relative path for Pictures"),'</label></div>
-					<div><input type="text" id="picturepath" defaultvalue="',$config->defaults["picturepath"],'" name="picturepath" value="',$config->ParameterArray["picturepath"],'" class="validate[required,custom[endWithSlashConfigurationPage]]">
-					</div>
-				</div>
-			</div> <!-- end table -->			
 			<h3>',__("Time and Measurements"),'</h3>
 			<div class="table" id="timeandmeasurements">
 				<div>
@@ -1826,22 +1791,6 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
-				
-				<!-- **********************************************************************
-                *********** START - Add Action field to the Rack Request From page ********
-                *********************************************************************** -->
-				<div>
-					<div><label for="RackRequestsActions">',__("Rack Requests Actions"),'</label></div>
-					<div><select id="RackRequestsActions" name="RackRequestsActions" defaultvalue="',$config->defaults["RackRequestsActions"],'" data="',$config->ParameterArray["RackRequestsActions"],'">
-							<option value="disabled">',__("Disabled"),'</option>
-							<option value="enabled">',__("Enabled"),'</option>
-						</select>
-					</div>
-				</div>
-                <!-- **********************************************************************
-                *********** END - Add Action field to the Rack Request From page **********
-                *********************************************************************** -->
-				
 				<div>
 					<div><label for="MailSubject">',__("Mail Subject"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["MailSubject"],'" name="MailSubject" value="',$config->ParameterArray["MailSubject"],'"></div>
@@ -1856,8 +1805,24 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Online Repository"),'</h3>
-			<h5>',__("UserID and Key are not needed to pull from the repository, only to send."),'</h5>
+			<h5><u>',__("Default Behavior for Site (Can Override Per Template)"),'</u></h5>
 			<div class="table" id="repository">
+				<div>
+					<div><label for="ShareToRepo">',__("Share your templates to the repository"),'</label></div>
+					<div><select name="ShareToRepo" id="ShareToRepo" defaultvalue="',$config->defaults["ShareToRepo"],'" data="',$config->ParameterArray["ShareToRepo"],'">
+						<option value="disabled">',__("Disabled"),'</option>
+						<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for="keep_local">',__("Keep local values when synchronizing"),'</label></div>
+					<div><select name="KeepLocal" id="KeepLocal" defaultvalue="',$config->defaults["KeepLocal"],'" data="',$config->ParameterArray["KeepLocal"],'">
+						<option value="disabled">',__("Disabled"),'</option>
+						<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
 				<div>
 					<div><label for="APIUserID">',__("API UserID"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["APIUserID"],'" name="APIUserID" value="',$config->ParameterArray["APIUserID"],'"></div>
@@ -1948,6 +1913,28 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
+
+
+                                 <div>
+					<div><label for="AssignCabinetLabels">',__("Which Cabinet Label?"),'</label></div>
+					<div><select id="AssignCabinetLabels" name="AssignCabinetLabels" defaultvalue="',$config->defaults["AssignCabinetLabels"],'" data="',$config->ParameterArray["AssignCabinetLabels"],'">
+
+							<option value="OwnerName">',__("Owner Name"),'</option>
+							<option value="KeyLockInformation">',__("Key Lock Information"),'</option>
+							<option value="ModelNo">',__("Model No"),'</option>
+                                                
+
+							
+                                                        
+						</select>
+					</div>
+				</div>
+
+
+
+
+
+
 			</div> <!-- end table -->
 			<h3>',__("Site"),'</h3>
 			<div class="table">
@@ -2291,35 +2278,8 @@ echo '<div class="main">
 				</div>
 				<div>
 					<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
-				</div>
-			</div>
-			<h3>',__("User Attributes"),'</h3>
-			<div class="table">
-				<div>
-					<div><label for="LDAPFirstName">',__("First Name"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPFirstName"],'" name="LDAPFirstName" value="',$config->ParameterArray["LDAPFirstName"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPLastName">',__("Last Name"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPLastName"],'" name="LDAPLastName" value="',$config->ParameterArray["LDAPLastName"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPEmail">',__("Email"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPEmail"],'" name="LDAPEmail" value="',$config->ParameterArray["LDAPEmail"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPPhone1">',__("Phone1"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPPhone1"],'" name="LDAPPhone1" value="',$config->ParameterArray["LDAPPhone1"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPPhone2">',__("Phone2"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPPhone2"],'" name="LDAPPhone2" value="',$config->ParameterArray["LDAPPhone2"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPPhone3">',__("Phone3"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPPhone3"],'" name="LDAPPhone3" value="',$config->ParameterArray["LDAPPhone3"],'"></div>
-				</div>
+			<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
+		</div>
 			</div>
 			<h3>',__("Group Distinguished Names"),'</h3>
 			<div class="table">
@@ -2473,7 +2433,7 @@ echo '<div class="main">
 </div> <!-- END div.table -->
 </form>
 </div>
-   <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a><span class="hide"><!-- hiding these two phrases here to make sure they get translated for use in the asset tracking status fields -->',__("Reserved"),'',__("Disposed"),'</span>'; ?>
+   <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>
 </div>
   </div>
   </div>

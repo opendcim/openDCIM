@@ -16,16 +16,6 @@ function getISODateTime(d){
 		s(d.getSeconds(),2);
 }
 
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-
 // Function to convert an image to base64 for submission to the repo
 /**
  * convertImgToBase64
@@ -165,51 +155,38 @@ function editnotes(button){
 	button.val('preview').text('Preview');
 	var a=button.next('div');
 	button.next('div').remove();
-	button.next('textarea').jqte({
-		b: false,
-		i: false,
-		center: false,
-		color: false,
-		fsize: false,
-		format: false,
-		indent: false,
-		link: true,
-		left: false,
-		ol: false,
-		outdent: false,
-		p: false,
-		remove: false,
-		right: false,
-		rule: false,
-		source: false,
-		status: true,
-		sub: false,
-		strike: false,
-		sup: false,
-		title: false,
-		u: false,
-		ul: false
+	button.next('textarea').htmlarea({
+		toolbar: [
+		"link", "unlink", "image"
+		],
+		css: 'css/jHtmlArea.Editor.css'
 	});
-	$('.jqte').show();
-	resize();
+	$('.jHtmlArea div iframe').height(a.innerHeight());
 }
 
 function rendernotes(button){
 	button.val('edit').text('Edit');
 	var w=button.next('div').outerWidth();
-	var h=$('.jqte').outerHeight();
+	var h=$('.jHtmlArea').outerHeight();
 	if(h>0){
 		h=h+'px';
 	}else{
 		h="auto";
 	}
-	$('.jqte').hide();
+	$('#Notes,#notes').htmlarea('dispose');
 	button.after('<div id="preview">'+$('#Notes,#notes').val()+'</div>');
 	button.next('div').css({'width': w+'px', 'height' : h}).find('a').each(function(){
 		$(this).attr('target', '_new');
 	});
 	$('#Notes,#notes').html($('#Notes,#notes').val()).hide(); // we still need this field to submit it with the form
-	resize();
+	h=0; // recalculate height in case they added an image that is gonna hork the layout
+	// need a slight delay here to allow the load of large images before the height calculations are done
+	setTimeout(function(){
+		$('#preview').find("*").each(function(){
+			h+=$(this).outerHeight();
+		});
+		$('#preview').height(h);
+	},2000);
 }
 
 /*!
@@ -582,7 +559,7 @@ function buildportstable(){
 		var label=(rrow.data('change'))?rrow.find('input[name^=label]').val():(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
 		var mt=(rrow.data('change'))?rrow.find('select[name^=mt]').val():(typeof TemplatePortObj.MediaID=='undefined')?'0':TemplatePortObj.MediaID;
 		var c=(rrow.data('change'))?rrow.find('select[name^=cc]').val():(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
-		var n=(rrow.data('change'))?rrow.find('input[name^=notes]').val():(typeof TemplatePortObj.Notes=='undefined')?'':TemplatePortObj.Notes;
+		var n=(rrow.data('change'))?rrow.find('input[name^=portnotes]').val():(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
 
 		var row=$('<div>').
 			append($('<div>').html(pn)).
@@ -754,9 +731,9 @@ function buildpowerportstable(){
 		});
 		return test;
 	}
-	function reload(imgdir,target){
+	function reload(target){
 		$('#'+target).children().remove();
-		$.post('',{dir: imgdir}).done(function(a){
+		$.post('',{dir: target}).done(function(a){
 			$.each(a,function(dir,files){
 				$.each(files,function(i,file){
 					$('#'+target).append(makeThumb(dir,file));
@@ -857,6 +834,7 @@ function startmap(){
 			for(var i in data.cab){
 				var thiscab=data.cab[i];
 				if(thiscab.Rights!="None"){
+					thiscab.Owner_Name = data.Owner
 					map.append(buildarea(thiscab));
 					temp.cabs.push({'CabinetID':thiscab.CabinetID,'MapX1':thiscab.MapX1,'MapX2':thiscab.MapX2,'MapY1':thiscab.MapY1,'MapY2':thiscab.MapY2});
 					temphilight.cabs[thiscab.CabinetID]=false;
@@ -954,7 +932,10 @@ function startmap(){
 		var y=Number(area[1]);
 		var w=Number(area[2]-area[0]);
 		var h=Number(area[3]-area[1]);
+                //var altname='Test Tag'
 		var altname=obj.prop('alt');
+                
+
 
 		// if color isn't given then just outline the object
 		if(typeof c=='undefined'){
@@ -1012,7 +993,7 @@ function startmap(){
 			var row=false;
 			obj.ZoneID=0;
 		} else {
-			var label=obj.Location;
+			var label=obj.ShowCabinetLabel;
 			var name='cab'+obj.CabinetID;
 			var href='cabnavigator.php?cabinetid='+obj.CabinetID;
 			var row=obj.CabRowID==0?false:true;
@@ -1100,7 +1081,7 @@ function bindmaptooltips(){
 
 // Cabinet image / label controls
 function cabinetimagecontrols(){
-	var controlrow=$('<tr>').append($('<td>').attr({'colspan':'4','id':'cabinetimagecontrols'}).css('text-align','left')).addClass('noprint');
+	var controlrow=$('<tr>').append($('<td>').attr('colspan','4').css('text-align','left')).addClass('noprint');
 	controlrow.td=controlrow.find('td');
 	var imgbtn=$('<button>').attr('type','button').css({'line-height': '1em', 'height': '1.5em'}).data('show',false).text('Images');
 	var lblbtn=imgbtn.clone().text('Labels');
@@ -1193,20 +1174,12 @@ function cabinetimagecontrols(){
 		NoPictures();
 	}
 		
-	/*
-	 * Ignore the cookie for the positions
-	 *
-	 * We're gonna leave this code here for now but it's problematic for
-	 * the image loading.  It is still useful for the printing function
-	 * to be able to hide them so the button will remain
-	 *
 	// Read the cookie and do stuff
 	if(typeof $.cookie('cabpos')=='undefined' || $.cookie('cabpos')=='show'){
 		snoitisoPoN();
 	}else{
 		NoPositions();
 	}
-	*/
 		
 	function serutciPoN(){
 		// We're showing device images so labels are optional
@@ -1254,9 +1227,9 @@ function cabinetimagecontrols(){
 		$('.cabinet').css({'transform':'scale(1.5)','transform-origin':'left top'});
 		$('.main').css({'width':'','border':'0','background-color':'#fff'});
 		$('.cabinet td').css('border','1px solid black');
-		$('table[id^=cabinet]').insertBefore('.center');
+		$('.cabinet').insertBefore('.center');
 		window.print();
-		$('div.cabinet').append($('table[id^=cabinet]'));
+		$('#centeriehack').prepend($('.cabinet'));
 		$('.cabinet td').css('border','');
 		$('.main').css({'border':'','background-color':''});
 		$('div#infopanel,div#sidebar,div#header,h2,h3,.center ~ a').show();
@@ -1269,39 +1242,8 @@ function cabinetimagecontrols(){
 }
 // END = Cabinet image / label controls
 
-// Make some generic loading place holders that we can call from anything else
-// https://codepen.io/halvves/pen/RaVxJR
-var spinningsquares=$('<div>').addClass('dizzy-gillespie').addClass('loadingplaceholder');
-// https://codepen.io/michaeldeboeve/pen/ojLQLw
-var flippingpostits=$('<div>').addClass('loader').addClass('loadingplaceholder');
-for (i = 1; i < 10; i++) {
-	flippingpostits.append($('<i>').addClass('loader__tile loader__tile__'+i));
-}
-// https://codepen.io/deineko/pen/EPwPNV
-var multiaxistrainer=$('<i>').addClass('preloader').addClass('loadingplaceholder');
-// https://codepen.io/rlo206/pen/GppXPM
-var rotatingloader=$('<div>').addClass('rotateloader').addClass('loadingplaceholder').html('<div class="row"><div class="box blue"></div><div class="box red"></div><div class="box blue"></div></div><div class="row"><div class="box red"></div><div class="box white"></div><div class="box red"></div></div><div class="row"><div class="box blue"></div><div class="box red"></div><div class="box blue"></div></div></div>');
-var rotatingloader1=rotatingloader.clone().addClass('one');
-var rotatingloader2=rotatingloader.clone().addClass('two');
-var rotatingloader3=rotatingloader.clone().addClass('three');
-var rotatingloader4=rotatingloader.clone().addClass('four');
-// https://codepen.io/dicson/pen/vOxZjM
-var rollingbox=$('<div>').addClass('boxLoading').addClass('loadingplaceholder');
-//
-// Uncomment whichever set of loaders we decide to use
-//
-// -=- all -=-
-//var loaders=[ spinningsquares, flippingpostits, multiaxistrainer, rotatingloader1, rotatingloader2, rotatingloader3, rotatingloader4, rollingbox ]
-// -=- fun -=-
-//var loaders=[ spinningsquares, flippingpostits, multiaxistrainer ]
-// -=- semi-professional? -=-
-//var loaders=[ rotatingloader1, rotatingloader2, rotatingloader3, rotatingloader4 ]
-// -=- stupid simple rolling box -=-
-var loaders=[ rollingbox ]
-
 // Cabinet device population
 $(document).ready(function(){
-	resize();
 	// Make an array to store all the unique cabinet id's shown on the page
 	var cabs=new Array();
 	// Find all the tables that are labeled as cabinetX and add them to the array
@@ -1310,132 +1252,78 @@ $(document).ready(function(){
 	});
 	// Strip out the duplicates
 	cabs=$.unique(cabs);
-	var cab_picture_count=0;
-	// Get all the image data for the racks
-	cabs.forEach(function(item, id) {
-		var rand=Math.floor(Math.random() * loaders.length);
-		$('#'+cabs[id]+' div[id^=servercontainer]').append(loaders[rand].clone());
-		var cabid=cabs[id].replace('cabinet','');
-		if (typeof window.pictures=='undefined'){
-			window.pictures=new Array();
-		}
-		$.ajax({url: 'api/v1/cabinet/'+cabid+'/getpictures',type: "get",async: true,success: function(data){
-			window.pictures[cabid]=data.pictures;
-			cab_picture_count++;
-			}
-		});
-	});
-	if(cabs.length > 1){
-		var devices;
-		var cabrowid=getParameterByName('row');
-		$.get('api/v1/cabrow/'+cabrowid+'/devices').done(function(data){
-			devices=data.device;
-		});
-	}
-	var picloaddelay=setInterval(function(){
-		if(cab_picture_count>=cabs.length){
-			// Add the devices to the page
-			if(cabs.length == 1){
-				for(var id in cabs){
-					var totalmoment=0;
-					var totalweight=0;
-					var arr_position=[];
-					var arr_weightbyu=[];
-					var arr_parents=[];
-					var cabid=cabs[id].replace('cabinet','');
-					var rackbottom=$('#'+cabs[id]+' tr:last-child').prop('id').replace('pos','');
-					// we don't want to include devices that could be below the floor in the moment calcs
-					rackbottom=(rackbottom < 1)?'1':rackbottom;
-					$.get('api/v1/device?Cabinet='+cabs[id].replace('cabinet','')).done(function(data){
-						// draw all the devices on the screen
-						for(var x in data.device){
-							if(data.device[x].ParentDevice==0){
-								InsertDevice(data.device[x]);
-							}
-						}
-						// Add controls to the rack
-						cabinetimagecontrols();
-						// clean up the loading animations from any empty cabinets
-						$('.cabinet .loadingplaceholder').remove();
-						// make an index of all non-children and their rack position
-						for(var x in data.device){
-							if(data.device[x].ParentDevice==0){
-								arr_position[data.device[x].DeviceID]=data.device[x].Position;
-							}
-							arr_parents[data.device[x].DeviceID]=data.device[x].ParentDevice;
-						}
-						// iterate over all the devices again for figuring weight by u 
-						for(var x in data.device){
-							totalweight += data.device[x].Weight;
-							if(data.device[x].ParentDevice==0){
-								if(typeof arr_weightbyu[data.device[x].Position]=='undefined'){
-									arr_weightbyu[data.device[x].Position]=data.device[x].Weight;
-								}else{
-									arr_weightbyu[data.device[x].Position]+=data.device[x].Weight;
-								}
-							}else{ // add children into their parent
-								function findrootparent(devid){
-									while(arr_parents[devid]!=0 && typeof devid!='undefined'){
-										devid=arr_parents[devid];
-									}
-									return devid;
-								}
-								var parentid=findrootparent(data.device[x].DeviceID);
-								if(typeof arr_weightbyu[arr_position[parentid]]=='undefined'){
-									arr_weightbyu[arr_position[parentid]]=data.device[x].Weight;
-								}else{
-									arr_weightbyu[arr_position[parentid]]+=data.device[x].Weight;
-								}
-							}
-						}
-			// console.log(arr_weightbyu);
-						// one last time to go over all the devices to figure moment.
-						for(var x in data.device){
-							if(data.device[x].ParentDevice==0){
-								var devheight=data.device[x].Height/2;
-								var posfromfloor=(data.device[x].Position < rackbottom)?rackbottom - data.device[x].Position:data.device[x].Position;
-			// console.log('totalmoment : '+totalmoment+' totalweight : '+totalweight);
-								totalmoment += arr_weightbyu[data.device[x].Position] * (posfromfloor + devheight);
-							}
-						}
-						var rackpositions=$('table#'+cabs[id]+' tr[id^=pos]');
-			// console.log(rackpositions);
-						var numu=rackpositions.length;
-			// console.log('numu : '+numu);
-						var tippingpoint=Math.round(totalmoment/totalweight);
-			// console.log('tipping point : '+tippingpoint);
-						var tpobj={id:"0"};
-						tpobj=(typeof rackpositions[tippingpoint]=='undefined')?tpobj:rackpositions[rackpositions.length-tippingpoint];
-						$('#tippingpoint').text(tpobj.id.replace('pos','')+'U');
-						// $('#tippingpoint').text(tippingpoint+'U');
-			// Debug info
-						// console.log(cabs[id]+' totalmoment: '+totalmoment+' totalweight: '+totalweight+' tipping point: '+tippingpoint);
-					}).then(initdrag);
+	// Add the devices to the page
+	for(var id in cabs){
+		var totalmoment=0;
+		var totalweight=0;
+		var arr_position=[];
+		var arr_weightbyu=[];
+		var arr_parents=[];
+		var rackbottom=$('#'+cabs[id]+' tr:last-child').prop('id').replace('pos','');
+		// we don't want to include devices that could be below the floor in the moment calcs
+		rackbottom=(rackbottom < 1)?'1':rackbottom;
+		$.get('api/v1/device?Cabinet='+cabs[id].replace('cabinet','')).done(function(data){
+			// draw all the devices on the screen
+			for(var x in data.device){
+				if(data.device[x].ParentDevice==0){
+					InsertDevice(data.device[x]);
 				}
-			// else we're dealing with a row so don't calculate moment, etc
-			}else{
-				var devloaddelay=setInterval(function(){
-					if(typeof devices!="undefined"){
-						var cabrowid=getParameterByName('row');
-						if(cabrowid!=''){
-							// draw all the devices on the screen
-							for(var x in devices){
-								if(devices[x].ParentDevice==0){
-									InsertDevice(devices[x]);
-								}
-							}
-						}
-						clearInterval(devloaddelay);
-						// Add controls to the rack
-						cabinetimagecontrols();
-						// clean up the loading animations from any empty cabinets
-						$('.cabinet .loadingplaceholder').remove();
-					}
-				}, 10);
 			}
-			clearInterval(picloaddelay);
-		}
-	}, 10)
+			// make an index of all non-children and their rack position
+			for(var x in data.device){
+				if(data.device[x].ParentDevice==0){
+					arr_position[data.device[x].DeviceID]=data.device[x].Position;
+				}
+				arr_parents[data.device[x].DeviceID]=data.device[x].ParentDevice;
+			}
+			// iterate over all the devices again for figuring weight by u 
+			for(var x in data.device){
+				totalweight += data.device[x].Weight;
+				if(data.device[x].ParentDevice==0){
+					if(typeof arr_weightbyu[data.device[x].Position]=='undefined'){
+						arr_weightbyu[data.device[x].Position]=data.device[x].Weight;
+					}else{
+						arr_weightbyu[data.device[x].Position]+=data.device[x].Weight;
+					}
+				}else{ // add children into their parent
+					function findrootparent(devid){
+						while(arr_parents[devid]!=0 && typeof devid!='undefined'){
+							devid=arr_parents[devid];
+						}
+						return devid;
+					}
+					var parentid=findrootparent(data.device[x].DeviceID);
+					if(typeof arr_weightbyu[arr_position[parentid]]=='undefined'){
+						arr_weightbyu[arr_position[parentid]]=data.device[x].Weight;
+					}else{
+						arr_weightbyu[arr_position[parentid]]+=data.device[x].Weight;
+					}
+				}
+			}
+// console.log(arr_weightbyu);
+			// one last time to go over all the devices to figure moment.
+			for(var x in data.device){
+				if(data.device[x].ParentDevice==0){
+					var devheight=data.device[x].Height/2;
+					var posfromfloor=(data.device[x].Position < rackbottom)?rackbottom - data.device[x].Position:data.device[x].Position;
+// console.log('totalmoment : '+totalmoment+' totalweight : '+totalweight);
+					totalmoment += arr_weightbyu[data.device[x].Position] * (posfromfloor + devheight);
+				}
+			}
+			var rackpositions=$('table#'+cabs[id]+' tr[id^=pos]');
+// console.log(rackpositions);
+			var numu=rackpositions.length;
+// console.log('numu : '+numu);
+			var tippingpoint=Math.round(totalmoment/totalweight);
+// console.log('tipping point : '+tippingpoint);
+			var tpobj={id:"0"};
+			tpobj=(typeof rackpositions[tippingpoint]=='undefined')?tpobj:rackpositions[rackpositions.length-tippingpoint];
+			$('#tippingpoint').text(tpobj.id.replace('pos','')+'U');
+			// $('#tippingpoint').text(tippingpoint+'U');
+// Debug info
+			// console.log(cabs[id]+' totalmoment: '+totalmoment+' totalweight: '+totalweight+' tipping point: '+tippingpoint);
+		}).then(initdrag);
+	}
 });
 
 // function to determine if two objects overlap
@@ -1592,19 +1480,8 @@ function initdrag(){
 								data: devcopy,
 								success: function(data){
 									if(!data.error){
-										$.get("api/v1/device/"+data.device.DeviceID+"/getpicture",function(picdata){
-											// Make a new cached image for our copied device
-											window.pictures[data.device.Cabinet][data.device.DeviceID]={};
-											// Save the front picture
-											window.pictures[data.device.Cabinet][data.device.DeviceID]['Front']=picdata.picture;
-											// Get the rear image
-											$.get("api/v1/device/"+data.device.DeviceID+"/getpicture?rear",function(picdata){
-												window.pictures[data.device.Cabinet][data.device.DeviceID]['Rear']=picdata.picture;
-												// Add the copy to the rack
-												InsertDevice(data.device);
-												initdrag();
-											});
-										});
+										InsertDevice(data.device);
+										initdrag();
 									}
 								},
 								error: function(data){
@@ -1639,23 +1516,19 @@ function initdrag(){
 
 function InsertDevice(obj){
 	if(obj.Position!=0 && obj.Height!=0){
-		$('#cabinet'+obj.Cabinet+' .loadingplaceholder').remove();
 		function getPic(insertobj,rear){
 			var showrear=(rear)?'?rear':'';
-			if(rear){
-				insertobj.html(window.pictures[obj.Cabinet][obj.DeviceID]['Rear']).css('border','');
-			}else{
-				insertobj.html(window.pictures[obj.Cabinet][obj.DeviceID]['Front']).css('border','');
-			}
-			if(typeof bindworkorder=='function'){
-				// need a delay to wait for the dom to react to the insert from above
-				var domloaddelay=setInterval(function(){
-					if(insertobj.html()!=""){
-						bindworkorder(insertobj);
-						clearInterval(domloaddelay);
-					}
-				}, 100)
-			}
+			$.get('api/v1/device/'+obj.DeviceID+'/getpicture'+showrear).done(function(data){
+				if(!data.error){
+					insertobj.append(data.picture).css('border','');
+				}else{ // We didn't get a picture back from the function to give it a text link
+					var label=(obj.Label)?obj.Label:'no label';
+					insertobj.append($('<a>').prop('href','devices.php?DeviceID='+obj.DeviceID).text(label));
+				}
+				if(typeof bindworkorder=='function'){
+					bindworkorder(insertobj);
+				}
+			});
 		}
 
 		var racktop=parseInt($('#cabinet'+obj.Cabinet+' tr:nth-child(3)').prop('id').replace('pos',''));
@@ -1731,13 +1604,7 @@ function InsertDevice(obj){
 			var stName=obj.Status.split(' ').join('_');
 			StartingU.find('.pos').addClass(stName);
 			$('#legend > .legenditem > span.'+stName).parent('div').removeClass('hide');
-			if(obj.HalfDepth==1 && obj.BackSide==0){
-				StartingU.find('.pos:first-child').addClass('dept'+obj.Owner).addClass('damnit');
-			}else if(obj.HalfDepth==1 && obj.BackSide==1){
-				StartingU.find('.pos:last').addClass('dept'+obj.Owner).addClass('damnit');
-			}else{
-				StartingU.find('.pos').addClass('dept'+obj.Owner).addClass('damnit');
-			}
+			StartingU.find('.pos').addClass('dept'+obj.Owner);
 			StartingU=StartingU.prev(); // move our pointer up a u
 		}
 	}
