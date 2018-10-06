@@ -405,6 +405,7 @@ class Device {
 			Ports=$this->Ports, FirstPortNum=$this->FirstPortNum, TemplateID=$this->TemplateID, 
 			PowerSupplyCount=$this->PowerSupplyCount, ChassisSlots=$this->ChassisSlots, 
 			RearChassisSlots=$this->RearChassisSlots,ParentDevice=$this->ParentDevice,
+			AuditStamp=\"".date("Y-m-d", strtotime($this->AuditStamp))."\", 
 			MfgDate=\"".date("Y-m-d", strtotime($this->MfgDate))."\", 
 			InstallDate=\"".date("Y-m-d", strtotime($this->InstallDate))."\", 
 			WarrantyCo=\"$this->WarrantyCo\", Notes=\"$this->Notes\", 
