@@ -502,7 +502,7 @@ msgstr ""
 #: openDCIM/project_mgr.php:174 openDCIM/report_logging.php:73
 #: openDCIM/timeperiods.php:86 openDCIM/usermgr.php:295 openDCIM/zone.php:180
 msgid "Update"
-msgstr "Wanker"
+msgstr ""
 
 #: openDCIM/cabinets.php:334 openDCIM/cabrow.php:197 openDCIM/container.php:286
 #: openDCIM/datacenter.php:319 openDCIM/datacenter.php:334
