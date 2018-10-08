@@ -14,7 +14,7 @@ msgstr ""
 #: openDCIM/bulk_cabinet.php:12
 #, fuzzy
 msgid "Bulk Cabinet Importer"
-msgstr "Importar Dispositivos Masivamente"
+msgstr "Informe do Armario"
 
 #: openDCIM/bulk_cabinet.php:60 openDCIM/bulk_container.php:60
 #: openDCIM/bulk_importer.php:60 openDCIM/bulk_moves.php:60
@@ -22,8 +22,6 @@ msgstr "Importar Dispositivos Masivamente"
 msgid ""
 "Pick the appropriate column header (line 1) for each field name listed below."
 msgstr ""
-"Elija la cabecera de columna (linea 1) correspondiente a cada campo listado "
-"a continuacion."
 
 #: openDCIM/bulk_cabinet.php:61 openDCIM/bulk_container.php:61
 #: openDCIM/bulk_departments.php:61 openDCIM/bulk_importer.php:61
@@ -31,7 +29,7 @@ msgstr ""
 #: openDCIM/bulk_power.php:61 openDCIM/bulk_templates.php:61
 #: openDCIM/bulk_users.php:61
 msgid "Mouse over each field for help text."
-msgstr "Pasa el ratón por cada campo para ver la ayuda"
+msgstr ""
 
 #: openDCIM/bulk_cabinet.php:100 openDCIM/bulk_container.php:100
 #: openDCIM/bulk_departments.php:100 openDCIM/bulk_importer.php:315
@@ -39,14 +37,14 @@ msgstr "Pasa el ratón por cada campo para ver la ayuda"
 #: openDCIM/bulk_power.php:107 openDCIM/bulk_templates.php:100
 #: openDCIM/bulk_users.php:100
 msgid "Process"
-msgstr "Procesar"
+msgstr ""
 
 #: openDCIM/bulk_cabinet.php:245 openDCIM/bulk_container.php:243
 #: openDCIM/bulk_departments.php:186 openDCIM/bulk_importer.php:462
 #: openDCIM/bulk_network.php:307 openDCIM/bulk_power.php:256
 #: openDCIM/bulk_templates.php:208 openDCIM/bulk_users.php:196
 msgid "All records imported successfully."
-msgstr "Todos los registros se han importado correctamente."
+msgstr ""
 
 #: openDCIM/bulk_cabinet.php:247 openDCIM/bulk_container.php:245
 #: openDCIM/bulk_departments.php:188 openDCIM/bulk_importer.php:464
@@ -56,8 +54,6 @@ msgstr "Todos los registros se han importado correctamente."
 msgid ""
 "At least one error was encountered processing the file.  Please see below."
 msgstr ""
-"Al menos se ha encontrado un error procesando el archivo. Mire a "
-"continuación."
 
 #: openDCIM/bulk_cabinet.php:257 openDCIM/bulk_container.php:255
 #: openDCIM/bulk_departments.php:198 openDCIM/bulk_importer.php:474
@@ -65,26 +61,22 @@ msgstr ""
 #: openDCIM/bulk_power.php:268 openDCIM/bulk_templates.php:220
 #: openDCIM/bulk_users.php:208
 msgid "Select file to upload:"
-msgstr "Elija archivo para subir:"
+msgstr ""
 
 #: openDCIM/bulk_container.php:12
-#, fuzzy
 msgid "Bulk Container/Datacenter Importer"
-msgstr "Importar Dispositivos Masivamente"
+msgstr ""
 
 #: openDCIM/bulk_departments.php:12
 #, fuzzy
 msgid "Bulk Department Importer"
-msgstr "Importar Dispositivos Masivamente"
+msgstr "Nome do Departamento"
 
 #: openDCIM/bulk_departments.php:60
-#, fuzzy
 msgid ""
 "Pick the appropriate column header (line 1) for each field name listed "
 "below.  Any records matching an existing Department Name will be rejected."
 msgstr ""
-"Elija la cabecera de columna (linea 1) correspondiente a cada campo listado "
-"a continuacion."
 
 #: openDCIM/bulk_departments.php:152
 msgid "Department name already exists in database: "
@@ -101,27 +93,25 @@ msgstr ""
 #: openDCIM/bulk_departments.php:177
 #, fuzzy
 msgid "Created new Department:"
-msgstr "Nuevo Departamento"
+msgstr "Novo Departamento"
 
 #: openDCIM/bulk_importer.php:12
 msgid "Bulk Device Importer"
-msgstr "Importar Dispositivos Masivamente"
+msgstr ""
 
 #: openDCIM/bulk_importer.php:100 openDCIM/bulk_moves.php:107
 msgid "Validate"
-msgstr "Validar"
+msgstr ""
 
 #: openDCIM/bulk_importer.php:137
 msgid "The following required fields are not mapped"
-msgstr "Los siguientes campos requeridos no estan mapeados"
+msgstr ""
 
 #: openDCIM/bulk_importer.php:191
 msgid ""
 "The following values in the import file require entries in openDCIM before "
 "you may proceed."
 msgstr ""
-"Los campos siguientes en el archivo de importacion, necesitan valores en "
-"openDCIM antes de proceder."
 
 #: openDCIM/bulk_importer.php:199 openDCIM/cabinets.php:246
 #: openDCIM/cabnavigator.php:51 openDCIM/cabrow.php:166
@@ -187,21 +177,19 @@ msgstr "Contacto Principal"
 
 #: openDCIM/bulk_importer.php:297 openDCIM/bulk_moves.php:243
 msgid "Collision Detected"
-msgstr "Se ha detectado una colision"
+msgstr ""
 
 #: openDCIM/bulk_importer.php:308 openDCIM/bulk_moves.php:254
 msgid "The file has passed validation.  Press the Process button to import."
 msgstr ""
-"El archivo ha completado la validacion. Pulse el boton de Procesar para "
-"importar."
 
 #: openDCIM/bulk_importer.php:386
 msgid "Parent device does not exist at specified location."
-msgstr "El dispositivo padre no existe en la ubicacion especificada."
+msgstr ""
 
 #: openDCIM/bulk_moves.php:12
 msgid "Bulk Device Moves/Deletes"
-msgstr "Movimiento/Borrado Masivo de Dispositivos"
+msgstr ""
 
 #: openDCIM/bulk_moves.php:100 openDCIM/bulk_network.php:100
 #: openDCIM/bulk_power.php:100
@@ -209,38 +197,34 @@ msgid ""
 "The type of key field that is being used to match devices in openDCIM.  Only "
 "one type may be specified per file."
 msgstr ""
-"El tipo de campo clave que se esta usando para amparejar dispositivos en "
-"openDCIM. Solo se debe especificar un tipo por archivo."
 
 #: openDCIM/bulk_moves.php:100 openDCIM/bulk_network.php:100
 #: openDCIM/bulk_power.php:100
 msgid "KeyField"
-msgstr "Campo Clave"
+msgstr ""
 
 #: openDCIM/bulk_moves.php:152
 msgid ""
 "The following values in the bulk move/delete file require entries in "
 "openDCIM before you may proceed."
 msgstr ""
-"Los siguientes valores en el archivo de importacion, necesitan valores en "
-"openDCIM antes de poder seguir."
 
 #: openDCIM/bulk_moves.php:378
 msgid "All records processed successfully."
-msgstr "Todos los registros se han importado correctamente."
+msgstr ""
 
 #: openDCIM/bulk_network.php:12
 msgid "Bulk Network Importer"
-msgstr "Importar Dispositivos Masivamente"
+msgstr ""
 
 #: openDCIM/bulk_power.php:12
 msgid "Bulk Power Importer"
-msgstr "Importar Dispositivos Masivamente"
+msgstr ""
 
 #: openDCIM/bulk_templates.php:12
 #, fuzzy
 msgid "Bulk Device Template Importer"
-msgstr "Importar Dispositivos Masivamente"
+msgstr "Editar Plantillas de Dispositivos"
 
 #: openDCIM/bulk_templates.php:60
 msgid ""
@@ -256,36 +240,32 @@ msgstr "Actualizar Plantilla"
 #: openDCIM/bulk_templates.php:195
 #, fuzzy
 msgid "Error:  Unable to add template for"
-msgstr "Erro actualizando os portos da plantilla"
+msgstr "Error actualizando los puertos de la plantilla"
 
 #: openDCIM/bulk_templates.php:199
 #, fuzzy
 msgid "Error:  Invalid DeviceType specified"
-msgstr "Dispositivo inicial no especificado"
+msgstr "Dispositivo inicial non especificado"
 
 #: openDCIM/bulk_templates.php:203
 #, fuzzy
 msgid "Error:  Manufacturer name "
-msgstr "Fecha de Fabricación"
+msgstr "Data de Fabricación"
 
 #: openDCIM/bulk_templates.php:203
 #, fuzzy
 msgid "not in database."
-msgstr "Usuario no encontrado en la base de datos"
+msgstr "Usuario non atopado na base de datos"
 
 #: openDCIM/bulk_users.php:12
-#, fuzzy
 msgid "Bulk User Authorization Importer"
-msgstr "Importar Dispositivos Masivamente"
+msgstr ""
 
 #: openDCIM/bulk_users.php:60
-#, fuzzy
 msgid ""
 "Pick the appropriate column header (line 1) for each field name listed "
 "below.  Any UserID already in the system will be updated."
 msgstr ""
-"Elija la cabecera de columna (linea 1) correspondiente a cada campo listado "
-"a continuacion."
 
 #: openDCIM/bulk_users.php:170
 msgid "Created new person account:"
@@ -304,7 +284,7 @@ msgstr ""
 #: openDCIM/report_power_utilization.php:31
 #: openDCIM/report_vm_by_department.php:38 openDCIM/report_warranty.php:106
 msgid "Information Technology Services"
-msgstr "Servicios de Tecnología de la Información"
+msgstr "Servizos de Tecnoloxía da Información"
 
 #: openDCIM/cabaudit.php:52
 msgid "Cabinet Audit Report"
@@ -321,7 +301,7 @@ msgstr "Informe de Auditoría de Armarios"
 #: openDCIM/report_supply_status.php:66 openDCIM/report_vm_by_department.php:42
 #: openDCIM/report_warranty.php:110 openDCIM/template_mpdf_reports.inc.php:79
 msgid "Date"
-msgstr "Fecha"
+msgstr "Data"
 
 #: openDCIM/cabaudit.php:54 openDCIM/cabnavigator.php:49
 #: openDCIM/report_audit_frequency.php:242 openDCIM/report_audit.php:286
@@ -337,14 +317,14 @@ msgstr "Última Auditoría"
 #: openDCIM/report_power_utilization.php:42
 #: openDCIM/report_vm_by_department.php:49 openDCIM/report_warranty.php:117
 msgid "Page"
-msgstr "Página"
+msgstr "Páxina"
 
 #: openDCIM/cabaudit.php:399 openDCIM/report_audit_frequency.php:242
 #: openDCIM/report_audit.php:321 openDCIM/report_audit.php:417
 #: openDCIM/report_diverse_power_exceptions.php:167
 #: openDCIM/report_power_utilization.php:167
 msgid "Cabinet Location"
-msgstr "Identificación del Armario"
+msgstr "Identificación do Armario"
 
 #: openDCIM/cabaudit.php:404 openDCIM/cabaudit.php:510
 #: openDCIM/configuration.php:2231 openDCIM/devices.php:1716
@@ -361,7 +341,7 @@ msgstr "NºSerie"
 
 #: openDCIM/cabaudit.php:404
 msgid "AssetTag"
-msgstr "Etiqueta del Activo"
+msgstr "Etiqueta do Activo"
 
 #: openDCIM/cabaudit.php:404 openDCIM/connections_spreadsheet.php:58
 #: openDCIM/devices.php:1887 openDCIM/rackrequest.php:516
@@ -384,7 +364,7 @@ msgstr "Us de Rack"
 
 #: openDCIM/cabaudit.php:404
 msgid "#Ports"
-msgstr "Nº Puertos"
+msgstr "Nº Portos"
 
 #: openDCIM/cabaudit.php:404
 msgid "#PS"
@@ -408,19 +388,19 @@ msgstr "PDUs en"
 
 #: openDCIM/cabaudit.php:510
 msgid "NumOutputs"
-msgstr "NúmSalidas"
+msgstr "NúmSaídas"
 
 #: openDCIM/cabaudit.php:510
 msgid "PanelLabel"
-msgstr "NemónicoCuadro"
+msgstr "NemónicoCadro"
 
 #: openDCIM/cabaudit.php:510
 msgid "PanelPole"
-msgstr "LíneaCuadro"
+msgstr "LíneaCadro"
 
 #: openDCIM/cabinets.php:5 openDCIM/cabnavigator.php:5 openDCIM/rowview.php:5
 msgid "Data Center Cabinet Inventory"
-msgstr "Inventario de Armarios del CPD"
+msgstr "Inventario de Armarios do CPD"
 
 #: openDCIM/cabinets.php:78 openDCIM/cabrow.php:41
 #: openDCIM/cdu_templates.php:43 openDCIM/container.php:28
@@ -440,7 +420,7 @@ msgstr "Actualizado"
 
 #: openDCIM/cabinets.php:236
 msgid "New Cabinet"
-msgstr "Nuevo Armario"
+msgstr "Novo Armario"
 
 #: openDCIM/cabinets.php:260 openDCIM/report_supply_status.php:105
 #: openDCIM/search_export.php:125 openDCIM/search_export_storage_room.php:50
@@ -454,20 +434,20 @@ msgstr "Asignado a"
 
 #: openDCIM/cabinets.php:266 openDCIM/scripts/ajax_tooltip.php:67
 msgid "General Use"
-msgstr "Utilización General"
+msgstr "Utilización Xeral"
 
 #: openDCIM/cabinets.php:277 openDCIM/cabnavigator.php:58
 #: openDCIM/report_network_map.php:626 openDCIM/zone.php:117
 msgid "Zone"
-msgstr "Zona"
+msgstr "Zoa"
 
 #: openDCIM/cabinets.php:281 openDCIM/report_network_map.php:621
 msgid "Cabinet Row"
-msgstr "Fila de Armario"
+msgstr "Fila do Armario"
 
 #: openDCIM/cabinets.php:285
 msgid "Cabinet Height"
-msgstr "Altura del Armario"
+msgstr "Altura do Armario"
 
 #: openDCIM/cabinets.php:289
 msgid "U1 Position"
@@ -478,7 +458,7 @@ msgstr "Posición U1"
 #: openDCIM/mapmaker.php:172 openDCIM/zone_stats.php:305
 #: openDCIM/zone_stats.php:313
 msgid "Bottom"
-msgstr "Abajo"
+msgstr "Abaixo"
 
 #: openDCIM/cabinets.php:292 openDCIM/configuration.php:1900
 #: openDCIM/dc_stats.php:308 openDCIM/dc_stats.php:316
@@ -493,7 +473,7 @@ msgstr "Por defecto"
 
 #: openDCIM/cabinets.php:305 openDCIM/cabnavigator.php:295
 msgid "Key/Lock Information"
-msgstr "Información de Cerradura"
+msgstr "Información de Pechadura"
 
 #: openDCIM/cabinets.php:309
 msgid "Maximum"
@@ -505,7 +485,7 @@ msgstr "Peso Máximo"
 
 #: openDCIM/cabinets.php:317
 msgid "Date of Installation"
-msgstr "Fecha de Instalación"
+msgstr "Data de Instalación"
 
 #: openDCIM/cabinets.php:321 openDCIM/cabnavigator.php:66
 #: openDCIM/devices.php:1823 openDCIM/search_export.php:134
@@ -550,7 +530,7 @@ msgstr "Informe de Auditoría"
 #: openDCIM/cabinets.php:336 openDCIM/cabnavigator.php:392
 #: openDCIM/power_panel.php:349
 msgid "Map Coordinates"
-msgstr "Coordenadas en el Plano"
+msgstr "Coordenadas no Plano"
 
 #: openDCIM/cabinets.php:338 openDCIM/cabrow.php:192
 #: openDCIM/cdu_templates.php:213 openDCIM/container.php:288
@@ -568,7 +548,7 @@ msgstr "Crear"
 #: openDCIM/cabinets.php:346 openDCIM/devices.php:2502
 #: openDCIM/devices.php:2504
 msgid "Return to Navigator"
-msgstr "Volver al Visualizador de Armarios"
+msgstr "Voltar ao Visualizador de Armarios"
 
 #: openDCIM/cabinets.php:348 openDCIM/cabrow.php:204
 #: openDCIM/cdu_templates.php:220 openDCIM/configuration.php:2468
@@ -582,19 +562,19 @@ msgstr "Volver al Visualizador de Armarios"
 #: openDCIM/supplies.php:128 openDCIM/supplybin.php:214
 #: openDCIM/timeperiods.php:96 openDCIM/usermgr.php:306 openDCIM/zone.php:206
 msgid "Return to Main Menu"
-msgstr "Volver al Menú Principal"
+msgstr "Voltar ao Menú Principal"
 
 #: openDCIM/cabinets.php:354 openDCIM/cabnavigator.php:660
 msgid "Cabinet delete confirmation"
-msgstr "Confirmación de eliminación del armario"
+msgstr "Confirmación de eliminación do armario"
 
 #: openDCIM/cabinets.php:355
 msgid ""
 "Are you sure that you want to delete this cabinet and all the devices in it?"
 "<br><br><b>THERE IS NO UNDO</b>"
 msgstr ""
-"¿Está seguro de que quiere eliminar este armario y todos los dispositivos "
-"que contiene?<br><br><b>NO SE PODRÁ DESHACER</b>"
+"¿Está seguro de que quere eliminar este armario e todos os dispositivos que "
+"contén?<br><br><b>NON SE PODERÁ DESFACER</b>"
 
 #: openDCIM/cabinets.php:370 openDCIM/cabrow.php:122 openDCIM/container.php:164
 #: openDCIM/datacenter.php:163 openDCIM/devices.php:1456
@@ -602,7 +582,7 @@ msgstr ""
 #: openDCIM/project_mgr.php:103 openDCIM/report_exception.php:261
 #: openDCIM/zone.php:245
 msgid "Yes"
-msgstr "Sí"
+msgstr "Si"
 
 #: openDCIM/cabinets.php:381 openDCIM/cabrow.php:127 openDCIM/container.php:169
 #: openDCIM/datacenter.php:175 openDCIM/devices.php:1460
@@ -610,11 +590,11 @@ msgstr "Sí"
 #: openDCIM/project_mgr.php:114 openDCIM/report_exception.php:263
 #: openDCIM/zone.php:250
 msgid "No"
-msgstr "No"
+msgstr "Non"
 
 #: openDCIM/cabnavigator.php:52 openDCIM/devices.php:1740
 msgid "Install Date"
-msgstr "Fecha de Instalación"
+msgstr "Data de Instalación"
 
 #: openDCIM/cabnavigator.php:64 openDCIM/cabrow.php:148
 #: openDCIM/dc_stats.php:314 openDCIM/rowview.php:94
@@ -628,37 +608,37 @@ msgstr "Nunca"
 
 #: openDCIM/cabnavigator.php:177
 msgid "Above defined rack height"
-msgstr "Altura del rack definida arriba"
+msgstr "Altura do rack definida arriba"
 
 #: openDCIM/cabnavigator.php:186
 msgid "Free Space"
-msgstr "Espacio Libre"
+msgstr "Espazo Libre"
 
 #: openDCIM/cabnavigator.php:232
 msgid "Maximum Weight Not Set"
-msgstr "Peso máximo no especificado"
+msgstr "Peso máximo non especificado"
 
 #: openDCIM/cabnavigator.php:244
 msgid "Owner Unassigned"
-msgstr "Propietario no Asignado"
+msgstr "Propietario non Asignado"
 
 #: openDCIM/cabnavigator.php:245
 msgid "Template Unassigned"
-msgstr "Plantilla no Asignada"
+msgstr "Plantilla non Asignada"
 
 #: openDCIM/cabnavigator.php:249
 msgid "Markup Key"
-msgstr "Leyenda"
+msgstr "Lenda"
 
 #: openDCIM/cabnavigator.php:253
 msgid "Cabinet Metrics"
-msgstr "Medidas del Armario"
+msgstr "Medidas do Armario"
 
 #: openDCIM/cabnavigator.php:256 openDCIM/dc_dashboard.php:84
 #: openDCIM/dc_stats.php:286 openDCIM/index.php:123 openDCIM/zone_stats.php:282
 #: openDCIM/scripts/ajax_tooltip.php:137
 msgid "Space"
-msgstr "Espacio"
+msgstr "Espazo"
 
 #: openDCIM/cabnavigator.php:265 openDCIM/dc_dashboard.php:85
 #: openDCIM/dc_stats.php:287 openDCIM/devices.php:1912
@@ -677,39 +657,39 @@ msgstr "Watios Medidos"
 
 #: openDCIM/cabnavigator.php:292
 msgid "Approximate Center of Gravity"
-msgstr "Centro de Gravedad Aproximado"
+msgstr "Centro de Gravidade Aproximado"
 
 #: openDCIM/cabnavigator.php:301
 msgid "Zero-U Devices"
-msgstr "Dispositivos que no ocupan Us"
+msgstr "Dispositivos que non ocupan Us"
 
 #: openDCIM/cabnavigator.php:306
 msgid "Power Distribution"
-msgstr "Distribución de Energía Eléctrica"
+msgstr "Distribución de Enerxía Eléctrica"
 
 #: openDCIM/cabnavigator.php:347
 msgid "Unknown Status"
-msgstr "Estado Desconocido"
+msgstr "Estado Descoñecido"
 
 #: openDCIM/cabnavigator.php:350
 msgid "ATS Feeds OK"
-msgstr "Alimentación del CTA correcta"
+msgstr "Alimentación do CTA correcta"
 
 #: openDCIM/cabnavigator.php:353
 msgid "ATS Feeds Abnormal"
-msgstr "Alimentación del CTA anormal"
+msgstr "Alimentación do CTA anormal"
 
 #: openDCIM/cabnavigator.php:361
 msgid "Add CDU"
-msgstr "Añadir PDU"
+msgstr "Engadir PDU"
 
 #: openDCIM/cabnavigator.php:367
 msgid "Environmental Sensors"
-msgstr "Sensores ambientales"
+msgstr "Sensores ambientais"
 
 #: openDCIM/cabnavigator.php:375
 msgid "Add Sensor"
-msgstr "Añadir sensor"
+msgstr "Engadir sensor"
 
 #: openDCIM/cabnavigator.php:389 openDCIM/devices.php:2479
 msgid "Certify Audit"
@@ -717,7 +697,7 @@ msgstr "Certificar Auditoría"
 
 #: openDCIM/cabnavigator.php:390 openDCIM/devices.php:2218
 msgid "Add Device"
-msgstr "Añadir Dispositivo"
+msgstr "Engadir Dispositivo"
 
 #: openDCIM/cabnavigator.php:393
 msgid "Edit Cabinet"
@@ -729,11 +709,11 @@ msgstr "Eliminar Armario"
 
 #: openDCIM/cabnavigator.php:402
 msgid "Cabinet Notes"
-msgstr "Notas del armario"
+msgstr "Notas do armario"
 
 #: openDCIM/cabnavigator.php:415 openDCIM/rowview.php:94
 msgid "Facilities Cabinet Maintenance"
-msgstr "Mantenimiento de Instalaciones del Armario"
+msgstr "Mantemento de Instalacións do Armario"
 
 #: openDCIM/cabnavigator.php:649
 #, php-format
@@ -747,15 +727,14 @@ msgstr "Confirmación de auditoría"
 #: openDCIM/cabnavigator.php:653
 msgid "Do you certify that you have completed an audit of this cabinet?"
 msgstr ""
-"¿Quiere certificar que se ha completado una auditoría del armario "
-"seleccionado?"
+"¿Quere certificar que se compretou unha auditoría do armario seleccionado?"
 
 #: openDCIM/cabnavigator.php:661
 msgid ""
 "Are you sure that you want to delete this cabinet and all the devices in it?"
 msgstr ""
-"¿Está seguro que quiere eliminar este armario y todos los dispositivos que "
-"hay en él?"
+"¿Está seguro que quere eliminar este armario e mais todos os dispositivos "
+"que hay en el?"
 
 #: openDCIM/cabnavigator.php:665 openDCIM/departments.php:236
 #: openDCIM/device_manufacturers.php:227 openDCIM/usermgr.php:321
@@ -765,7 +744,7 @@ msgstr "¿Está REALMENTE seguro?"
 #: openDCIM/cabnavigator.php:666 openDCIM/departments.php:237
 #: openDCIM/device_manufacturers.php:228 openDCIM/usermgr.php:322
 msgid "Are you sure REALLY sure?  There is no undo!!"
-msgstr "¿Está REALMENTE seguro? ¡Esto no se podrá deshacer!"
+msgstr "¿Está REALMENTE seguro? ¡Isto non se poderá desfacer!"
 
 #: openDCIM/cabrow.php:5
 msgid "Rows of Cabinets"
@@ -773,15 +752,15 @@ msgstr "Filas de Armarios"
 
 #: openDCIM/cabrow.php:114
 msgid "Verify Delete Row"
-msgstr "Verificar Borrado de la Fila"
+msgstr "Verificar Borrado da Fila"
 
 #: openDCIM/cabrow.php:115
 msgid ""
 "This Row will be deleted and there is no undo.  Assets within the row will "
 "remain as members of the Data Center."
 msgstr ""
-"Esta Fila se borrará y no se podrá deshacer. Los activos en la fila "
-"permanecerán como miembros del CPD."
+"Esta Fila borrarase e non se poderá desfacer. Os activos na fila "
+"permanecerán como membros do CPD."
 
 #: openDCIM/cabrow.php:115 openDCIM/container.php:157 openDCIM/zone.php:237
 msgid "Are you sure?"
@@ -789,7 +768,7 @@ msgstr "¿Está seguro?"
 
 #: openDCIM/cabrow.php:151
 msgid "New Row"
-msgstr "Nueva Fila"
+msgstr "Nova Fila"
 
 #: openDCIM/cabrow.php:162 openDCIM/container.php:241
 #: openDCIM/datacenter.php:252 openDCIM/device_manufacturers.php:193
@@ -797,11 +776,11 @@ msgstr "Nueva Fila"
 #: openDCIM/search_export.php:128 openDCIM/search_export_storage_room.php:53
 #: openDCIM/scripts/ajax_tooltip.php:199 openDCIM/scripts/ajax_tooltip.php:206
 msgid "Name"
-msgstr "Nombre"
+msgstr "Nome"
 
 #: openDCIM/cabrow.php:178
 msgid "Data Center Zone"
-msgstr "Zona del CPD"
+msgstr "Zona do CPD"
 
 #: openDCIM/cdu_templates.php:5
 msgid "Data Center Cabinet Distribution Unit Templates"
@@ -814,11 +793,11 @@ msgstr "Plantilla"
 
 #: openDCIM/cdu_templates.php:84 openDCIM/device_templates.php:733
 msgid "New Template"
-msgstr "Nueva Plantilla"
+msgstr "Nova Plantilla"
 
 #: openDCIM/cdu_templates.php:112 openDCIM/device_templates.php:976
 msgid "Managed"
-msgstr "Gestionado"
+msgstr "Xestionado"
 
 #: openDCIM/cdu_templates.php:118 openDCIM/devices.php:2144
 msgid "Automatic Transfer Switch"
@@ -831,7 +810,7 @@ msgstr "Versión de SNMP"
 
 #: openDCIM/cdu_templates.php:137 openDCIM/device_templates.php:982
 msgid "Firmware Version OID"
-msgstr "OID de la Versión de Firmware"
+msgstr "OID da Versión de Firmware"
 
 #: openDCIM/cdu_templates.php:141 openDCIM/device_templates.php:986
 msgid "Multiplier"
@@ -851,11 +830,11 @@ msgstr "OID3"
 
 #: openDCIM/cdu_templates.php:177 openDCIM/device_templates.php:1033
 msgid "ATS Status OID"
-msgstr "OID del estado del CTA"
+msgstr "OID do estado do CTA"
 
 #: openDCIM/cdu_templates.php:181 openDCIM/device_templates.php:1037
 msgid "ATS Desired Result"
-msgstr "Resultado Deseado del CTA"
+msgstr "Resultado Deseado do CTA"
 
 #: openDCIM/cdu_templates.php:185 openDCIM/device_templates.php:1010
 msgid "Processing Scheme"
@@ -863,19 +842,19 @@ msgstr "Tipo de Procesado"
 
 #: openDCIM/cdu_templates.php:197 openDCIM/device_templates.php:1021
 msgid "Voltage"
-msgstr "Voltaje"
+msgstr "Voltaxe"
 
 #: openDCIM/cdu_templates.php:201 openDCIM/device_templates.php:1025
 msgid "Amperage"
-msgstr "Amperaje"
+msgstr "Amperaxe"
 
 #: openDCIM/cdu_templates.php:205
 msgid "No. of Outlets"
-msgstr "Nº de Salidas"
+msgstr "Nº de Saídas"
 
 #: openDCIM/configuration.php:7
 msgid "Data Center Configuration"
-msgstr "Configuración del CPD"
+msgstr "Configuración do CPD"
 
 #: openDCIM/configuration.php:34
 #, fuzzy
@@ -887,7 +866,7 @@ msgstr "Posición Actual"
 #: openDCIM/device_templates.php:402 openDCIM/rackrequest.php:376
 #: openDCIM/rackrequest.php:495
 msgid "Select"
-msgstr "Seleccionar"
+msgstr "Selecionar"
 
 #: openDCIM/configuration.php:723 openDCIM/configuration.php:912
 msgid "Clear all"
@@ -898,11 +877,11 @@ msgstr "Borrar todo"
 #: openDCIM/configuration.php:1166 openDCIM/configuration.php:1180
 #: openDCIM/configuration.php:1279 openDCIM/configuration.php:1296
 msgid "Something just went horribly wrong."
-msgstr "Algo salió horriblemente mal."
+msgstr "Algo salíu horriblemente mal."
 
 #: openDCIM/configuration.php:738 openDCIM/configuration.php:929
 msgid "Replace"
-msgstr "Reemplazar"
+msgstr "Substituir"
 
 #: openDCIM/configuration.php:754 openDCIM/configuration.php:950
 #: openDCIM/configuration.php:1161 openDCIM/configuration.php:1188
@@ -920,8 +899,8 @@ msgid ""
 "This media type is in use somewhere. Select an alternate type to assign to "
 "all the records to or choose clear all."
 msgstr ""
-"Este tipo de medio se está utilizando. Seleccione otro tipo para asignarlo a "
-"todos los registros o elija borrar todo."
+"Este tipo de medio estase a utilizar. Seleccione outro tipo para asignarlo a "
+"todos os rexistros ou elixa borrar todo."
 
 #: openDCIM/configuration.php:954
 msgid "Code Delete Override"
@@ -932,51 +911,50 @@ msgid ""
 "This code is in use somewhere. You can either choose to clear all instances "
 "of this color being used or choose to have them replaced with another color."
 msgstr ""
-"Este código se está utilizando. Borre todas las instancias donde se utiliza "
-"este color o reemplácelo con otro color."
+"Este código se está a utilizar. Borre todas as instancias onde se emprega "
+"esta cor ou substitúao con outra cor."
 
 #: openDCIM/configuration.php:1166
 msgid "Custom Device Attribute Type Change Error"
-msgstr "Error en el cambio del tipo de atributo personalizado de dispositivo"
+msgstr "Erro no cambio do tipo de atributo personalizado de dispositivo"
 
 #: openDCIM/configuration.php:1174
 msgid "Change Type and Clear all uses"
-msgstr "Cambiar el tipo y eliminar todos los usos"
+msgstr "Cambiar o tipo e eliminar todos os usos"
 
 #: openDCIM/configuration.php:1193
 msgid "Custom Device Attribute Type Change Override"
 msgstr ""
-"Sobreescribir el cambio de tipo de atributo personalizado de dispositivo"
+"Sobreescribir o cambio de tipo de atributo personalizado de dispositivo"
 
 #: openDCIM/configuration.php:1193
 msgid ""
 "This custom device attribute is in use somewhere. If you choose to change "
 "the attribute type, it will be cleared from all devices and device templates."
 msgstr ""
-"Este atributo personalizado de dispositivo está en uso. Si decide cambiar el "
-"tipo de atributo, esto afectará a todos los dispositivos y plantillas de "
+"Este atributo personalizado de dispositivo está en uso. Se decide cambiar o "
+"tipo de atributo, isto afectará a todos os dispositivos e plantillas de "
 "dispositivo."
 
 #: openDCIM/configuration.php:1279
 msgid "Custom Device Attribute Delete Error"
-msgstr "Error en la eliminación de atributo personalizado de dispositivo"
+msgstr "Erro na eliminación de atributo personalizado de dispositivo"
 
 #: openDCIM/configuration.php:1288
 msgid "Delete from All Devices/Templates"
-msgstr "Eliminar de todos los dispositivos/plantillas"
+msgstr "Eliminar de todos os dispositivos/plantillas"
 
 #: openDCIM/configuration.php:1307
 msgid "Custom Device Attribute Delete Override"
-msgstr ""
-"Sobreescritura de la eliminación del atributo personalizado de dispositivo"
+msgstr "Sobreescritura da eliminación do atributo personalizado de dispositivo"
 
 #: openDCIM/configuration.php:1307
 msgid ""
 "This custom device attribute is in use somewhere. If you choose to delete "
 "the attribute, it will be removed from all devices and device templates."
 msgstr ""
-"Este atributo personalizado de dispositivo está en uso. Si decide eliminar "
-"el atributo, será eliminado en todos los dispositivos y plantillas de "
+"Este atributo personalizado de dispositivo está en uso. Se decide eliminar o "
+"atributo, será eliminado en todos os dispositivos e plantillas de "
 "dispositivo."
 
 #: openDCIM/configuration.php:1514
@@ -985,11 +963,11 @@ msgstr ""
 
 #: openDCIM/configuration.php:1634
 msgid "General"
-msgstr "General"
+msgstr "Xeral"
 
 #: openDCIM/configuration.php:1635
 msgid "Workflow"
-msgstr "Flujo de trabajo"
+msgstr "Fluxo de traballo"
 
 #: openDCIM/configuration.php:1636
 msgid "Style"
@@ -1019,7 +997,7 @@ msgstr "Atributo personalizado de dispositivo"
 
 #: openDCIM/configuration.php:1642
 msgid "LDAP"
-msgstr "LDAP"
+msgstr ""
 
 #: openDCIM/configuration.php:1643
 msgid "SAML"
@@ -1027,24 +1005,24 @@ msgstr ""
 
 #: openDCIM/configuration.php:1644
 msgid "Pre-Flight Check"
-msgstr "Lista de comprobación del sistema"
+msgstr "Lista de comprobación do sistema"
 
 #: openDCIM/configuration.php:1649
 msgid "Organization Name"
-msgstr "Nombre de la Organización"
+msgstr "Nome da Organización"
 
 #: openDCIM/configuration.php:1653
 msgid "Locale"
-msgstr "Configuración Regional"
+msgstr "Configuración Rexional"
 
 #: openDCIM/configuration.php:1657
 msgid "Default Panel Voltage"
-msgstr "Voltaje de los Cuadros por Defecto"
+msgstr "Voltaje dos Cadros por Defecto"
 
 #: openDCIM/configuration.php:1661
 #, fuzzy
 msgid "Site Specific Paths"
-msgstr "Especificaciones Eléctricas"
+msgstr "Especificacións Eléctricas"
 
 #: openDCIM/configuration.php:1667
 msgid "Relative path for Drawings"
@@ -1056,29 +1034,29 @@ msgstr ""
 
 #: openDCIM/configuration.php:1676
 msgid "Time and Measurements"
-msgstr "Tiempo y Medidas"
+msgstr "Tempo e Medidas"
 
 #: openDCIM/configuration.php:1679
 msgid "Time Zone"
-msgstr "Zona Horaria"
+msgstr "Zoa Horaria"
 
 #: openDCIM/configuration.php:1683 openDCIM/devices.php:1735
 #: openDCIM/rackrequest.php:417
 msgid "Manufacture Date"
-msgstr "Fecha de Fabricación"
+msgstr "Data de Fabricación"
 
 #: openDCIM/configuration.php:1685 openDCIM/configuration.php:1693
 msgid "Blank"
-msgstr "Vacío"
+msgstr "Valeiro"
 
 #: openDCIM/configuration.php:1686 openDCIM/configuration.php:1694
 #: openDCIM/report_surplus.php:37
 msgid "Now"
-msgstr "Ahora"
+msgstr "Agora"
 
 #: openDCIM/configuration.php:1691
 msgid "Warranty Date"
-msgstr "Fecha de la Garantía"
+msgstr "Data da Garantía"
 
 #: openDCIM/configuration.php:1699
 msgid "Measurement Units"
@@ -1094,7 +1072,7 @@ msgstr "Métrica"
 
 #: openDCIM/configuration.php:1707
 msgid "Page Size"
-msgstr "Tamaño de Página"
+msgstr "Tamaño de Páxina"
 
 #: openDCIM/configuration.php:1709
 msgid "A4"
@@ -1126,7 +1104,7 @@ msgstr "URL de Consulta de Usuarios"
 
 #: openDCIM/configuration.php:1728
 msgid "Block Undefined Users"
-msgstr "Bloquear Usuarios no Definidos"
+msgstr "Bloquear Usuarios non Definidos"
 
 #: openDCIM/configuration.php:1730 openDCIM/configuration.php:1802
 #: openDCIM/configuration.php:1813 openDCIM/configuration.php:1824
@@ -1150,7 +1128,7 @@ msgstr "Habilitado"
 
 #: openDCIM/configuration.php:1736
 msgid "Rack Usage"
-msgstr "Utilización del Rack"
+msgstr "Utilización do Rack"
 
 #: openDCIM/configuration.php:1739
 msgid "Space Critical"
@@ -1162,11 +1140,11 @@ msgstr "Temperatura Critica"
 
 #: openDCIM/configuration.php:1746
 msgid "Space Warning"
-msgstr "Ocupación Peligrosa"
+msgstr "Ocupación Perigosa"
 
 #: openDCIM/configuration.php:1749
 msgid "Temperature Warning"
-msgstr "Temperatura Peligrosa"
+msgstr "Temperatura Perigosa"
 
 #: openDCIM/configuration.php:1753
 msgid "Weight Critical"
@@ -1174,55 +1152,55 @@ msgstr "Peso Crítico"
 
 #: openDCIM/configuration.php:1756
 msgid "High Humidity Critical"
-msgstr "Humedad Alta Crítica"
+msgstr "Humidade Alta Crítica"
 
 #: openDCIM/configuration.php:1760
 msgid "Weight Warning"
-msgstr "Peso Peligroso"
+msgstr "Peso Perigoso"
 
 #: openDCIM/configuration.php:1763
 msgid "Low Humidity Critical"
-msgstr "Humedad Baja Crítica"
+msgstr "Humedad Baixa Crítica"
 
 #: openDCIM/configuration.php:1767
 msgid "Power Critical"
-msgstr "Consumo Energético Crítico"
+msgstr "Consumo Enerxético Crítico"
 
 #: openDCIM/configuration.php:1770
 msgid "High Humidity Caution"
-msgstr "Humedad Alta Peligrosa"
+msgstr "Humidade Alta Perigosa"
 
 #: openDCIM/configuration.php:1774
 msgid "Power Warning"
-msgstr "Consumo Energético Peligroso"
+msgstr "Consumo Enerxético Perigoso"
 
 #: openDCIM/configuration.php:1777
 msgid "Low Humidity Caution"
-msgstr "Humedad Baja Peligrosa"
+msgstr "Humidade Baixa Perigosa"
 
 #: openDCIM/configuration.php:1781
 msgid "RCI (Rack Cooling Index) High"
-msgstr "RCI (Rack Cooling Index - Índice de refrigeración del armario) Alto"
+msgstr "RCI (Rack Cooling Index - Índice de refrixeración do armario) Alto"
 
 #: openDCIM/configuration.php:1784
 msgid "RCI (Rack Cooling Index) Low"
-msgstr "RCI (Rack Cooling Index - Índice de refrigeración del armario) Bajo"
+msgstr "RCI (Rack Cooling Index - Índice de refrixeración do armario) Baixo"
 
 #: openDCIM/configuration.php:1788 openDCIM/index.php:135
 msgid "Virtual Machines"
-msgstr "Máquinas Virtuales"
+msgstr "Máquinas Virtuais"
 
 #: openDCIM/configuration.php:1791
 msgid "Expiration Time (Days)"
-msgstr "Tiempo de Caucidad (Días)"
+msgstr "Tempo de Caucidade (Días)"
 
 #: openDCIM/configuration.php:1800
 msgid "Work Order Builder"
-msgstr "Creador de Órdenes de Trabajo"
+msgstr "Creador de Ordes de Traballo"
 
 #: openDCIM/configuration.php:1808
 msgid "Site Level Security Options"
-msgstr "Opciones de Seguridad del Sitio"
+msgstr "Opcións de Seguridade do Sitio"
 
 #: openDCIM/configuration.php:1811
 msgid "Filter Cabinet List"
@@ -1230,12 +1208,12 @@ msgstr "Filtro de Listas de Armarios"
 
 #: openDCIM/configuration.php:1819 openDCIM/configuration.php:1822
 msgid "Rack Requests"
-msgstr "Solicitud de Rack"
+msgstr "Solicitude de Rack"
 
 #: openDCIM/configuration.php:1830
 #, fuzzy
 msgid "Rack Requests Actions"
-msgstr "Solicitud de Rack"
+msgstr "Solicitude de Rack"
 
 #: openDCIM/configuration.php:1838
 msgid "Mail Subject"
@@ -1243,7 +1221,7 @@ msgstr "Asunto de Correo"
 
 #: openDCIM/configuration.php:1842
 msgid "Warning (Hours)"
-msgstr "Peligroso (Horas)"
+msgstr "Perigoso (Horas)"
 
 #: openDCIM/configuration.php:1846
 msgid "Critical (Hours)"
@@ -1260,31 +1238,31 @@ msgstr ""
 
 #: openDCIM/configuration.php:1854
 msgid "API UserID"
-msgstr "UserID del API"
+msgstr "UserID do API"
 
 #: openDCIM/configuration.php:1858 openDCIM/usermgr.php:270
 msgid "API Key"
-msgstr "Clave del API"
+msgstr "Chave do API"
 
 #: openDCIM/configuration.php:1864
 msgid "Racks & Maps"
-msgstr "Racks y Planos"
+msgstr "Racks e Planos"
 
 #: openDCIM/configuration.php:1867
 msgid "Critical Color"
-msgstr "Color de Crítico"
+msgstr "Cor de Crítico"
 
 #: openDCIM/configuration.php:1873
 msgid "Caution Color"
-msgstr "Color de Atención"
+msgstr "Cor de Atención"
 
 #: openDCIM/configuration.php:1879
 msgid "Good Color"
-msgstr "Color de Correcto"
+msgstr "Cor de Correcto"
 
 #: openDCIM/configuration.php:1891
 msgid "Unused Spaces"
-msgstr "Espacios No Utilizados"
+msgstr "Espazos Non Utilizados"
 
 #: openDCIM/configuration.php:1897
 msgid "Default U1 Position"
@@ -1296,11 +1274,11 @@ msgstr "Dispositivos"
 
 #: openDCIM/configuration.php:1907
 msgid "Device Labels"
-msgstr "Nemónicos de los Dispositivos"
+msgstr "Nemónicos dos Dispositivos"
 
 #: openDCIM/configuration.php:1909
 msgid "Uppercase"
-msgstr "Mayúsculas"
+msgstr "Maiúsculas"
 
 #: openDCIM/configuration.php:1910
 msgid "Lowercase"
@@ -1308,23 +1286,23 @@ msgstr "Minúsculas"
 
 #: openDCIM/configuration.php:1911
 msgid "Initial caps"
-msgstr "Iniciales en mayúsculas"
+msgstr "Iniciais en maiúsculas"
 
 #: openDCIM/configuration.php:1912
 msgid "Don't touch my labels"
-msgstr "No modificar mis nemónicos"
+msgstr "Non modificar os meus nemónicos"
 
 #: openDCIM/configuration.php:1917
 msgid "Device Lists"
-msgstr "Lista de Dispositivos"
+msgstr "Listaxe de Dispositivos"
 
 #: openDCIM/configuration.php:1919
 msgid "Just Devices"
-msgstr "Sólo Dispositivos"
+msgstr "Só Dispositivos"
 
 #: openDCIM/configuration.php:1920
 msgid "Show Datacenter and Cabinet"
-msgstr "Mostrar CPDs y Armarios"
+msgstr "Mostrar CPDs e Armarios"
 
 #: openDCIM/configuration.php:1925 openDCIM/departments.php:231
 #: openDCIM/rowview.php:94
@@ -1333,11 +1311,11 @@ msgstr "Armarios"
 
 #: openDCIM/configuration.php:1928
 msgid "Draw Cabinet Outlines"
-msgstr "Trazar contornos del armario"
+msgstr ""
 
 #: openDCIM/configuration.php:1936
 msgid "Add Cabinet Labels"
-msgstr "Añadir etiquetas del armario"
+msgstr ""
 
 #: openDCIM/configuration.php:1944
 msgid "Site"
@@ -1345,19 +1323,19 @@ msgstr "Sitio"
 
 #: openDCIM/configuration.php:1947
 msgid "Header Color"
-msgstr "Color de la Cabecera"
+msgstr "Cor da Cabeceira"
 
 #: openDCIM/configuration.php:1953
 msgid "Body Color"
-msgstr "Color del Fondo"
+msgstr "Cor do Fondo"
 
 #: openDCIM/configuration.php:1959
 msgid "Link Color"
-msgstr "Color de los Enlaces"
+msgstr "Cor dos Enlaces"
 
 #: openDCIM/configuration.php:1965
 msgid "Viewed Link Color"
-msgstr "Color de un Enlace Visitado"
+msgstr "Cor dun Enlace Visitado"
 
 #: openDCIM/configuration.php:1975
 msgid "SMTP Server"
@@ -1365,7 +1343,7 @@ msgstr "Servidor SMTP"
 
 #: openDCIM/configuration.php:1979
 msgid "SMTP Port"
-msgstr "Puerto SMTP"
+msgstr "Porto SMTP"
 
 #: openDCIM/configuration.php:1983
 msgid "SMTP Helo"
@@ -1377,7 +1355,7 @@ msgstr "Usuario SMTP"
 
 #: openDCIM/configuration.php:1991
 msgid "SMTP Password"
-msgstr "Contraseña SMTP"
+msgstr "Contrasinal SMTP"
 
 #: openDCIM/configuration.php:1995
 msgid "Mail To"
@@ -1389,32 +1367,32 @@ msgstr "Correo De"
 
 #: openDCIM/configuration.php:2003
 msgid "Facility Manager"
-msgstr "Gestor de Equipamiento"
+msgstr "Xestor de Equipamento"
 
 #: openDCIM/configuration.php:2007
 msgid "Facility Manager Email"
-msgstr "Correo del Gestor de Equipamiento"
+msgstr "Correo do Xestor de Equipamiento"
 
 #: openDCIM/configuration.php:2018 openDCIM/report_cost.php:397
 #: openDCIM/report_cost.php:400
 msgid "Annual Cost Per Rack Unit (Year)"
-msgstr "Coste Anual Por Rack (Año)"
+msgstr "Coste Anual Por Rack (Ano)"
 
 #: openDCIM/configuration.php:2022
 msgid "Cost Per KwHr"
-msgstr "Coste por Kwh"
+msgstr "Custo por Kwh"
 
 #: openDCIM/configuration.php:2026
 msgid "Logo file for headers"
-msgstr "Fichero de Logo para Cabeceras"
+msgstr "Fichero de Logo para Cabeceiras"
 
 #: openDCIM/configuration.php:2030
 msgid "Font"
-msgstr "Fuente"
+msgstr "Fonte"
 
 #: openDCIM/configuration.php:2034
 msgid "New Installs Period"
-msgstr "Nuevo Periodo de Instalación"
+msgstr "Novo Periodo de Instalación"
 
 #: openDCIM/configuration.php:2038
 msgid "Base URL for install"
@@ -1422,15 +1400,15 @@ msgstr "URL base para instalar"
 
 #: openDCIM/configuration.php:2042
 msgid "SNMP Options"
-msgstr "Opciones SNMP"
+msgstr "Opcións SNMP"
 
 #: openDCIM/configuration.php:2045
 msgid "Default SNMP Community"
-msgstr "Comunidad SNMP por Defecto"
+msgstr "Comunidade SNMPpor Defecto"
 
 #: openDCIM/configuration.php:2059 openDCIM/devices.php:2002
 msgid "SNMPv3 Security Level"
-msgstr "Nivel de seguridad SNMPv3"
+msgstr "Nivel de seguridade SNMPv3"
 
 #: openDCIM/configuration.php:2069 openDCIM/devices.php:2015
 msgid "SNMPv3 AuthProtocol"
@@ -1438,7 +1416,7 @@ msgstr "AuthProtocol SNMPv3"
 
 #: openDCIM/configuration.php:2078 openDCIM/devices.php:2028
 msgid "SNMPv3 Passphrase"
-msgstr "Contraseña SNMPv3"
+msgstr "Contrasinal SNMPv3"
 
 #: openDCIM/configuration.php:2082 openDCIM/devices.php:2032
 msgid "SNMPv3 PrivProtocol"
@@ -1450,7 +1428,7 @@ msgstr "PrivPassphrase SNMPv3"
 
 #: openDCIM/configuration.php:2095
 msgid "Capacity Reporting"
-msgstr "Informes de Capacidad"
+msgstr "Informes de Capacidade"
 
 #: openDCIM/configuration.php:2098
 msgid "Switches"
@@ -1466,7 +1444,7 @@ msgstr "OptOut"
 
 #: openDCIM/configuration.php:2107
 msgid "Switch Capacity Threshold"
-msgstr "Umbral de Capacidad del Conmutador"
+msgstr "Umbral de Capacidade do Conmutador"
 
 #: openDCIM/configuration.php:2111
 msgid "Utilities"
@@ -1515,20 +1493,20 @@ msgstr "Tipo de Medio"
 
 #: openDCIM/configuration.php:2176
 msgid "Default Color"
-msgstr "Color por Defecto"
+msgstr "Cor por Defecto"
 
 #: openDCIM/configuration.php:2180 openDCIM/configuration.php:2194
 #: openDCIM/configuration.php:2239 openDCIM/configuration.php:2256
 msgid "Add new row"
-msgstr "Añadir nueva fila"
+msgstr "Añadir nova fila"
 
 #: openDCIM/configuration.php:2185
 msgid "Cable Colors"
-msgstr "Color del Cable"
+msgstr "Cor do Cable"
 
 #: openDCIM/configuration.php:2189 openDCIM/connections_spreadsheet.php:25
 msgid "Color"
-msgstr "Color"
+msgstr "Cor"
 
 #: openDCIM/configuration.php:2190
 msgid "Default Note"
@@ -1536,27 +1514,27 @@ msgstr "Nota por Defecto"
 
 #: openDCIM/configuration.php:2199
 msgid "Connection Filtering"
-msgstr "Filtrado de conexiones"
+msgstr ""
 
 #: openDCIM/configuration.php:2202
 msgid "Patch panel rear connection filtering"
-msgstr "Filtrado de conexiones traseras del panel de conexiones"
+msgstr ""
 
 #: openDCIM/configuration.php:2210
 msgid "Connection Pathing"
-msgstr "Encaminamiento de Conexiones"
+msgstr "Encamiñamento de Conexións"
 
 #: openDCIM/configuration.php:2213
 msgid "Cabinet Weight"
-msgstr "Peso del Armario"
+msgstr "Peso do Armario"
 
 #: openDCIM/configuration.php:2217
 msgid "Weight for rear connections between panels"
-msgstr "Peso de las conexiones traseras entre paneles"
+msgstr "Peso das conexións traseiras entre paneis"
 
 #: openDCIM/configuration.php:2221
 msgid "Weight for patches in the same row"
-msgstr "Peso de los parcheos en la misma fila"
+msgstr "Peso dos parcheos na mesma fila"
 
 #: openDCIM/configuration.php:2232
 msgid "Type"
@@ -1564,11 +1542,11 @@ msgstr "Tipo"
 
 #: openDCIM/configuration.php:2233
 msgid "Required"
-msgstr "Requerido"
+msgstr "Requirido"
 
 #: openDCIM/configuration.php:2234
 msgid "Apply to<br>All Devices"
-msgstr "Aplicar a<br>Todos los dispositivos"
+msgstr "Aplicar a<br>Todos os dispositivos"
 
 #: openDCIM/configuration.php:2235
 msgid "Default Value"
@@ -1577,35 +1555,35 @@ msgstr "Valor por defecto"
 #: openDCIM/configuration.php:2247
 #, fuzzy
 msgid "Device Status"
-msgstr "Lista de Dispositivos"
+msgstr "Listaxe de Dispositivos"
 
 #: openDCIM/configuration.php:2262 openDCIM/install.php:1681
 msgid "LDAP Authentication and Authorization Configuration"
-msgstr "Configuracion de Autentificacion y Autorizacion LDAP"
+msgstr ""
 
 #: openDCIM/configuration.php:2265 openDCIM/install.php:1684
 msgid "LDAP Server URI"
-msgstr "URI del Servidor LDAP"
+msgstr ""
 
 #: openDCIM/configuration.php:2269 openDCIM/install.php:1688
 msgid "Base DN"
-msgstr "Base DN"
+msgstr ""
 
 #: openDCIM/configuration.php:2273
 msgid "Base Search"
-msgstr "Busqueda Base"
+msgstr ""
 
 #: openDCIM/configuration.php:2277 openDCIM/install.php:1692
 msgid "Bind DN"
-msgstr "Enlace DN"
+msgstr ""
 
 #: openDCIM/configuration.php:2281
 msgid "User Search"
-msgstr "Busqueda de Usuario"
+msgstr ""
 
 #: openDCIM/configuration.php:2285 openDCIM/install.php:1696
 msgid "LDAP Session Expiration (Seconds)"
-msgstr "Expiración de la sesion LDAP (Segundos)"
+msgstr ""
 
 #: openDCIM/configuration.php:2289
 #, fuzzy
@@ -1614,11 +1592,11 @@ msgstr "Atributo personalizado de dispositivo"
 
 #: openDCIM/configuration.php:2292 openDCIM/usermgr.php:250
 msgid "First Name"
-msgstr "Nombre"
+msgstr "Nome"
 
 #: openDCIM/configuration.php:2296 openDCIM/usermgr.php:246
 msgid "Last Name"
-msgstr "Apellido"
+msgstr "Apelido"
 
 #: openDCIM/configuration.php:2304 openDCIM/report_contact.php:450
 #: openDCIM/report_cost.php:435 openDCIM/report_department.php:179
@@ -1640,52 +1618,52 @@ msgstr "Teléfono3"
 
 #: openDCIM/configuration.php:2316 openDCIM/install.php:1700
 msgid "Group Distinguished Names"
-msgstr "Nombres Distinguidos del Grupo"
+msgstr ""
 
 #: openDCIM/configuration.php:2319 openDCIM/install.php:1703
 msgid "Site Access"
-msgstr "Acceso al Sitio"
+msgstr ""
 
 #: openDCIM/configuration.php:2323 openDCIM/install.php:1707
 msgid "Global Read"
-msgstr "Lectura Global"
+msgstr ""
 
 #: openDCIM/configuration.php:2327 openDCIM/install.php:1711
 msgid "Global Write"
-msgstr "Escritura Global"
+msgstr ""
 
 #: openDCIM/configuration.php:2331 openDCIM/install.php:1715
 msgid "Global Delete"
-msgstr "Borrado Global"
+msgstr ""
 
 #: openDCIM/configuration.php:2335 openDCIM/install.php:1719
 msgid "Admin Owned Devices"
-msgstr "Dispositivos pertenecientes a Admin"
+msgstr ""
 
 #: openDCIM/configuration.php:2339 openDCIM/install.php:1723
 msgid "Enter Rack Request"
-msgstr "Introducir Solicitudes de Rack"
+msgstr ""
 
 #: openDCIM/configuration.php:2343 openDCIM/install.php:1727
 msgid "Complete Rack Request"
-msgstr "Completar Solicitud de Armario"
+msgstr ""
 
 #: openDCIM/configuration.php:2347 openDCIM/install.php:1731
 msgid "Contact Admin"
-msgstr "Contactar con Admin"
+msgstr ""
 
 #: openDCIM/configuration.php:2351
 msgid "Bulk Operations"
-msgstr "Operaciones Masivas"
+msgstr ""
 
 #: openDCIM/configuration.php:2355 openDCIM/install.php:1735
 msgid "Site Admin"
-msgstr "Administrados del Sitio"
+msgstr ""
 
 #: openDCIM/configuration.php:2362
 #, fuzzy
 msgid "SAML Authentication Configuration"
-msgstr "Configuracion de Autentificacion y Autorizacion LDAP"
+msgstr "Configuración SNMP"
 
 #: openDCIM/configuration.php:2365
 #, fuzzy
@@ -1697,9 +1675,8 @@ msgid "Debug"
 msgstr ""
 
 #: openDCIM/configuration.php:2381
-#, fuzzy
 msgid "Base URL"
-msgstr "Base DN"
+msgstr ""
 
 #: openDCIM/configuration.php:2385
 msgid "Show Success Page"
@@ -1733,7 +1710,7 @@ msgstr ""
 #: openDCIM/configuration.php:2416
 #, fuzzy
 msgid "SAML Identity Provider Configuration"
-msgstr "Configuración del CPD"
+msgstr "Configuración do CPD"
 
 #: openDCIM/configuration.php:2423
 msgid "SSO URL"
@@ -1779,7 +1756,7 @@ msgstr "Enchufe Nº"
 
 #: openDCIM/conflicts.php:575
 msgid "Power Supply"
-msgstr "Fuente de Alimentación"
+msgstr "Fonte de Alimentación"
 
 #: openDCIM/conflicts.php:608 openDCIM/devices.php:821 openDCIM/devices.php:835
 #: openDCIM/rackrequest.php:499
@@ -1788,28 +1765,28 @@ msgstr "Conmutador"
 
 #: openDCIM/conflicts.php:608
 msgid "Switch Port"
-msgstr "Puerto del Conmutador"
+msgstr "Porto do Conmutador"
 
 #: openDCIM/conflicts.php:608 openDCIM/devices.php:2328
 #: openDCIM/devices.php:2370 openDCIM/devices.php:2420
 msgid "Device Port"
-msgstr "Puerto del Dispositivo"
+msgstr "Porto do Dispositivo"
 
 #: openDCIM/connections_spreadsheet.php:15
 msgid "Device Port Connections"
-msgstr "Conexiones de los Puertos del Dispositivo"
+msgstr "Conexións dos Portos do Dispositivo"
 
 #: openDCIM/connections_spreadsheet.php:16
 msgid "Device Port Detail"
-msgstr "Detalles de los Puertos del Dispositivo"
+msgstr "Detalles dos Portos do Dispositivo"
 
 #: openDCIM/connections_spreadsheet.php:19
 msgid "SourceDevice"
-msgstr "DispositivoOrigen"
+msgstr "DispositivoOrixe"
 
 #: openDCIM/connections_spreadsheet.php:20
 msgid "SourcePort"
-msgstr "PuertoOrigen"
+msgstr "PortoOrixe"
 
 #: openDCIM/connections_spreadsheet.php:21
 msgid "TargetDevice"
@@ -1817,7 +1794,7 @@ msgstr "DispositivoDestino"
 
 #: openDCIM/connections_spreadsheet.php:22
 msgid "TargetPort"
-msgstr "PuertoDestino"
+msgstr "PortoDestino"
 
 #: openDCIM/connections_spreadsheet.php:24
 msgid "MediaType"
@@ -1826,11 +1803,11 @@ msgstr "TipoDeMedio"
 #: openDCIM/connections_spreadsheet.php:28 openDCIM/devices.php:2366
 #: openDCIM/devices.php:2420 openDCIM/pathmaker.php:199
 msgid "Connections"
-msgstr "Conexiones"
+msgstr "Conexións"
 
 #: openDCIM/connections_spreadsheet.php:46 openDCIM/report_tags.php:32
 msgid "Device Label"
-msgstr "Nemónico del Dispositivo"
+msgstr "Nemónico do Dispositivo"
 
 #: openDCIM/connections_spreadsheet.php:52 openDCIM/devices.php:1720
 #: openDCIM/rackrequest.php:413 openDCIM/report_asset.php:54
@@ -1847,7 +1824,7 @@ msgstr "Número de Serie"
 #: openDCIM/search_export.php:130 openDCIM/search_export_storage_room.php:55
 #: openDCIM/sidebar.inc.php:21 openDCIM/storageroom.php:77
 msgid "Asset Tag"
-msgstr "Etiqueta del Activo"
+msgstr "Etiqueta do Activo"
 
 #: openDCIM/connections_spreadsheet.php:56
 msgid "Target Cabinet"
@@ -1864,78 +1841,78 @@ msgstr "Listado de Contactos de Departamentos"
 
 #: openDCIM/container.php:5
 msgid "Container Detail"
-msgstr "Detalle del Contenedor"
+msgstr "Detalle do Colector"
 
 #: openDCIM/container.php:156
 msgid "Verify Delete Container"
-msgstr "Verificar Borrado del Conenedor"
+msgstr "Verificar Borrado do Colector"
 
 #: openDCIM/container.php:157
 msgid ""
 "This container will be deleted and there is no undo. Their direct "
 "descendants will be moved to \\'home\\'."
 msgstr ""
-"Este contenedor se borrará y no se podrá deshacer. Sus descendientes "
-"directos se moverán a  \\'Inicio\\'."
+"Este colector borrarase e non se poderá desfacer. Os seus descendentes "
+"directos moveranse a  \\'Inicio\\'."
 
 #: openDCIM/container.php:229 openDCIM/datacenter.php:277
 #: openDCIM/report_network_map.php:622
 msgid "Container"
-msgstr "Contenedor"
+msgstr "Colector"
 
 #: openDCIM/container.php:231
 msgid "New Container"
-msgstr "Nuevo Contenedor"
+msgstr "Novo Colector"
 
 #: openDCIM/container.php:245 openDCIM/datacenter.php:268
 msgid "Drawing URL"
-msgstr "URL del Plano"
+msgstr "URL do Plano"
 
 #: openDCIM/container.php:250
 msgid "Parent Container"
-msgstr "Contenedor Padre"
+msgstr "Colector Pai"
 
 #: openDCIM/container.php:252 openDCIM/datacenter.php:279
 #: openDCIM/classes/Cabinet.class.php:356
 #: openDCIM/classes/Cabinet.class.php:424
 msgid "None"
-msgstr "Ninguno"
+msgstr "Ningún"
 
 #: openDCIM/container.php:277
 msgid "Click on the image to select container coordinates"
-msgstr "Pulse en la imagen para selecionar las coordenadas del contenedor"
+msgstr "Pulse na imaxe para seleccionar as coordenadas do colector"
 
 #: openDCIM/container_stats.php:5 openDCIM/dc_dashboard.php:5
 #: openDCIM/dc_stats.php:5 openDCIM/report_asset_Excel.php:152
 msgid "Data Center Statistics"
-msgstr "Estadísticas del CPD"
+msgstr "Estatísticas do CPD"
 
 #: openDCIM/container_stats.php:43 openDCIM/datacenter.php:76
 #: openDCIM/dc_dashboard.php:46 openDCIM/dc_stats.php:146
 #: openDCIM/install.php:1511 openDCIM/zone_stats.php:154
 msgid "Square Feet"
-msgstr "Metros Cuadrados"
+msgstr "Metros Cadrados"
 
 #: openDCIM/container_stats.php:44 openDCIM/dc_dashboard.php:47
 #: openDCIM/dc_stats.php:148 openDCIM/zone_stats.php:156
 msgid "Watts per Square Foot"
-msgstr "Watios por Metro Cuadrado"
+msgstr "Watios por Metro Cadrado"
 
 #: openDCIM/container_stats.php:46 openDCIM/datacenter.php:78
 #: openDCIM/dc_dashboard.php:49 openDCIM/dc_stats.php:150
 #: openDCIM/install.php:1513 openDCIM/zone_stats.php:158
 msgid "Square Meters"
-msgstr "Metros Cuadrados"
+msgstr "Metros Cadrados"
 
 #: openDCIM/container_stats.php:47 openDCIM/dc_dashboard.php:50
 #: openDCIM/dc_stats.php:152 openDCIM/zone_stats.php:160
 msgid "Watts per Square Meter"
-msgstr "Watios por Metro Cuadrado"
+msgstr "Watios por Metro Cadrado"
 
 #: openDCIM/container_stats.php:57 openDCIM/dc_dashboard.php:95
 #: openDCIM/dc_stats.php:193 openDCIM/zone_stats.php:204
 msgid "Infrastructure"
-msgstr "Infraestructura"
+msgstr "Infraestrutura"
 
 #: openDCIM/container_stats.php:58 openDCIM/dc_dashboard.php:96
 #: openDCIM/dc_stats.php:194 openDCIM/zone_stats.php:205
@@ -1950,18 +1927,18 @@ msgstr "Situado"
 #: openDCIM/container_stats.php:60 openDCIM/dc_dashboard.php:98
 #: openDCIM/dc_stats.php:196 openDCIM/zone_stats.php:207
 msgid "Available"
-msgstr "Disponible"
+msgstr "Dispoñible"
 
 #: openDCIM/container_stats.php:63 openDCIM/dc_dashboard.php:101
 #: openDCIM/dc_stats.php:199 openDCIM/zone_stats.php:210
 msgid "Total U"
-msgstr "Us Totales"
+msgstr "Us Totais"
 
 #: openDCIM/container_stats.php:70 openDCIM/dc_dashboard.php:108
 #: openDCIM/dc_stats.php:206 openDCIM/report_audit_frequency.php:318
 #: openDCIM/report_audit.php:388 openDCIM/zone_stats.php:217
 msgid "Percentage"
-msgstr "Porcentaje"
+msgstr "Porcentaxe"
 
 #: openDCIM/container_stats.php:79
 msgid "Data Centers"
@@ -1994,7 +1971,7 @@ msgstr "Potenciá Máxima de Diseño (kW)"
 
 #: openDCIM/container_stats.php:95
 msgid "BTU Computation from Watts"
-msgstr "Cálculo de la BTU a partir de Watios"
+msgstr "Cálculo da BTU a partires de Watios"
 
 #: openDCIM/container_stats.php:96 openDCIM/dc_dashboard.php:130
 #: openDCIM/dc_stats.php:238 openDCIM/zone_stats.php:235
@@ -2004,11 +1981,11 @@ msgstr "BTU"
 #: openDCIM/container_stats.php:99 openDCIM/dc_dashboard.php:133
 #: openDCIM/dc_stats.php:241
 msgid "Data Center Size"
-msgstr "Tamaño del CPD"
+msgstr "Tamaño do CPD"
 
 #: openDCIM/container_stats.php:107
 msgid "Minimum Cooling Tonnage Required"
-msgstr "Toneladas de Refrigeración Mínimas Requeridas"
+msgstr "Toneladas de Refrixeración Mínimas Requiridas"
 
 #: openDCIM/container_stats.php:108 openDCIM/dc_dashboard.php:142
 #: openDCIM/dc_stats.php:254 openDCIM/zone_stats.php:251
@@ -2018,19 +1995,19 @@ msgstr "Toneladas"
 #: openDCIM/container_stats.php:111 openDCIM/dc_stats.php:249
 #: openDCIM/index.php:147 openDCIM/zone_stats.php:246
 msgid "Total Cabinets"
-msgstr "Total de Armarios"
+msgstr ""
 
 #: openDCIM/datacenter.php:5 openDCIM/power_panel.php:5
 msgid "Data Center Detail"
-msgstr "Detalle del Centro de Proceso de Datos"
+msgstr "Detalle do Centro de Proceso de Datos"
 
 #: openDCIM/datacenter.php:240
 msgid "Data Center ID"
-msgstr "ID del CPD"
+msgstr "ID do CPD"
 
 #: openDCIM/datacenter.php:242
 msgid "New Data Center"
-msgstr "Nuevo CPD"
+msgstr "Novo CPD"
 
 #: openDCIM/datacenter.php:260 openDCIM/dc_stats.php:215
 msgid "Delivery Address"
@@ -2042,24 +2019,23 @@ msgstr "Administrador"
 
 #: openDCIM/datacenter.php:301
 msgid "Click on the image to select DC coordinates"
-msgstr "Pulse en la imagen para indicar las coordenadas del CPD"
+msgstr "Pulse na imaxe para indicar as coordenadas do CPD"
 
 #: openDCIM/datacenter.php:332
 msgid "Data Center Deletion Confirmation"
-msgstr "Confirmación de Borrado del CPD"
+msgstr "Confirmación de Borrado do CPD"
 
 #: openDCIM/datacenter.php:333
 msgid ""
 "Are you sure that you want to delete this data center and all contents "
 "within it?"
-msgstr "¿Seguro que quiere borrar este CPD y todo su contenido?"
+msgstr "¿Seguro que quere borrar este CPD e todo o seu contido?"
 
 #: openDCIM/datacenter.php:334
 msgid ""
 "Move the contents of this datacenter's storage room to the general storage "
 "or delete them?"
-msgstr ""
-"¿Mover el contenido del almacén de este CPD al almacén general o eliminarlo?"
+msgstr "¿Mover o contido do almacén de este CPD ao almacén xeral ou eliminalo?"
 
 #: openDCIM/datacenter.php:334 openDCIM/rackrequest.php:378
 msgid "Move"
@@ -2077,17 +2053,18 @@ msgstr "Potencia"
 #: openDCIM/dc_dashboard.php:129 openDCIM/dc_stats.php:237
 #: openDCIM/zone_stats.php:234
 msgid "BTU Computation from Computed Watts"
-msgstr "Cálculo de la BTU a partir de Watios Calculados"
+msgstr "Cálculo da BTU a partires de Watios Calculados"
 
 #: openDCIM/dc_dashboard.php:141 openDCIM/dc_stats.php:253
 #: openDCIM/zone_stats.php:250
 msgid "Minimum Cooling Tonnage (Based on Computed Watts)"
 msgstr ""
-"Toneladas de Refrigeración Mínimas Requeridas (a partir de Watios Calculados)"
+"Toneladas de Refrixeración Mínimas Requiridas (a partires de Watios "
+"Calculados)"
 
 #: openDCIM/dc_stats.php:162
 msgid "openDCIM Data Center Information Management"
-msgstr "Gestión de Información del CPD openDCIM"
+msgstr "Xestión de Información do CPD openDCIM"
 
 #: openDCIM/dc_stats.php:190 openDCIM/device_templates.php:916
 msgid "Export"
@@ -2099,11 +2076,11 @@ msgstr "XML"
 
 #: openDCIM/dc_stats.php:190
 msgid "Click to show statistics"
-msgstr "Hacer clic para mostrar estadisticas"
+msgstr ""
 
 #: openDCIM/dc_stats.php:190
 msgid "Click to hide statistics"
-msgstr "Hacer clic para esconder estadisticas"
+msgstr ""
 
 #: openDCIM/dc_stats.php:257 openDCIM/zone_stats.php:254
 msgid "Average Temperature"
@@ -2115,7 +2092,7 @@ msgstr "º"
 
 #: openDCIM/dc_stats.php:261 openDCIM/zone_stats.php:258
 msgid "Average Humidity"
-msgstr "Numedad Media"
+msgstr "Humidade Media"
 
 #: openDCIM/dc_stats.php:262 openDCIM/dc_stats.php:268
 #: openDCIM/dc_stats.php:275 openDCIM/zone_stats.php:259
@@ -2125,11 +2102,11 @@ msgstr "%"
 
 #: openDCIM/dc_stats.php:265 openDCIM/zone_stats.php:262
 msgid "RCI Low Percentage (Overcooling)"
-msgstr "RCI Porcentaje bajo (sobreenfriamiento)"
+msgstr "RCI Porcentaxe baixa (sobrearrefriado)"
 
 #: openDCIM/dc_stats.php:272 openDCIM/zone_stats.php:269
 msgid "RCI High Percentage (Cabinets Satisfied)"
-msgstr "RCI Porcentaje alto (Armario satisfactorio)"
+msgstr "RCI Porcentaxe alta (Armario satisfactorio)"
 
 #: openDCIM/dc_stats.php:288 openDCIM/zone_stats.php:284
 #: openDCIM/scripts/ajax_tooltip.php:139
@@ -2148,12 +2125,12 @@ msgstr "Temperatura"
 #: openDCIM/dc_stats.php:291 openDCIM/zone_stats.php:287
 #: openDCIM/scripts/ajax_tooltip.php:180
 msgid "Humidity"
-msgstr "Humedad"
+msgstr "Humidade"
 
 #: openDCIM/dc_stats.php:292 openDCIM/zone_stats.php:288
 #: openDCIM/classes/DataCenter.class.php:522
 msgid "Air Flow"
-msgstr "Flujo de Aire"
+msgstr "Fuxo de Aire"
 
 #: openDCIM/dc_stats.php:304 openDCIM/zone_stats.php:299
 msgid "Set the air intake direction"
@@ -2163,59 +2140,59 @@ msgstr "Poner toma de aire"
 #: openDCIM/mapmaker.php:171 openDCIM/zone_stats.php:304
 #: openDCIM/zone_stats.php:312
 msgid "Right"
-msgstr "Derecha"
+msgstr "Dereita"
 
 #: openDCIM/dc_stats.php:311 openDCIM/dc_stats.php:319
 #: openDCIM/mapmaker.php:173 openDCIM/zone_stats.php:306
 #: openDCIM/zone_stats.php:314
 msgid "Left"
-msgstr "Izquierda"
+msgstr "Esquerda"
 
 #: openDCIM/dc_stats.php:322 openDCIM/zone_stats.php:317
 msgid "Alignment"
-msgstr "Alineacion"
+msgstr ""
 
 #: openDCIM/dc_stats.php:324 openDCIM/zone_stats.php:319
 msgid "Align Top"
-msgstr "Alineamiento arriba"
+msgstr ""
 
 #: openDCIM/dc_stats.php:325 openDCIM/zone_stats.php:320
 msgid "Align Left"
-msgstr "Alineamiento Izquierdo"
+msgstr ""
 
 #: openDCIM/dc_stats.php:326 openDCIM/zone_stats.php:321
 msgid "Align Bottom"
-msgstr "Alineamiento abajo"
+msgstr ""
 
 #: openDCIM/dc_stats.php:327 openDCIM/zone_stats.php:322
 msgid "Align Right"
-msgstr "Alineamiento Derecha"
+msgstr ""
 
 #: openDCIM/departments.php:5
 msgid "Data Center Department Detail"
-msgstr "Detalle de Departamentos del CPD"
+msgstr "Detalle de Departamentos do CPD"
 
 #: openDCIM/departments.php:174
 msgid "New Department"
-msgstr "Nuevo Departamento"
+msgstr "Novo Departamento"
 
 #: openDCIM/departments.php:184
 msgid "Department Name"
-msgstr "Nombre del Departamento"
+msgstr "Nome do Departamento"
 
 #: openDCIM/departments.php:188 openDCIM/report_contact.php:437
 #: openDCIM/report_cost.php:422 openDCIM/report_department.php:166
 #: openDCIM/report_exception.php:218 openDCIM/report_vm_by_department.php:210
 msgid "Executive Sponsor"
-msgstr "Jefe Ejecutivo"
+msgstr "Xefe Executivo"
 
 #: openDCIM/departments.php:192
 msgid "Account Manager"
-msgstr "Administrador de Cuentas"
+msgstr "Administrador de Contas"
 
 #: openDCIM/departments.php:196
 msgid "Department Color"
-msgstr "Color del Departamento"
+msgstr "Cor do Departamento"
 
 #: openDCIM/departments.php:200
 msgid "Classification"
@@ -2227,7 +2204,7 @@ msgstr "Asignar Contactos"
 
 #: openDCIM/departments.php:228
 msgid "Department delete confirmation"
-msgstr "Confirmación de eliminación del departamento"
+msgstr "Confirmación de eliminación do departamento"
 
 #: openDCIM/departments.php:229
 msgid "Are you sure that you want to delete this Department?"
@@ -2235,7 +2212,7 @@ msgstr "¿Está seguro de eliminiar este Departamento?"
 
 #: openDCIM/dept_groups.php:46
 msgid "openDCIM Department Contact Maintenance"
-msgstr "Mantenimiento de Contactos de Departamentos de openDCIM"
+msgstr "Mantemento de Contactos de Departamentos de openDCIM"
 
 #: openDCIM/dept_groups.php:66
 msgid "Group to Administer"
@@ -2250,15 +2227,15 @@ msgstr "Enviar"
 
 #: openDCIM/device_manufacturers.php:5
 msgid "Data Center Manufacturer Listing"
-msgstr "Listado de Fabricantes del CPD"
+msgstr "Listado de Fabricantes do CPD"
 
 #: openDCIM/device_manufacturers.php:55
 msgid "Error adding new manufacturer"
-msgstr "Error al añadir un nuevo fabricante"
+msgstr "Erro ao añadir un novo fabricante"
 
 #: openDCIM/device_manufacturers.php:179
 msgid "New Manufacturer"
-msgstr "Nuevo Fabricante"
+msgstr "Novo Fabricante"
 
 #: openDCIM/device_manufacturers.php:189
 msgid "Global ID"
@@ -2266,7 +2243,7 @@ msgstr "ID Global"
 
 #: openDCIM/device_manufacturers.php:197
 msgid "Subscribe to Repository"
-msgstr "Suscribirse al Repositorio"
+msgstr "Suscribirse ao Repositorio"
 
 #: openDCIM/device_manufacturers.php:213
 msgid "Templates using this Manufacturer"
@@ -2278,30 +2255,30 @@ msgstr "Confirmación de eliminación de Fabricante"
 
 #: openDCIM/device_manufacturers.php:222
 msgid "Are you sure that you want to delete this Manufacturer?"
-msgstr "¿Está seguro de que quiere eliminar este Fabricante?"
+msgstr "¿Está seguro de que quere eliminar este Fabricante?"
 
 #: openDCIM/devices.php:5
 msgid "Data Center Device Detail"
-msgstr "Detalle de Dispositivos del CPD"
+msgstr "Detalle de Dispositivos do CPD"
 
 #: openDCIM/devices.php:52
 msgid "Something isn't working correctly"
-msgstr "Algo no está funcionando corréctamente"
+msgstr "Algo non está a funcionar correctamente"
 
 #: openDCIM/devices.php:95 openDCIM/devices.php:99 openDCIM/devices.php:152
 #: openDCIM/devices.php:155 openDCIM/report_exception.php:165
 #: openDCIM/report_exception.php:235
 msgid "From Template"
-msgstr "Desde la Plantilla"
+msgstr "Dende a Plantilla"
 
 #: openDCIM/devices.php:95 openDCIM/devices.php:99 openDCIM/devices.php:152
 #: openDCIM/device_templates.php:515
 msgid "Invert Port Labels"
-msgstr "Invertir etiquetas de puertos"
+msgstr "Inverter etiquetas de portos"
 
 #: openDCIM/devices.php:235
 msgid "ERROR: No ports found"
-msgstr "ERROR: Puertos no encontrados"
+msgstr "ERRO: Portos non atopados"
 
 #: openDCIM/devices.php:380 openDCIM/devices.php:2190 openDCIM/devices.php:2453
 #: openDCIM/device_templates.php:939 openDCIM/misc.inc.php:1097
@@ -2314,19 +2291,19 @@ msgstr "ERROR: Puertos no encontrados"
 #: openDCIM/classes/DeviceTemplate.class.php:576
 #: openDCIM/classes/DeviceTemplate.class.php:580
 msgid "Rear"
-msgstr "Trasera"
+msgstr "Traseira"
 
 #: openDCIM/devices.php:556
 msgid ""
 "This device is a copy of an existing device.  Remember to set the new "
 "location before saving."
 msgstr ""
-"Este dispositivo es una copia de uno existente. Recuerde poner una nueva "
-"posición antes de guardar."
+"Este dispositivo é unha copia doutro existente. Recorde poñer unha nova "
+"posición antes de gardar."
 
 #: openDCIM/devices.php:704
 msgid "Device did not copy.  Error."
-msgstr "No se copió el dispositivo. Error."
+msgstr "Non se copió o dispositivo. Erro."
 
 #: openDCIM/devices.php:818 openDCIM/devices.php:832
 #: openDCIM/rackrequest.php:496
@@ -2341,7 +2318,7 @@ msgstr "Appliance"
 #: openDCIM/devices.php:820 openDCIM/devices.php:834
 #: openDCIM/rackrequest.php:498
 msgid "Storage Array"
-msgstr "Cabina de Almacenamiento"
+msgstr "Cabina de Almacenamento"
 
 #: openDCIM/devices.php:822 openDCIM/devices.php:836
 #: openDCIM/rackrequest.php:500
@@ -2360,7 +2337,7 @@ msgstr "Sensor"
 #: openDCIM/devices.php:838 openDCIM/devices.php:1842
 #: openDCIM/rackrequest.php:502
 msgid "Physical Infrastructure"
-msgstr "Infraestructura Física"
+msgstr "Infraestrutura Física"
 
 #: openDCIM/devices.php:839
 msgid "CDU"
@@ -2368,12 +2345,12 @@ msgstr "CDU"
 
 #: openDCIM/devices.php:871
 msgid "openDCIM Device Maintenance"
-msgstr "Mantenimiento de dispositvos de opnDCIM"
+msgstr "Mantemento de dispositvos de opnDCIM"
 
 #: openDCIM/devices.php:878 openDCIM/vmnamecheck.php:77
 #: openDCIM/vmnamecheck.php:117
 msgid "VM Name"
-msgstr "Nombre VM"
+msgstr "Nome VM"
 
 #: openDCIM/devices.php:878 openDCIM/devices.php:1704 openDCIM/devices.php:2372
 #: openDCIM/disposition.php:102
@@ -2403,11 +2380,11 @@ msgstr "Última Actualización"
 #: openDCIM/report_exception.php:158 openDCIM/vmnamecheck.php:87
 #: openDCIM/vmnamecheck.php:127
 msgid "Unknown"
-msgstr "Desconocido"
+msgstr "Descoñecido"
 
 #: openDCIM/devices.php:964
 msgid "Open"
-msgstr "Abrir"
+msgstr ""
 
 #: openDCIM/devices.php:1053
 msgid "Landscape"
@@ -2419,31 +2396,32 @@ msgstr "Retrato"
 
 #: openDCIM/devices.php:1108
 msgid "Network & Power"
-msgstr "Red y Energía"
+msgstr "Rede e Enerxía"
 
 #: openDCIM/devices.php:1441
 msgid "Verify Delete Device"
-msgstr "Verificar Borrado del Dispositivo"
+msgstr "Verificar Borrado do Dispositivo"
 
 #: openDCIM/devices.php:1450
 msgid ""
 "If this device has blades installed they will be deleted and there is no "
 "undo. Are you sure?"
 msgstr ""
-"Si este chasis tiene dispositivos instalados, estos serán eliminados y no se "
-"podrá deshacer. ¿Está seguro?"
+"Se este chasis ten dispositivos instalados, estes serán eliminados e non se "
+"poderá desfacer. ¿Está seguro?"
 
 #: openDCIM/devices.php:1604
 msgid "This device will be deleted and there is no undo. Are you sure?"
-msgstr "Este dispositivo será eliminado y no se podrá deshacer. ¿Está seguro?"
+msgstr ""
+"Este dispositivo será eliminado e non se poderá desfacer. ¿Está seguro?"
 
 #: openDCIM/devices.php:1697
 msgid "Asset Tracking"
-msgstr "Seguimiento de Activos"
+msgstr "Seguimento de Activos"
 
 #: openDCIM/devices.php:1700
 msgid "Device ID"
-msgstr "ID del Dispositivo"
+msgstr "ID do Dispositivo"
 
 #: openDCIM/devices.php:1722 openDCIM/devices.php:1727
 msgid "Scan Barcode"
@@ -2452,16 +2430,16 @@ msgstr "Escanear Código de Barras"
 #: openDCIM/devices.php:1730 openDCIM/search_export.php:131
 #: openDCIM/search_export_storage_room.php:56
 msgid "Primary IP / Host Name"
-msgstr "IP Principal / Nombre"
+msgstr "IP Principal / Nome"
 
 #: openDCIM/devices.php:1744
 msgid "Warranty Company"
-msgstr "Empresa que da la Garantía"
+msgstr "Empresa que da a Garantía"
 
 #: openDCIM/devices.php:1748 openDCIM/search_export.php:137
 #: openDCIM/search_export_storage_room.php:62
 msgid "Warranty Expiration"
-msgstr "Caducidad de la Garantía"
+msgstr "Caducidade da Garantía"
 
 #: openDCIM/devices.php:1752
 msgid "Last Audit Completed"
@@ -2469,7 +2447,7 @@ msgstr "Última Auditoría Completada"
 
 #: openDCIM/devices.php:1753
 msgid "Audit not yet completed"
-msgstr "Auditoría sin completar"
+msgstr "Auditoría sen completar"
 
 #: openDCIM/devices.php:1756 openDCIM/rackrequest.php:435
 msgid "Departmental Owner"
@@ -2479,7 +2457,7 @@ msgstr "Departamento Propietario"
 #: openDCIM/rackrequest.php:438 openDCIM/search_export.php:52
 #: openDCIM/search_export.php:165 openDCIM/scripts/ajax_tooltip.php:299
 msgid "Unassigned"
-msgstr "No Asignado"
+msgstr "Non Asignado"
 
 #: openDCIM/devices.php:1767
 msgid "Show Contacts"
@@ -2491,7 +2469,7 @@ msgstr "Información de Escalado"
 
 #: openDCIM/devices.php:1776
 msgid "Time Period"
-msgstr "Periodo de Tiempo"
+msgstr "Periodo de Tempo"
 
 #: openDCIM/devices.php:1778 openDCIM/devices.php:1790
 #: openDCIM/devices.php:1939
@@ -2512,7 +2490,7 @@ msgstr "Atributo personalizado de dispositivo"
 
 #: openDCIM/devices.php:1853
 msgid "Parent Device"
-msgstr "Dispositivo Padre"
+msgstr "Dispositivo Pai"
 
 #: openDCIM/devices.php:1865 openDCIM/rackrequest.php:451
 msgid "Device Class"
@@ -2520,7 +2498,7 @@ msgstr "Clase de Dispositivo"
 
 #: openDCIM/devices.php:1867
 msgid "Select a template..."
-msgstr "Selecionar una plantilla..."
+msgstr "Selecionar unha plantilla..."
 
 #: openDCIM/devices.php:1883 openDCIM/devices.php:2204
 #: openDCIM/device_templates.php:759 openDCIM/rackrequest.php:471
@@ -2538,11 +2516,11 @@ msgstr "Medio Fondo"
 
 #: openDCIM/devices.php:1900
 msgid "Back Side"
-msgstr "Parte Trasera"
+msgstr "Parte Traseira"
 
 #: openDCIM/devices.php:1904
 msgid "Number of Data Ports"
-msgstr "Número de Puertos de Datos"
+msgstr "Número de Portos de Datos"
 
 #: openDCIM/devices.php:1908
 msgid "Nominal Draw (Watts)"
@@ -2550,15 +2528,15 @@ msgstr "Potencia Nominal (Watios)"
 
 #: openDCIM/devices.php:1919 openDCIM/devices.php:2321
 msgid "Power Connections"
-msgstr "Conexiones Eléctricas"
+msgstr "Conexións Eléctricas"
 
 #: openDCIM/devices.php:1927
 msgid "Chassis Total Draw"
-msgstr "Potencia Total del Chasis"
+msgstr "Potencia Total do Chasis"
 
 #: openDCIM/devices.php:1931
 msgid "Chassis Total Weight"
-msgstr "Peso Total del Chasis"
+msgstr "Refrescar Notas dos Portos"
 
 #: openDCIM/devices.php:1937 openDCIM/devices.php:2206
 #: openDCIM/device_templates.php:771 openDCIM/rackrequest.php:492
@@ -2569,27 +2547,27 @@ msgstr "Tipo de Dispositivo"
 
 #: openDCIM/devices.php:1951
 msgid "Device Images"
-msgstr "Imágenes del dispositivo"
+msgstr "Imaxes do dispositivo"
 
 #: openDCIM/devices.php:1961
 msgid "ProxMox Configuration"
-msgstr "Configuración ProxMox"
+msgstr ""
 
 #: openDCIM/devices.php:1964
 msgid "API Username"
-msgstr "Nombre de usuario API"
+msgstr ""
 
 #: openDCIM/devices.php:1968
 msgid "API Password"
-msgstr "Contraseña API"
+msgstr ""
 
 #: openDCIM/devices.php:1972
 msgid "API Port"
-msgstr "Puerto API"
+msgstr ""
 
 #: openDCIM/devices.php:1976
 msgid "ProxMox Realm"
-msgstr "Reino ProxMox"
+msgstr ""
 
 #: openDCIM/devices.php:1982
 msgid "SNMP Configuration"
@@ -2602,7 +2580,7 @@ msgstr "Configuración por defecto"
 
 #: openDCIM/devices.php:1998
 msgid "SNMP Read Only Community"
-msgstr "Comunidad SNMP de Sólo Lectura"
+msgstr "Comunidade SNMP de Sólo Lectura"
 
 #: openDCIM/devices.php:1999
 msgid "Test SNMP"
@@ -2614,35 +2592,35 @@ msgstr "Fallos SNMP Consecutivos"
 
 #: openDCIM/devices.php:2053
 msgid "Polling is disabled after three consecutive failures."
-msgstr "El sondeo se deshabilita después de tres fallos consecutivos."
+msgstr "A sondaxe deshabilítase despois de tres fallos consecutivos."
 
 #: openDCIM/devices.php:2056
 msgid "Power Specifications"
-msgstr "Especificaciones Eléctricas"
+msgstr "Especificacións Eléctricas"
 
 #: openDCIM/devices.php:2059
 msgid "Source Panel"
-msgstr "Cuadro Eléctrico"
+msgstr "Cadro Eléctrico"
 
 #: openDCIM/devices.php:2062 openDCIM/devices.php:2154
 msgid "Select Panel"
-msgstr "Selecionar Cuadro"
+msgstr "Selecionar Cadro"
 
 #: openDCIM/devices.php:2076
 msgid "Voltages:"
-msgstr "Voltajes:"
+msgstr "Voltaxes:"
 
 #: openDCIM/devices.php:2090
 msgid "Breaker Size (# of Poles)"
-msgstr "Tamaño del Interruptor (Nº de Polos)"
+msgstr "Tamaño do Interruptor (Nº de Polos)"
 
 #: openDCIM/devices.php:2104
 msgid "Panel Pole Number"
-msgstr "Numero de Toma del Cuadro"
+msgstr "Numero de Toma do Cadro"
 
 #: openDCIM/devices.php:2111
 msgid "All Breaker Poles"
-msgstr "Polos en el Cuadro"
+msgstr "Polos no Cadro"
 
 #: openDCIM/devices.php:2117
 msgid "Input Amperage"
@@ -2650,7 +2628,7 @@ msgstr "Amperaje de Entrada"
 
 #: openDCIM/devices.php:2125
 msgid "Uptime"
-msgstr "Tiempo de Funcionamiento"
+msgstr "Tempo de Funcionamento"
 
 #: openDCIM/devices.php:2129
 msgid "Firmware Version"
@@ -2674,11 +2652,11 @@ msgstr "¿Conmutador Contra Fallos?"
 
 #: openDCIM/devices.php:2151
 msgid "Source Panel (Secondary Source)"
-msgstr "Cuadro Eléctrico (Fuente Secuntaria)"
+msgstr "Cadro Eléctrico (Fonte Secuntaria)"
 
 #: openDCIM/devices.php:2166
 msgid "Panel Pole Number (Secondary Source)"
-msgstr "Numero de Toma del Cuadro (Secundario)"
+msgstr "Numero de Toma do Cadro (Secundario)"
 
 #: openDCIM/devices.php:2175
 msgid "Switch SNMP"
@@ -2690,13 +2668,13 @@ msgid ""
 "the ports again, or attempt to load the Port Name Labels from the switch "
 "device."
 msgstr ""
-"Utilice estos botones para especificar el primer puerto del switch, "
-"comprobar de nuevo el estado del puerto, o intentar cargar el nombre del "
-"puerto desde el dispositivo."
+"Utilice estes botón para especificar o primeiro porto do switch, comprobar "
+"de novo o estado do porto, ou intentar cargar o nome do porto dende o "
+"dispositivo."
 
 #: openDCIM/devices.php:2176
 msgid "Set First Port"
-msgstr "Poner Primer Puerto"
+msgstr "Poñer Primeiro Porto"
 
 #: openDCIM/devices.php:2176
 msgid "Refresh Status"
@@ -2704,15 +2682,15 @@ msgstr "Refrescar Estado"
 
 #: openDCIM/devices.php:2176
 msgid "Refresh Port Names"
-msgstr "Refrescar Nombres de Puertos"
+msgstr "Refrescar Nomes de Portos"
 
 #: openDCIM/devices.php:2176
 msgid "Refresh Port Notes"
-msgstr "Refrescar Notas de Puertos"
+msgstr "Refrescar Notas dos Puertos"
 
 #: openDCIM/devices.php:2185
 msgid "Chassis Contents"
-msgstr "Contenido del Chasis"
+msgstr "Contenido do Chasis"
 
 #: openDCIM/devices.php:2189 openDCIM/devices.php:2420
 #: openDCIM/device_templates.php:934
@@ -2723,7 +2701,7 @@ msgstr "Frontal"
 
 #: openDCIM/devices.php:2193
 msgid "Number of Slots in Chassis:"
-msgstr "Número de Ranuras en el Chasis"
+msgstr "Número de Ranuras no Chasis"
 
 #: openDCIM/devices.php:2203
 msgid "Slot #"
@@ -2736,7 +2714,7 @@ msgstr "Ranuna Nº"
 #: openDCIM/report_power_distribution.php:202
 #: openDCIM/report_power_utilization.php:167
 msgid "Device Name"
-msgstr "Nombre del Dispositivo"
+msgstr "Nome do Dispositivo"
 
 #: openDCIM/devices.php:2223
 msgid ""
@@ -2747,27 +2725,27 @@ msgstr ""
 
 #: openDCIM/devices.php:2234
 msgid "Hypervisor Server Information"
-msgstr "Información del Servidor Hypervisor"
+msgstr ""
 
 #: openDCIM/devices.php:2240
 msgid "Hypervisor"
-msgstr "Hipervisor"
+msgstr ""
 
 #: openDCIM/devices.php:2266
 msgid "Limit device type selection to"
-msgstr "Limitar la selección del tipo de dispositivo a"
+msgstr ""
 
 #: openDCIM/devices.php:2280
 msgid "Limit device selection to"
-msgstr "Limitar la selección de dispositivo a"
+msgstr "Limitar a selección de dispositivo a"
 
 #: openDCIM/devices.php:2295
 msgid "Operational Log"
-msgstr "Log de Operaciones"
+msgstr "Log de Operacións"
 
 #: openDCIM/devices.php:2326 openDCIM/devices.php:2368
 msgid "Port Name"
-msgstr "Nombre de Puerto"
+msgstr "Nome do Porto"
 
 #: openDCIM/devices.php:2327 openDCIM/devices.php:2369
 #: openDCIM/pathmaker.php:464 openDCIM/report_cabinets.php:187
@@ -2782,15 +2760,15 @@ msgstr "Panel"
 
 #: openDCIM/devices.php:2374
 msgid "Color Code"
-msgstr "Código de Color"
+msgstr "Código de Cor"
 
 #: openDCIM/devices.php:2420
 msgid "Patch Port"
-msgstr "Puerto de Parcheo"
+msgstr "Porto de Parcheo"
 
 #: openDCIM/devices.php:2420
 msgid "Back"
-msgstr "Trasera"
+msgstr "Traseira"
 
 #: openDCIM/devices.php:2478 openDCIM/classes/Device.class.php:481
 msgid "Copy"
@@ -2798,79 +2776,78 @@ msgstr "Copiar"
 
 #: openDCIM/devices.php:2489 openDCIM/workorder.php:229
 msgid "Export Connections"
-msgstr "Exportar Conexiones"
+msgstr "Exportar Conexións"
 
 #: openDCIM/devices.php:2501
 msgid "Return to Parent Device"
-msgstr "Volver al Dispositivo Padre"
+msgstr "Voltar ao Dispositivo Pai"
 
 #: openDCIM/devices.php:2507
 msgid "Return to Storage Room"
-msgstr "Volver al Almacén"
+msgstr "Volver ao Almacén"
 
 #: openDCIM/devices.php:2509
 msgid "Return to General Storage Room"
-msgstr "Volver ao Almacén Xeral"
+msgstr "Volver al Almacén General"
 
 #: openDCIM/devices.php:2514
 msgid "Do you certify that you have completed an audit of this device?"
-msgstr ""
-"¿Quiere certificar que se ha completado una auditoría de este dispositivo?"
+msgstr "¿Quere certificar que se compretou unha auditoría de este dispositivo?"
 
 #: openDCIM/device_templates.php:5
 msgid "Data Center Device Templates"
-msgstr "Plantillas de Dispositivos del CPD"
+msgstr "Plantillas de Dispositivos do CPD"
 
 #: openDCIM/device_templates.php:77
 msgid "Template File Imported"
-msgstr "Ficheiro de Plantilla Importado"
+msgstr "Fichero de Plantilla Importado"
 
 #: openDCIM/device_templates.php:77
 msgid "View errors"
-msgstr "Ver Errores"
+msgstr "Ver Erros"
 
 #: openDCIM/device_templates.php:118
 msgid "Error updating front slots"
-msgstr "Erro actualizando ranuras frontais"
+msgstr "Error actualizando ranuras frontales"
 
 #: openDCIM/device_templates.php:129
 msgid "Error updating rear slots"
-msgstr "Erro actualizando ranuras traseiras"
+msgstr "Error actualizando ranuras traseras"
 
 #: openDCIM/device_templates.php:141
 msgid "Error updating template ports"
-msgstr "Erro actualizando os portos da plantilla"
+msgstr "Error actualizando los puertos de la plantilla"
 
 #: openDCIM/device_templates.php:151
 msgid "Error updating template power connections"
-msgstr "Error actualizando las conexiones de la plantilla de potencia"
+msgstr "Erro actualizando as conexións da plantilla de potencia"
 
 #: openDCIM/device_templates.php:173 openDCIM/device_templates.php:188
 msgid "Error updating device template custom values"
 msgstr ""
-"Error actualizando los valores personalizados de la plantilla de dispositivo"
+"Error actualizando os valores personalizados da plantilla de dispositivo"
 
 #: openDCIM/device_templates.php:206 openDCIM/device_templates.php:228
 msgid "Error updating cdu attributes"
-msgstr "Error actualizando los atributos de la CDU"
+msgstr "Erro actualizando os atributos da CDU"
 
 #: openDCIM/device_templates.php:246
 msgid "An error has occured, template not created"
-msgstr "Ha ocurrido un error, la plantilla no se ha creado"
+msgstr "Ocorreu un erro, a plantilla non se creou"
 
 #: openDCIM/device_templates.php:250 openDCIM/device_templates.php:266
 msgid "Error updating template"
-msgstr "Error actualizando plantilla"
+msgstr "Erro actualizando plantilla"
 
 #: openDCIM/device_templates.php:278
 msgid "Error updating devices"
-msgstr "Error actualizando dispositivos"
+msgstr "Erro actualizando dispositivos"
 
 #: openDCIM/device_templates.php:283 openDCIM/device_templates.php:295
 #: openDCIM/paths.php:173 openDCIM/scripts/ajax_tooltip.php:23
 #: openDCIM/classes/Device.class.php:2413
 msgid "Error"
-msgstr "Error"
+msgstr "Erro"
 
 #: openDCIM/device_templates.php:295
 msgid "Exported"
@@ -2886,39 +2863,39 @@ msgstr "Importar"
 
 #: openDCIM/device_templates.php:476
 msgid "Close"
-msgstr "Cerrar"
+msgstr "Pechar"
 
 #: openDCIM/device_templates.php:514
 msgid "Custom"
-msgstr "Personalizado"
+msgstr ""
 
 #: openDCIM/device_templates.php:760
 msgid "0 for a vertical mounting"
-msgstr "0 para montaje vertical"
+msgstr "0 para montaxe vertical"
 
 #: openDCIM/device_templates.php:783
 msgid "No. Power Connections"
-msgstr "Núm. Conexiones Eléctricas"
+msgstr "Núm. Conexións Eléctricas"
 
 #: openDCIM/device_templates.php:784 openDCIM/device_templates.php:788
 msgid "Edit Ports"
-msgstr "Editar Puertos"
+msgstr "Editar Portos"
 
 #: openDCIM/device_templates.php:787
 msgid "No. Ports"
-msgstr "Nº de Puertos"
+msgstr "Nº de Portos"
 
 #: openDCIM/device_templates.php:809
 msgid "Front Picture File"
-msgstr "Ficheiro de Carátula Frontal"
+msgstr "Fichero de Carátula Frontal"
 
 #: openDCIM/device_templates.php:813
 msgid "Rear Picture File"
-msgstr "Ficheiro de Carátula Traseira"
+msgstr "Fichero de Carátula Trasera"
 
 #: openDCIM/device_templates.php:817
 msgid "Chassis Slots"
-msgstr "Ranuras del Chasis"
+msgstr "Ranuras do Chasis"
 
 #: openDCIM/device_templates.php:818 openDCIM/device_templates.php:822
 msgid "Edit Coordinates"
@@ -2926,7 +2903,7 @@ msgstr "Editar Coordenadas"
 
 #: openDCIM/device_templates.php:821
 msgid "Rear Chassis Slots"
-msgstr "Ranuras Traseras del Chasis"
+msgstr "Ranuras Traseiras do Chasis"
 
 #: openDCIM/device_templates.php:854
 msgid "Default:"
@@ -2934,11 +2911,11 @@ msgstr "Por defecto:"
 
 #: openDCIM/device_templates.php:868
 msgid "Revert to default value from configuration page"
-msgstr "Revertir al valor por defecto de la página de configuración"
+msgstr "Reverter ao valor por defecto da páxina de configuración"
 
 #: openDCIM/device_templates.php:868
 msgid "Revert"
-msgstr "Revertir"
+msgstr "Reverter"
 
 #: openDCIM/device_templates.php:878
 msgid "Enabled?"
@@ -2946,7 +2923,7 @@ msgstr "Habilitado?"
 
 #: openDCIM/device_templates.php:879
 msgid "Required?"
-msgstr "Requerido?"
+msgstr "Requirido?"
 
 #: openDCIM/device_templates.php:905
 msgid "Number of Devices Using This Template:"
@@ -2982,19 +2959,19 @@ msgstr "OID para Fase3"
 
 #: openDCIM/device_templates.php:1049
 msgid "Temperature OID"
-msgstr "OID de la Temperatura"
+msgstr "OID da Temperatura"
 
 #: openDCIM/device_templates.php:1053
 msgid "Humidity OID"
-msgstr "OID de la Humedad"
+msgstr "OID da Humidade"
 
 #: openDCIM/device_templates.php:1057
 msgid "Temperature Multiplier"
-msgstr "Multiplicador de la Temperatura"
+msgstr "Multiplicador da Temperatura"
 
 #: openDCIM/device_templates.php:1068
 msgid "Humidity Multiplier"
-msgstr "Multiplicador de la Humedad"
+msgstr "Multiplicador da Humidade"
 
 #: openDCIM/device_templates.php:1079
 msgid "Temperature Units"
@@ -3002,11 +2979,11 @@ msgstr "Unidades de Temperatura"
 
 #: openDCIM/device_templates.php:1105
 msgid "Image file selector"
-msgstr "Selector de ficheiro de imaxe"
+msgstr "Selector de fichero de imagen"
 
 #: openDCIM/device_templates.php:1114
 msgid "Import Template From File"
-msgstr "Importar Plantilla Dende Ficheiro"
+msgstr "Importar Plantilla Desde Fichero"
 
 #: openDCIM/device_templates.php:1122
 msgid "Import log"
@@ -3015,7 +2992,7 @@ msgstr "Log de importación"
 #: openDCIM/disposition.php:5
 #, fuzzy
 msgid "Disposal Method Management"
-msgstr "Gestión de Plantillas"
+msgstr "Xestión de Plantillas"
 
 #: openDCIM/disposition.php:25
 #, fuzzy
@@ -3038,7 +3015,7 @@ msgstr ""
 #: openDCIM/disposition.php:94 openDCIM/report_surplus.php:136
 #: openDCIM/timeperiods.php:80 openDCIM/zone.php:134
 msgid "Description"
-msgstr "Descripción"
+msgstr "Descrición"
 
 #: openDCIM/disposition.php:98
 msgid "Reference Number (Contract)"
@@ -3050,27 +3027,27 @@ msgstr ""
 
 #: openDCIM/escalations.php:5
 msgid "Data Center Escalation Rules"
-msgstr "Reglas de Escalado del CPD"
+msgstr "Regras de Escalado do CPD"
 
 #: openDCIM/escalations.php:68
 msgid "Escalation Rule"
-msgstr "Regla de Escalado"
+msgstr "Regra de Escalado"
 
 #: openDCIM/escalations.php:70
 msgid "New Escalation Rule"
-msgstr "Nueva Regla de Escalado"
+msgstr "Nova Regra de Escalado"
 
 #: openDCIM/image_management.php:5
 msgid "OpenDCIM Image File Management"
-msgstr "Xestión de Ficheiros de Imaxe de openDCIM"
+msgstr "Gestión de Ficheros de Imagen de openDCIM"
 
 #: openDCIM/image_management.php:36
 msgid "openDCIM Data Center Inventory"
-msgstr "Inventario del CPD openDCIM"
+msgstr "Inventario do CPD openDCIM"
 
 #: openDCIM/image_management.php:63
 msgid "Device Pictures"
-msgstr "Carátulas del Dispositivo"
+msgstr "Carátulas do Dispositivo"
 
 #: openDCIM/image_management.php:65
 msgid "Rebuild Image Cache"
@@ -3078,29 +3055,29 @@ msgstr ""
 
 #: openDCIM/image_management.php:124
 msgid "Infrastructure Drawings"
-msgstr "Imágenes de las Infraestructuras"
+msgstr "Imaxes das Infraestruturas"
 
 #: openDCIM/image_management.php:171
 msgid "Delete image file?"
-msgstr "¿Eliminar fichero de imagen?"
+msgstr "¿Eliminar ficheiro de imaxe?"
 
 #: openDCIM/image_management.php:172
 msgid ""
 "This image will be permanently deleted and cannot be recovered. Are you sure?"
-msgstr "Esta imagen será eliminada y no se podrá recuperar. ¿Está seguro?"
+msgstr "Esta imaxe será eliminada e non se poderá recuperar. ¿Está seguro?"
 
 #: openDCIM/index.php:15 openDCIM/repository_sync_ui.php:7 openDCIM/sync.php:7
 #: openDCIM/template.php:7
 msgid "Data Center Operations Metrics"
-msgstr "Medidas Operativas del Centro de Proceso de Datos"
+msgstr "Medidas Operativas do Centro de Proceso de Datos"
 
 #: openDCIM/index.php:48
 msgid "Pending Rack Requests"
-msgstr "Solicitudes de Rack Pendientes"
+msgstr "Solicitudes de Rack Pendentes"
 
 #: openDCIM/index.php:48
 msgid "Submit Time"
-msgstr "Tiempo de Envío"
+msgstr "Tempo de Envío"
 
 #: openDCIM/index.php:48 openDCIM/rackrequest.php:354
 msgid "Requestor"
@@ -3108,7 +3085,7 @@ msgstr "Solicitante"
 
 #: openDCIM/index.php:48
 msgid "System Name"
-msgstr "Nombre del Sistema"
+msgstr "Nome do Sistema"
 
 #: openDCIM/index.php:48
 msgid "Due By"
@@ -3116,7 +3093,7 @@ msgstr "Previsto Para"
 
 #: openDCIM/index.php:103
 msgid "Data Center Inventory"
-msgstr "Inventario del CPD"
+msgstr "Inventario do CPD"
 
 #: openDCIM/index.php:103
 msgid "Export Inventory"
@@ -3124,7 +3101,7 @@ msgstr "Exportar Inventario"
 
 #: openDCIM/index.php:106
 msgid "Hosted Systems"
-msgstr "Sistemas Alojados"
+msgstr "Sistemas Aloxados"
 
 #: openDCIM/index.php:110
 msgid "DC Count"
@@ -3132,15 +3109,15 @@ msgstr "Número de CPDs"
 
 #: openDCIM/index.php:115
 msgid "Physical Server Count"
-msgstr "Número de servidores físicos"
+msgstr ""
 
 #: openDCIM/index.php:119
 msgid "Other Device Count"
-msgstr "Número de Otros Dispositivos"
+msgstr "Número de Outros Dispositivos"
 
 #: openDCIM/index.php:127
 msgid "Power Consumption"
-msgstr "Consumo Energético"
+msgstr "Consumo Enerxético"
 
 #: openDCIM/index.php:131
 msgid "Heat Produced"
@@ -3148,23 +3125,23 @@ msgstr "Calor Producido"
 
 #: openDCIM/index.php:139
 msgid "VM Hosts"
-msgstr "Hosts VM"
+msgstr ""
 
 #: openDCIM/index.php:143
 msgid "Virtualization Ratio"
-msgstr "Ratio de Virtualización"
+msgstr ""
 
 #: openDCIM/login_ad.php:49 openDCIM/login_ldap.php:9
 msgid "openDCIM Login"
-msgstr "Inicio de sesión openDCIM"
+msgstr ""
 
 #: openDCIM/login_ad.php:221 openDCIM/login_ldap.php:246
 msgid "Username:"
-msgstr "Nombre de Usuario:"
+msgstr ""
 
 #: openDCIM/login_ad.php:225 openDCIM/login_ldap.php:250
 msgid "Password:"
-msgstr "Contraseña:"
+msgstr ""
 
 #: openDCIM/login_ldap.php:127
 msgid ""
@@ -3187,8 +3164,7 @@ msgstr "Borde Frontal"
 #: openDCIM/mapmaker.php:205
 #, fuzzy
 msgid "Click and drag on the image to select an area for "
-msgstr ""
-"Pulse y desplace por la imagen para seleccionar un área para el armario"
+msgstr "Pulse e desprace pola imaxen para seleccionar unha área para o armario"
 
 #: openDCIM/mapmaker.php:211
 #, fuzzy
@@ -3196,29 +3172,28 @@ msgid ""
 "You must configure an image for this data center before attempting to place "
 "a cabinet on its map."
 msgstr ""
-"Debe configurar una imagen para este CPD antes de intentar colocar un "
-"armario en su plano."
+"Debe configurar unha imaxe para este CPD antes de intentar colocar un "
+"armario no seu plano."
 
 #: openDCIM/mapmaker.php:212
 #, php-format
 msgid "Please check that &quot;%s&quot; is actually a file."
-msgstr "Por favor, compruebe que el fichero &quot;%s&quot; existe"
+msgstr "Por favor comprobe que o ficheiro &quot;%s&quot; existe"
 
 #: openDCIM/mapmaker.php:213
 #, php-format
 msgid "Please check the permissions on %s and make sure it is readable."
 msgstr ""
-"Por favor, revise los permisos sobre %s y compruebe que tiene permiso de "
-"lectura."
+"Por favor, revise os permisos sobre %s e comprobe que ten permiso de lectura."
 
 #: openDCIM/mapmaker.php:226
 msgid "Selection Preview"
-msgstr "Previsualización de la Selección"
+msgstr "Previsualización da Selección"
 
 #: openDCIM/misc.inc.php:848 openDCIM/storageroom.php:44
 #: openDCIM/classes/Container.class.php:207
 msgid "General Storage Room"
-msgstr "Almacén General"
+msgstr "Almacén Xeral"
 
 #: openDCIM/misc.inc.php:956
 msgid "Reports"
@@ -3226,11 +3201,11 @@ msgstr "Informes"
 
 #: openDCIM/misc.inc.php:960
 msgid "Work Order"
-msgstr "Orden de Trabajo"
+msgstr "Orde de Traballo"
 
 #: openDCIM/misc.inc.php:964
 msgid "Rack Request Form"
-msgstr "Formulario de Solicitud de Rack"
+msgstr "Formulario de Solicitude de Rack"
 
 #: openDCIM/misc.inc.php:967 openDCIM/misc.inc.php:968
 msgid "User Administration"
@@ -3246,20 +3221,20 @@ msgstr "Escalados"
 
 #: openDCIM/misc.inc.php:969
 msgid "Time Periods"
-msgstr "Periodos de Tiempo"
+msgstr "Periodos de Tempo"
 
 #: openDCIM/misc.inc.php:970
 msgid "Escalation Rules"
-msgstr "Reglas de Escalado"
+msgstr "Regras de Escalado"
 
 #: openDCIM/misc.inc.php:971
 msgid "Project Catalog"
-msgstr "Catálogo de Proyecto"
+msgstr ""
 
 #: openDCIM/misc.inc.php:974 openDCIM/misc.inc.php:976
 #: openDCIM/misc.inc.php:990 openDCIM/misc.inc.php:991
 msgid "Template Management"
-msgstr "Gestión de Plantillas"
+msgstr "Xestión de Plantillas"
 
 #: openDCIM/misc.inc.php:974
 msgid "Edit Device Templates"
@@ -3269,7 +3244,7 @@ msgstr "Editar Plantillas de Dispositivos"
 #: openDCIM/misc.inc.php:996 openDCIM/misc.inc.php:997
 #: openDCIM/misc.inc.php:998 openDCIM/misc.inc.php:999
 msgid "Infrastructure Management"
-msgstr "Gestión de las Infraestructuras"
+msgstr "Xestión das Infraestruturas"
 
 #: openDCIM/misc.inc.php:975
 msgid "Edit Cabinets"
@@ -3277,7 +3252,7 @@ msgstr "Editar Armarios"
 
 #: openDCIM/misc.inc.php:976
 msgid "Device Image Management"
-msgstr "Gestión de Imágenes de Dispositivos"
+msgstr "Xestión de Imáxes de Dispositivos"
 
 #: openDCIM/misc.inc.php:979 openDCIM/misc.inc.php:980
 #: openDCIM/misc.inc.php:981 openDCIM/misc.inc.php:982
@@ -3285,16 +3260,15 @@ msgstr "Gestión de Imágenes de Dispositivos"
 #: openDCIM/misc.inc.php:985 openDCIM/misc.inc.php:986
 #: openDCIM/misc.inc.php:987
 msgid "Bulk Importer"
-msgstr "Importador Masivo"
+msgstr ""
 
 #: openDCIM/misc.inc.php:979
 msgid "Import Container/Datacenter/Zone/Row"
 msgstr ""
 
 #: openDCIM/misc.inc.php:980
-#, fuzzy
 msgid "Import User Accounts"
-msgstr "Importar conexiones eléctricas"
+msgstr ""
 
 #: openDCIM/misc.inc.php:981
 msgid "Import Departments/Customers"
@@ -3307,23 +3281,23 @@ msgstr "Editar Plantillas de Dispositivos"
 
 #: openDCIM/misc.inc.php:983
 msgid "Import New Cabinets"
-msgstr "Importar Armarios nuevos"
+msgstr ""
 
 #: openDCIM/misc.inc.php:984
 msgid "Import New Devices"
-msgstr "Importar nuevos dispositivos"
+msgstr ""
 
 #: openDCIM/misc.inc.php:985
 msgid "Import Network Connections"
-msgstr "Importar conexiones de red"
+msgstr ""
 
 #: openDCIM/misc.inc.php:986
 msgid "Import Power Connections"
-msgstr "Importar conexiones eléctricas"
+msgstr ""
 
 #: openDCIM/misc.inc.php:987
 msgid "Process Bulk Moves"
-msgstr "Procesar movimientos masivos"
+msgstr ""
 
 #: openDCIM/misc.inc.php:990
 msgid "Edit Manufacturers"
@@ -3337,15 +3311,15 @@ msgstr "Sincronizar Repositorio"
 #: openDCIM/misc.inc.php:994
 #, fuzzy
 msgid "Materiel Management"
-msgstr "Gestión de la Energía"
+msgstr "Xestión da Enerxía"
 
 #: openDCIM/misc.inc.php:992
 msgid "Manage Supply Bins"
-msgstr "Gestionar Almacenes de Suministros"
+msgstr "Xestionar Almacéns de Subministros"
 
 #: openDCIM/misc.inc.php:993
 msgid "Manage Supplies"
-msgstr "Gestionar Suministros"
+msgstr "Xestionar Subministros"
 
 #: openDCIM/misc.inc.php:994
 msgid "Manage Disposal Methods"
@@ -3357,11 +3331,11 @@ msgstr "Editar CPDs"
 
 #: openDCIM/misc.inc.php:996
 msgid "Edit Containers"
-msgstr "Editar Contenedores"
+msgstr "Editar Colectores"
 
 #: openDCIM/misc.inc.php:997
 msgid "Edit Zones"
-msgstr "Editar Zonas"
+msgstr "Editar Zoas"
 
 #: openDCIM/misc.inc.php:998
 msgid "Edit Rows of Cabinets"
@@ -3369,27 +3343,27 @@ msgstr "Editar Filas de Armarios"
 
 #: openDCIM/misc.inc.php:999
 msgid "Facilities Image Management"
-msgstr "Gestión de Imagenes de las Instalaciones"
+msgstr "Gestión de Imaxes das Instalacións"
 
 #: openDCIM/misc.inc.php:1000
 msgid "Power Management"
-msgstr "Gestión de la Energía"
+msgstr "Xestión da Enerxía"
 
 #: openDCIM/misc.inc.php:1000
 msgid "Edit Power Panels"
-msgstr "Editar Cuadros Eléctricos"
+msgstr "Editar Cadros Eléctricos"
 
 #: openDCIM/misc.inc.php:1001 openDCIM/misc.inc.php:1002
 msgid "Path Connections"
-msgstr "Camino de Conexiones"
+msgstr "Camiño de Conexións"
 
 #: openDCIM/misc.inc.php:1001
 msgid "View Path Connection"
-msgstr "Ver Camino de Conexiones"
+msgstr "Ver Camiño de Conexións"
 
 #: openDCIM/misc.inc.php:1002
 msgid "Make Path Connection"
-msgstr "Crear Camino de Conexiones"
+msgstr "Crear Camiño de Conexións"
 
 #: openDCIM/misc.inc.php:1003
 msgid "Edit Configuration"
@@ -3397,7 +3371,7 @@ msgstr "Editar Configuración"
 
 #: openDCIM/misc.inc.php:1010
 msgid "Logout"
-msgstr "Cerrar Sesión"
+msgstr ""
 
 #: openDCIM/misc.inc.php:1100 openDCIM/report_cabinets.php:182
 msgid "Side"
@@ -3405,7 +3379,7 @@ msgstr "Lado"
 
 #: openDCIM/pathmaker.php:5
 msgid "Creating an end to end connection"
-msgstr "Creación de conexiones extremo a extremo"
+msgstr "Creación de conexións extremo a extremo"
 
 #: openDCIM/pathmaker.php:96 openDCIM/pathmaker.php:98
 msgid "Connection implemented"
@@ -3413,59 +3387,59 @@ msgstr "Conexión Implementada"
 
 #: openDCIM/pathmaker.php:148
 msgid "Path not initialized"
-msgstr "Camino no inicializado"
+msgstr "Camiño non inicializado"
 
 #: openDCIM/pathmaker.php:153
 msgid "Error getting initial device data"
-msgstr "Error al obtener los datos del dispositivo inicial"
+msgstr "Erro obtindo os datos do dispositivo inicial"
 
 #: openDCIM/pathmaker.php:156
 msgid "Error: initial device is a panel"
-msgstr "Error: el dispositivo inicial es un panel"
+msgstr "Erro: o dispositivo inicial é un panel"
 
 #: openDCIM/pathmaker.php:159
 msgid "Error getting initial device port data"
-msgstr "Error al obtener los datos del puerto del dispositivo inicial"
+msgstr "Erro obtindo os datos do porto do dispositivo inicial"
 
 #: openDCIM/pathmaker.php:162
 msgid "Error: initial device port is already connected"
-msgstr "Error: el dispositivo inicial ya está conectado"
+msgstr "Erro: ol dispositivo inicial xa está conectado"
 
 #: openDCIM/pathmaker.php:165
 msgid "Error getting final device data"
-msgstr "Error obteniendo datos del dispositivo final"
+msgstr "Erro obtindo datos do dispositivo final"
 
 #: openDCIM/pathmaker.php:168
 msgid "Error: final device is a panel"
-msgstr "Error: el dispositivo final es un panel"
+msgstr "Erro: o dispositivo final é un panel"
 
 #: openDCIM/pathmaker.php:171
 msgid "Error getting final device port data"
-msgstr "Error obteniendo datos del puerto del dispositivo final"
+msgstr "Erro obtindo datos do porto do dispositivo final"
 
 #: openDCIM/pathmaker.php:174
 msgid "Error: final device port is already connected"
-msgstr "Error: el puerto del dispositivo final ya está conectado"
+msgstr "Erro: o porto do dispositivo final xa está conectado"
 
 #: openDCIM/pathmaker.php:177
 msgid "Path not found"
-msgstr "Camino no encontrado"
+msgstr "Camiño non atopado"
 
 #: openDCIM/pathmaker.php:184
 msgid "Initial device unspecified"
-msgstr "Dispositivo inicial no especificado"
+msgstr "Dispositivo inicial non especificado"
 
 #: openDCIM/pathmaker.php:186
 msgid "Initial device port unspecified"
-msgstr "Puerto del dispositivo inicial no especificado"
+msgstr "Porto do dispositivo inicial non especificado"
 
 #: openDCIM/pathmaker.php:188 openDCIM/pathmaker.php:190
 msgid "Final device unspecified"
-msgstr "Dispositivo final no especificado"
+msgstr "Dispositivo final non especificado"
 
 #: openDCIM/pathmaker.php:192 openDCIM/scripts/uploadifive.php:103
 msgid "Unknown Error"
-msgstr "Error Desconocido"
+msgstr "Erro descoñecido"
 
 #: openDCIM/pathmaker.php:247 openDCIM/pathmaker.php:324
 #: openDCIM/pathmaker.php:459 openDCIM/paths.php:76 openDCIM/paths.php:137
@@ -3473,7 +3447,7 @@ msgstr "Error Desconocido"
 #: openDCIM/classes/DevicePorts.class.php:185
 #: openDCIM/classes/DevicePorts.class.php:203
 msgid "Port"
-msgstr "Puerto"
+msgstr "Porto"
 
 #: openDCIM/pathmaker.php:372 openDCIM/paths.php:462
 msgid "Front Connection"
@@ -3481,11 +3455,11 @@ msgstr "Conexión Frontal"
 
 #: openDCIM/pathmaker.php:376 openDCIM/paths.php:466
 msgid "Rear Connection"
-msgstr "Conexión Trasera"
+msgstr "Conexión Traseira"
 
 #: openDCIM/pathmaker.php:396
 msgid "Implement in DataBase"
-msgstr "Implementar en la Base de Datos"
+msgstr "Implementar na Base de Datos"
 
 #: openDCIM/pathmaker.php:492
 msgid "Initial device"
@@ -3497,54 +3471,54 @@ msgstr "Dipositivo final"
 
 #: openDCIM/pathmaker.php:514
 msgid "Make Path"
-msgstr "Crear Camino"
+msgstr "Crear Camiño"
 
 #: openDCIM/paths.php:5
 msgid "End to end connection path"
-msgstr "Conexiones extremo a extremo"
+msgstr "Conexións extremo a extremo"
 
 #: openDCIM/paths.php:59
 msgid "Front connections deleted"
-msgstr "Conexiones Frontales Eliminadas"
+msgstr "Conexións Frontais Eliminadas"
 
 #: openDCIM/paths.php:61
 msgid "Come back when you have device rights"
-msgstr "Vuelva cuando tenga permisos de dispositivos"
+msgstr "Volva cando teña permisos de dispositivos"
 
 #: openDCIM/paths.php:84 openDCIM/paths.php:111 openDCIM/paths.php:132
 #: openDCIM/paths.php:168
 msgid "There is a loop in this port"
-msgstr "Hay un bucle en ese puerto"
+msgstr "Hai un bucle neste porto"
 
 #: openDCIM/paths.php:116 openDCIM/api/v1/getRoutes.php:445
 #: openDCIM/api/v1/getRoutes.php:466 openDCIM/api/v1/index2.php:467
 #: openDCIM/api/v1/index2.php:488
 msgid "Device not found"
-msgstr "Dispositivo no encontrado"
+msgstr "Dispositivo non atopado"
 
 #: openDCIM/paths.php:120
 msgid "There are several devices with this label"
-msgstr "Hay varios dispositivos con esa etiqueta"
+msgstr "Hai varios dispositivos con esa etiqueta"
 
 #: openDCIM/paths.php:120
 msgid "Please, select a device from list"
-msgstr "Por favor, seleccione un dispositvo de la lista"
+msgstr "Por favor, seleccione un dispositvo da lista"
 
 #: openDCIM/paths.php:159
 msgid "Not found"
-msgstr "No encontrado"
+msgstr "Non atopado"
 
 #: openDCIM/paths.php:179
 msgid "Path of"
-msgstr "Camino de"
+msgstr "Camiño de"
 
 #: openDCIM/paths.php:480
 msgid "Delete front connections in DataBase"
-msgstr "Eliminar conexiones frontales de la base de datos"
+msgstr "Eliminar conexións frontais da base de datos"
 
 #: openDCIM/paths.php:594
 msgid "Search by path identifier"
-msgstr "Buscar por identificador de camino"
+msgstr "Buscar por identificador de camiño"
 
 #: openDCIM/paths.php:599
 msgid "Identifier"
@@ -3556,39 +3530,39 @@ msgstr "Buscar"
 
 #: openDCIM/paths.php:610
 msgid "Search by label/port"
-msgstr "Buscar por etiqueta/puerto"
+msgstr "Buscar por etiqueta/porto"
 
 #: openDCIM/people_depts.php:46
 msgid "openDCIM Department Membership Maintenance"
-msgstr "Mantenimiento de Miembros de Departamentos de openDCIM"
+msgstr "Mantemento de Membros de Departamentos de openDCIM"
 
 #: openDCIM/people_depts.php:66 openDCIM/usermgr.php:295
 msgid "Department Membership"
-msgstr "Miembro de Departamento"
+msgstr "Membro de Departamento"
 
 #: openDCIM/power_panel.php:108
 msgid "Inherited Meter Load"
-msgstr "Medidor de Carga Heredado"
+msgstr ""
 
 #: openDCIM/power_panel.php:109
 msgid "Estimated Load"
-msgstr "Carga estimada"
+msgstr ""
 
 #: openDCIM/power_panel.php:110
 msgid "Panel Meter Load"
-msgstr "Carga del medidor del panel"
+msgstr ""
 
 #: openDCIM/power_panel.php:244
 msgid "Power Panel ID"
-msgstr "ID del Cuadro Eléctrico"
+msgstr "ID do Cadro Eléctrico"
 
 #: openDCIM/power_panel.php:246
 msgid "New Panel"
-msgstr "Nuevo Cuadro"
+msgstr "Novo Cadro"
 
 #: openDCIM/power_panel.php:257
 msgid "Panel Name"
-msgstr "Nombre del Cuadro"
+msgstr "Nome do Cadro"
 
 #: openDCIM/power_panel.php:261
 msgid "Number of Poles"
@@ -3596,11 +3570,11 @@ msgstr "Número de Circuitos"
 
 #: openDCIM/power_panel.php:265
 msgid "Main Breaker Amperage"
-msgstr "Amperaje del Interruptor Principal"
+msgstr "Amperaje do Interruptor Principal"
 
 #: openDCIM/power_panel.php:269
 msgid "Panel Voltage"
-msgstr "Voltaje del Cuadro"
+msgstr "Voltaje do Cadro"
 
 #: openDCIM/power_panel.php:273
 msgid "Numbering Scheme"
@@ -3608,45 +3582,45 @@ msgstr "Esquema de Numeración"
 
 #: openDCIM/power_panel.php:294
 msgid "Parent Panel"
-msgstr "Panel Padre"
+msgstr "Panel Pai"
 
 #: openDCIM/power_panel.php:309
 msgid "Parent Breaker Name"
-msgstr "Nombre del interruptor padre"
+msgstr "Nome do interruptor pai"
 
 #: openDCIM/power_panel.php:313
 msgid "Panel Meter IP Address"
-msgstr "Dirección IP del medidor del panel"
+msgstr "Dirección IP do medidor do panel"
 
 #: openDCIM/power_panel.php:317
 msgid "CDU/Meter Template"
-msgstr "Plantilla de la PDU/medidor"
+msgstr "Plantilla da PDU/medidor"
 
 #: openDCIM/power_panel.php:332
 #, fuzzy
 msgid "Data Center (for Mapping)"
-msgstr "Zona del CPD"
+msgstr "Zona do CPD"
 
 #: openDCIM/power_panel.php:369
 msgid "Panel Schedule"
-msgstr "Conexiones del Cuadro"
+msgstr "Conexións do Cadro"
 
 #: openDCIM/power_panel.php:406
 msgid "Unknown Pole"
-msgstr "Polo Desconocido"
+msgstr ""
 
 #: openDCIM/power_panel.php:413
 msgid ""
 "PDUs and Panels displayed here could not be drawn on the panel because no "
 "circuit ID was defined. Please check the pole positions on the panels again."
 msgstr ""
-"PDUs mostradas no pueden dibujarse en el cuadro porque hay solapamiento en "
-"la asignación de ID de circuitos. Por favor, revise la posición de las tomas "
-"del cuadro."
+"PDUs mostradas non poden dibuxarse no cadro porque hai solapamento na "
+"asignación de ID de circuitos. Por favor, revise a posición das tomas do "
+"cadro."
 
 #: openDCIM/power_panel.php:418
 msgid "Errors"
-msgstr "Errores"
+msgstr "Erros"
 
 #: openDCIM/power_panel.php:425
 msgid ""
@@ -3654,68 +3628,65 @@ msgid ""
 "overlapping circuit ID assignment. Please check the pole positions on the "
 "panels again."
 msgstr ""
-"Los PDUs y paneles mostrados no pueden dibujarse en el cuadro, porque hay un "
-"solapamiento en la asignación de ID de circuitos. Por favor, revise la "
-"posición de las tomas del cuadro."
 
 #: openDCIM/power_panel.php:433
 msgid "Power panel delete confirmation"
-msgstr "Confirmación de eliminación de cuadro eléctrico"
+msgstr "Confirmación de eliminación de cadro eléctrico"
 
 #: openDCIM/power_panel.php:434
 msgid "Are you sure that you want to delete this power panel?"
-msgstr "¿Está seguro de que quiere eliminar este cuadro eléctrico?"
+msgstr "¿Está seguro de que quere eliminar este cadro eléctrico?"
 
 #: openDCIM/project_members.php:77
 msgid "openDCIM Project Membership Maintenance"
-msgstr "Mantenimiento de Miembros del Proyecto openDCIM"
+msgstr ""
 
 #: openDCIM/project_members.php:101
 msgid "Project to Administer"
-msgstr "Proyecto para Administrar"
+msgstr ""
 
 #: openDCIM/project_mgr.php:5
 msgid "Project Detail"
-msgstr "Detalle del Proyecto"
+msgstr ""
 
 #: openDCIM/project_mgr.php:56
 msgid "openDCIM Project Information"
-msgstr "Información del Proyecto openDCIM"
+msgstr ""
 
 #: openDCIM/project_mgr.php:138 openDCIM/report_network_map.php:625
 #: openDCIM/report_project_outage_simulator.php:342 openDCIM/sidebar.inc.php:23
 msgid "Project"
-msgstr "Proyecto"
+msgstr ""
 
 #: openDCIM/project_mgr.php:140
 msgid "New Project"
-msgstr "Proyecto Nuevo"
+msgstr ""
 
 #: openDCIM/project_mgr.php:150 openDCIM/report_network_map.php:173
 #: openDCIM/report_project_outage_simulator.php:298
 msgid "Project Name"
-msgstr "Nombre del Proyecto"
+msgstr ""
 
 #: openDCIM/project_mgr.php:154
 #: openDCIM/report_project_outage_simulator.php:299
 msgid "Project Sponsor"
-msgstr "Patrocinador del Proyecto"
+msgstr ""
 
 #: openDCIM/project_mgr.php:158
 msgid "Project Start Date"
-msgstr "Fecha de Comienzo del Proyecto"
+msgstr ""
 
 #: openDCIM/project_mgr.php:162
 msgid "Project Expiration Date"
-msgstr "Fecha de Caducidad del Proyecto"
+msgstr ""
 
 #: openDCIM/project_mgr.php:166
 msgid "Project Actual End Date"
-msgstr "Fecha Final del Proyecto Actual"
+msgstr ""
 
 #: openDCIM/project_mgr.php:174
 msgid "Assign Devices"
-msgstr "Asignar Dispositivos"
+msgstr ""
 
 #: openDCIM/project_mgr.php:174
 #, fuzzy
@@ -3724,23 +3695,21 @@ msgstr "Asignar Contactos"
 
 #: openDCIM/project_mgr.php:188
 msgid "Project delete confirmation"
-msgstr "Confirmación de eliminación del Proyecto"
+msgstr ""
 
 #: openDCIM/project_mgr.php:189
 msgid ""
 "Are you sure that you want to delete this project? (Devices will be "
 "unassociated, but will not be deleted)."
 msgstr ""
-"Está seguro de eliminar éste Proyecto? (Los dispositivos serán disociados, "
-"pero no eliminados)"
 
 #: openDCIM/project_mgr.php:189
 msgid "THERE IS NO UNDO"
-msgstr "NO HAY DESHACER"
+msgstr ""
 
 #: openDCIM/rackrequest.php:5
 msgid "Data Center Rack Request"
-msgstr "Solicitud de Rack del CPD"
+msgstr "Solicitude de Rack do CPD"
 
 #: openDCIM/rackrequest.php:58 openDCIM/report-em_disabled_snmp.php:26
 #: openDCIM/report-em_new_installs.php:29
@@ -3752,15 +3721,15 @@ msgstr "CorreoDe"
 
 #: openDCIM/rackrequest.php:65
 msgid "Check contact details for"
-msgstr "Revisar los detalles de contacto para"
+msgstr "Revisar os detalles de contacto para"
 
 #: openDCIM/rackrequest.php:72 openDCIM/vmnamecheck.php:46
 msgid "Data center team address"
-msgstr "Dirección del equipo del CPD"
+msgstr "Dirección do equipo do CPD"
 
 #: openDCIM/rackrequest.php:78
 msgid "ITS Facilities Rack Request"
-msgstr "Solicitudes de Servicio de Rack"
+msgstr "Solicitudes de Armario"
 
 #: openDCIM/rackrequest.php:104
 #, php-format
@@ -3772,18 +3741,18 @@ msgid ""
 "this request has been completed.\n"
 "\t\t\tPlease allow up to 2 business days for requests to be completed."
 msgstr ""
-"Se ha recibido su solicitud de enrackado para el dispositivo etiquetado "
+"Recibiouse a súa solicitude de enrackado para o dispositivo etiquetado "
 "%1$s.\n"
-"\t\t\tEl Centro de Gestión de Red examinará la solicitud y contactará con "
-"usted si precisa más información\n"
-"\t\t\tantes de tramitar la solicitud. Recibirá una notificación cuando la "
-"solicitud se complete.\n"
-"\t\t\tLa tramitación puede tardar hasta 2 días laborables."
+"\t\t\tO Centro de Gestión de Rede examinará a solicitude e contactará con "
+"vostede se precisa máis información\n"
+"\t\t\tantes de tramitar a solicitude. Recibirá unha notificación cando a "
+"solicitude se complete.\n"
+"\t\t\tA tramitación pode tardar ata 2 días laborables."
 
 #: openDCIM/rackrequest.php:109
 #, php-format
 msgid "Your Request ID is %1$d and you may view the request online at"
-msgstr "El identificador de su solicitud es %1$d y puede verla en línea en"
+msgstr "O identificador da súa solicitude é %1$d e pode vela en línea en"
 
 #: openDCIM/rackrequest.php:111 openDCIM/rackrequest.php:166
 msgid "this link"
@@ -3793,29 +3762,28 @@ msgstr "este enlace"
 #, php-format
 msgid "Your request for racking up the device labeled %1$s has been completed."
 msgstr ""
-"Su solicitud de enrackado para el dispositivo etiquetado %1$s se ha "
-"completado."
+"A súa solicitude de enrackado para o dispositivo etiquetado %1$s completouse."
 
 #: openDCIM/rackrequest.php:165
 #, php-format
 msgid "To view your device in its final location click %1$s"
-msgstr "Para ver su dispositivo en su posición final, pulse %1$s"
+msgstr "Para ver o seu dispositivo na súa posición final, pulse %1$s"
 
 #: openDCIM/rackrequest.php:188
 msgid "You do not have permission to delete this request"
-msgstr "No tiene permiso para eliminar esa solicitud"
+msgstr "Non ten permiso para eliminar esa solicitude"
 
 #: openDCIM/rackrequest.php:235
 msgid "You must specify the VLAN information for the ethernet connections"
-msgstr "Debe especificar la información de VLAN para las conexiones ethernet"
+msgstr "Debe especificar a información de VLAN para as conexións ethernet"
 
 #: openDCIM/rackrequest.php:240
 msgid "You must specify the SAN port information to continue"
-msgstr "Debe especificar la información del puerto SAN para continuar"
+msgstr "Debe especificar a información do porto SAN para continuar"
 
 #: openDCIM/rackrequest.php:245
 msgid "You must specify the current location of the equipment"
-msgstr "Debe especificar la posición actual del equipo"
+msgstr "Debe especificar a posición actual do equipo"
 
 #: openDCIM/rackrequest.php:373 openDCIM/report_logging.php:57
 msgid "Action"
@@ -3824,7 +3792,7 @@ msgstr "Acción"
 #: openDCIM/rackrequest.php:377
 #, fuzzy
 msgid "New"
-msgstr "Ahora"
+msgstr "Agora"
 
 #: openDCIM/rackrequest.php:379
 msgid "Change"
@@ -3836,32 +3804,31 @@ msgstr ""
 
 #: openDCIM/rackrequest.php:400
 msgid "Label Color"
-msgstr "Color del Nemónico"
+msgstr "Cor do Nemónico"
 
 #: openDCIM/rackrequest.php:404
 msgid "White"
-msgstr "Blanco"
+msgstr "Branco"
 
 #: openDCIM/rackrequest.php:404
 msgid "Yellow"
-msgstr "Amarillo"
+msgstr "Amarelo"
 
 #: openDCIM/rackrequest.php:404
 msgid "Red"
-msgstr "Rojo"
+msgstr "Vermello"
 
 #: openDCIM/rackrequest.php:425
-#, fuzzy
 msgid "Hypervisor?"
-msgstr "Hipervisor"
+msgstr ""
 
 #: openDCIM/rackrequest.php:454
 msgid "Select a template"
-msgstr "Selecionar una plantilla"
+msgstr "Selecionar unha plantilla"
 
 #: openDCIM/rackrequest.php:475
 msgid "Number of Ethernet Connections"
-msgstr "Número de Puertos Ethernet"
+msgstr "Número de Portos Ethernet"
 
 #: openDCIM/rackrequest.php:479
 msgid "VLAN Settings"
@@ -3869,11 +3836,11 @@ msgstr "Configuración de VLAN"
 
 #: openDCIM/rackrequest.php:483
 msgid "Number of SAN Connections"
-msgstr "Número de Conexiones SAN"
+msgstr "Número de Conexións SAN"
 
 #: openDCIM/rackrequest.php:487
 msgid "SAN Port Assignments"
-msgstr "Asignación de Puertos de SAN"
+msgstr "Asignación de Portos de SAN"
 
 #: openDCIM/rackrequest.php:507
 msgid "Current Location"
@@ -3881,19 +3848,19 @@ msgstr "Posición Actual"
 
 #: openDCIM/rackrequest.php:511
 msgid "Special Instructions"
-msgstr "Instrucciones Especiales"
+msgstr "Instruccións Especiais"
 
 #: openDCIM/rackrequest.php:516
 msgid "Select Rack Location"
-msgstr "Selecionar Posición del Rack"
+msgstr "Selecionar Posición do Rack"
 
 #: openDCIM/rackrequest.php:524
 msgid "Update Request"
-msgstr "Actualización de la Solicitud"
+msgstr "Actualización da Solicitude"
 
 #: openDCIM/rackrequest.php:525
 msgid "Delete Request"
-msgstr "Eliminación de la Solicitud"
+msgstr "Eliminación da Solicitude"
 
 #: openDCIM/rackrequest.php:528
 msgid "Move to Rack"
@@ -3901,27 +3868,27 @@ msgstr "Mover a Rack"
 
 #: openDCIM/report_aging.php:94
 msgid "Data Center Asset Aging Report"
-msgstr "Informe de Antigüedad de Activos del CPD"
+msgstr "Informe de Antigüidade de Activos do CPD"
 
 #: openDCIM/report_aging.php:409
 msgid "Device Ages by Count"
-msgstr "Antigüedad de Dispositivos por Número"
+msgstr "Antigüidade dos Dispositivos por Número"
 
 #: openDCIM/report_aging.php:425 openDCIM/report_aging.php:460
 msgid "Age"
-msgstr "Edad"
+msgstr "Idade"
 
 #: openDCIM/report_aging.php:458
 msgid "Devices more than 5 years old"
-msgstr "Dispositivos de más de 5 años"
+msgstr "Dispositivos de máis de 5 anos"
 
 #: openDCIM/report_asset_Excel.php:41
 msgid "Asset Report (Excel)"
-msgstr "Informe de Activos (Excel)"
+msgstr ""
 
 #: openDCIM/report_asset_Excel.php:124
 msgid "Return to Reports"
-msgstr "Volver a Informes"
+msgstr ""
 
 #: openDCIM/report_asset_Excel.php:150
 msgid "Asset Report"
@@ -3929,86 +3896,84 @@ msgstr "Informe de Activos"
 
 #: openDCIM/report_asset_Excel.php:151
 msgid "Data Center Statistics on all data centers assets."
-msgstr "Estadísticas del CPD de todos los activos"
+msgstr "Estatísticas do CPD de todos os activos"
 
 #: openDCIM/report_asset_Excel.php:153
 msgid "datacenter report assets statistic"
-msgstr "CPD informe activos estadísticas"
+msgstr "CPD informe activos estatísticas"
 
 #: openDCIM/report_asset_Excel.php:159
 msgid "Notes on DC Statistics"
-msgstr "Notas en las Estadísticas del CPD"
+msgstr "Notas nas Estatísticas do CPD"
 
 #: openDCIM/report_asset_Excel.php:165
 msgid "Logo Name"
-msgstr "Nombre del Logo"
+msgstr "Nome do Logo"
 
 #: openDCIM/report_asset_Excel.php:166
 msgid "Logo Description"
-msgstr "Descripción del Logo"
+msgstr "Descrición do Logo"
 
 #: openDCIM/report_asset_Excel.php:174
 msgid ""
 "● This is the combined report on all data center assets. It contains the "
 "list of all devices and a list of all cabinets."
 msgstr ""
-"● Este es el informe combinado de todos los activos del centro de datos. "
-"Contiene la lista de todos los dispositivos y una lista de todos los "
-"armarios."
+"● Este é o informe combinado de todos os activos do centro de datos. Conten "
+"a lista de todos os dispositivos e máis unha lista de todos os armarios."
 
 #: openDCIM/report_asset_Excel.php:176
 msgid ""
 "● Using Excel\"s pivot capabilities many different analysis and statistics "
 "can be performed."
 msgstr ""
-"● Utilizando las capacidades de pivote de Excel se pueden realizar muchos "
-"analisis y estadísticas diferentes."
+"● Utilizando as capacidades de pivote de Excel pódense realizar moitas "
+"análise e estatísticas diferentes."
 
 #: openDCIM/report_asset_Excel.php:178
 msgid "● The terms \"cabinet\" and  \"rack\" are used interchangeable."
-msgstr "● Los términos 'armario' y 'rack' se usan indistintamente."
+msgstr "● Os termos 'armario' e 'rack' úsanse indistintamente."
 
 #: openDCIM/report_asset_Excel.php:179
 msgid ""
 "● For user who have only the \"Admin Own Devices\" right the report is "
 "limited to the cabinets which are owned by this department."
 msgstr ""
-"● Para el usuario que sólo tiene permiso de 'administrar dispositivos "
-"propios' el informe se limita a los armarios que son propiedad de este "
-"departamento."
+"● Para o usuario que só ten permiso de 'administrar dispositivos propios' o "
+"informe limítase aos armarios que son propiedade deste departamento."
 
 #: openDCIM/report_asset_Excel.php:181
 msgid ""
 "● The \"DC Statistics\" page is only generated for users who are not limited "
 "to \"Admin Own Devices\"."
 msgstr ""
-"● La página 'Estadísticas del CPD' sólo se genera para los usuarios que no "
-"se limitan a 'administrar dispositivos propios'."
+"● A páxina 'Estatísticas do CPD' só se xenera para os usuarios que non se "
+"limitan a 'administrar dispositivos propios'."
 
 #: openDCIM/report_asset_Excel.php:183
 msgid ""
 "● For a child device the column \"Parent Device\" shows the parent device "
 "otherwise it is empty. A child devices is e.g. a blade server."
 msgstr ""
-"● Para un dispositivo hijo, la columna 'Dispositivo Padre' muestra el "
-"dispositivo padre, de lo contrario está vacía. Un dispositivo hijo es, por "
-"ejemplo, un servidor blade."
+"● Para un dispositivo fillo, a columna 'Dispositivo Pai' mostra o "
+"dispositivo pai, pola contra está baleira. Un dispositivo fillo é, por "
+"exemplo, un servidor blade."
 
 #: openDCIM/report_asset_Excel.php:186
 msgid ""
 "● The \"Position\" for a child device is the slot position within in the "
 "parent device."
 msgstr ""
-"● La 'Posición' para un dispositivo hijo es la posición de la ranura que "
-"ocupa en el dispositivo padre."
+"● A 'Posición' para un dispositivo fillo é a posición da ranura que ocupa no "
+"dispositivo pai."
 
 #: openDCIM/report_asset_Excel.php:188
 msgid ""
 "● \"Half Depth\" contains a value \"front\" or \"rear\" only if the device "
 "is of half depth in which case this indicates the location."
 msgstr ""
-"● 'Medio fondo' contiene un valor 'frente' o 'trasero' sólo si el "
-"dispositivo es de medio fondo, que indica su colocación."
+"● 'Medio fondo' contén un valor 'frente' ou 'traseiro' só se o dispositivo é "
+"de medio fondo, que indica a súa colocación."
 
 #: openDCIM/report_asset_Excel.php:191
 msgid ""
@@ -4017,10 +3982,9 @@ msgid ""
 "start of the range and \"Height\" specifies the size of the range of free "
 "rack space."
 msgstr ""
-"● El espacio consecutivo libre se indica en la hoja de trabajo \"Inventario "
-"del CPD' con la cadena '__EMPTY' en la columna 'Dispositivo'. 'Posición' da "
-"el inicio del rango y 'Altura' especifica el tamaño del rango de espacio de "
-"rack libre."
+"● O espazo consecutivo libre indícase na folla de traballo \"Inventario do "
+"CPD' coa cadea '__EMPTY' na columna 'Dispositivo'. 'Posición' da o inicio do "
+"rango e 'Altura' especifica o tamaño do rango de espazo de rack libre."
 
 #: openDCIM/report_asset_Excel.php:195
 msgid ""
@@ -4029,9 +3993,9 @@ msgid ""
 "\"Position\" gives the start of the range and \"Height\" specifies the "
 "number of free slots."
 msgstr ""
-"● Un rango de ranuras libres consecutivas en un chasis se indica en la hoja "
-"de trabajo 'Inventario del CPD ' con la cadena ' __EMPTYSLOT ' en la columna "
-"'Dispositivo'. 'Posición' da el inicio del rango y 'Altura' especifica el "
+"● Un rango de ranuras libres consecutivas nun chasis indícase na folla de "
+"traballo 'Inventario do CPD ' coa cadea ' __EMPTYSLOT ' na columna "
+"'Dispositivo'. 'Posición' da o inicio do rango e 'Altura' especifica o "
 "número de ranuras libres."
 
 #: openDCIM/report_asset_Excel.php:199
@@ -4041,10 +4005,10 @@ msgid ""
 "at the same position within a cabinet. Only the non occupied rack units are "
 "free RUs."
 msgstr ""
-"● Todas las unidades de rack (RU) libres en los armarios cuentan para el "
-"total de unidades de rack libres. Es posible que dispositivos de diferente "
-"altura se monten en la misma posición dentro de un armario. Sólo las "
-"unidades de rack no ocupadas son RU libres."
+"● Todas as unidades de rack (RU) libres nos armarios contan para o total de "
+"unidades de rack libres. É posible que dispositivos de diferente altura se "
+"monten na mesma posición dentro dun armario. Só as unidades de rack non "
+"ocupadas son RU libres."
 
 #: openDCIM/report_asset_Excel.php:203
 msgid ""
@@ -4053,32 +4017,32 @@ msgid ""
 "\"No. Reserved Racks\". Nevertheless, the rack units are taken into account "
 "in all other statistics."
 msgstr ""
-"● Armarios con 'Modelo' igua a 'RESERVED' son marcas en el plano del CPD "
-"para armarios que se instalarán en el futuro. Su número se cuenta en la "
-"columna \"Nº de Armarios Reservados'. Sin embargo, las unidades de rack se "
-"tienen en cuenta en todas las otras estadísticas."
+"● Armarios con 'Modelo' igua a 'RESERVED' son marcas no plano do CPD para "
+"armarios que se instalarán no futuro. O seu número cóntase na columna \"Nº "
+"de Armarios Reservados'. Con todo, as unidades de rack tense en conta en "
+"todas as outras estatísticas."
 
 #: openDCIM/report_asset_Excel.php:208
 msgid ""
 "This file is confidential and shall not be used without permission of the "
 "owner."
 msgstr ""
-"Este fichero es confidencial y no será utilizado sin autorización del "
+"Este ficheiro é confidencial e non será utilizado sen autorización do "
 "propietario."
 
 #: openDCIM/report_asset_Excel.php:211
 msgid "Generate by openDCIM"
-msgstr "Generado por openDCIM"
+msgstr "Xenerado por openDCIM"
 
 #: openDCIM/report_asset_Excel.php:215
 msgid "Summary Statistics"
-msgstr "Sumario de  Estadísticas"
+msgstr "Sumario de  Estatísticas"
 
 #: openDCIM/report_asset_Excel.php:235 openDCIM/report_asset.php:54
 #: openDCIM/report_contact.php:485 openDCIM/report_cost.php:469
 #: openDCIM/report_exception.php:165 openDCIM/report_exception.php:235
 msgid "DC Room"
-msgstr "Sala del CPD"
+msgstr "Sala do CPD"
 
 #: openDCIM/report_asset_Excel.php:236
 msgid ""
@@ -4087,7 +4051,7 @@ msgid ""
 "(sqm)"
 msgstr ""
 "Superficie\n"
-"de Suelo\n"
+"de Solo\n"
 "(m2)"
 
 #: openDCIM/report_asset_Excel.php:237
@@ -4137,7 +4101,7 @@ msgid ""
 "Rack\n"
 "Units"
 msgstr ""
-"Porcentaje\n"
+"Porcentaxe\n"
 "de Unidades\n"
 "de Rack\n"
 "Usadas"
@@ -4152,7 +4116,7 @@ msgstr ""
 "Suma de\n"
 "Unidades\n"
 "de Rack (RU)\n"
-"Vacías"
+"Valeiras"
 
 #: openDCIM/report_asset_Excel.php:243
 msgid ""
@@ -4161,10 +4125,10 @@ msgid ""
 "Rack\n"
 "Units"
 msgstr ""
-"Porcentaje\n"
+"Porcentaxe\n"
 "de Unidades\n"
 "de Rack\n"
-"Vacías"
+"Valeiras"
 
 #: openDCIM/report_asset_Excel.php:244
 msgid ""
@@ -4190,23 +4154,23 @@ msgstr ""
 
 #: openDCIM/report_asset_Excel.php:784
 msgid "Template Missing"
-msgstr "Falta Plantilla"
+msgstr ""
 
 #: openDCIM/report_asset_Excel.php:1669
 msgid "Computing DC Inventory"
-msgstr "Calculando el Inventario del DC"
+msgstr ""
 
 #: openDCIM/report_asset_Excel.php:1680
 msgid "Writing Inventory to Spreadsheet"
-msgstr "Escribiendo el Inventario a Hoja de Cálculo"
+msgstr ""
 
 #: openDCIM/report_asset_Excel.php:1688
 msgid "Formatting Spreadsheet"
-msgstr "Formateando Hoja de Cálculo"
+msgstr ""
 
 #: openDCIM/report_asset.php:28 openDCIM/reports.php:47
 msgid "Data Center Asset Report"
-msgstr "Informe de Activos del CPD"
+msgstr "Informe de Activos do CPD"
 
 #: openDCIM/report_asset.php:54 openDCIM/report_tags.php:34
 msgid "Rack"
@@ -4219,7 +4183,7 @@ msgstr "Informe de Frecuencia de Auditoría de Armario"
 
 #: openDCIM/report_audit_frequency.php:239 openDCIM/report_audit.php:414
 msgid "Activity by Location"
-msgstr "Actividad por Localización"
+msgstr "Actividade por Localización"
 
 #: openDCIM/report_audit_frequency.php:242
 msgid "Times Audited"
@@ -4228,16 +4192,16 @@ msgstr "Veces Auditado"
 #: openDCIM/report_audit_frequency.php:242 openDCIM/search_export.php:138
 #: openDCIM/search_export_storage_room.php:61
 msgid "Installation Date"
-msgstr "Fecha de Instalación"
+msgstr "Data de Instalación"
 
 #: openDCIM/report_audit_frequency.php:242
 #: openDCIM/report_audit_frequency.php:318
 msgid "Days Since Last Audit"
-msgstr "Días desde la última auditoría"
+msgstr "Días dende a última auditoría"
 
 #: openDCIM/report_audit_frequency.php:315
 msgid "Summary by Period"
-msgstr "Resumen por Período"
+msgstr "Resumo por Período"
 
 #: openDCIM/report_audit_frequency.php:318
 msgid "Number of Cabinets"
@@ -4253,34 +4217,34 @@ msgstr "Informe de Auditorías de Armarios"
 
 #: openDCIM/report_audit.php:48
 msgid "Dates"
-msgstr "Fechas"
+msgstr "Datas"
 
 #: openDCIM/report_audit.php:283
 msgid "Auditor Summary"
-msgstr "Resumen del Auditor"
+msgstr "Resumo do auditor"
 
 #: openDCIM/report_audit.php:286 openDCIM/report_contact.php:450
 #: openDCIM/report_cost.php:435 openDCIM/report_department.php:179
 #: openDCIM/report_logging.php:53 openDCIM/report_vm_by_department.php:223
 #: openDCIM/usermgr.php:242
 msgid "UserID"
-msgstr "ID del Usuario"
+msgstr "ID do Usuario"
 
 #: openDCIM/report_audit.php:286 openDCIM/report_audit.php:321
 #: openDCIM/report_audit.php:417 openDCIM/report_contact.php:450
 #: openDCIM/report_cost.php:435 openDCIM/report_department.php:179
 #: openDCIM/report_vm_by_department.php:223
 msgid "UserName"
-msgstr "NombreUsuario"
+msgstr "NomeUsuario"
 
 #: openDCIM/report_audit.php:286 openDCIM/supplies.php:52
 #: openDCIM/supplybin.php:177
 msgid "Count"
-msgstr "Cantidad"
+msgstr "Cantidade"
 
 #: openDCIM/report_audit.php:318
 msgid "Activity by Date"
-msgstr "Actividad por Fecha"
+msgstr "Actividade por Data"
 
 #: openDCIM/report_audit.php:321 openDCIM/report_audit.php:417
 msgid "Comments"
@@ -4296,15 +4260,15 @@ msgstr "Mar"
 
 #: openDCIM/report_audit.php:335 openDCIM/report_audit.php:337
 msgid "Wed"
-msgstr "Mié"
+msgstr "Mér"
 
 #: openDCIM/report_audit.php:335 openDCIM/report_audit.php:337
 msgid "Thu"
-msgstr "Jue"
+msgstr "Xov"
 
 #: openDCIM/report_audit.php:335 openDCIM/report_audit.php:337
 msgid "Fri"
-msgstr "Vie"
+msgstr "Ven"
 
 #: openDCIM/report_audit.php:335 openDCIM/report_audit.php:337
 msgid "Sat"
@@ -4316,11 +4280,11 @@ msgstr "Dom"
 
 #: openDCIM/report_audit.php:384
 msgid "Day of Week Frequency"
-msgstr "Frecuencia del Día de Semana"
+msgstr "Frecuencia do Día de Semana"
 
 #: openDCIM/report_audit.php:388
 msgid "Day of Week"
-msgstr "Dia de la Semana"
+msgstr "Dia da Semana"
 
 #: openDCIM/report_audit.php:388
 msgid "Audits"
@@ -4328,7 +4292,7 @@ msgstr "Auditorías"
 
 #: openDCIM/report_cabinets.php:15
 msgid "Cabinet Report"
-msgstr "Informe del Armario"
+msgstr "Informe do Armario"
 
 #: openDCIM/report_cabinets.php:73 openDCIM/report_outage_simulator.php:47
 #: openDCIM/report_panel_schedule.php:54
@@ -4339,18 +4303,18 @@ msgstr "Selecionar un CPD"
 
 #: openDCIM/report_cabinets.php:99
 msgid "Choose cabinets to print in Data Center"
-msgstr "Elegir armarios para imprimir en CPD"
+msgstr "Elixir armarios para imprimir en CPD"
 
 #: openDCIM/report_cabinets.php:100 openDCIM/report_outage_simulator.php:68
 #: openDCIM/report_panel_schedule.php:69
 #: openDCIM/report_project_outage_simulator.php:69
 #: openDCIM/report_xml_CFD.php:69
 msgid "Generate"
-msgstr "Generar"
+msgstr "Xerar"
 
 #: openDCIM/report_cabinets.php:105
 msgid "Cabinet ID"
-msgstr "ID del armario"
+msgstr "ID do armario"
 
 #: openDCIM/report_cabinets.php:187
 msgid "Pos"
@@ -4358,21 +4322,21 @@ msgstr "Pos"
 
 #: openDCIM/report_contact.php:40
 msgid "Data Center Asset and Contact Report"
-msgstr "Informe de Activos del CPD y Contactos"
+msgstr "Informe de Activos do CPD e Contactos"
 
 #: openDCIM/report_contact.php:399
 msgid "Top 10 Data Center Occupancy Rates"
-msgstr "Indice Top 10  de Ocupación del CPD"
+msgstr "Indice Top 10  de Ocupación do CPD"
 
 #: openDCIM/report_contact.php:407
 msgid "Top 10 Data Center Power Users"
-msgstr "Top 10 de Potencia por Usuario del CPD"
+msgstr "Top 10 de Potencia por Usuario do CPD"
 
 #: openDCIM/report_contact.php:442 openDCIM/report_cost.php:427
 #: openDCIM/report_department.php:171 openDCIM/report_exception.php:223
 #: openDCIM/report_vm_by_department.php:215
 msgid "Service Delivery Manager"
-msgstr "Gestor del Servicio de Entrega"
+msgstr "Xestor do Servizo de Entrega"
 
 #: openDCIM/report_contact.php:504 openDCIM/report_cost.php:489
 msgid "Total Rack Units for "
@@ -4384,16 +4348,16 @@ msgstr "Total de BTU para"
 
 #: openDCIM/report_contact.php:537 openDCIM/report_cost.php:528
 msgid "Total Rack Units for All Data Centers"
-msgstr "Total de Us para todos los CPD"
+msgstr "Total de Us para todos os CPD"
 
 #: openDCIM/report_contact.php:538 openDCIM/report_cost.php:529
 msgid "Total BTU Output for All Data Centers"
-msgstr "Total de BTU para todos los CPD"
+msgstr "Total de BTU para todos os CPD"
 
 #: openDCIM/report_contact.php:545 openDCIM/report_vm_by_department.php:171
 #: openDCIM/report_vm_by_department.php:249
 msgid "Virtual Machine Image Name"
-msgstr "Nombre de la Imagen de la Máquina Virtual"
+msgstr "Nome da Imaxe da Máquina Virtual"
 
 #: openDCIM/report_contact.php:545 openDCIM/report_vm_by_department.php:171
 #: openDCIM/report_vm_by_department.php:249
@@ -4410,15 +4374,15 @@ msgstr "Último Sondeado"
 
 #: openDCIM/report_cost.php:45 openDCIM/reports.php:49
 msgid "Data Center Asset Costing Report"
-msgstr "Informe de Costes de Activos del CPD"
+msgstr "Informe de Costes de Activos do CPD"
 
 #: openDCIM/report_cost.php:398 openDCIM/report_cost.php:401
 msgid "Annual Cost Per Watt (Year)"
-msgstr "Coste Anual Por Watio (Año)"
+msgstr "Coste Anual Por Watio (Ano)"
 
 #: openDCIM/report_cost.php:469
 msgid "Rack Cost"
-msgstr "Coste del Rack"
+msgstr "Coste do Rack"
 
 #: openDCIM/report_cost.php:531 openDCIM/report_cost.php:534
 msgid "Annual Electrical Cost for Department"
@@ -4426,16 +4390,16 @@ msgstr "Coste Eléctrico Anual por Departamento"
 
 #: openDCIM/report_cost.php:532 openDCIM/report_cost.php:535
 msgid "Annual Infrastructure Cost for Department"
-msgstr "Coste Anual de la Infraestructura por Departamento"
+msgstr "Coste Anual da Infraestrutura por Departamento"
 
 #: openDCIM/report_department.php:35
 msgid "Departmental Contacts Report"
-msgstr "Informe de Contactos Departamentales"
+msgstr "Informe de Contactos Departamentais"
 
 #: openDCIM/report_diverse_power_exceptions.php:34
 #: openDCIM/report_power_utilization.php:34
 msgid "Devices Without Diverse (Tier III) Power"
-msgstr "Dispositivos sin Fuente Redundante (Tier III)"
+msgstr "Dispositivos sen Fonte Redundante (Tier III)"
 
 #: openDCIM/report_diverse_power_exceptions.php:167
 #: openDCIM/report_power_utilization.php:167
@@ -4445,51 +4409,50 @@ msgstr "Dependencia"
 #: openDCIM/report-em_disabled_snmp.php:20
 #, fuzzy
 msgid "Data Center Disabled SNMP Devices Report"
-msgstr "Informe de Espacio Reservado del CPD"
+msgstr "Informe de Espacio Reservado do CPD"
 
 #: openDCIM/report-em_disabled_snmp.php:33
 #: openDCIM/report-em_new_installs.php:36
 #: openDCIM/report-em_reservations.php:33
 #: openDCIM/report-em_switch_exceptions.php:33 openDCIM/workorder.php:72
 msgid "Facility Manager email address"
-msgstr "Correo del Gestor de Equipamiento"
+msgstr "Correo do Xestor de Equipamiento"
 
 #: openDCIM/report-em_new_installs.php:23
 msgid "Recent Data Center Installations Report"
-msgstr "Informe de Instalaciones Recientes en el CPD"
+msgstr "Informe de Instalacións Recentes no CPD"
 
 #: openDCIM/report-em_reservations.php:20
 msgid "Data Center Reserved Space Report"
-msgstr "Informe de Espacio Reservado del CPD"
+msgstr "Informe de Espacio Reservado do CPD"
 
 #: openDCIM/report-em_reservations.php:48
 msgid "Data Center Inventory Reservations"
-msgstr "Inventario de Reservas del CPD"
+msgstr "Inventario de Reservas do CPD"
 
 #: openDCIM/report-em_reservations.php:60
 msgid "There are no reserved installations within the date range specified"
-msgstr ""
-"No hay instalaciones reservadas dentro del rango de fechas especificado"
+msgstr "Non hai instalacións reservadas dentro do rango de datas especificado"
 
 #: openDCIM/report-em_reservations.php:75
 msgid "Scheduled Installations for Department"
-msgstr "Instalaciones Planificadas por Departamento"
+msgstr "Instalacións Planificadas por Departamento"
 
 #: openDCIM/report-em_reservations.php:93
 msgid "Total U Reserved for Department"
-msgstr "RU Totales Reservadas por Departmento"
+msgstr "RU Totais Reservadas por Departmento"
 
 #: openDCIM/report-em_reservations.php:97
 msgid "Total U Reserved in DCIM"
-msgstr "RU Totales Reservadas en el DCIM"
+msgstr "RU Totais Reservadas no DCIM"
 
 #: openDCIM/report-em_switch_exceptions.php:20
 msgid "Data Center Switch Capacity Exceptions Report"
-msgstr "Informe de Excepciones de Capacidad de Conmutadores"
+msgstr "Informe de Excepcións de Capacidade de Conmutadores"
 
 #: openDCIM/report_exception.php:39 openDCIM/reports.php:62
 msgid "Data Exceptions Report"
-msgstr "Informe de Incumplimientos de Fecha"
+msgstr "Informe de Incumprimentos de Data"
 
 #: openDCIM/report_exception.php:165 openDCIM/report_exception.php:235
 msgid "Power Cords"
@@ -4497,7 +4460,7 @@ msgstr "Cables Eléctricos"
 
 #: openDCIM/report_logging.php:36
 msgid "Logging View/Export"
-msgstr "Ver/Exportar el Log"
+msgstr "Ver/Exportar o Log"
 
 #: openDCIM/report_logging.php:52
 msgid "Time"
@@ -4509,15 +4472,15 @@ msgstr "Clase"
 
 #: openDCIM/report_logging.php:55
 msgid "ObjectID"
-msgstr "ID del Objeto"
+msgstr "ID do Obxecto"
 
 #: openDCIM/report_logging.php:56
 msgid "ChildID"
-msgstr "ID del Hijo"
+msgstr "ID do Fillo"
 
 #: openDCIM/report_logging.php:58
 msgid "Property"
-msgstr "Propiedad"
+msgstr "Propiedade"
 
 #: openDCIM/report_logging.php:59
 msgid "Old Value"
@@ -4525,24 +4488,24 @@ msgstr "Valor Anterior"
 
 #: openDCIM/report_logging.php:60
 msgid "New Value"
-msgstr "Nuevo Valor"
+msgstr "Novo Valor"
 
 #: openDCIM/report_logging.php:105
 #, fuzzy
 msgid "Activity Log"
-msgstr "Log de Acciones"
+msgstr "Log de Accións"
 
 #: openDCIM/report_network_map.php:5
 msgid "Network Map Viewer"
-msgstr "Visor del Mapa de Red"
+msgstr "Visor do Mapa de Rede"
 
 #: openDCIM/report_network_map.php:617
 msgid "Filter type:"
-msgstr "Tipo de fichero:"
+msgstr "Tipo de ficheiro:"
 
 #: openDCIM/report_network_map.php:619
 msgid "Select filter type"
-msgstr "Seleccione el tipo de filtro"
+msgstr "Seleccione o tipo de filtro"
 
 #: openDCIM/report_network_map.php:623 openDCIM/sidebar.inc.php:19
 msgid "Custom Tag"
@@ -4553,18 +4516,18 @@ msgstr "Etiqueta Personalizada"
 #: openDCIM/report_project_outage_simulator.php:278
 #: openDCIM/search_export.php:282 openDCIM/search_export_storage_room.php:237
 msgid "All Data Centers"
-msgstr "Todos los Centros de Proceso de Datos"
+msgstr "Todos os Centros de Proceso de Datos"
 
 #: openDCIM/report_outage_simulator.php:66
 #: openDCIM/report_panel_schedule.php:67
 #: openDCIM/report_project_outage_simulator.php:67
 msgid "Choose either power sources or panels to simulate for Data Center"
-msgstr "Elegir fuentes de energía o cuadros a simular para el CPD"
+msgstr "Elixir fontes de enerxía ou cadros a simular para o CPD"
 
 #: openDCIM/report_outage_simulator.php:70
 #: openDCIM/report_project_outage_simulator.php:71
 msgid "Only show down/unknown devices"
-msgstr "Sólo mostrar dispositivos caídos/desconocidos"
+msgstr "Sólo mostrar dispositivos caídos/descoñecidos"
 
 #: openDCIM/report_outage_simulator.php:73
 #: openDCIM/report_panel_schedule.php:72 openDCIM/report_panel_schedule.php:171
@@ -4572,26 +4535,26 @@ msgstr "Sólo mostrar dispositivos caídos/desconocidos"
 #: openDCIM/report_power_distribution.php:202
 #: openDCIM/report_project_outage_simulator.php:74
 msgid "Power Source"
-msgstr "Fuente de Energía"
+msgstr "Fonte de Enerxía"
 
 #: openDCIM/report_outage_simulator.php:73
 #: openDCIM/report_panel_schedule.php:72 openDCIM/report_panel_schedule.php:172
 #: openDCIM/report_project_outage_simulator.php:74
 msgid "Power Panel"
-msgstr "Cuadro Eléctrico"
+msgstr "Cadro Eléctrico"
 
 #: openDCIM/report_outage_simulator.php:89
 #: openDCIM/report_project_outage_simulator.php:90
 msgid "Tags (example: +Linux -Development)"
-msgstr "Etiquetas (ejemplo: +Linux -Desarrollo)"
+msgstr "Etiquetas (exemplo: +Linux -Desenvolvemento)"
 
 #: openDCIM/report_panel_schedule.php:15 openDCIM/reports.php:68
 msgid "Power Panel Schedule Report"
-msgstr "Informe del Esquema del Cuadro Eléctrico"
+msgstr "Informe do Esquema do Cadro Eléctrico"
 
 #: openDCIM/report_panel_schedule.php:169
 msgid "Panel Schedule for"
-msgstr "Esquema del Cuadro para"
+msgstr "Esquema do Cadro para"
 
 #: openDCIM/report_panel_schedule.php:175
 #: openDCIM/report_panel_schedule.php:177
@@ -4603,11 +4566,11 @@ msgstr "Polo"
 #: openDCIM/report_panel_schedule.php:178
 #: openDCIM/report_panel_schedule.php:193
 msgid "Circuit"
-msgstr "Circuito"
+msgstr "Circuíto"
 
 #: openDCIM/report_power_distribution.php:35 openDCIM/reports.php:66
 msgid "Power Distribution by Data Center"
-msgstr "Distribución de Energía Eléctrica por CPD"
+msgstr "Distribución de Enerxía Eléctrica por CPD"
 
 #: openDCIM/report_power_distribution.php:196
 #: openDCIM/report_power_distribution.php:202
@@ -4616,39 +4579,39 @@ msgstr "PDU"
 
 #: openDCIM/report_project_outage_simulator.php:149
 msgid "Simulated Outage Report"
-msgstr "Informe de Cortes de Energía simulados"
+msgstr ""
 
 #: openDCIM/report_project_outage_simulator.php:150
 msgid "Simulated Power Outage by Project"
-msgstr "Cortes de Energía simulados por Proyecto"
+msgstr ""
 
 #: openDCIM/report_project_outage_simulator.php:153
 msgid "Summary"
-msgstr "Resumen"
+msgstr ""
 
 #: openDCIM/report_project_outage_simulator.php:274
 msgid "Power Outage Simulation report"
-msgstr "Informe de Cortes de Energía simulados"
+msgstr ""
 
 #: openDCIM/report_project_outage_simulator.php:300
 msgid "Project Status"
-msgstr "Estado del Proyecto"
+msgstr ""
 
 #: openDCIM/report_project_outage_simulator.php:336
 msgid "Only listing systems which are down or unknown."
-msgstr "Sólo listar sistemas que están caídos o son desconocidos."
+msgstr "Só listar sistemas que estean caídos ou son descoñecidos."
 
 #: openDCIM/report_project_outage_simulator.php:348
 msgid "DeviceName"
-msgstr "Nombre del Dispositivo"
+msgstr ""
 
 #: openDCIM/report_project_outage_simulator.php:520
 msgid "Child"
-msgstr "Hijo"
+msgstr "Fillo"
 
 #: openDCIM/report_project_outage_simulator.php:559
 msgid "Compromised"
-msgstr "Comprometida"
+msgstr ""
 
 #: openDCIM/report_project_outage_simulator.php:559
 msgid "Normal"
@@ -4656,20 +4619,19 @@ msgstr "Normal"
 
 #: openDCIM/report_project_outage_simulator.php:584
 msgid "No Devices Were Affected"
-msgstr "Ningún dispositivo ha sido afectado"
+msgstr ""
 
 #: openDCIM/report_project_outage_simulator.php:595
 msgid "Included Tags"
-msgstr "Etiquetas incluídas"
+msgstr ""
 
 #: openDCIM/report_project_outage_simulator.php:604
 msgid "Excluded Tags"
-msgstr "Etiquetas excluídas"
+msgstr ""
 
 #: openDCIM/report_projects.php:20
-#, fuzzy
 msgid "All Projects/Services"
-msgstr "Todos los Proyectos"
+msgstr ""
 
 #: openDCIM/report_projects.php:25
 msgid "Specified Project/Service"
@@ -4685,22 +4647,22 @@ msgstr ""
 
 #: openDCIM/report_projects.php:132 openDCIM/report_projects.php:240
 msgid "Project Name:"
-msgstr "Nombre del Proyecto:"
+msgstr ""
 
 #: openDCIM/report_projects.php:134
 #, fuzzy
 msgid "Project Sponsor:"
-msgstr "Patrocinador del Proyecto"
+msgstr "Xefe Executivo"
 
 #: openDCIM/report_projects.php:136
 #, fuzzy
 msgid "Start Date:"
-msgstr "Fecha de Comienzo del Proyecto"
+msgstr "Data da Garantía"
 
 #: openDCIM/report_projects.php:138
 #, fuzzy
 msgid "Expiration Date:"
-msgstr "Fecha de Caducidad del Proyecto"
+msgstr "Tempo de Caucidade (Días)"
 
 #: openDCIM/report_projects.php:140
 msgid "Actual End:"
@@ -4709,7 +4671,7 @@ msgstr ""
 #: openDCIM/report_projects.php:146
 #, fuzzy
 msgid "Total Assigned Cabinets:"
-msgstr "Total de Armarios"
+msgstr "Armario Destino"
 
 #: openDCIM/report_projects.php:185 openDCIM/classes/DataCenter.class.php:653
 #, fuzzy
@@ -4722,11 +4684,11 @@ msgstr ""
 
 #: openDCIM/report_projects.php:242
 msgid "Select Project"
-msgstr "Seleccionar Proyecto"
+msgstr ""
 
 #: openDCIM/report_projects.php:243
 msgid "All Projects"
-msgstr "Todos los Proyectos"
+msgstr ""
 
 #: openDCIM/report_projects.php:249
 msgid ""
@@ -4769,15 +4731,15 @@ msgstr "Informe de Activos por Propietario"
 
 #: openDCIM/reports.php:48
 msgid "Data Center Asset Report [Excel]"
-msgstr "Informe de Activos del CPD [Excel]"
+msgstr "Informe de Activos do CPD [Excel]"
 
 #: openDCIM/reports.php:50
 msgid "Asset Aging Report"
-msgstr "Informe de Edad de los Activos"
+msgstr "Informe de Idade dos Activos"
 
 #: openDCIM/reports.php:51
 msgid "Project Asset Report"
-msgstr "Informe de Activos del Proyecto"
+msgstr ""
 
 #: openDCIM/reports.php:52
 msgid "Warranty Expiration Report"
@@ -4785,11 +4747,11 @@ msgstr "Informe de expiración de garantías"
 
 #: openDCIM/reports.php:53 openDCIM/report_vm_by_department.php:41
 msgid "Virtual Machines by Department"
-msgstr "Máquinas Virtuales por Departamento"
+msgstr "Máquinas Virtuais por Departamento"
 
 #: openDCIM/reports.php:54
 msgid "Network Map"
-msgstr "Mapa de la Red"
+msgstr "Mapa da Rede"
 
 #: openDCIM/reports.php:55
 #, fuzzy
@@ -4798,23 +4760,23 @@ msgstr "Informes de Inventario"
 
 #: openDCIM/reports.php:61
 msgid "Operational Reports"
-msgstr "Informes Operacionales"
+msgstr "Informes Operacionais"
 
 #: openDCIM/reports.php:63
 msgid "Diverse Power Exceptions Report"
-msgstr "Informe de Incumplimientos Energéticos Diversos"
+msgstr "Informe de Incumprimentos Enerxéticos Diversos"
 
 #: openDCIM/reports.php:64
 msgid "Simulated Power Outage Report"
-msgstr "Informe de Potencia de Salida Simulada"
+msgstr "Informe de Potencia de Saída Simulada"
 
 #: openDCIM/reports.php:65
 msgid "Project Power Outage Report"
-msgstr "Informe de Cortes de Energía del Proyecto"
+msgstr ""
 
 #: openDCIM/reports.php:67
 msgid "Server Tier Classification Report"
-msgstr "Informe de Clasificación TIER de los Servidores"
+msgstr "Informe de Clasificación TIER dos Servidores"
 
 #: openDCIM/reports.php:69
 msgid "Cabinet List"
@@ -4826,7 +4788,7 @@ msgstr "Informe de Auditoría"
 
 #: openDCIM/reports.php:73
 msgid "Cabinet Audit Logs"
-msgstr "Registro de Auditorías de Armarios"
+msgstr "Rexistro de Auditorías de Armarios"
 
 #: openDCIM/reports.php:74
 msgid "Cabinet Audit Frequency"
@@ -4838,15 +4800,15 @@ msgstr "Informe de Auditoría Excedente/Rescate"
 
 #: openDCIM/reports.php:76 openDCIM/report_supply_status.php:80
 msgid "Supplies Status Report"
-msgstr "Informe de Suministros"
+msgstr "Informe de Subministros"
 
 #: openDCIM/reports.php:77
 msgid "Actions Log"
-msgstr "Log de Acciones"
+msgstr "Log de Accións"
 
 #: openDCIM/report_supply_status.php:20
 msgid "Supply Status Report"
-msgstr "Informe del Estado de Suministros"
+msgstr "Informe do Estado de Subministros"
 
 #: openDCIM/report_supply_status.php:84 openDCIM/supplies.php:89
 #: openDCIM/supplies.php:101 openDCIM/supplybin.php:176
@@ -4855,7 +4817,7 @@ msgstr "Part Number"
 
 #: openDCIM/report_supply_status.php:85 openDCIM/supplies.php:105
 msgid "Part Name"
-msgstr "Nombre de la Pieza"
+msgstr "Nome da Peza"
 
 #: openDCIM/report_supply_status.php:86 openDCIM/supplies.php:109
 msgid "Min Qty"
@@ -4867,7 +4829,7 @@ msgstr "Cant Máx"
 
 #: openDCIM/report_supply_status.php:88
 msgid "On Hand"
-msgstr "Disponible"
+msgstr "Dispoñible"
 
 #: openDCIM/report_surplus.php:18
 msgid "All Mechanisms"
@@ -4890,7 +4852,7 @@ msgstr ""
 #: openDCIM/report_surplus.php:110
 #, fuzzy
 msgid "Criteria for this report:"
-msgstr "Hay un bucle en ese puerto"
+msgstr "Hai un bucle neste porto"
 
 #: openDCIM/report_surplus.php:111
 msgid "Date Range:"
@@ -4908,7 +4870,7 @@ msgstr "Número de Serie"
 #: openDCIM/report_surplus.php:232
 #, fuzzy
 msgid "Device Disposition Report"
-msgstr "Informe de Clasificación TIER de los Servidores"
+msgstr "Informe de Clasificación TIER dos Servidores"
 
 #: openDCIM/report_tags.php:11
 msgid "Inventory Reporting By Tag"
@@ -4928,7 +4890,7 @@ msgstr "Seleccionar Etiqueta"
 
 #: openDCIM/report_tags.php:118
 msgid "All Tags"
-msgstr "Todas las Etiquetas"
+msgstr "Todas as Etiquetas"
 
 #: openDCIM/report_vendor_model.php:48
 msgid "Please select the values to limit the report scope as indicated below."
@@ -4947,7 +4909,7 @@ msgstr ""
 #: openDCIM/report_vendor_model.php:160
 #, fuzzy
 msgid "The criteria given for this report is:"
-msgstr "Hay un bucle en ese puerto"
+msgstr "Hai un bucle neste porto"
 
 #: openDCIM/report_vendor_model.php:161
 #, fuzzy
@@ -4965,7 +4927,7 @@ msgstr "Número Total de MVs"
 
 #: openDCIM/report_vm_by_department.php:168
 msgid "Virtual Machines Unassigned to a Department"
-msgstr "Máquinas Virtuales no Asignadas a Departamento"
+msgstr "Máquinas Virtuais non Asignadas a Departamento"
 
 #: openDCIM/report_vm_by_department.php:171
 #: openDCIM/report_vm_by_department.php:249
@@ -4974,11 +4936,11 @@ msgstr "Índice"
 
 #: openDCIM/report_warranty.php:109
 msgid "Data Center Warranty Expiration Report"
-msgstr "Informe de expiración de garantías del CPD"
+msgstr "Informe de expiración de garantías do CPD"
 
 #: openDCIM/report_warranty.php:422
 msgid "Warranty Status"
-msgstr "Estado de la garantía"
+msgstr "Estado da garantía"
 
 #: openDCIM/report_warranty.php:439
 msgid "Remaining"
@@ -4986,7 +4948,7 @@ msgstr "Remanente"
 
 #: openDCIM/report_warranty.php:470
 msgid "Devices with expired warranty"
-msgstr "Dispositivos con la garantía expirada"
+msgstr "Dispositivos coa garantía expirada"
 
 #: openDCIM/report_warranty.php:472
 msgid "Expired"
@@ -4994,7 +4956,7 @@ msgstr "Expirada"
 
 #: openDCIM/report_xml_CFD.php:11
 msgid "XML Output for CFD Simulation"
-msgstr "Salida XML para Simulación CFD"
+msgstr "Saída XML para Simulación CFD"
 
 #: openDCIM/report_xml_CFD.php:62
 msgid "Select Data Center"
@@ -5002,7 +4964,7 @@ msgstr "Selecionar un CPD"
 
 #: openDCIM/rowview.php:119
 msgid "Add new cabinet"
-msgstr "Añadir nuevo armario"
+msgstr "Engadir novo armario"
 
 #: openDCIM/rowview.php:122
 msgid "Front View"
@@ -5010,11 +4972,11 @@ msgstr "Vista Frontal"
 
 #: openDCIM/rowview.php:122
 msgid "Rear View"
-msgstr "Vista Trasera"
+msgstr "Vista Traseira"
 
 #: openDCIM/rowview.php:173
 msgid "Return to"
-msgstr "Volver a"
+msgstr "Voltar a"
 
 #: openDCIM/search_export.php:5
 msgid "Data Center View/Export"
@@ -5027,65 +4989,65 @@ msgstr "Centro de Proceso de Datos:"
 #: openDCIM/search_export_storage_room.php:5
 #, fuzzy
 msgid "Storage Room View/Export"
-msgstr "Ver/Exportar el Log"
+msgstr "Ver/Exportar o Log"
 
 #: openDCIM/search.php:25
 msgid "Search Results"
-msgstr "Resultados de la Búsqueda"
+msgstr "Resultados da Procura"
 
 #: openDCIM/search.php:31
 msgid "Serial number search results for"
-msgstr "Resultados de la búsqueda por número de serie para"
+msgstr "Resultados da procura por número de serie para"
 
 #: openDCIM/search.php:36
 msgid "PrimaryIP search results for"
-msgstr "Resultados de la búsqueda por IP pricipal"
+msgstr "Resultados da procura por IP principal"
 
 #: openDCIM/search.php:46
 msgid "Name search results for"
-msgstr "Resultados de la búsqueda por nombre para"
+msgstr "Resultados da procura por nome para"
 
 #: openDCIM/search.php:63
 msgid "Owner search results for"
-msgstr "Resultados de la búsqueda por propietario para"
+msgstr "Resultados da procura por propietario para"
 
 #: openDCIM/search.php:68
 msgid "Asset tag search results for"
-msgstr "Resultados de la búsqueda por etiqueta del activo para"
+msgstr "Resultados da procura por etiqueta do activo para"
 
 #: openDCIM/search.php:74
 msgid "Custom tag search results for"
-msgstr "Resultados de la búsqueda por etiqueta personalizada para"
+msgstr "Resultados da procura por etiqueta personalizada para"
 
 #: openDCIM/search.php:84
 msgid "Project Catalog search results for"
-msgstr "Resultados de búsqueda en el Catálogo del Proyecto para"
+msgstr ""
 
 #: openDCIM/search.php:96
 msgid "Device Model search results for"
-msgstr "Resultados de la búsqueda por Modelo de Dispositivo para"
+msgstr ""
 
 #: openDCIM/search.php:119
 msgid "Notes search results for"
-msgstr "Resultados de la búsqueda de notas para"
+msgstr "Resultados da procura de notas para"
 
 #: openDCIM/search.php:132
 msgid "Search results for"
-msgstr "Resultados de la Búsqueda para"
+msgstr ""
 
 #: openDCIM/search.php:282
 #, php-format
 msgid "Search complete. (%s) results."
-msgstr "Búsqueda completa. (%s) resultados."
+msgstr "Procura completa. (%s) resultados."
 
 #: openDCIM/search.php:284
 msgid "No matching devices found."
-msgstr "Ningún dispositivo cumple el criterio."
+msgstr "Ningún dispositivo cumpre o criterio."
 
 #: openDCIM/search.php:400
 #, php-format
 msgid "Only one result, will autoforward in %s seconds."
-msgstr "Sólo un resultado, se avanzará en %s segundos"
+msgstr "Só un resultado, se avanzará en %s segundos"
 
 #: openDCIM/search.php:435
 msgid "Show All"
@@ -5093,15 +5055,15 @@ msgstr "Mostrar todo"
 
 #: openDCIM/search.php:435
 msgid "Racks Only"
-msgstr "Sólo los Armarios"
+msgstr "Só os Armarios"
 
 #: openDCIM/search.php:452
 msgid "No label"
-msgstr "Sin etiqueta"
+msgstr "Sen etiqueta"
 
 #: openDCIM/sidebar.inc.php:8
 msgid "Search by Name:"
-msgstr "Buscar por Nombre"
+msgstr "Buscar por Nome"
 
 #: openDCIM/sidebar.inc.php:11 openDCIM/sidebar.inc.php:72
 msgid "Advanced"
@@ -5109,11 +5071,11 @@ msgstr "Avanzada"
 
 #: openDCIM/sidebar.inc.php:15
 msgid "Advanced Search:"
-msgstr "Búsqueda Avanzada:"
+msgstr "Procura Avanzada:"
 
 #: openDCIM/sidebar.inc.php:24
 msgid "Device Model"
-msgstr "Modelo del Dispositivo"
+msgstr ""
 
 #: openDCIM/sidebar.inc.php:25
 msgid "PrimaryIP"
@@ -5129,7 +5091,7 @@ msgstr "Inicio"
 
 #: openDCIM/storageroom.php:5 openDCIM/storageroom.php:54
 msgid "Storage Room Maintenance"
-msgstr "Mantenimiento del Almacén"
+msgstr "Mantemento do Almacén"
 
 #: openDCIM/storageroom.php:41
 #, php-format
@@ -5146,55 +5108,55 @@ msgstr ""
 
 #: openDCIM/supplies.php:5 openDCIM/supplycheckout.php:5
 msgid "Data Center Stockroom Supplies"
-msgstr "Suministros del CPD"
+msgstr "Subministros do CPD"
 
 #: openDCIM/supplies.php:51
 msgid "Bin ID"
-msgstr "ID del Almacén"
+msgstr "ID do Almacén"
 
 #: openDCIM/supplies.php:91
 msgid "New Supplies"
-msgstr "Nuevos Suministros"
+msgstr "Novos Subministros"
 
 #: openDCIM/supplybin.php:5
 msgid "Data Center Stockroom Supply Bins"
-msgstr "Almacenes de suministros del CPD"
+msgstr "Almacéns de suministros do CPD"
 
 #: openDCIM/supplybin.php:147
 msgid "Bin Location"
-msgstr "Localización del Almacén"
+msgstr "Localización do Almacén"
 
 #: openDCIM/supplybin.php:149
 msgid "New Bin"
-msgstr "Nuevo Almacén"
+msgstr "Novo Almacén"
 
 #: openDCIM/supplybin.php:192
 msgid "Select parts to add..."
-msgstr "Selecionar partes a añadir..."
+msgstr "Selecionar partes a engadir..."
 
 #: openDCIM/template_mpdf_reports.inc.php:6
 msgid "No Data to Display"
-msgstr "No hay información que mostrar"
+msgstr "Non hai información que mostrar"
 
 #: openDCIM/timeperiods.php:5
 msgid "Data Center Time Periods Listing"
-msgstr "Listado de Periodos de Tiempo del CPD"
+msgstr "Listado de Periodos de Tempo do CPD"
 
 #: openDCIM/timeperiods.php:68
 msgid "Escalation Time Period"
-msgstr "Periodo de Tiempo de Escalado"
+msgstr "Periodo de Tempo de Escalado"
 
 #: openDCIM/timeperiods.php:70
 msgid "New Time Period"
-msgstr "Nuevo Periodo de Tiempo"
+msgstr "Novo Periodo de Tempo"
 
 #: openDCIM/updatevmowner.php:5
 msgid "Data Center Virtual Machine Detail"
-msgstr "Detalle de las Máquinas Virtuales del CPD"
+msgstr "Detalle das Máquinas Virtuais do CPD"
 
 #: openDCIM/usermgr.php:5
 msgid "Data Center Contact Detail"
-msgstr "Detalle de Contactos del CPD"
+msgstr "Detalle de Contactos do CPD"
 
 #: openDCIM/usermgr.php:56
 msgid "Existing UserID account displayed."
@@ -5210,12 +5172,12 @@ msgstr "Usuario"
 
 #: openDCIM/usermgr.php:232
 msgid "New User"
-msgstr "Nuevo Usuario"
+msgstr "Novo Usuario"
 
 #: openDCIM/usermgr.php:239
 msgid "This user is the primary contact for this many devices"
 msgstr ""
-"Este usuario es el contacto principal para esta cantidad de dispositivos"
+"Este usuario é o contacto principal para esta cantidade de dispositivos"
 
 #: openDCIM/usermgr.php:254
 msgid "Phone 1"
@@ -5231,11 +5193,11 @@ msgstr "Teléfono 3"
 
 #: openDCIM/usermgr.php:266
 msgid "Email Address"
-msgstr "Dirección de Correo Electrónico"
+msgstr "Enderezo de Correo Electrónico"
 
 #: openDCIM/usermgr.php:274
 msgid "Generate New Key"
-msgstr "Generar Nueva Clave"
+msgstr ""
 
 #: openDCIM/usermgr.php:278
 msgid "Rights"
@@ -5259,7 +5221,7 @@ msgstr "Eliminar Dispositivos (Global)"
 
 #: openDCIM/usermgr.php:284
 msgid "Enter/Modify Contacts and Departments"
-msgstr "Introducir/Modificar Contactos y Departamentos"
+msgstr "Introducir/Modificar Contactos e Departamentos"
 
 #: openDCIM/usermgr.php:285
 msgid "Enter Rack Requests"
@@ -5271,11 +5233,11 @@ msgstr "Completar Solicitudes de Armario"
 
 #: openDCIM/usermgr.php:287
 msgid "Perform Bulk Operations"
-msgstr "Realizar Operaciones Masivas"
+msgstr ""
 
 #: openDCIM/usermgr.php:288
 msgid "Manage Site and Users"
-msgstr "Gestionar Sistema y Usuarios"
+msgstr "Xestionar Sistema e Usuarios"
 
 #: openDCIM/usermgr.php:295
 msgid "Transfer Devices"
@@ -5283,15 +5245,15 @@ msgstr "Transferir Dispositivos"
 
 #: openDCIM/usermgr.php:318
 msgid "Transfer all devices to another primary contact"
-msgstr "Transferir todos los dispositivos a otro contacto principal"
+msgstr "Transferir todos os dispositivos a outro contacto principal"
 
 #: openDCIM/vmnamecheck.php:26 openDCIM/vmnamecheck.php:66
 msgid "Virtual Machine Inventory Exception Report"
-msgstr "Informe de Incumplimientos de Inventario de Máquinas Virtuales"
+msgstr "Informe de Incumprimentos de Inventario de Máquinas Virtuais"
 
 #: openDCIM/vmnamecheck.php:67 openDCIM/vmnamecheck.php:111
 msgid "This is an automated message from the"
-msgstr "Este es un mensaje automático del"
+msgstr "Esta é unha mensaxe automática do"
 
 #: openDCIM/vmnamecheck.php:67
 msgid ""
@@ -5301,9 +5263,9 @@ msgid ""
 "\t\t\t<p>The following"
 msgstr ""
 "Proceso\n"
-"\t\t de Inventario. Este proceso está programado para ejecutarse una vez "
+"\t\t de Inventario. Este proceso está programado para executarse unha vez "
 "cada día laborable.</p>\n"
-"\t\t\t<p>El siguiente"
+"\t\t\t<p>O seguinte"
 
 #: openDCIM/vmnamecheck.php:69
 msgid ""
@@ -5313,11 +5275,11 @@ msgid ""
 "update\n"
 "\t\t\townership information."
 msgstr ""
-"Las Máquinas Virtuales fueron detectadas en el entorno\n"
-"\t\ty no tienen un registro de propietario asociado. Se asume que\n"
-"\t\t\tson Máquinas Virtuales nuevas. Por favor, pulse en los enlaces de "
-"abajo para actualizar\n"
-"\t\t\tla información del propietario."
+"As Máquinas Virtuais foron detectadas no entorno\n"
+"\t\te non ten un rexistro de propietario asociado. Asúmese que\n"
+"\t\t\tson Máquinas Virtuais novas. Por favor, pulse nos enlaces de abaixo "
+"para actualizar\n"
+"\t\t\ta información do propietario."
 
 #: openDCIM/vmnamecheck.php:73
 msgid ""
@@ -5325,20 +5287,20 @@ msgid ""
 "please\n"
 "\t\t\tsend an email to"
 msgstr ""
-"Si el departamento apropiado no está incluido como propietario, por favor\n"
+"Se o departamento apropiado non está incluido como propietario, por favor\n"
 "\t\t envíe un correo a"
 
 #: openDCIM/vmnamecheck.php:74
 msgid "to have it added."
-msgstr "tenerlo añadido."
+msgstr "tenelo engadido."
 
 #: openDCIM/vmnamecheck.php:77 openDCIM/vmnamecheck.php:117
 msgid "Server Name"
-msgstr "Nombre del Servidor"
+msgstr "Nome do Servidor"
 
 #: openDCIM/vmnamecheck.php:110
 msgid "Virtual Machine Inventory Expiration Report"
-msgstr "Informe de Caducidad de Inventario de Máquinas Virtuales"
+msgstr "Informe de Caducidade de Inventario de Máquinas Virtuais"
 
 #: openDCIM/vmnamecheck.php:111
 msgid ""
@@ -5346,19 +5308,19 @@ msgid ""
 "\t\t\tProcess.  This process is scheduled to run once each business day."
 msgstr ""
 "Proceso de Inventario de \n"
-"\t\tMáquinas Virtuales. Este proceso está programado para ejecutarse una vez "
+"\t\tMáquinas Virtuais. Este proceso está programado para executarse unha vez "
 "cada día laborable."
 
 #: openDCIM/vmnamecheck.php:113
 msgid "The following"
-msgstr "El siguiente"
+msgstr "O seguinte"
 
 #: openDCIM/vmnamecheck.php:113
 msgid ""
 "Virtual Machines have not been detected within the\n"
 "\t\t\tpast"
 msgstr ""
-"Las Máquinas Virtuales no han sido detectadas en el\n"
+"As Máquinas Virtuais non foron detectadas no\n"
 "\t\tpasado"
 
 #: openDCIM/vmnamecheck.php:114
@@ -5366,40 +5328,40 @@ msgid ""
 "days and are assumed to be expired.  They are being removed from the\n"
 "\t\t\tinventory system."
 msgstr ""
-"días y se asume que han expirado. Serán eliminadas del\n"
+"días e asúmese que expiraron. Serán eliminadas do\n"
 "\t\tsistema de inventario."
 
 #: openDCIM/workorder.php:5
 msgid "Data Center Operations Work Order Builder"
-msgstr "Creador de Órdenes de Trabajo del CPD"
+msgstr "Creador de Ordes de Traballo do CPD"
 
 #: openDCIM/workorder.php:59
 msgid "openDCIM-workorder-"
-msgstr "Orden-de-trabajo-openDCIM-"
+msgstr ""
 
 #: openDCIM/workorder.php:190
 msgid "Work Order Contents"
-msgstr "Contenido de la Orden de Trabajo"
+msgstr "Contido da Orde de Traballo"
 
 #: openDCIM/workorder.php:192
 msgid "Image"
-msgstr "Imagen"
+msgstr "Imaxe"
 
 #: openDCIM/workorder.php:226
 msgid "Select All"
-msgstr "Seleccionar Todo"
+msgstr ""
 
 #: openDCIM/workorder.php:230
 msgid "Email to DC Team Address"
-msgstr "Direccion del equipo CPD para enviar Correo "
+msgstr ""
 
 #: openDCIM/workorder.php:232
 msgid "Clear Reservation Flag"
-msgstr "Borrar el indicador de Reserva"
+msgstr ""
 
 #: openDCIM/workorder.php:233
 msgid "Move Items to Storage"
-msgstr "Mover elementos a Almacenamiento"
+msgstr ""
 
 #: openDCIM/workorder.php:234
 msgid "Clear"
@@ -5407,15 +5369,15 @@ msgstr "Borrar"
 
 #: openDCIM/zone.php:5
 msgid "Data Center Zones"
-msgstr "Zonas del CPD"
+msgstr "Zoas do CPD"
 
 #: openDCIM/zone.php:85
 msgid "openDCIM Data Center Zones"
-msgstr "Zonas del CPD"
+msgstr "Zoas do CPD"
 
 #: openDCIM/zone.php:120
 msgid "New Zone"
-msgstr "Nueva Zona"
+msgstr "Nova Zoa"
 
 #: openDCIM/zone.php:168
 msgid "Zoom"
@@ -5423,27 +5385,27 @@ msgstr "Zoom"
 
 #: openDCIM/zone.php:196
 msgid "Click and drag on the image to select an area for this zone"
-msgstr "Pulse y desplace por la imagen para seleccionar un área para esta zona"
+msgstr "Pulse e desprace pola imaxen para seleccionar unha área para esta zoa"
 
 #: openDCIM/zone.php:236
 msgid "Verify Delete Zone"
-msgstr "Verificar Borrado de la Zona"
+msgstr "Verificar Borrado da Zoa"
 
 #: openDCIM/zone.php:237
 msgid ""
 "This Zone will be deleted and there is no undo.  Assets within the zone will "
 "remain as members of the Data Center."
 msgstr ""
-"Esta Zona se borrará y no se podrá deshacer. Los activos en la zona "
-"permanecerán como miembros del CPD."
+"Esta Zoa borrarase e non se poderá desfacer. Os activos na zoa permanecerán "
+"como membros do CPD."
 
 #: openDCIM/zone_stats.php:5
 msgid "Zone Statistics"
-msgstr "Estadísticas de la Zona"
+msgstr "Estatísticas da Zoa"
 
 #: openDCIM/zone_stats.php:238
 msgid "Zone Size (approximate)"
-msgstr "Tamaño de la Zona (aproximado)"
+msgstr "Tamaño da Zoa (aproximado)"
 
 #: openDCIM/zone_stats.php:242
 msgid "approximate"
@@ -5464,15 +5426,15 @@ msgstr "aproximado"
 #: openDCIM/api/v1/putRoutes.php:385 openDCIM/api/v1/putRoutes.php:426
 #: openDCIM/api/v1/putRoutes.php:467
 msgid "Access Denied"
-msgstr "Acceso Denegado"
+msgstr ""
 
 #: openDCIM/api/v1/deleteRoutes.php:101 openDCIM/api/v1/index2.php:1756
 msgid "Failed to delete color with ColorID"
-msgstr "Fallo al eliminar el color con ColorID"
+msgstr "Fallo ao eliminar a cor con ColorID"
 
 #: openDCIM/api/v1/deleteRoutes.php:125 openDCIM/api/v1/index2.php:1778
 msgid "Device doesn't exist"
-msgstr "No existe ese dispositivo"
+msgstr "Non existe ese dispositivo"
 
 #: openDCIM/api/v1/deleteRoutes.php:130 openDCIM/api/v1/index2.php:1119
 #: openDCIM/api/v1/index2.php:1154 openDCIM/api/v1/index2.php:1194
@@ -5482,11 +5444,11 @@ msgstr "No existe ese dispositivo"
 #: openDCIM/api/v1/index2.php:1593 openDCIM/api/v1/index2.php:1630
 #: openDCIM/api/v1/index2.php:1665 openDCIM/api/v1/index2.php:1783
 msgid "Unauthorized"
-msgstr "No autorizado"
+msgstr "Non autorizado"
 
 #: openDCIM/api/v1/deleteRoutes.php:135 openDCIM/api/v1/index2.php:1788
 msgid "An unknown error has occured"
-msgstr "Ha ocurrido un error desconocido"
+msgstr "Ocorreu un erro descoñecido"
 
 #: openDCIM/api/v1/deleteRoutes.php:164
 msgid ""
@@ -5496,77 +5458,76 @@ msgstr ""
 #: openDCIM/api/v1/deleteRoutes.php:168
 #, fuzzy
 msgid "Status removed successfully."
-msgstr "Todos los registros se han importado correctamente."
+msgstr "Nova cor creada satisfactoriamente."
 
 #: openDCIM/api/v1/getRoutes.php:263 openDCIM/api/v1/getRoutes.php:442
 #: openDCIM/api/v1/index2.php:464
 msgid "Unknown error"
-msgstr "Error desconocido"
+msgstr "Erro descoñecido"
 
 #: openDCIM/api/v1/getRoutes.php:266 openDCIM/api/v1/index2.php:1424
 #: openDCIM/api/v1/index2.php:1469 openDCIM/api/v1/putRoutes.php:160
 #: openDCIM/api/v1/putRoutes.php:205
 msgid "Cabinet not found"
-msgstr "Armario no encontrado"
+msgstr "Armario non atopado"
 
 #: openDCIM/api/v1/getRoutes.php:417 openDCIM/api/v1/index2.php:429
 #: openDCIM/api/v1/index2.php:1114 openDCIM/api/v1/postRoutes.php:238
 #: openDCIM/api/v1/postRoutes.php:275
 msgid "No device found with DeviceID"
-msgstr "No se ha encontrado ningún dispositivo con DeviceID"
+msgstr "Non se atopou ningún dispositivo con DeviceID"
 
 #: openDCIM/api/v1/getRoutes.php:472 openDCIM/api/v1/index2.php:494
 msgid "Device is not a sensor or is missing a template"
-msgstr "El dispositivo no es un sensor o le falta la plantilla"
+msgstr "O dispositivo non é un sensor ou faltalle a plantilla"
 
 #: openDCIM/api/v1/getRoutes.php:657
 #, fuzzy
 msgid "No status found with StatusID"
-msgstr "No se ha encontrado ningún dispositivo con identificador:"
+msgstr "Non se atopou ningún dispositivo con identificador:"
 
 #: openDCIM/api/v1/getRoutes.php:824 openDCIM/api/v1/index2.php:690
 msgid "No color code found with ColorID"
-msgstr "No se ha encontrado ningún código de color con ColorID"
+msgstr "Non se atopou ningún código de cor con ColorID"
 
 #: openDCIM/api/v1/getRoutes.php:905 openDCIM/api/v1/index2.php:758
 msgid "No template found with TemplateID: "
-msgstr "No se ha encontrado ningún dispositivo con identificador:"
+msgstr "Non se atopou ningún dispositivo con identificador:"
 
 #: openDCIM/api/v1/getRoutes.php:928 openDCIM/api/v1/getRoutes.php:975
 #: openDCIM/api/v1/index2.php:781 openDCIM/api/v1/index2.php:828
 msgid "No ports found for TemplateID: "
-msgstr "No se han encontrado puertos para el identificador de plantilla:"
+msgstr "Non se atoparon portos para o identificador de plantilla:"
 
 #: openDCIM/api/v1/getRoutes.php:952 openDCIM/api/v1/index2.php:805
 msgid "Port not found for TemplateID: "
-msgstr "Puerto no encontrado para el identificador de plantilla:"
+msgstr "Porto non atopado para o identificador de plantilla:"
 
 #: openDCIM/api/v1/getRoutes.php:996 openDCIM/api/v1/index2.php:849
 msgid "No slots found for TemplateID: "
-msgstr "Ranuras no definidas en la plantilla:"
+msgstr "Ranuras non definidas na plantilla:"
 
 #: openDCIM/api/v1/index2.php:963
 msgid "Insufficient privilege level"
-msgstr "Nivel de privilegios insuficiente"
+msgstr "Nivel de privilexios insuficiente"
 
 #: openDCIM/api/v1/index2.php:974
 msgid "User not found in database."
-msgstr "Usuario no encontrado en la base de datos"
+msgstr "Usuario non atopado na base de datos"
 
 #: openDCIM/api/v1/index2.php:986 openDCIM/api/v1/postRoutes.php:58
 msgid "Unable to update People resource with the given parameters."
 msgstr ""
-"No es posible actualizar el recurso People con los parámetros porporcionados"
+"Non é posible actualizar o recurso People cos parámetros porporcionados"
 
 #: openDCIM/api/v1/index2.php:991
 #, php-format
 msgid "People resource for UserID=%1$s updated successfully."
-msgstr ""
-"El recurso People para UserID=%1$s se ha actualizado satisfactoriamente."
+msgstr "O recurso People para UserID=%1$s actualizouse satisfactoriamente."
 
 #: openDCIM/api/v1/index2.php:1032 openDCIM/api/v1/postRoutes.php:112
 msgid "Device update has failed"
-msgstr "La actualización del dispositivo ha fallado"
+msgstr "A actualización do dispositivo fallou."
 
 #: openDCIM/api/v1/index2.php:1127 openDCIM/api/v1/postRoutes.php:254
 #: openDCIM/api/v1/postRoutes.php:285
@@ -5575,46 +5536,45 @@ msgstr "Actualización fallada"
 
 #: openDCIM/api/v1/index2.php:1159 openDCIM/api/v1/postRoutes.php:315
 msgid "No device template found with TemplateID: "
-msgstr "No se ha encontrado la plantilla con identificador:"
+msgstr "Non se atopou a plantilla con identificador:"
 
 #: openDCIM/api/v1/index2.php:1167 openDCIM/api/v1/postRoutes.php:326
 msgid "Device template update failed"
-msgstr "Fallo en la actualización de la plantilla de dispositivo"
+msgstr "Fallo na actualización da plantilla de dispositivo"
 
 #: openDCIM/api/v1/index2.php:1199 openDCIM/api/v1/postRoutes.php:358
 msgid "Template port not found with id: "
-msgstr "No se ha encontrado el puerto de la plantilla con identificador:"
+msgstr "Non se atopou o porta da plantilla con identificador:"
 
 #: openDCIM/api/v1/index2.php:1207 openDCIM/api/v1/postRoutes.php:369
 msgid "Template port update failed"
-msgstr "Fallo en la actualización del puerto de la plantilla"
+msgstr "Fallo na actualización do porto da plantilla"
 
 #: openDCIM/api/v1/index2.php:1241 openDCIM/api/v1/postRoutes.php:403
 msgid "Template slot not found with id: "
-msgstr "No se ha encontrado la ranura de la plantilla con identificador:"
+msgstr "Non se atopou a ranura da plantilla con identificador:"
 
 #: openDCIM/api/v1/index2.php:1252 openDCIM/api/v1/postRoutes.php:417
 msgid "Template slot update failed"
-msgstr "Fallo en la actualización de la ranura de la plantilla"
+msgstr "Fallo na actualización da ranura da plantilla"
 
 #: openDCIM/api/v1/index2.php:1283 openDCIM/api/v1/postRoutes.php:489
 msgid "Manufacturer not found with id: "
-msgstr "No se ha encontrado el fabricante con identificador:"
+msgstr "Non se atopou o fabricante con identificador:"
 
 #: openDCIM/api/v1/index2.php:1289 openDCIM/api/v1/postRoutes.php:498
 msgid "Manufacturer update failed"
-msgstr "Fallo en la actualización del fabricante"
+msgstr "Fallo na actualización do fabricante"
 
 #: openDCIM/api/v1/index2.php:1339 openDCIM/api/v1/putRoutes.php:48
 msgid "UserID already in database.  Use the update API to modify record."
 msgstr ""
-"UserID ya está en la base de datos. Utilice la API actualizada para "
-"modificar el registro."
+"UserID xa está na base de datos. Utilice a API actualizada para modificar o "
+"rexistro."
 
 #: openDCIM/api/v1/index2.php:1359 openDCIM/api/v1/putRoutes.php:62
 msgid "Unable to create People resource with the given parameters."
-msgstr ""
-"No es posible crear el recurso People con los parámetros proporcionados."
+msgstr "Non é posible crear o recurso People cos parámetros proporcionados."
 
 #: openDCIM/api/v1/index2.php:1364 openDCIM/api/v1/putRoutes.php:66
 msgid "People resource created successfully."
@@ -5622,69 +5582,69 @@ msgstr "Recurso People creado satisfactoriamente."
 
 #: openDCIM/api/v1/index2.php:1390 openDCIM/api/v1/putRoutes.php:102
 msgid "Error creating new color."
-msgstr "Error en la creación del nuevo color."
+msgstr "Erro na creación da nova cor."
 
 #: openDCIM/api/v1/index2.php:1394 openDCIM/api/v1/putRoutes.php:106
 msgid "New color created successfully."
-msgstr "Nuevo color creado satisfactoriamente."
+msgstr "Nova cor creada satisfactoriamente."
 
 #: openDCIM/api/v1/index2.php:1434 openDCIM/api/v1/index2.php:1479
 #: openDCIM/api/v1/putRoutes.php:170 openDCIM/api/v1/putRoutes.php:215
 msgid "Device creation failed"
-msgstr "Fallo en la creación del dispositivo"
+msgstr "Fallo na creación do dispositivo"
 
 #: openDCIM/api/v1/index2.php:1521 openDCIM/api/v1/putRoutes.php:301
 msgid "Device template creation failed"
-msgstr "Fallo en la creación de la plantilla de dispositivo"
+msgstr "Fallo na creación da plantilla de dispositivo"
 
 #: openDCIM/api/v1/index2.php:1561 openDCIM/api/v1/index2.php:1598
 #: openDCIM/api/v1/putRoutes.php:347 openDCIM/api/v1/putRoutes.php:390
 msgid "Device template port creation failed"
-msgstr "Fallo en la creación del puerto de la plantilla de dispositivo"
+msgstr "Fallo na creación do porto da plantilla de dispositivo"
 
 #: openDCIM/api/v1/index2.php:1635 openDCIM/api/v1/putRoutes.php:431
 msgid "Device template slot creation failed"
-msgstr "Fallo en la creación de la ranura de la plantilla del dispositivo"
+msgstr "Fallo na creación da ranura da plantilla do dispositivo"
 
 #: openDCIM/api/v1/index2.php:1668 openDCIM/api/v1/putRoutes.php:470
 msgid "Manufacturer not created: "
-msgstr "No se ha creado el fabricante:"
+msgstr "Non se creou o fabricante:"
 
 #: openDCIM/api/v1/postRoutes.php:44
 msgid "UserID="
-msgstr "ID del Usuario="
+msgstr ""
 
 #: openDCIM/api/v1/postRoutes.php:62
 #, php-format
 msgid "People resource for UserID=%s updated successfully."
-msgstr "El recurso People para UserID=%s se ha actualizado satisfactoriamente."
+msgstr ""
 
 #: openDCIM/api/v1/postRoutes.php:120
 msgid "devices updated"
-msgstr "dispositivos actualizados"
+msgstr ""
 
 #: openDCIM/api/v1/postRoutes.php:188
 msgid "Error updating color code."
-msgstr "Error actualizando código de color."
+msgstr ""
 
 #: openDCIM/api/v1/postRoutes.php:216
 msgid "Invalid operation"
-msgstr "Operación no válida."
+msgstr ""
 
 #: openDCIM/api/v1/postRoutes.php:457 openDCIM/api/v1/putRoutes.php:258
 #, fuzzy
 msgid "Error creating new status."
-msgstr "Error en la creación del nuevo color."
+msgstr "Erro na creación da nova cor."
 
 #: openDCIM/api/v1/postRoutes.php:461
 #, fuzzy
 msgid "Status updated successfully."
-msgstr "Todos los registros se han importado correctamente."
+msgstr "Nova cor creada satisfactoriamente."
 
 #: openDCIM/api/v1/putRoutes.php:262
 #, fuzzy
 msgid "New status created successfully."
-msgstr "Nuevo color creado satisfactoriamente."
+msgstr "Nova cor creada satisfactoriamente."
 
 #: openDCIM/scripts/ajax_tooltip.php:131 openDCIM/scripts/ajax_tooltip.php:132
 #: openDCIM/scripts/ajax_tooltip.php:133
@@ -5692,7 +5652,7 @@ msgstr "Nuevo color creado satisfactoriamente."
 #: openDCIM/classes/DataCenter.class.php:520
 #: openDCIM/classes/DataCenter.class.php:521
 msgid "no data"
-msgstr "Sin datos"
+msgstr "Sen datos"
 
 #: openDCIM/scripts/ajax_tooltip.php:140
 msgid "Measured Power Combined"
@@ -5700,81 +5660,81 @@ msgstr "Potencia medida combinada"
 
 #: openDCIM/scripts/ajax_tooltip.php:182
 msgid "Quit that! You don't have rights to view this."
-msgstr "No tiene permisos para ver esto."
+msgstr "Non ten permisos para ver isto."
 
 #: openDCIM/scripts/ajax_tooltip.php:202
 msgid "Details Restricted"
-msgstr "Detalles Restringidos"
+msgstr "Detalles Restrinxidos"
 
 #: openDCIM/scripts/ajax_tooltip.php:319
 msgid "Tooltips are enabled with no options selected."
-msgstr "Los Tooltips están habilitados sin opciones seleccionadas."
+msgstr "Os Tooltips están habilitados sen opcións seleccionadas."
 
 #: openDCIM/scripts/uploadifive.php:37
 #, php-format
 msgid "Upload directory '%s' is not writable"
-msgstr "El directorio de subida no es de escritura"
+msgstr "O directorio de subida non é de escritura"
 
 #: openDCIM/scripts/uploadifive.php:57
 msgid "File was not deleted"
-msgstr "El archivo no ha sido eliminado"
+msgstr "O arquivo non foi eliminado"
 
 #: openDCIM/scripts/uploadifive.php:76
 msgid "Couldn't complete file move"
-msgstr "No se pudo completar el movimiento del archivo"
+msgstr "Non se puido completar o movemento do arquivo"
 
 #: openDCIM/scripts/uploadifive.php:82
 msgid "The file is bigger than this PHP installation allows"
-msgstr "El archivo es más grande de lo que permite esta instalación de PHP"
+msgstr "O arquivo é máis grande do que permite esta instalación de PHP"
 
 #: openDCIM/scripts/uploadifive.php:85
 msgid "The file is bigger than this form allows"
-msgstr "El archivo es más grande de lo que permite este formulario"
+msgstr "O archivo é máis grande do que permite este formulario"
 
 #: openDCIM/scripts/uploadifive.php:88
 msgid "Only part of the file was uploaded"
-msgstr "Sólo se subió parte del archivo"
+msgstr "Só se subió parte do arquivo"
 
 #: openDCIM/scripts/uploadifive.php:91
 msgid "No file was uploaded"
-msgstr "No se subió ningún archivo"
+msgstr "Non se subiu ningún arquivo"
 
 #: openDCIM/scripts/uploadifive.php:94
 msgid "Missing a temporary folder"
-msgstr "Falta una carpeta temporal"
+msgstr "Falta unha carpeta temporal"
 
 #: openDCIM/scripts/uploadifive.php:97
 msgid "Failed to write file to disk"
-msgstr "Fallo al escribir el archivo en disco"
+msgstr "Fallo ao escribir o arqiivo en disco"
 
 #: openDCIM/scripts/uploadifive.php:100
 msgid "File upload stopped by extension"
-msgstr "Subida del archivo detenida por extensión"
+msgstr "Subida do archivo detenida por extensión"
 
 #: openDCIM/scripts/uploadifive.php:110
 msgid "Invalid file type."
-msgstr "Tipo de archivo no válido."
+msgstr "Tipo de arquivo non válido."
 
 #: openDCIM/scripts/uploadifive.php:117
 msgid "No files uploaded"
-msgstr "Ningún archivo subido."
+msgstr "Ningún arquivo subido."
 
 #: openDCIM/scripts/uploadifive.php:118
 msgid "You must be a site admin to add images"
-msgstr "Debe ser administrador del sistema para añadir imágenes"
+msgstr "Debe ser administrador do sistema para engadir imaxes"
 
 #: openDCIM/scripts/uploadifive.php:119
 msgid "Token mismatch"
-msgstr "Falta de coincidencia en el token"
+msgstr "Falta de coincidencia no token"
 
 #: openDCIM/scripts/uploadifive.php:120
 msgid "God help us something has gone horribly wrong"
-msgstr "Algo ha ido muy mal"
+msgstr "Algo foi moi mal"
 
 #: openDCIM/classes/DataCenter.class.php:515
 #, fuzzy
 msgid "Composite View of Cabinets"
-msgstr "Importar Armarios nuevos"
+msgstr "Editar Filas de Armarios"
 
 #: openDCIM/classes/DataCenter.class.php:516
 #, fuzzy
@@ -5823,12 +5783,12 @@ msgstr ""
 #: openDCIM/classes/DeviceTemplate.class.php:653
 #, fuzzy
 msgid "Import Warning"
-msgstr "Consumo Energético Peligroso"
+msgstr "Consumo Enerxético Perigoso"
 
 #: openDCIM/classes/DeviceTemplate.class.php:576
 #, fuzzy, php-format
 msgid "An error has occurred creating the slot %s"
-msgstr "Ha ocurrido un error, la plantilla no se ha creado"
+msgstr "Ocorreu un erro, a plantilla non se creou"
 
 #: openDCIM/classes/DeviceTemplate.class.php:580
 #, php-format
@@ -5838,18 +5798,18 @@ msgstr ""
 #: openDCIM/classes/DeviceTemplate.class.php:604
 #, fuzzy, php-format
 msgid "An error has occurred creating the color code %s"
-msgstr "Ha ocurrido un error, la plantilla no se ha creado"
+msgstr "Ocorreu un erro, a plantilla non se creou"
 
 #: openDCIM/classes/DeviceTemplate.class.php:622
 #, fuzzy, php-format
 msgid "An error has occurred creating the media type %s"
-msgstr "Ha ocurrido un error, la plantilla no se ha creado"
+msgstr "Ocorreu un erro, a plantilla non se creou"
 
 #: openDCIM/classes/DeviceTemplate.class.php:633
 #: openDCIM/classes/DeviceTemplate.class.php:650
 #, fuzzy, php-format
 msgid "An error has occurred creating the port %s"
-msgstr "Ha ocurrido un error, la plantilla no se ha creado"
+msgstr "Ocorreu un erro, a plantilla non se creou"
 
 #: openDCIM/classes/DeviceTemplate.class.php:637
 #: openDCIM/classes/DeviceTemplate.class.php:654
@@ -5872,26 +5832,26 @@ msgstr ""
 
 #~ msgid "Default Behavior for Site (Can Override Per Template)"
 #~ msgstr ""
-#~ "Comportamiento predeterminado para el sitio (se puede sobreescribir por "
+#~ "Comportamiento predeterminado para o sitio (pódese sobreescribir por "
 #~ "plantilla)"
 
 #~ msgid "Share your templates to the repository"
-#~ msgstr "Compartir sus plantillas con el repositorio"
+#~ msgstr "Compartir as súas plantillas có repositorio"
 
 #~ msgid "Keep local values when synchronizing"
-#~ msgstr "Mantener valores locales en la sincronización"
+#~ msgstr "Manter valores locais na sincronización"
 
 #~ msgid "Reservation?"
 #~ msgstr "¿Reserva?"
 
 #~ msgid "Share to Repository"
-#~ msgstr "Compartir al Repositorio"
+#~ msgstr "Compartir ao Repositorio"
 
 #~ msgid "Keep Local (Ignore Repository)"
-#~ msgstr "Mantener Local (Ignorar Repositorio)"
+#~ msgstr "Manter Local (Ignorar Repositorio)"
 
 #~ msgid "Supplies Management"
-#~ msgstr "Gestión de Suministros"
+#~ msgstr "Xestión de Subministros"
 
 #~ msgid "ESX Server?"
 #~ msgstr "¿Servidor ESX?"
@@ -5902,17 +5862,14 @@ msgstr ""
 #~ msgid "False"
 #~ msgstr "Falso"
 
-#~ msgid "Project View/Export"
-#~ msgstr "Ver/Exportar Proyecto"
-
 #~ msgid "Surplus/Salvage Device Reporting"
-#~ msgstr "Informe de dispositivos del almacén de excedentes"
+#~ msgstr "Informe de dispositivos do almacén de excedentes"
 
 #~ msgid "Surplus/Salvage by Date"
-#~ msgstr "Almacen de Excedentes por Fecha"
+#~ msgstr "Almacen de Excedentes por Data"
 
 #~ msgid "Surplus Date"
-#~ msgstr "Fecha del Excedente"
+#~ msgstr "Data do Excedente"
 
 #~ msgid "Datacenter"
 #~ msgstr "Centro de Proceso de Datos"
