@@ -1,5 +1,5 @@
 <?php
-$codeversion="18.01";
+$codeversion="18.02";
 
 require_once( "preflight.php" );
 
@@ -1144,6 +1144,11 @@ function upgrade(){
 		$results[]=applyupdate("db-4.5-to-18.01.sql");
 
 		print '<iframe src="build_image_cache.php" height="250" width="220" scrolling="no" style="border: 0px;"></iframe>';
+
+		$config->rebuild();
+	}
+	if($version=="18.01"){
+		$results[]=applyupdate("db-18.01-to-18.02.sql");
 
 		$config->rebuild();
 	}

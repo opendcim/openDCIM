@@ -25,5 +25,5 @@ INSERT INTO fac_Config (Parameter, Value, UnitOfMeasure, ValType, DefaultVal) VA
 -- Bump up the database version (uncomment below once released)
 --
 
--- UPDATE fac_Config set Value="18.02" WHERE Parameter="Version";
+UPDATE fac_Config set Value="18.02" WHERE Parameter="Version";
 

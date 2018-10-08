@@ -608,6 +608,7 @@ CREATE TABLE fac_RackRequest (
   LabelColor varchar(80) NOT NULL,
   CurrentLocation varchar(120) NOT NULL,
   SpecialInstructions text NOT NULL,
+  RequestedAction varchar(10) NOT NULL,
   PRIMARY KEY (RequestID),
   KEY RequestorID (RequestorID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -788,7 +789,7 @@ CREATE TABLE fac_Config (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO fac_Config VALUES
-	('Version','18.01','','',''),
+	('Version','18.02','','',''),
 	('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),
 	('ClassList','ITS, Internal, Customer','List','string','ITS, Internal, Customer'),
 	('SpaceRed','80','percentage','float','80'),
@@ -901,7 +902,16 @@ INSERT INTO fac_Config VALUES
 	('SAMLidpcertFingerprint', '', 'string', 'string', 'FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF'),
 	('SAMLidpcertFingerprintAlgorithm', '', 'string', 'string', 'sha1'),
 	('SAMLaccountPrefix', '', 'string', 'string', 'DOMAIN\\'),
-	('SAMLaccountSuffix', '', 'string', 'string', '@example.org')
+	('SAMLaccountSuffix', '', 'string', 'string', '@example.org'),
+	("LDAPFirstName", "givenname", "string", "string", "givenname"),
+	("LDAPLastName", "sn", "string", "string", "sn"),
+	("LDAPEmail", "mail", "string", "string", "mail"),
+	("LDAPPhone1", "telephonenumber", "string", "string", "telephonenumber"),
+	("LDAPPhone2", "mobile", "string", "string", "mobile"),
+	("LDAPPhone3", "pager", "string", "string", "pager"),
+	("drawingpath", "drawings/", "string", "string", "drawings/"),
+	("picturepath", "pictures/", "string", "string", "pictures/"),
+	("RackRequestsActions", "disabled", "Enabled/Disabled", "string", "disabled")
 ;
 
 --
