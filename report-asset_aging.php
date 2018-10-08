@@ -9,6 +9,12 @@
 	require_once "vendor/autoload.php";
 
 	$person = People::Current();
+    
+    if(!$person->ReadAccess){
+        // No soup for you.
+        header('Location: '.redirect());
+        exit;
+    }
 
 	$workBook = new PHPExcel();
 	
