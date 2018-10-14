@@ -6,6 +6,19 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 18.02
+----------------
+* Enhanced LDAP integration, with better support for Active Directory environments
+* Bulk network import now supports rear ports for patch panels
+* Storage room items are now in lexicographical order
+* Fixed bug where Switch Status was not honoring the OptIn/OptOut tags
+* Fixed UI bug where copying a device would not show the new device until after refresh
+* Fixed the ReportAssetExcel file to look at Status instead of the old Reservation field
+* Fixed query for getting cabinets by department
+* Allow for pictures and drawings folders to be user selected (more container friendly)
+* Allow for db.inc.php values to be pulled from Environment (more container friendly)
+* Other bug fixes too minor or too embarassing to document
+
 Changes in 18.01
 ----------------
 * Nomenclature for releases has changed to YY.nn, as this ends the debate over what warrants a major vs minor number change
