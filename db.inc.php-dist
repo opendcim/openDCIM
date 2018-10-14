@@ -9,13 +9,11 @@
 	}
 
 	// Set to true if you want to skip the installer check
-	$devMode = false;
-
-	$dbhost = 'localhost';
-	$dbport = '3306';
-	$dbname = 'dcim';
-	$dbuser = 'dcim';
-	$dbpass = 'dcim';
+	$devMode = getenv('OPENDCIM_DEBUG') ? getenv('OPENMDCIM_DEBUG'):false;
+	$dbhost = getenv('OPENDCIM_DB_HOST') ? getenv('OPENDCIM_DB_HOST'):'localhost';
+	$dbname = getenv('OPENDCIM_DB_NAME') ? getenv('OPENDCIM_DB_NAME'):'dcim';
+	$dbuser = getenv('OPENDCIM_DB_USER') ? getenv('OPENDCIM_DB_USER'):'dcim';
+	$dbpass = getenv('OPENDCIM_DB_PASS') ? getenv('OPENDCIM_DB_PASS'):'dcim';
 
 	$locale = "en_US";
 	$codeset = "UTF-8";
