@@ -500,7 +500,7 @@
 			//	If you select to OptIn switch polling, only poll if you have the Poll tag assigned to this device
 			//	but if you are an OptOut site, poll everything unless it has the NoPoll tag assigned
 			//
-			if( ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" && in_array( "Poll", $tagList ) || ( $config->ParameterArray["NetworkCapacityReportOptOut"] == "OptOut" && ! in_array( "NoPoll", $tagList )))) {
+			if( ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" && in_array( "Poll", $tagList ) || ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptOut" && ! in_array( "NoPoll", $tagList )))) {
 				echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
 			} else {
 				echo json_encode(array());
