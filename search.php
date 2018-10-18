@@ -148,7 +148,7 @@
 			$temp[$x]['cabinet']=$device->Cabinet;
 			$temp[$x]['parent']=$device->ParentDevice;
 			$temp[$x]['rights']=$device->Rights;
-			$cabtemp[$device->Cabinet]="";
+			$cabtemp[$device->Cabinet] = [];
 			++$x;
 			if($device->ParentDevice>0){
 				foreach($uncleDaddy=$device->GetDeviceLineage() as $branches){
