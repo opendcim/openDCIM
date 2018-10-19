@@ -147,27 +147,8 @@
 			}else{
 				$tests['Remote User']['message']='<a href="http://httpd.apache.org/docs/2.2/howto/auth.html">http://httpd.apache.org/docs/2.2/howto/auth.html</a>';
 			}
-		}elseif(AUTHENTICATION=="Oauth"){
-			if(isset($_SESSION['userid'])){
-				$tests['Remote User']['state']="good";
-				$tests['Remote User']['message']='Authenticated as UserID='.$_SESSION['userid'];
-			}else{
-				$tests['Remote User']['message']='Click <a href="oauth/login.php">here</a> to authenticate via Oauth';
-			}
-		}elseif(AUTHENTICATION=="Saml"){
-			if(isset($_SESSION['userid'])){
-				$tests['Remote User']['state']="good";
-				$tests['Remote User']['message']='Authenticated as UserID='.$_SESSION['userid'];
-			}else{
-				$tests['Remote User']['message']='Click <a href="saml/login.php">here</a> to authenticate via Saml';
-			}
-		}elseif(AUTHENTICATION=="LDAP") {
-			if(isset($_SESSION['userid'])){
-				$tests['Remote User']['state']="good";
-				$tests['Remote User']['message']='Authenticated as UserID='.$_SESSION['userid'];
-			}else{
-				header("Location: ldap_bootstrap.php" );
-			}
+		}else{
+			$tests['Remote User']['message']='Only Apache authentication is supported for the initial install. Please use the provided .htaccess to authenticate as admin OR supply your own apache password file';
 		}
 		// Try to not duplicate everything
 		if(!isset($tests['Remote User']['state'])){
