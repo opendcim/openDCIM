@@ -36,66 +36,6 @@
 			return str_replace($metaChars, $quotedMetaChars, $str);
 		}
 	}
-	function checkAccess($ldapobject){
-		$config=new Config();
-		$access=false;
-		if(array_key_exists("memberof",$ldapobject)){
-			foreach ($ldapobject['memberof'] as $group){
-				if(!strcasecmp($group, $config->ParameterArray['LDAPSiteAccess'])){
-					$access=true;
-				}
-			}
-		}else{
-			if(!strcasecmp($ldapobject['dn'], $config->ParameterArray['LDAPSiteAccess'])){
-				$access=true;
-			}
-		}
-		return $access;
-	}
-	function setRights($group,&$person){
-		// Originally this was a Switch/Case statement, which would seem to make more sense.
-		// However, if someone wants to use the same Group identifier for more than one right,
-		// the switch/case would only allow for that group membership to be used once.
-		//
-		// So, here we are with a ton of if/then statements.
-
-		$config=new Config();
-		if(!strcasecmp($group,$config->ParameterArray['LDAPReadAccess'])){
-			$person->ReadAccess=true;
-		}
-
-		if(!strcasecmp($group,$config->ParameterArray['LDAPWriteAccess'])){
-			$person->WriteAccess=true;
-		}
-
-		if(!strcasecmp($group,$config->ParameterArray['LDAPDeleteAccess'])){
-			$person->DeleteAccess=true;
-		}
-
-		if(!strcasecmp($group,$config->ParameterArray['LDAPAdminOwnDevices'])){
-			$person->AdminOwnDevices=true;
-		}
-
-		if(!strcasecmp($group,$config->ParameterArray['LDAPRackRequest'])){
-			$person->RackRequest=true;
-		}
-
-		if(!strcasecmp($group,$config->ParameterArray['LDAPRackAdmin'])){
-			$person->RackAdmin=true;
-		}
-
-		if(!strcasecmp($group,$config->ParameterArray['LDAPContactAdmin'])){
-			$person->ContactAdmin=true;
-		}
-
-		if(!strcasecmp($group,$config->ParameterArray['LDAPBulkOperations'])){
-			$person->BulkOperations=true;
-		}
-
-		if(!strcasecmp($group,$config->ParameterArray['LDAPSiteAdmin'])){
-			$person->SiteAdmin=true;
-		}
-	}
 
 	if ( isset($_GET['logout'])) {
 		// Unfortunately session_destroy() doesn't actually clear out existing variables, so let's nuke from orbit
@@ -113,11 +53,21 @@
 			$content="<h3>Fatal error.  The LDAP server is not reachable.  Please try again later, or contact your system administrator to check the configuration.</h3>";
 			error_log("Unable to connect to LDAP Server: {$config->ParameterArray['LDAPServer']}");
 		}else{
+			if(!strcasecmp($config->ParameterArray['LDAPServerType'],"OpenLDAP")){
+				$groupAttr="dn";
+				$ldapBaseSearch=$config->ParameterArray['LDAPBaseSearch'];
+				$ldapBindDN=$config->ParameterArray['LDAPBindDN'];
+			}else{
+				$groupAttr="memberof";
+				$ldapBaseSearch=$config->ParameterArray['LDAPBaseSearch-AD'];
+				$ldapBindDN=$config->ParameterArray['LDAPBindDN-AD'];
+			}
+				
 			ldap_set_option($ldapConn,LDAP_OPT_PROTOCOL_VERSION,3);
 			ldap_set_option($ldapConn,LDAP_OPT_REFERRALS,0);
 
 			$ldapUser=ldap_escape(htmlspecialchars($_POST['username']),null,LDAP_ESCAPE_FILTER);
-			$ldapDN=str_replace("%userid%",$ldapUser,$config->ParameterArray['LDAPBindDN']);
+			$ldapDN=str_replace("%userid%",$ldapUser,$ldapBindDN);
 			$ldapPassword=ldap_escape($_POST['password'],null,LDAP_ESCAPE_FILTER);
 
 			$ldapBind=ldap_bind($ldapConn,$ldapDN,$ldapPassword);
@@ -126,27 +76,20 @@
 				$content="<h3>Login failed.  Incorrect username, password, or rights.</h3>";
 				error_log( __("Unable to bind to specified LDAP server with specified username/password.  Username:") . $ldapUser );
 			}else{
-				// User was able to authenticate, but might not have authorization to access openDCIM.  Here we check for those rights.
-				/* If this install doesn't have the new parameter, use the old default */
-				if(!isset($config->ParameterArray['LDAPBaseSearch'])){
-					$config->ParameterArray['LDAPBaseSearch']="(&(objectClass=posixGroup)(memberUid=%userid%))";
-				}
-				// Now get some more info about the user
-				//Get the DN so I can use the LDAP_MATCHING_RULE_IN_CHAIN function
-				// Insert the default 4.2 UserSearch string in case this is an upgrade instance
-				if(!isset($config->ParameterArray['LDAPUserSearch'])){
-					$config->ParameterArray['LDAPUserSearch']="(|(uid=%userid%))";
-				}
-				$userSearch=str_replace("%userid%",$ldapUser,html_entity_decode($config->ParameterArray['LDAPUserSearch']));
-				$ldapSearch=ldap_search($ldapConn,$config->ParameterArray['LDAPBaseDN'],$userSearch);
-				$ldapResults=ldap_get_entries($ldapConn,$ldapSearch);
-
-				// These are standard schema items, so they aren't configurable
-				// However, suppress any errors that may crop up from not finding them
-				$found_dn=@$ldapResults[0]['cn'][0];
-
-				$ldapSearchDN=str_replace("%userid%",$found_dn,html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
-				$ldapSearch=ldap_search($ldapConn,$config->ParameterArray['LDAPBaseDN'],$ldapSearchDN);
+				$justThese = array(
+					$config->ParameterArray['LDAPFirstName'],
+					$config->ParameterArray['LDAPLastName'],
+					$config->ParameterArray['LDAPEmail'],
+					$config->ParameterArray['LDAPPhone1'],
+					$config->ParameterArray['LDAPPhone2'],
+					$config->ParameterArray['LDAPPhone3'],
+					$groupAttr
+				);
+                                
+				$ldapSearchDN=str_replace("%userid%",$ldapUser,html_entity_decode($ldapBaseSearch));
+				$ldapSearch=ldap_search($ldapConn,$config->ParameterArray['LDAPBaseDN'],$ldapSearchDN,$justThese);
+				// Sort the LDAP query result to make it easier to separate user and group data (only OpenLDAP);
+				ldap_sort($ldapConn,$ldapSearch,$config->ParameterArray['LDAPFirstName']);
 				$ldapResults=ldap_get_entries($ldapConn,$ldapSearch);
 
 				// Because we have audit logs to maintain, we need to make a local copy of the User's record
@@ -156,37 +99,71 @@
 				$person->UserID=$ldapUser;
 				$person->GetPersonByUserID();
 				$person->revokeAll();
+                                
+				if(!strcasecmp($config->ParameterArray['LDAPServerType'],"OpenLDAP")){
+					$ldapUserInfo=array_pop($ldapResults);
+					$ldapUserGroups=array_map('strtolower',array_column($ldapResults, 'dn'));
+				}else{
+					$ldapUserInfo=$ldapResults[0];
+					$ldapUserGroups=array_map('strtolower',$ldapUserInfo['memberof']);
+					unset($ldapUserInfo['memberof']);
+				}
 
 				// GetPersonByUserID just populated our person object, update it with the 
 				// info we just pulled from ldap, if they are a valid user we'll update the
 				// db version of their name below, suppress any errors for missing attributes
-				@$person->FirstName=$ldapResults[0][$config->ParameterArray['LDAPFirstName']][0];
-				@$person->LastName =$ldapResults[0][$config->ParameterArray['LDAPLastName']][0];
-				@$person->Email    =$ldapResults[0][$config->ParameterArray['LDAPEmail']][0];
-				@$person->Phone1   =$ldapResults[0][$config->ParameterArray['LDAPPhone1']][0];
-				@$person->Phone2   =$ldapResults[0][$config->ParameterArray['LDAPPhone2']][0];
-				@$person->Phone3   =$ldapResults[0][$config->ParameterArray['LDAPPhone3']][0];
+				@$person->FirstName=$ldapUserInfo[$config->ParameterArray['LDAPFirstName']][0];
+				@$person->LastName =$ldapUserInfo[$config->ParameterArray['LDAPLastName']][0];
+				@$person->Email    =$ldapUserInfo[$config->ParameterArray['LDAPEmail']][0];
+				@$person->Phone1   =$ldapUserInfo[$config->ParameterArray['LDAPPhone1']][0];
+				@$person->Phone2   =$ldapUserInfo[$config->ParameterArray['LDAPPhone2']][0];
+				@$person->Phone3   =$ldapUserInfo[$config->ParameterArray['LDAPPhone3']][0];
 
-				for($i=0;$i < $ldapResults['count'];$i++){
-					if($config->ParameterArray['LDAPSiteAccess']=="" || checkAccess($ldapResults[$i])){
-						// No specific group membership required to access openDCIM or they have a match to the group required
-						$_SESSION['userid']=$ldapUser;
-						$_SESSION['LoginTime']=time();
-						session_commit();
-						error_log(__("LDAP authentication successful, granted site access based on required group membership.  Username: $ldapUser"));
-					}else{
-						error_log(__("LDAP authentication successful, but access denied based on lacking group membership.  Username: $ldapUser"));
+				if($config->ParameterArray['LDAPSiteAccess']=="" || in_array(strtolower($config->ParameterArray['LDAPSiteAccess']),$ldapUserGroups)){
+					// No specific group membership required to access openDCIM or they have a match to the group required
+					$_SESSION['userid']=$ldapUser;
+					$_SESSION['LoginTime']=time();
+					session_commit();
+					
+					if(in_array(strtolower($config->ParameterArray['LDAPReadAccess']),$ldapUserGroups)){
+						$person->ReadAccess=true;
 					}
-					$ldapentry=$ldapResults[$i];
-					// if memberof exists then we're dealing with AD
-					if (array_key_exists("memberof",$ldapentry)){
-						foreach ($ldapResults[$i]['memberof'] as $group){
-							setRights($group,$person);
-						}
-					}else{
-						setRights($ldapResults[$i]['dn'],$person);
+
+					if(in_array(strtolower($config->ParameterArray['LDAPWriteAccess']),$ldapUserGroups)){
+						$person->WriteAccess=true;
 					}
-				}
+
+					if(in_array(strtolower($config->ParameterArray['LDAPDeleteAccess']),$ldapUserGroups)){
+						$person->DeleteAccess=true;
+					}
+
+					if(in_array(strtolower($config->ParameterArray['LDAPAdminOwnDevices']),$ldapUserGroups)){
+						$person->AdminOwnDevices=true;
+					}
+
+					if(in_array(strtolower($config->ParameterArray['LDAPRackRequest']),$ldapUserGroups)){
+						$person->RackRequest=true;
+					}
+
+					if(in_array(strtolower($config->ParameterArray['LDAPRackAdmin']),$ldapUserGroups)){
+							$person->RackAdmin=true;
+					}
+
+					if(in_array(strtolower($config->ParameterArray['LDAPContactAdmin']),$ldapUserGroups)){
+						$person->ContactAdmin=true;
+					}
+
+					if(in_array(strtolower($config->ParameterArray['LDAPBulkOperations']),$ldapUserGroups)){
+						$person->BulkOperations=true;
+					}
+
+					if(in_array(strtolower($config->ParameterArray['LDAPSiteAdmin']),$ldapUserGroups)){
+						$person->SiteAdmin=true;
+					}
+				}else{
+					error_log(__("LDAP authentication successful, but access denied based on lacking group membership.  Username: $ldapUser"));
+				}	
+				
 				if(isset($_SESSION['userid'])){
 					if($person->PersonID>0){
 						$person->UpdatePerson();

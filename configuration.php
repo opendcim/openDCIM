@@ -22,7 +22,7 @@
 		$path=trim($path,"/");
 		# if path is empty revert to the current directory
 		$path=($path)?$path:'.';
-		$here=end(explode(DIRECTORY_SEPARATOR,getcwd()));
+		$here=basename(getcwd());
 		$breadcrumb="<a href=\"?dl=\">$here</a>/";
 		$breadcrumbpath="";
 		if($path!='.'){
@@ -1495,6 +1495,18 @@
 			$(this).trigger('keyup');
 		});
 
+		// LDAP  - Change Server Type
+		$('#LDAPServerType').change(function(){
+			if($(this).val() == 'AD'){
+				$('.ad').show();
+				$('.openldap').hide();     
+			}else{
+				$('.ad').hide();
+				$('.openldap').show();    
+			}
+		});
+                $('#LDAPServerType').change();
+
 		// Convert this bitch over to an ajax form submit
 		$('button[name="action"]').click(function(e){
 			if($(".main form").validationEngine('validate')){
@@ -2261,6 +2273,14 @@ echo '<div class="main">
 		<div id="ldap">
 			<h3>',__("LDAP Authentication and Authorization Configuration"),'</h3>
 			<div class="table">
+                                <div>
+					<div><label for="LDAPServerType">',__("LDAP Server Type"),'</label></div>
+					<div><select id="LDAPServerType" name="LDAPServerType" defaultvalue="',$config->defaults["LDAPServerType"],'" data="',$config->ParameterArray["LDAPServerType"],'">
+							<option value="OpenLDAP">',__("OpenLDAP"),'</option>
+							<option value="AD">',__("AD"),'</option>
+						</select>
+					</div>
+				</div>
 				<div>
 					<div><label for="LDAPServer">',__("LDAP Server URI"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$config->ParameterArray["LDAPServer"],'"></div>
@@ -2269,17 +2289,23 @@ echo '<div class="main">
 					<div><label for="LDAPBaseDN">',__("Base DN"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$config->ParameterArray["LDAPBaseDN"],'"></div>
 				</div>
-				<div>
+				<div class="openldap">
 					<div><label for="LDAPBaseSearch">',__("Base Search"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseSearch"],'" name="LDAPBaseSearch" value="',$config->ParameterArray["LDAPBaseSearch"],'"></div>
+					<div>
+                                            <input type="text" defaultvalue="',$config->defaults["LDAPBaseSearch"],'" name="LDAPBaseSearch" value="',$config->ParameterArray["LDAPBaseSearch"],'"></div>
 				</div>
-				<div>
+				<div class="ad">
+					<div><label for="LDAPBaseSearch-AD">',__("Base Search"),'</label></div>
+					<div>
+                                            <input type="text" defaultvalue="',$config->defaults["LDAPBaseSearch-AD"],'" name="LDAPBaseSearch-AD" value="',$config->ParameterArray["LDAPBaseSearch-AD"],'"></div>
+				</div>
+				<div class="openldap">
 					<div><label for="LDAPBindDN">',__("Bind DN"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$config->ParameterArray["LDAPBindDN"],'"></div>
 				</div>
-				<div>
-					<div><label for="LDAPUserSearch">',__("User Search"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPUserSearch"],'" name="LDAPUserSearch" value="',$config->ParameterArray["LDAPUserSearch"],'"></div>
+				<div class="ad">
+					<div><label for="LDAPBindDN-AD">',__("Bind DN"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPBindDN-AD"],'" name="LDAPBindDN-AD" value="',$config->ParameterArray["LDAPBindDN-AD"],'"></div>
 				</div>
 				<div>
 					<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>

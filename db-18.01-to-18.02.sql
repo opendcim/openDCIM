@@ -22,6 +22,20 @@ INSERT INTO fac_Config (Parameter, Value, UnitOfMeasure, ValType, DefaultVal) VA
 INSERT INTO fac_Config (Parameter, Value, UnitOfMeasure, ValType, DefaultVal) VALUES ("LDAPPhone3", "pager", "string", "string", "pager");
 
 --
+-- More LDAP configuration options to work well with AD and simplify query
+--
+INSERT INTO fac_Config (Parameter, Value, UnitOfMeasure, ValType, DefaultVal) VALUES ("LDAPServerType", "OpenLDAP", "OpenLDAP/AD", "string", "OpenLDAP");
+INSERT INTO fac_Config (Parameter, Value, UnitOfMeasure, ValType, DefaultVal) VALUES ("LDAPBindDN-AD", "%userid%@opendcim.org", "DN", "string", "%userid%@opendcim.org");
+INSERT INTO fac_Config (Parameter, Value, UnitOfMeasure, ValType, DefaultVal) VALUES ("LDAPBaseSearch-AD", "(sAMAccountName=%userid%)", "DN", "string", "(sAMAccountName=%userid%)");
+DELETE FROM TABLE fac_Config WHERE Parameter="LDAPUserSearch";
+UPDATE fac_Config SET Value="(|(uid=%userid%)(&(objectClass=posixGroup)(memberUid=%userid%)))", DefaultVal="(|(uid=%userid%)(&(objectClass=posixGroup)(memberUid=%userid%)))" WHERE Parameter="LDAPBaseSearch";
+
+--
+-- Reinserting this parameter that is still used
+--
+INSERT INTO fac_Config (Parameter, Value, UnitOfMeasure, ValType, DefaultVal) VALUES ("FreeSpaceColor", "#ffffff", "HexColor", "string", "#ffffff");
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 
