@@ -78,12 +78,10 @@
 	$dc->GetDataCenterbyID();
 
 	foreach(Department::GetDepartmentListIndexedbyID() as $deptid => $d){
-		if($d->DeptColor!="#FFFFFF"){
-            // If head is empty then we don't have any custom colors defined above so add a style container for these
-            $head=($head=="")?"\t\t<style type=\"text/css\">\n":$head;
-			$head.="\t\t\t.dept$deptid {background-color:$d->DeptColor;}\n";
-            $legend.="\t\t<div class=\"legenditem\"><span class=\"border colorbox dept$deptid\"></span> - <span>$d->Name</span></div>\n";
-		}
+		// If head is empty then we don't have any custom colors defined above so add a style container for these
+		$head=($head=="")?"\t\t<style type=\"text/css\">\n":$head;
+		$head.="\t\t\t.dept$deptid {background-color:$d->DeptColor;}\n";
+		$legend.="\t\t<div class=\"legenditem\"><span class=\"border colorbox dept$deptid\"></span> - <span>$d->Name</span></div>\n";
 	}
 
 	// If $head isn't empty then we must have added some style information so close the tag up.

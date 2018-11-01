@@ -1430,6 +1430,8 @@ $(document).ready(function(){
 						cabinetimagecontrols();
 						// clean up the loading animations from any empty cabinets
 						$('.cabinet .loadingplaceholder').remove();
+						// Everything has finished loading call initdrag
+						initdrag();
 					}
 				}, 10);
 			}
