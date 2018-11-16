@@ -30,10 +30,14 @@
 		
 		$body="";
 		foreach($childList as $child){
-			$cdate=date("Y-m-d",strtotime($child->InstallDate));
-			$cwarranty=date("Y-m-d",strtotime($child->WarrantyExpire));
+			$cinsDate=date("Y-m-d",strtotime($child->InstallDate));
+			$cwarrantyDate=date("Y-m-d",strtotime($child->WarrantyExpire));
+			$cMfgDate=date("Y-m-d",strtotime($child->MfgDate));
 			$cModel="";
-			$cDepartment="";					
+			$cDepartment="";
+			$cAuditStampDate=((strtotime($child->AuditStamp)>0)?date('r',strtotime($child->AuditStamp)):NULL);
+			$cHalfDepth=((($child->HalfDepth)>0)?__("True"):__("False"));
+			$cBackSide=((($child->BackSide)>0)?__("True"):__("False"));
 
 			$ctags=implode(",", $child->GetTags());
 			if($child->TemplateID >0){
@@ -64,6 +68,7 @@
 			}
 
 			$body .= "\t\t<tr>
+			\t<td><a href=\"devices.php?DeviceID=$child->DeviceID\" target=\"device\">{$child->DeviceID}</a></td>
 			\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
 			\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
 			\t<td>{$row["Position"]}</td>
@@ -71,14 +76,23 @@
 			\t<td><a href=\"devices.php?DeviceID=$child->DeviceID\" target=\"device\">$child->Label</a></td>
 			\t<td>$child->SerialNo</td>
 			\t<td>$child->AssetTag</td>
+			\t<td>$child->Status</td>
 			\t<td>$child->PrimaryIP</td>
 			\t<td><a href=\"search.php?key=dev&DeviceType=$child->DeviceType&search\" target=\"search\">$child->DeviceType</a></td>
 			\t<td>$cModel</td>
 			\t<td>$ctags</td>
 			\t<td>$cDepartment</td>
 			\t<th>$contact</th>
-			\t<td>$cwarranty</td>
-			\t<td>$cdate</td>
+			\t<td>$cwarrantyDate</td>
+			\t<td>$child->WarrantyCo</td>
+			\t<td>$cMfgDate</td>
+			\t<td>$cinsDate</td>
+			\t<td>$child->NominalWatts</td>
+			\t<td>$child->Weight</td>
+			\t<td>$child->Ports</td>
+			\t<td>$cAuditStampDate</td>
+			\t<td>$cHalfDepth</td>
+			\t<td>$cBackSide</td>
 			\t{$ca_cells}\n\t\t</tr>\n";
 
 			if($child->DeviceType=="Chassis"){
@@ -104,7 +118,8 @@
 
 			$sql="SELECT a.Name AS DataCenter, b.DeviceID, c.Location, b.Position, 
 				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, 
-				b.WarrantyExpire, b.PrimaryIP, b.ParentDevice, b.PrimaryContact, b.TemplateID, 
+				b.Status, b.PrimaryIP, b.NominalWatts, b.Weight, b.Ports, b.AuditStamp, b.HalfDepth, b.BackSide,  
+				b.WarrantyExpire, b.WarrantyCo, b.MfgDate, b.ParentDevice, b.PrimaryContact, b.TemplateID, 
 				b.Owner, c.CabinetID, c.DataCenterID $custom_concat FROM fac_DataCenter a,
 				fac_Cabinet c, fac_Device b  LEFT OUTER JOIN fac_DeviceCustomValue d on
 				b.DeviceID=d.DeviceID WHERE b.Cabinet=c.CabinetID AND c.DataCenterID=a.DataCenterID
@@ -121,6 +136,7 @@
 
 		// Left these expanded in case we need to add or remove columns.  Otherwise I would have just collapsed entirely.
 		$body="<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
+			\t<th>".__("DeviceID")."</th>
 			\t<th>".__("Data Center")."</th>
 			\t<th>".__("Location")."</th>
 			\t<th>".__("Position")."</th>
@@ -128,6 +144,7 @@
 			\t<th>".__("Name")."</th>
 			\t<th>".__("Serial Number")."</th>
 			\t<th>".__("Asset Tag")."</th>
+			\t<th>".__("Status")."</th>
 			\t<th>".__("Primary IP / Host Name")."</th>
 			\t<th>".__("Device Type")."</th>
 			\t<th>".__("Template")."</th>
@@ -135,7 +152,15 @@
 			\t<th>".__("Owner")."</th>
 			\t<th>".__("Primary Contact")."</th>
 			\t<th>".__("Warranty Expiration")."</th>
+			\t<th>".__("Warranty Company")."</th>
+			\t<th>".__("Manufacture Date")."</th>
 			\t<th>".__("Installation Date")."</th>
+			\t<th>".__("Power")."</th>
+			\t<th>".__("Weight")."</th>
+			\t<th>".__("Ports")."</th>
+			\t<th>".__("Audit Stamp")."</th>
+			\t<th>".__("Half Depth")."</th>
+			\t<th>".__("Back Side")."</th>
 			{$ca_headers}
 			</tr>\n\t</thead>\n\t<tbody>\n";
 
@@ -144,11 +169,15 @@
 			// Dont show devices in chassis, they are shown under each chassiss as a child device
 			if($row["ParentDevice"]=="0"){
 				// insert date formating later for regionalization settings
-				$date=date("Y-m-d",strtotime($row["InstallDate"]));
-				$warranty=date("Y-m-d",strtotime($row["WarrantyExpire"]));
+				$insDate=date("Y-m-d",strtotime($row["InstallDate"]));
+				$warrantyDate=date("Y-m-d",strtotime($row["WarrantyExpire"]));
+				$MfgDate=date("Y-m-d",strtotime($child->MfgDate));
 				$Model="";
 				$Department="";
-				
+				$AuditStampDate=((strtotime($row["AuditStamp"])>0)?date('r',strtotime($row["AuditStamp"])):NULL);
+				$HalfDepth=((($row["HalfDepth"])>0)?__("True"):__("False"));
+				$BackSide=((($row["BackSide"])>0)?__("True"):__("False"));
+
 				if($row["TemplateID"]>0 && array_key_exists( $row["TemplateID"], $tpList )){
 					$Model="<a href=\"device_templates.php?TemplateID=".$row["TemplateID"]."\" target=\"template\">" . $tpList[$row["TemplateID"]]->Model . "</a>";
 				}
@@ -179,6 +208,7 @@
 				$dev->DeviceID=$row["DeviceID"];
 				$tags=implode(",", $dev->GetTags());
 				$body.="\t\t<tr>
+				\t<td><a href=\"devices.php?DeviceID=$dev->DeviceID\" target=\"device\">{$dev->DeviceID}</a></td>
 				\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
 				\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
 				\t<td>{$row["Position"]}</td>
@@ -186,14 +216,22 @@
 				\t<td><a href=\"devices.php?DeviceID=$dev->DeviceID\" target=\"device\">{$row["Label"]}</a></td>
 				\t<td>{$row["SerialNo"]}</td>
 				\t<td>{$row["AssetTag"]}</td>
+				\t<td>{$row["Status"]}</td>
 				\t<td>{$row["PrimaryIP"]}</td>
 				\t<td><a href=\"search.php?key=dev&DeviceType={$row["DeviceType"]}&search\" target=\"search\">{$row["DeviceType"]}</a></td>
 				\t<td>$Model</td>
 				\t<td>$tags</td>
 				\t<td>$Department</td>
 				\t<th>$contact</th>
-				\t<td>$warranty</td>
-				\t<td>$date</td>
+				\t<td>$warrantyDate</td>
+				\t<td>{$row["WarrantyCo"]}</td>
+				\t<td>$MfgDate</td>
+				\t<td>$insDate</td>				\t<td>{$row["NominalWatts"]}</td>
+				\t<td>{$row["Weight"]}</td>
+				\t<td>{$row["Ports"]}</td>
+				\t<td>{$AuditStampDate}</td>
+				\t<td>{$HalfDepth}</td>
+				\t<td>{$BackSide}</td>
 				{$ca_cells}\t\n\t\t</tr>\n";
 
 				if($row["DeviceType"]=="Chassis"){
