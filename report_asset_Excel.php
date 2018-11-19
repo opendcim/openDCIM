@@ -250,7 +250,8 @@ $DProps = array(
 			array(__("Sum of\nEmpty\nRack\nUnits (RU)"), '', 12, null),
 			array(__("Percentage\nEmpty\nRack\nUnits"), 'P', 12, null),
 			array(__("Sum of\nPower\n(kW)"), 'F', 9, null),
-			array(__("Sum of\nDesign\nPower\n(kW)"), '', 9, null)
+			array(__("Sum of\nDesign\nPower\n(kW)"), '', 9, null),
+			array(__("Sum of\nWeight"), '', 9, null)
 		),
 		'KPIs' => array(
 			'Fl_Spc',      // - Fl_Spc      floor space
@@ -260,7 +261,8 @@ $DProps = array(
 			'Rk_UtE',      // - Rk_UtE      rack units empty
 			'Rk_Res',      // - Rk_Res      racks reserved
 			'Watts',       // - Watts       power allocated
-			'DesignPower'  // - DesignPower design power of DC
+			'DesignPower',  // - DesignPower design power of DC
+			'Rk_Weight'     // - Weight      weight
 		),
 		'ColIdx' => array(),
 		'ExpStr' => array()
@@ -328,6 +330,7 @@ $DProps = array(
             array('Keylock', '', null, null),
             array('MaxKW', '', null, null),
             array('MaxWeight', '', null, null),
+            array('DeviceWeight', '', null, null),
             array('Install Date', 'D', 10, null),
             array('Auditor', '', 10, null),
             array('Timestamp', 'D', 18, null),
@@ -1134,6 +1137,7 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
             }
 
             $wattageTotal += $child->NominalWatts;
+            $weightTotal += $child->Weight;
             $invData[] = $devSpec;
             $idx += $child->Height;
         }
@@ -1152,7 +1156,7 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
         }
     }
 
-    return array($wattageTotal, $invData);
+    return array($wattageTotal, $weightTotal, $invData);
 }
 
 /**
@@ -1165,7 +1169,7 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
  * @param DataCenter $dc
  * @param array $dcContainerList
  */
-function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList)
+function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList, $Rk_Weight)
 {
     $rack = makeEmptySpec($cabinetColumns, $dcContainerList);
     if ($cab->AssignedTo != 0) {
@@ -1188,6 +1192,7 @@ function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList)
     $rack['Keylock'] = $cab->Keylock;
     $rack['MaxKW'] = $cab->MaxKW;
     $rack['MaxWeight'] = $cab->MaxWeight;
+    $rack['DeviceWeight'] = $Rk_Weight;
     $rack['Install Date'] = $cab->InstallationDate;
     $rack['Auditor'] = getAuditorName($cab);
     $rack['Front Edge'] = $cab->FrontEdge;
@@ -1243,6 +1248,7 @@ function computeSheetBodyDCInventory($DProps, $customAttributes)
         $dcStats['Rk_UtU'] = 0;
         $dcStats['Rk_UtE'] = 0;
         $dcStats['Rk_Res'] = 0;
+        $dcStats['Rk_Weight'] = 0;
 
         $cabList = $cab->ListCabinetsByDC();
         if (count($cabList) == 0) {
@@ -1252,6 +1258,8 @@ function computeSheetBodyDCInventory($DProps, $customAttributes)
             $invData[] = $devSpec;
         } else {
             foreach ($cabList as $cab) {
+				$rkStats = array();
+				$rkStats['Rk_Weight'] = 5;
                 if (((! $person->ReadAccess) and ($cab->AssignedTo == 0))
                     or (($cab->AssignedTo > 0)
                         and (! $person->canRead($cab->AssignedTo)))) {
@@ -1261,7 +1269,6 @@ function computeSheetBodyDCInventory($DProps, $customAttributes)
                 }
                 $zoneName = getZoneName($cab);
                 $rowName = getRowName($cab);
-                addRackStat($invCab, $cab, $cabinetColumns, $dc, $dcContainerList);
                 $cab_height = $cab->CabinetHeight;
                 if (mb_strtoupper($cab->Model) == 'RESERVED') {
                     $dcStats['Rk_Res']++;
@@ -1354,6 +1361,8 @@ function computeSheetBodyDCInventory($DProps, $customAttributes)
 
                         $invData[] = $devSpec;
                         $dcStats['Watts'] += $dev->NominalWatts;
+                        $dcStats['Rk_Weight'] += $dev->Weight;
+                        $rkStats['Rk_Weight'] += $dev->Weight;
                         // devices can be installed at the same position and
                         // could be of different height; count only the free
                         // rack units which are not covered by any device
@@ -1367,11 +1376,13 @@ function computeSheetBodyDCInventory($DProps, $customAttributes)
                             $dcStats['Rk_UtU'] += $rest_height;
                         }
                         if ($dev->DeviceType == 'Chassis') {
-                            list($watts, $invData) = computeDeviceChildren(
+                            list($watts, $weight, $invData) = computeDeviceChildren(
                                 $sheetColumns, $invData, $dev, $dc->Name, $cab,
                                 $devTemplates, $deptList, $contactList,
                                 $dcContainerList, $customAttributes);
                             $dcStats['Watts'] += $watts;
+							$dcStats['Rk_Weight'] += $weight;
+							$rkStats['Rk_Weight'] += $weight;
                         }
                     }
                     if ($low_idx <= $cab->CabinetHeight) {
@@ -1391,8 +1402,10 @@ function computeSheetBodyDCInventory($DProps, $customAttributes)
                         $invData[] = $devSpec;
                     }
                 }
+				addRackStat($invCab, $cab, $cabinetColumns, $dc, $dcContainerList, $rkStats['Rk_Weight']);
             }
-        }
+		}
+		
         assignStatsVal($Stats, $dc, $dcStats);
 
         $percentDone += $incrementalPercent;
@@ -1499,7 +1512,8 @@ function statsLine($itemName, $values)
         $values['Rk_UtE'],
         $values['Rk_UtT'] != 0 ? ($values['Rk_UtE'] / $values['Rk_UtT']) : null,
         $values['Watts'] / 1000,
-        $values['DesignPower']
+        $values['DesignPower'],
+        $values['Rk_Weight']		
     );
 }
 
