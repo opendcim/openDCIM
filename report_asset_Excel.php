@@ -142,6 +142,14 @@ error_reporting(E_ALL);
 ini_set('memory_limit', '840M');
 ini_set('max_execution_time', '0');
 
+// Retrieve custom device attributes
+$ca_sql="SELECT AttributeID, Label, AttributeType from fac_DeviceCustomAttribute ORDER BY AttributeID ASC;";
+$customAttributes = array();
+$ca_result=$dbh->query($ca_sql)->fetchAll();
+foreach($ca_result as $ca_row){
+    array_push($customAttributes, array("Label" => $ca_row['Label'], "AttributeType" => $ca_row['AttributeType']));
+} 
+
 // Configuration variables.
 // Properties of the document and worksheets.
 $DProps = array(
@@ -275,19 +283,26 @@ $DProps = array(
             array('Half Depth', '', null, null),
             array('Height', '', null, null),
             array('Device', '', 19, null),
+            array('IP Address', '', 19, null),
             array('Parent Device', '', 19, null),
             array('Manufacturer', '', null, null),
             array('Model', 'T', 15, null),
             array('Device Type', '', null, null),
             array('Asset Number', 'T', 11, null),
             array('Serial No.', 'T', 11, null),
+            array('Manufacture Date', 'D', 19, null),
             array('Install Date', 'D', 11, null),
             array('Warranty End', 'D', 11, null),
+            array('Warranty Company', '', 19, null),
             array('Owner', '', 11, null),
             array('Power (W)', '', 11, null),
+            array('Weight', '', null, null),
+            array('Data Ports', '', null, null),
+            array('Power Connections', '', null, null),
             array('Status', '', null, null),
             array('Contact', '', null, null),
             array('Tags', '', null, null),
+            array('Audit Stamp', 'D', null, null),
             array('Notes', '', 40, 'wrap')),
         'ColIdx' => array(),
         'ExpStr' => array()
@@ -322,6 +337,17 @@ $DProps = array(
         'ExpStr' => array()
     )
 );
+
+
+// Add custom device attributes to column headers
+foreach($customAttributes as $customAttribute) {
+    if ($customAttribute['AttributeType'] == "date") {
+        array_push($DProps['DC Inventory']['Columns'],array($customAttribute['Label'], 'D', null, null));
+    }
+    else {
+        array_push($DProps['DC Inventory']['Columns'],array($customAttribute['Label'], '', null, null));
+    }
+}
 
 /**
  * Report some runtime statistics if the log file writable and reporting flag set.
@@ -1067,6 +1093,7 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
                 $idx = $child->Position;
             }
             $Status = $child->Status;
+            $AuditStampDate=((strtotime($child->AuditStamp)>0)?date('r',strtotime($child->AuditStamp)):NULL);
             list($manufacturer, $model) = getDeviceTemplateName($devTemplates,
                 $child);
             $devSpec = makeEmptySpec($sheetColumns, $dcContainerList);
@@ -1078,21 +1105,34 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
             $devSpec['Position'] = $child->Position;
             $devSpec['Height'] = $child->Height;
             $devSpec['Device'] = $child->Label;
+            $devSpec['IP Address'] = $child->PrimaryIP;
             $devSpec['Parent Device'] = $parentDev->Label;
             $devSpec['Manufacturer'] = $manufacturer;
             $devSpec['Model'] = $model;
             $devSpec['Device Type'] = $child->DeviceType;
             $devSpec['Asset Number'] = $child->AssetTag;
             $devSpec['Serial No.'] = $child->SerialNo;
+            $devSpec['Manufacture Date'] = $child->MfgDate;
             $devSpec['Install Date'] = $child->InstallDate;
             $devSpec['Warranty End'] = $child->WarrantyExpire;
+            $devSpec['Warranty Company'] = $child->WarrantyCo;
             $devSpec['Owner'] = getOwnerName($child, $deptList);
             $devSpec['Power (W)'] = $child->NominalWatts;
+            $devSpec['Weight'] = $child->Weight;
+            $devSpec['Data Ports'] = $child->Ports;
+            $devSpec['Power Connections'] = $child->PowerSupplyCount;
             $devSpec['Status'] = $Status;
             $devSpec['Contact'] = getContactName($contactList, $child->PrimaryContact);
             $devSpec['Tags'] = getTagsString($child);
+            $devSpec['Audit Stamp'] = $AuditStampDate;
             $devSpec['Notes'] = html_entity_decode(strip_tags($child->Notes),
                 ENT_COMPAT, 'UTF-8');
+
+            // Add custom device attributes
+            foreach($customAttributes as $customAttribute) {
+                $devSpec[$customAttribute['Label']] = $child->$customAttribute['Label'];
+            }
+
             $wattageTotal += $child->NominalWatts;
             $invData[] = $devSpec;
             $idx += $child->Height;
@@ -1166,7 +1206,7 @@ function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList)
  * @return (array|array|array|boolean)[]
  *      statistics array, device inventory, cabinet inventory
  */
-function computeSheetBodyDCInventory($DProps)
+function computeSheetBodyDCInventory($DProps, $customAttributes)
 {
     global $person;
     global $sessID;
@@ -1271,6 +1311,7 @@ function computeSheetBodyDCInventory($DProps)
                         }
                         // device in cabinet
                         $Status = $dev->Status;
+                        $AuditStampDate=((strtotime($child->AuditStamp)>0)?date('r',strtotime($child->AuditStamp)):NULL);
                         list($manufacturer, $model) = getDeviceTemplateName(
                             $devTemplates, $dev);
                         $devSpec = makeEmptySpec($sheetColumns, $dcContainerList);
@@ -1283,21 +1324,34 @@ function computeSheetBodyDCInventory($DProps)
                         $devSpec['Half Depth'] = getDeviceDepthPos($dev);
                         $devSpec['Height'] = $dev->Height;
                         $devSpec['Device'] = $dev->Label;
+                        $devSpec['IP Address'] = $dev->PrimaryIP;	
                         $devSpec['Parent Device'] = null;
                         $devSpec['Manufacturer'] = $manufacturer;
                         $devSpec['Model'] = $model;
                         $devSpec['Device Type'] = $dev->DeviceType;
                         $devSpec['Asset Number'] = $dev->AssetTag;
                         $devSpec['Serial No.'] = $dev->SerialNo;
+                        $devSpec['Manufacture Date'] = $dev->MfgDate;
                         $devSpec['Install Date'] = $dev->InstallDate;
                         $devSpec['Warranty End'] = $dev->WarrantyExpire;
+                        $devSpec['Warranty Company'] = $dev->WarrantyCo;
                         $devSpec['Owner'] = getOwnerName($dev, $deptList);
                         $devSpec['Power (W)'] = $dev->NominalWatts;
+                        $devSpec['Weight'] = $dev->Weight;
+                        $devSpec['Data Ports'] = $dev->Ports;
+                        $devSpec['Power Connections'] = $dev->PowerSupplyCount;
                         $devSpec['Status'] = $Status;
                         $devSpec['Contact'] = getContactName($contactList, $dev->PrimaryContact);
                         $devSpec['Tags'] = getTagsString($dev);
+                        $devSpec['AuditStamp'] = $AuditStampDate;
                         $devSpec['Notes'] = html_entity_decode(strip_tags($dev->Notes),
                                 ENT_COMPAT, 'UTF-8');
+
+                        // Add custom device attributes
+                        foreach($customAttributes as $customAttribute) {
+                            $devSpec[($customAttribute['Label'])] = $dev->$customAttribute['Label'];
+                        }
+
                         $invData[] = $devSpec;
                         $dcStats['Watts'] += $dev->NominalWatts;
                         // devices can be installed at the same position and
@@ -1316,7 +1370,7 @@ function computeSheetBodyDCInventory($DProps)
                             list($watts, $invData) = computeDeviceChildren(
                                 $sheetColumns, $invData, $dev, $dc->Name, $cab,
                                 $devTemplates, $deptList, $contactList,
-                                $dcContainerList);
+                                $dcContainerList, $customAttributes);
                             $dcStats['Watts'] += $watts;
                         }
                     }
@@ -1657,7 +1711,7 @@ function writeDCInvContent($worksheet, $sheetProps, $invData)
  * @param string $thisDate
  * @return (array|array|boolean)[] DC statistics and rack inventory
  */
-function writeDCInventory($DProps, $objPHPExcel, $thisDate)
+function writeDCInventory($DProps, $customAttributes, $objPHPExcel, $thisDate)
 {
     global $sessID;
 
@@ -1673,7 +1727,7 @@ function writeDCInventory($DProps, $objPHPExcel, $thisDate)
     writeWSHeader($worksheet, $wsKind, $DProps[$wsKind]);
     ReportStats::get()->report('Info', $wsKind . ' - Header set');
     list($DCStats, $invData, $Rack_Inv, $limitedUser) =
-        computeSheetBodyDCInventory($DProps);
+        computeSheetBodyDCInventory($DProps, $customAttributes);
     ReportStats::get()->report('Info', $wsKind . ' - computed body');
 
     if ( php_sapi_name()!="cli" ) {
@@ -1739,7 +1793,7 @@ function writeFrontPage($DProps, $config, $objPHPExcel, $thisDate)
  * @param PHPExcel $objPHPExcel
  * @param string $thisDate
  */
-function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
+function writeExcelReport(&$DProps, $objPHPExcel, $thisDate, $customAttributes)
 {
     ReportStats::get()->report('Info', 'User: ' . $DProps['Doc']['User']
         . ' Version: ' . $DProps['Doc']['version']);
@@ -1754,7 +1808,7 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
     setDocumentProperties($objPHPExcel, $thisDate,
         $config->ParameterArray['OrgName'], $DProps);
 
-    list($DCStats, $Rack_Inv, $limitedUser) = writeDCInventory($DProps,
+    list($DCStats, $Rack_Inv, $limitedUser) = writeDCInventory($DProps, $customAttributes,
         $objPHPExcel, $thisDate);
     ReportStats::get()->report('Info', 'DC Inventory');
 
@@ -1788,7 +1842,7 @@ $retcode = PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
 $thisDate = date('Y-m-d');
 
 $objPHPExcel = new PHPExcel();
-writeExcelReport($DProps, $objPHPExcel, $thisDate);
+writeExcelReport($DProps, $objPHPExcel, $thisDate, $customAttributes);
 
 // send out document, save Excel 2007 file
 
