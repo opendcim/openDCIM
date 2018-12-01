@@ -15,7 +15,7 @@
 	/* Version 1.0 of this report has no selectable parameters - you just get a complete dump */
 	
 	$mpdf=new mPDF('win-1252','A4','','',20,15,48,25,10,10); 
-	$mpdf->useOnlyCoreFonts = true;    // false is default
+	$mpdf->useOnlyCoreFonts = false;    // false is default
 	//$mpdf->SetProtection(array('print'));
 	$mpdf->SetTitle($config->ParameterArray["OrgName"] . " " . __("Supply Status Report"));
 	$mpdf->SetAuthor($config->ParameterArray["OrgName"]);
