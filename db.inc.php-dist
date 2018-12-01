@@ -36,6 +36,10 @@
 	// Make sure that you only have ONE of these authentication types uncommented.  You will get an error if you
 	// try to define the same name twice.
 	if ( !defined( "AUTHENTICATION") ) {
+		if ( getenv( 'OPENDCIM_AUTH')) {
+			define('AUTHENTICATION', getenv('OPENDCIM_AUTH'));
+		}
+
 		define( "AUTHENTICATION", "Apache" );
 
 	/* If you want to use Oauth authentication, comment the above 3 lines, uncomment the next 4 lines

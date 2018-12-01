@@ -7,6 +7,10 @@
     exit;
   }
 
+require_once 'vendor/box/spout/src/Spout/Autoloader/autoload.php';
+use Box\Spout\Reader\ReaderFactory;
+use Box\Spout\Common\Type;
+
 //	Uncomment these if you need/want to set a title in the header
 //	$header=__("");
 	$subheader=__("Bulk Cabinet Importer");
@@ -23,10 +27,19 @@
     $target_dir = '/tmp/';
     $targetFile = $target_dir . basename($_FILES['inputfile']['name']);
 
+    $targetInfo = pathinfo($targetFile);
+    $targetType = $targetInfo['extension'];
+
     try {
-      $inFileType = PHPExcel_IOFactory::identify($_FILES['inputfile']['tmp_name']);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
-      $objXL = $objReader->load($_FILES['inputfile']['tmp_name']);
+      if ( $targetType == "xlsx" ) {
+        $objReader = ReaderFactory::create(Type::XLSX);
+      } elseif ( $targetType == "csv" ) {
+        $objReader = ReaderFactory::create(Type::CSV);
+      } else {
+        die("Error identifying file type.");
+      }
+      $objReader->open($targetFile);
+      $objReader->close();
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
     }
@@ -34,6 +47,7 @@
     move_uploaded_file( $_FILES['inputfile']['tmp_name'], $targetFile );
 
     $_SESSION['inputfile'] = $targetFile;
+    $_SESSION['inputtype'] = $targetType;
 
     echo "<meta http-equiv='refresh' content='0; url=" . $_SERVER['SCRIPT_NAME'] . "?stage=headers'>";
     exit;
@@ -47,10 +61,16 @@
 
     // Make sure that we can still access the file
     $targetFile = $_SESSION['inputfile'];
+    $targetType = $_SESSION['inputtype'];
     try {
-      $inFileType = PHPExcel_IOFactory::identify($targetFile);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
-      $objXL = $objReader->load($targetFile);
+      if ( $targetType == "xlsx" ) {
+        $objReader = ReaderFactory::create(Type::XLSX);
+      } elseif ( $targetType == "csv" ) {
+        $objReader = ReaderFactory::create(Type::CSV);
+      } else {
+        die("Error identifying file type.");
+      }
+      $objReader->open($targetFile);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
     }
@@ -66,13 +86,19 @@
 
     // Find out how many columns are in the spreadsheet so that we can load them as possible values for the fields
     // and we don't really care how many rows there are at this point.
-    $sheet = $objXL->getSheet(0);
-    $highestColumn = $sheet->getHighestColumn();
-
-    $headerList = $sheet->rangeToArray('A1:' . $highestColumn . '1' );
+    $rowCount = 1;
+    foreach( $objReader->getSheetIterator() as $sheet ) {
+      foreach( $sheet->getRowIterator() as $row ) {
+        if ( $rowCount == 1 ) {
+          $headerList = $row;
+          break;
+        }
+      }
+      break;    
+    }
 
     $fieldList = array( "None" );
-    foreach( $headerList[0] as $fName ) {
+    foreach( $headerList as $fName ) {
       $fieldList[] = $fName;
     }
 
@@ -108,10 +134,17 @@
     //
 
     $targetFile = $_SESSION['inputfile'];
+    $targetType = $_SESSION['inputtype'];
+
     try {
-      $inFileType = PHPExcel_IOFactory::identify($targetFile);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
-      $objXL = $objReader->load($targetFile);
+      if ( $targetType == "xlsx" ) {
+        $objReader = ReaderFactory::create(Type::XLSX);
+      } elseif ( $targetType == "csv" ) {
+        $objReader = ReaderFactory::create(Type::CSV);
+      } else {
+        die("Error identifying file type.");
+      }
+      $objReader->open($targetFile);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
     }
@@ -119,123 +152,129 @@
     // Start off with the assumption that we have zero processing errors
     $errors = false;
 
-    $sheet = $objXL->getSheet(0);
-    $highestRow = $sheet->getHighestRow();
-
     // Also make sure we start with an empty string to display
     $content = "";
     $fields = array( "DataCenter", "Label", "Owner", "Zone", "Row", "Height", "Model", "U1Position", "MaxkW", "MaxWeight", "MapX1", "MapX2", "MapY1", "MapY2", "FrontEdge", "Notes" );
 
-    for ( $n = 2; $n <= $highestRow; $n++ ) { 
-      $rowError = false;
+    $rowNum = 1;
 
-      $cab = new Cabinet();
- 
-      // Load up the $row[] array with the values according to the mapping supplied by the user
-      foreach( $fields as $fname ) {
-        $addr = chr( 64 + $_REQUEST[$fname]);
-        if ( $_REQUEST[$fname] != 0 ) {
-          $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
+    foreach( $objReader->getSheetIterator() as $sheet ) {
+      foreach( $sheet->getRowIterator() as $sheetRow ) {
+        // Skip the header row
+        if ( $rowNum == 1 ) {
+          $rowNum++;
+          continue;
         }
-      }
 
-      // Stop processing once you hit the first blank cell for 'Location' - some Excel files will return $sheet->getHighestRow() way past the end of any meaningful data
-      if ( $row["Label"] == "" ) {
-        break;
-      }
+        $rowError = false;
 
-      // Pull in the raw data fields
-      $cab->Location = $row["Label"];
-      $cab->AssignedTo = $row["Owner"];
-      $cab->CabinetHeight = $row["Height"];
-      $cab->Model = $row["Model"];
-      $cab->U1Position = $row["U1Position"];
-      $cab->MaxKW = $row["MaxkW"];
-      $cab->MaxWeight = $row["MaxWeight"];
-      $cab->MapX1 = $row["MapX1"];
-      $cab->MapX2 = $row["MapX2"];
-      $cab->MapY1 = $row["MapY1"];
-      $cab->MapY2 = $row["MapY2"];
-      $cab->FrontEdge = ucfirst(strtolower($row["FrontEdge"]));
-      $cab->Notes = $row["Notes"];
-
-      /*
-       *
-       *  Section for looking up the DataCenter and setting the true DataCenterID
-       *
-       */
-      $st = $dbh->prepare( "select count(DataCenterID) as TotalMatches, DataCenterID from fac_DataCenter where ucase(Name)=ucase(:DataCenter)" );
-      $st->execute( array( ":DataCenter"=>$row["DataCenter"] ));
-      if ( ! $val = $st->fetch() ) {
-        $info = $dbh->errorInfo();
-        error_log( "PDO Error: {$info[2]}");
-      }
-
-      if ( $val["TotalMatches"] == 1 ) {
-        $cab->DataCenterID = $val["DataCenterID"];
-      } else {
-        $errors = true;
-        $content .= "<li>Cabinet: DataCenter = " . $row["DataCenter"] . " is not unique or not found.";
-      }
-
-      /*
-       *
-       *  Section for looking up the ZoneID and setting the true ZoneID in the cab variable
-       *
-       */
-      if ( $row["Zone"] != "" && $cab->DataCenterID > 0 ) {
-        $st = $dbh->prepare( "select count(ZoneID) as TotalMatches, ZoneID from fac_Zone where DataCenterID=:DataCenterID and ucase(Description)=ucase(:Zone)" );
-        $st->execute( array( ":DataCenterID"=>$cab->DataCenterID, ":Zone"=>$row["Zone"] ));
-        if ( ! $val = $st->fetch() ) {
-          $info = $dbh->errorInfo();
-          error_log( "PDO Error: {$info[2]}");
+        $cab = new Cabinet();
+   
+        // Load up the $row[] array with the values according to the mapping supplied by the user
+        foreach( $fields as $fname ) {
+          if ( $_REQUEST[$fname] != 0 ) {
+            $row[$fname] = sanitize($sheetRow[$_REQUEST[$fname]-1]);
+          }
         }
-      }
 
-      if ( $row["Zone"]!="" && $val["TotalMatches"] == 1 ) {
-        $cab->ZoneID = $val["ZoneID"];
-      } elseif ($row["Zone"]!="" ) {
-        $errors = true;
-        $content .= "<li>Cabinet: Data Center + Zone = " . $row["Zone"] . " is not unique or not found.";
-      }
+        // Stop processing once you hit the first blank cell for 'Location' - some Excel files will return $sheet->getHighestRow() way past the end of any meaningful data
+        if ( $row["Label"] == "" ) {
+          break;
+        }
 
-      /*
-       *
-       *  Section for looking up the Row by DataCenterID + name and setting the true RowID
-       *
-       */
-      if ( $row["Row"] != "" ) {
-        $st = $dbh->prepare( "select count(*) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ucase(Name)=ucase(:Row)" );
-        $st->execute( array( ":DataCenterID"=>$cab->DataCenterID, ":Row"=>$row["Row"] ));
+        // Pull in the raw data fields
+        $cab->Location = $row["Label"];
+        $cab->AssignedTo = $row["Owner"];
+        $cab->CabinetHeight = $row["Height"];
+        $cab->Model = $row["Model"];
+        $cab->U1Position = $row["U1Position"];
+        $cab->MaxKW = $row["MaxkW"];
+        $cab->MaxWeight = $row["MaxWeight"];
+        $cab->MapX1 = $row["MapX1"];
+        $cab->MapX2 = $row["MapX2"];
+        $cab->MapY1 = $row["MapY1"];
+        $cab->MapY2 = $row["MapY2"];
+        $cab->FrontEdge = ucfirst(strtolower($row["FrontEdge"]));
+        $cab->Notes = $row["Notes"];
+
+        /*
+         *
+         *  Section for looking up the DataCenter and setting the true DataCenterID
+         *
+         */
+        $st = $dbh->prepare( "select count(DataCenterID) as TotalMatches, DataCenterID from fac_DataCenter where ucase(Name)=ucase(:DataCenter)" );
+        $st->execute( array( ":DataCenter"=>$row["DataCenter"] ));
         if ( ! $val = $st->fetch() ) {
           $info = $dbh->errorInfo();
           error_log( "PDO Error: {$info[2]}");
         }
 
         if ( $val["TotalMatches"] == 1 ) {
-          $cab->CabRowID = $val["CabRowID"];
+          $cab->DataCenterID = $val["DataCenterID"];
         } else {
           $errors = true;
-          $content .= "<li>Cabinet: Data Center + Row = " . $row["Row"] . " is not unique or not found.";
-        }
-      }
-
-      if ( $row["Owner"] != "" ) {
-        $st = $dbh->prepare( "select DeptID from fac_Department where ucase(Name)=ucase(:Name)" );
-        $st->execute( array( ":Name" => $row["Owner"] ));
-        if ( ! $val = $st->fetch()) {
-          $info = $dbh->errorInfo();
-          error_log( "PDO Error: {$info[2]} (Department search)");
+          $content .= "<li>Cabinet: DataCenter = " . $row["DataCenter"] . " is not unique or not found.";
         }
 
-        $cab->AssignedTo = $val["DeptID"];
-      }
+        /*
+         *
+         *  Section for looking up the ZoneID and setting the true ZoneID in the cab variable
+         *
+         */
+        if ( $row["Zone"] != "" && $cab->DataCenterID > 0 ) {
+          $st = $dbh->prepare( "select count(ZoneID) as TotalMatches, ZoneID from fac_Zone where DataCenterID=:DataCenterID and ucase(Description)=ucase(:Zone)" );
+          $st->execute( array( ":DataCenterID"=>$cab->DataCenterID, ":Zone"=>$row["Zone"] ));
+          if ( ! $val = $st->fetch() ) {
+            $info = $dbh->errorInfo();
+            error_log( "PDO Error: {$info[2]}");
+          }
+        }
 
-      if ( ! $errors && ! $cab->CreateCabinet(true) ) {
-        $errors = true;
-        $content .= "<li><strong>" . __("Error adding cabinet on Row $n of the spreadsheet.") . "</strong>";
-      } else {
-        $content .= "<li>Added cabinet " . $cab->Location . "(" . $cab->CabinetID . ")";
+        if ( $row["Zone"]!="" && $val["TotalMatches"] == 1 ) {
+          $cab->ZoneID = $val["ZoneID"];
+        } elseif ($row["Zone"]!="" ) {
+          $errors = true;
+          $content .= "<li>Cabinet: Data Center + Zone = " . $row["Zone"] . " is not unique or not found.";
+        }
+
+        /*
+         *
+         *  Section for looking up the Row by DataCenterID + name and setting the true RowID
+         *
+         */
+        if ( $row["Row"] != "" ) {
+          $st = $dbh->prepare( "select count(*) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ucase(Name)=ucase(:Row)" );
+          $st->execute( array( ":DataCenterID"=>$cab->DataCenterID, ":Row"=>$row["Row"] ));
+          if ( ! $val = $st->fetch() ) {
+            $info = $dbh->errorInfo();
+            error_log( "PDO Error: {$info[2]}");
+          }
+
+          if ( $val["TotalMatches"] == 1 ) {
+            $cab->CabRowID = $val["CabRowID"];
+          } else {
+            $errors = true;
+            $content .= "<li>Cabinet: Data Center + Row = " . $row["Row"] . " is not unique or not found.";
+          }
+        }
+
+        if ( $row["Owner"] != "" ) {
+          $st = $dbh->prepare( "select DeptID from fac_Department where ucase(Name)=ucase(:Name)" );
+          $st->execute( array( ":Name" => $row["Owner"] ));
+          if ( ! $val = $st->fetch()) {
+            $info = $dbh->errorInfo();
+            error_log( "PDO Error: {$info[2]} (Department search)");
+          }
+
+          $cab->AssignedTo = $val["DeptID"];
+        }
+
+        if ( ! $errors && ! $cab->CreateCabinet(true) ) {
+          $errors = true;
+          $content .= "<li><strong>" . __("Error adding cabinet on Row $n of the spreadsheet.") . "</strong>";
+        } else {
+          $content .= "<li>Added cabinet " . $cab->Location . "(" . $cab->CabinetID . ")";
+        }
       }
     }
 

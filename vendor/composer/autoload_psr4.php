@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'ProxmoxVE\\' => array($vendorDir . '/zzantares/proxmoxve/src'),
+    'Box\\Spout\\' => array($vendorDir . '/box/spout/src/Spout'),
 );
