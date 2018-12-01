@@ -173,7 +173,6 @@
 						$_SESSION['userid']=$ldapUser;
 						$_SESSION['LoginTime']=time();
 						session_commit();
-						error_log(__("LDAP authentication successful, granted site access based on required group membership.  Username: $ldapUser"));
 					}else{
 						error_log(__("LDAP authentication successful, but access denied based on lacking group membership.  Username: $ldapUser"));
 					}
