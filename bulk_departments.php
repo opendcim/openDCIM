@@ -7,6 +7,10 @@
     exit;
   }
 
+require_once 'vendor/box/spout/src/Spout/Autoloader/autoload.php';
+use Box\Spout\Reader\ReaderFactory;
+use Box\Spout\Common\Type;
+
 //	Uncomment these if you need/want to set a title in the header
 //	$header=__("");
 	$subheader=__("Bulk Department Importer");
@@ -23,17 +27,27 @@
     $target_dir = '/tmp/';
     $targetFile = $target_dir . basename($_FILES['inputfile']['name']);
 
+    $targetInfo = pathinfo($targetFile);
+    $targetType = $targetInfo['extension'];
+
+    move_uploaded_file( $_FILES['inputfile']['tmp_name'], $targetFile );
+
     try {
-      $inFileType = PHPExcel_IOFactory::identify($_FILES['inputfile']['tmp_name']);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
-      $objXL = $objReader->load($_FILES['inputfile']['tmp_name']);
+      if ( $targetType == "xlsx" ) {
+        $objReader = ReaderFactory::create(Type::XLSX);
+      } elseif ( $targetType == "csv" ) {
+        $objReader = ReaderFactory::create(Type::CSV);
+      } else {
+        die("Error identifying file type.");
+      }
+      $objReader->open($targetFile);
+      $objReader->close();
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
     }
 
-    move_uploaded_file( $_FILES['inputfile']['tmp_name'], $targetFile );
-
     $_SESSION['inputfile'] = $targetFile;
+    $_SESSION['inputtype'] = $targetType;
 
     echo "<meta http-equiv='refresh' content='0; url=" . $_SERVER['SCRIPT_NAME'] . "?stage=headers'>";
     exit;
@@ -47,10 +61,16 @@
 
     // Make sure that we can still access the file
     $targetFile = $_SESSION['inputfile'];
+    $targetType = $_SESSION['inputtype'];
     try {
-      $inFileType = PHPExcel_IOFactory::identify($targetFile);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
-      $objXL = $objReader->load($targetFile);
+      if ( $targetType == "xlsx" ) {
+        $objReader = ReaderFactory::create(Type::XLSX);
+      } elseif ( $targetType == "csv" ) {
+        $objReader = ReaderFactory::create(Type::CSV);
+      } else {
+        die("Error identifying file type.");
+      }
+      $objReader->open($targetFile);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
     }
@@ -66,13 +86,19 @@
 
     // Find out how many columns are in the spreadsheet so that we can load them as possible values for the fields
     // and we don't really care how many rows there are at this point.
-    $sheet = $objXL->getSheet(0);
-    $highestColumn = $sheet->getHighestColumn();
+    $rowCount = 1;
+    foreach( $objReader->getSheetIterator() as $sheet ) {
+      foreach( $sheet->getRowIterator() as $row ) {
+        if ( $rowCount == 1 ) {
+          $headerList = $row;
+          break;
+        }
+      }
+      break;    
+    }
 
-    $headerList = $sheet->rangeToArray('A1:' . $highestColumn . '1' );
-
-    $fieldList = array( "Choose column" );
-    foreach( $headerList[0] as $fName ) {
+    $fieldList = array( "None" );
+    foreach( $headerList as $fName ) {
       $fieldList[] = $fName;
     }
 
@@ -108,10 +134,17 @@
     //
 
     $targetFile = $_SESSION['inputfile'];
+    $targetType = $_SESSION['inputtype'];
+
     try {
-      $inFileType = PHPExcel_IOFactory::identify($targetFile);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
-      $objXL = $objReader->load($targetFile);
+      if ( $targetType == "xlsx" ) {
+        $objReader = ReaderFactory::create(Type::XLSX);
+      } elseif ( $targetType == "csv" ) {
+        $objReader = ReaderFactory::create(Type::CSV);
+      } else {
+        die("Error identifying file type.");
+      }
+      $objReader->open($targetFile);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
     }
@@ -129,56 +162,68 @@
     $iDept = new Department();
     $trueArray = array( "1", "Y", "YES" );
 
-    for ( $n = 2; $n <= $highestRow; $n++ ) { 
-      $rowError = false;
+    $rowError = false;
 
-      // Load up the $row[] array with the values according to the mapping supplied by the user
-      foreach( $fields as $fname ) {
-        $addr = chr( 64 + $_REQUEST[$fname]);
-        if ( $_REQUEST[$fname] != 0 ) {
-          $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
+    // Load up the $row[] array with the values according to the mapping supplied by the user
+    $rowNum = 1;
+
+    foreach( $objReader->getSheetIterator() as $sheet ) {
+      foreach( $sheet->getRowIterator() as $sheetRow ) {
+        // Skip the header row
+        if ( $rowNum == 1 ) {
+          $rowNum++;
+          continue;
         }
-      }
 
-      // Stop processing once you hit the first blank cell for 'UserID' - some Excel files will return $sheet->getHighestRow() way past the end of any meaningful data
-      if ( $row["DepartmentName"] == "" ) {
-        break;
-      }
+        $rowError = false;
+
+        // Load up the $row[] array with the values according to the mapping supplied by the user
+        foreach( $fields as $fname ) {
+          if ( $_REQUEST[$fname] != 0 ) {
+            $row[$fname] = sanitize($sheetRow[$_REQUEST[$fname]-1]);
+          }
+        }
+
+        // Stop processing once you hit the first blank cell for 'UserID' - some Excel files will return $sheet->getHighestRow() way past the end of any meaningful data
+        if ( $row["DepartmentName"] == "" ) {
+          break;
+        }
 
 
-      $iDept->Name = $row["DepartmentName"];
-      if ( $hit = $iDept->GetDeptByName() ) {
-        $rowError = true;
-        $content .= "<li>" . __("Department name already exists in database:" . " " . $iDept->Name );
-      } else {
         $iDept->Name = $row["DepartmentName"];
-        $iDept->ExecSponsor=$row["ExecutiveSponsor"];
-        $iDept->SDM=$row["AccountManager"];
-        
-        if ((ctype_xdigit( $row["DepartmentColor"]) && strlen($row["DepartmentColor"]) == 6 ) || $row["DepartmentColor"] == "" ) {
-           $iDept->DeptColor=$row["DepartmentColor"];
-        } else {
+        if ( $hit = $iDept->GetDeptByName() ) {
           $rowError = true;
-          $content .= "<li>".__("Invalid hex color code entered:") . " " . $row["DepartmentColor"];
-        }
-
-        if ( ! in_array( $row["Classification"], $config->ParameterArray["ClassList"])) {
-            $rowError = true;
-            $content .= "<li>".__("Classification is not a valid entry in your site configuration:") . " " . $row["Classification"];
+          $content .= "<li>" . __("Department name already exists in database:" . " " . $iDept->Name );
         } else {
-          $iDept->Classification=$row["Classification"];
+          $iDept->Name = $row["DepartmentName"];
+          $iDept->ExecSponsor=$row["ExecutiveSponsor"];
+          $iDept->SDM=$row["AccountManager"];
+          
+          if ((ctype_xdigit( $row["DepartmentColor"]) && strlen($row["DepartmentColor"]) == 6 ) || $row["DepartmentColor"] == "" ) {
+             $iDept->DeptColor=$row["DepartmentColor"];
+          } else {
+            $rowError = true;
+            $content .= "<li>".__("Invalid hex color code entered:") . " " . $row["DepartmentColor"];
+          }
+
+          if ( ! in_array( $row["Classification"], $config->ParameterArray["ClassList"])) {
+              $rowError = true;
+              $content .= "<li>".__("Classification is not a valid entry in your site configuration:") . " " . $row["Classification"];
+          } else {
+            $iDept->Classification=$row["Classification"];
+          }
         }
-      }
 
 
-      if ( ! $hit && ! $rowError ) {
-        $iDept->CreateDepartment();
+        if ( ! $hit && ! $rowError ) {
+          $iDept->CreateDepartment();
 
-        $content .= "<li>".__("Created new Department:") . " " . $iDept->Name;
-      }
+          $content .= "<li>".__("Created new Department:") . " " . $iDept->Name;
+        }
 
-      if ( $rowError ) {
-          $errors = true;
+        if ( $rowError ) {
+            $errors = true;
+        }
       }
     }
 

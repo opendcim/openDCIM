@@ -30,6 +30,8 @@ use Box\Spout\Common\Type;
     $targetInfo = pathinfo($targetFile);
     $targetType = $targetInfo['extension'];
 
+    move_uploaded_file( $_FILES['inputfile']['tmp_name'], $targetFile );
+
     try {
       if ( $targetType == "xlsx" ) {
         $objReader = ReaderFactory::create(Type::XLSX);
@@ -43,8 +45,6 @@ use Box\Spout\Common\Type;
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
     }
-
-    move_uploaded_file( $_FILES['inputfile']['tmp_name'], $targetFile );
 
     $_SESSION['inputfile'] = $targetFile;
     $_SESSION['inputtype'] = $targetType;
