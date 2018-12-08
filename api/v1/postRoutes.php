@@ -155,6 +155,62 @@ $app->post( '/powerport/:deviceid', function($deviceid) use ($person) {
 });
 
 //
+//  URL:    /api/v1/cabinet
+//  Method:	POST
+//  Params:
+//  	Required: CabinetID
+//  	Optional: All other fields to be changed
+//  Returns: record as created
+//  
+
+$app->post( '/cabinet', function() use ($person) {
+	if ( ! $person->SiteAdmin ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+	} else {
+		$cab = new Cabinet();
+		$vars = getParsedBody();
+
+		foreach ($vars as $prop=>$val) {
+			if ( property_exists($cab, $prop)) {
+				$cab->$prop = $val;
+			}
+		}
+
+		$cab->MakeSafe();
+
+		if ( ! $cab->GetCabinet() ) {
+			$r['error'] = true;
+			$r['errorcode'] = 400;
+			$r['message'] = __("The specified CabinetID does not exist.");
+			$r['input'] = $vars;
+		} else {
+			// Reset the given variables since we pulled in the existing record, first.   This avoids blanking out non-specified variables.
+			foreach ($vars as $prop=>$val) {
+				if ( property_exists($cab, $prop)) {
+					$cab->$prop = $val;
+				}
+			}
+
+			if ( ! $cab->UpdateCabinet() ) {
+				$r['error'] = true;
+				$r['errorcode'] = 400;
+				$r['message'] = __("Error updating cabinet.");
+				$r['input'] = $vars;
+			} else {
+				$r['error'] = false;
+				$r['errorcode'] = 200;
+				$r['message'] = __("Cabinet updated successfully.");
+				$r['cabinet'][$cab->CabinetID] = $cab;
+			}
+		}
+	}
+
+	echoResponse( $r );
+});
+
+//
 //	URL:	/api/v1/colorcode/:colorid
 //	Method:	POST
 //	Params:	

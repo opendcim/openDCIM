@@ -73,6 +73,55 @@ $app->put('/people/:userid', function($userid) use ($person) {
 });
 
 //
+//  URL:    /api/v1/cabinet
+//  Method:	PUT
+//  Params:
+//  	Required: DataCenterID, Location, CabinetHeight
+//  	Optional: All others
+//  Returns: record as created
+//  
+
+$app->put( '/cabinet', function() use ($person) {
+	if ( ! $person->SiteAdmin ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+	} else {
+		$cab = new Cabinet();
+		$vars = getParsedBody();
+
+		foreach ($vars as $prop=>$val) {
+			if ( property_exists($cab, $prop)) {
+				$cab->$prop = $val;
+			}
+		}
+
+		$cab->MakeSafe();
+
+		// Check for the required values
+		if ( $cab->DataCenterID < 1 || $cab->Location == "" || $cab->CabinetHeight < 1 ) {
+			$r['error'] = true;
+			$r['errorcode'] = 400;
+			$r['message'] = __("Minimum required fields are not set:  DataCenterID, Location, and CabinetHeight");
+			$r['input'] = $vars;
+		} else {
+			if ( ! $cab->CreateCabinet() ) {
+				$r['error'] = true;
+				$r['errorcode'] = 400;
+				$r['message'] = __("Error creating cabinet.");
+			} else {
+				$r['error'] = false;
+				$r['errorcode'] = 200;
+				$r['message'] = __("New cabinet created successfully.");
+				$r['cabinet'][$cab->CabinetID] = $cab;
+			}
+		}
+	}
+
+	echoResponse( $r );
+});
+
+//
 //	URL:	/api/v1/colorcode/:name
 //	Method:	PUT
 //	Params: 
