@@ -11,13 +11,6 @@
   // Remove the Rights and CustomValues fields since they are not directly relatable
   unset($availFieldList["Rights"]);
   unset($availFieldList["CustomValues"]);
-  // This should get updated every time the model is updated, but just in case it doesn't,
-  // use it in such a way that the absence of a hint doesn't break this from working
-  // Anything without a hint will default to text
-  $hints = array( "DeviceID"=>"numeric", "PrimaryIP"=>"numeric", "Cabinet"=>"objCabinet",
-    "Owner"=>"objDepartment", "EscalationTimeID"=>"numeric", "EscalationID"=>"numeric",
-    "PrimaryContact"=>"objUser", "Ports"=>"numeric", "FirstPortNum"=>"numeric", 
-    "TemplateID"=>"objDeviceTemplate" );
 
   ksort($availFieldList);
 
