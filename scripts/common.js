@@ -512,8 +512,8 @@ function InsertCoordsTable(front,btn){
 		append($('<div>')));
 
 	var front=(btn.prev('input').attr('id')=='ChassisSlots')?true:false;
-	var picture=(front)?$('#FrontPictureFile'):$('#RearPictureFile');
-	$(targetdiv+' #previewimage').html($('<img>').attr('src','pictures/'+picture.val()).width(400));
+	var picture=(front)?$('#img_FrontPictureFile'):$('#img_RearPictureFile');
+	$(targetdiv+' #previewimage').html($('<img>').attr('src',picture.prop('src')).width(400));
 
 	for(var i=1;i<=btn.prev('input').val(); i++){
 		table.append(CoordinateRow(i,front));
