@@ -143,11 +143,22 @@
 
 				// These are standard schema items, so they aren't configurable
 				// However, suppress any errors that may crop up from not finding them
+                                $found_uid=@$ldapResults[0]['uid'][0];
 				$found_dn=@$ldapResults[0]['cn'][0];
 
 				$ldapSearchDN=str_replace("%userid%",$found_dn,html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
 				$ldapSearch=ldap_search($ldapConn,$config->ParameterArray['LDAPBaseDN'],$ldapSearchDN);
 				$ldapResults=ldap_get_entries($ldapConn,$ldapSearch);
+
+                                //
+                                // RFC2307/posixAccount Groups are based on 'uid' attribute, not 'cn' attribute.
+                                // so if 'cn' returns nothing, try the 'uid' attribute.
+                                //
+                                if (!$ldapResults['count']){
+                                    $ldapSearchDN=str_replace("%userid%",$found_uid,html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
+                                    $ldapSearch=ldap_search($ldapConn,$config->ParameterArray['LDAPBaseDN'],$ldapSearchDN);
+                                    $ldapResults=ldap_get_entries($ldapConn,$ldapSearch);
+                                }
 
 				// Because we have audit logs to maintain, we need to make a local copy of the User's record
 				// to keep in the openDCIM database just in case the user gets removed from LDAP.  This also
