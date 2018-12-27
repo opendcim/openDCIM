@@ -50,44 +50,64 @@
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript">
   $(document).ready(function() {
-    $('#newline').click(function (){
-      $(this).parent().prev().clone().insertBefore($(this).parent()).children('div:first-child').html('<img src="images/del.gif">').click(function() {
-        $(this).parent().remove();
-      });
-    });
-    $('.remove').click(function (){
-      if(!$(this).next().next().children('input').attr('oldcount')){
-        $(this).children('img').after('<input type="hidden" name="'+$(this).next().children("select").attr("name")+'" value="'+$(this).next().children("select").val()+'">');
-        $(this).children('img').after('<input type="hidden" name="'+$(this).next().next().children("input").attr("name")+'" value="-1">');
-        $(this).next().children('select').attr('disabled','disabled');
-        $(this).next().next().children('input').attr({
-          'oldcount': $(this).next().next().children('input').val(),
-          'value': '-1',
-          'disabled': 'disabled'
-        });
-      }else{
-        $(this).children('input').remove();
-        $(this).next().children('select').removeAttr('disabled');
-        $(this).next().next().children('input').val($(this).next().next().children('input').attr('oldcount')).removeAttr('oldcount').removeAttr('disabled');
-      }
-    });
+	$('select[name=searchoptions]').on('change',function(e){
+		if(e.currentTarget.value != 0){
+			AddRow($('select[name=searchoptions] > option:selected'));
+		}
+	});
+	$('#customsearch').on('click',function(e){
+		var searchstring='search.php?key=dev&loose';
+		$('#searchfields > div > div > :input').each(function(){
+			if(this.value){
+				searchstring+="&"+this.name+"="+this.value;
+			}
+		});
+		newtab(searchstring);
+	});
+	function BuildSelect(data,name){
+		select=$('<select />').attr('name',name);
+		for(var i in data){
+			select.append($('<option />').text(data[i].Location).val(data[i].CabinetID));
+		}
+		return select;
+	}
+	function SortSelect(){
+		var sel = $('select[name=searchoptions]');
+		sel.html(sel.find('option').sort(function(x, y) {
+			return $(x).text() > $(y).text() ? 1 : -1;
+		}));
+		sel.prepend(sel.find('option[value=0]'));
+		sel.val(0);
+	}
+	function AddRow(option){
+		var row=$('<div />');
+		var addrem=$('<div />').data('original',option).html('<img src="images/del.gif">').click(
+			function(e) {
+				$('select[name=searchoptions]').append($(e.currentTarget).data('original'));
+        		$(this).parent().remove();
+				$('select[name=searchoptions]').val(0);
+				SortSelect();
+			}
+		);
+		var label=$('<div />').html(option.val());
+		var searchfield=$('<div />');
+		if(option.val() == 'Cabinet'){
+			$.get('api/v1/cabinet').done(function(data){
+				var selectlist=BuildSelect(data.cabinet,option.val());
+				searchfield.append(selectlist);
+			});
+		}else{
+			searchfield.append($('<input>').attr('name',option.val()));
+		}
+		row.append(addrem).append(label).append(searchfield);
+		row.insertBefore($('select[name=searchoptions]').parent('div').parent('div'));
+		option.remove();
+	}
+	function newtab(searchlink){
+		var poopup=window.open(searchlink);
+		poopup.focus();
+	}
   });
-
-  function fieldHelper(fieldname) {
-    switch(fieldname) {
-      case "BackSide":
-        // Populate select box with Boolean values
-        break;
-      case "Status":
-        // Populate select box with valid Status values
-        break;
-      case "TemplateID":
-        // Populate select box with valid Template id=>name pairs
-        break;
-      default:
-        // Set the field to a text box
-    }
-  }
   </script>
 </head>
 <body>
@@ -101,7 +121,7 @@
 <h3>Device Criteria</h3>
 <?php
 echo '<form action="',$_SERVER["SCRIPT_NAME"].$formpatch,'" method="POST">
-<div class="table">
+<div class="table" id="searchfields">
   <div>
     <div></div>
     <div>',__("Search Field"),'</div>
@@ -110,22 +130,21 @@ echo '<form action="',$_SERVER["SCRIPT_NAME"].$formpatch,'" method="POST">
 
     echo '  <div>
     <div></div>
-    <div><select name="devicefield[]"><option value="0" selected>',__("Select search field"),'</option>';
+    <div><select name="searchoptions"><option value="0" selected>',__("Select search field"),'</option>';
 
     foreach($availFieldList as $tmpField=>$val){
       print "\t\t\t<option value=\"$tmpField\">$tmpField</option>\n";
     }
 
     echo '    </select></div>
-    <div><input class="criteria" name="criteria[]" type="text" size=20 maxlength=40></div>
+    <div></div>
   </div>
     <div>
-    <div id="newline"><img src="images/add.gif" alt="add new row"></div>
     <div></div>
     <div></div>
   </div>
   <div class="caption">
-    <button type="submit" name="action" value="search">',__("Search"),'</button>
+    <button type="button" id="customsearch">',__("Search"),'</button>
   </div>
 </div><!-- END div.table --> '
 ?>
