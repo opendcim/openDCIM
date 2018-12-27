@@ -72,6 +72,22 @@
       }
     });
   });
+
+  function fieldHelper(fieldname) {
+    switch(fieldname) {
+      case "BackSide":
+        // Populate select box with Boolean values
+        break;
+      case "Status":
+        // Populate select box with valid Status values
+        break;
+      case "TemplateID":
+        // Populate select box with valid Template id=>name pairs
+        break;
+      default:
+        // Set the field to a text box
+    }
+  }
   </script>
 </head>
 <body>
