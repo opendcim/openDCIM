@@ -122,7 +122,11 @@
 		foreach($dev as $prop => $val){
 			$dev->$prop=(isset($_GET[$prop]))?$_GET[$prop]:$val;
 		}
-		$devList=$dev->Search(true);
+		if ( isset( $_GET["loose"] )) {
+			$devList = $dev->LooseSearch(true);
+		} else {
+			$devList=$dev->Search(true);
+		}
 		$resultcount=count($devList);
 	}elseif($searchKey!=""){
 		// This should be catching custom attribute searches
