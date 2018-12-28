@@ -91,13 +91,70 @@
 		);
 		var label=$('<div />').html(option.val());
 		var searchfield=$('<div />');
-		if(option.val() == 'Cabinet'){
-			$.get('api/v1/cabinet').done(function(data){
-				var selectlist=BuildSelect(data.cabinet,option.val());
-				searchfield.append(selectlist);
-			});
-		}else{
-			searchfield.append($('<input>').attr('name',option.val()));
+		switch(option.val()) {
+			case "BackSide":
+				select=$('<select />').attr('name','BackSide');
+				select.append($('<option />').text("False").val("0"));
+				select.append($('<option />').text("True").val("1"));
+				searchfield.append(select);
+				break;
+			case "Cabinet":
+				$.get('api/v1/cabinet').done(function(data){
+					var selectlist=BuildSelect(data.cabinet,option.val());
+					searchfield.append(selectlist);
+				});
+				break;
+			case "DeviceType":
+				var devTypes = Array( 'Server','Appliance','Storage Array','Switch','Chassis','Patch Panel','Physical Infrastructure','CDU','Sensor' );
+				select=$('<select />').attr('name','DeviceType');
+				for(var i in devTypes){
+					select.append($('<option />').text(devTypes[i]).val(devTypes[i]));
+				}
+				searchfield.append(select);
+				break;
+			case "HalfDepth":
+				select=$('<select />').attr('name','HalfDepth');
+				select.append($('<option />').text("False").val("0"));
+				select.append($('<option />').text("True").val("1"));
+				searchfield.append(select);
+				break;
+			case "Hypervisor":
+				var hypTypes = Array( 'ESX', 'ProxMox', 'None' );
+				select=$('<select />').attr('name','Hypervisor');
+				for(var i in hypTypes){
+					select.append($('<option />').text(hypTypes[i]).val(hypTypes[i]));
+				}
+				searchfield.append(select);
+				break;
+			case "Owner":
+				$.get('api/v1/department').done(function(data){
+					select=$('<select />').attr('name','Owner');
+					for(var i in data.department){
+						select.append($('<option />').text(data.department[i].Name).val(data.department[i].DeptID));
+					}
+					searchfield.append(select);
+				});
+				break;
+			case "PrimaryContact":
+				$.get('api/v1/people').done(function(data){
+					select=$('<select />').attr('name','PrimaryContact');
+					for(var i in data.people){
+						select.append($('<option />').text(data.people[i].LastName+', '+data.people[i].FirstName).val(data.people[i].PersonID));
+					}
+					searchfield.append(select);
+				});
+				break;
+			case "Status":
+				$.get('api/v1/devicestatus').done(function(data){
+					select=$('<select />').attr('name','Status');
+					for(var i in data.devicestatus){
+						select.append($('<option />').text(data.devicestatus[i].Status).val(data.devicestatus[i].StatusID));
+					}
+					searchfield.append(select);
+				});
+				break;
+			default:
+				searchfield.append($('<input>').attr('name',option.val()));
 		}
 		row.append(addrem).append(label).append(searchfield);
 		row.insertBefore($('select[name=searchoptions]').parent('div').parent('div'));

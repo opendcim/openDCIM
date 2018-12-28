@@ -30,30 +30,30 @@ $app->get('/people', function() {
 	global $person;
 	
 	$person->GetUserRights();
-	if(!$person->ContactAdmin){
-		$r['error'] = true;
-		$r['errorcode'] = 401;
-		$r['message'] = _("Access Denied");
-	}else{
-		$sp=new People();
-		$loose = false;
-		$outputAttr = array();
-		$attrList = getParsedBody();
-		foreach($attrList as $prop => $val){
-			if ( strtoupper($prop) == "WILDCARDS" ) {
-				$loose = true;
-			} elseif ( strtoupper($prop) == "ATTRIBUTES" ) {
-				$outputAttr = explode( ",", $val );
-			} elseif ( property_exists( $sp, $prop )) {
-				$sp->$prop=$val;
-			}
-		}
 
-		$r = array();
-		$r['error'] = false;
-		$r['errorcode'] = 200;
-		$r['people'] = specifyAttributes( $outputAttr, $sp->Search( false, $loose ));
+	$sp=new People();
+	$loose = false;
+	$outputAttr = array();
+	$attrList = getParsedBody();
+	foreach($attrList as $prop => $val){
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		} elseif ( strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		} elseif ( property_exists( $sp, $prop )) {
+			$sp->$prop=$val;
+		}
 	}
+
+	if(!$person->ContactAdmin){
+		// Anybody that isn't an admin gets limited fields returned
+		$outputAttr = array( 'PersonID', 'FirstName', 'LastName' );
+	}
+
+	$r = array();
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['people'] = specifyAttributes( $outputAttr, $sp->Search( false, $loose ));
 
 	echoResponse( $r );
 });
@@ -68,30 +68,24 @@ $app->get('/people', function() {
 $app->get('/department', function() use($person) {
 	$r = array();
 
-	if ( !$person->ContactAdmin){
-		$r['error'] = true;
-		$r['errorcode'] = 401;
-		$r['message'] = _("Access Denied");
-	} else {
-		$dList = array();
-		$dept=new Department();
-		$loose = false;
-		$outputAttr = array();
-		$attrList = getParsedBody();
-		foreach($attrList as $prop => $val){
-			if ( strtoupper($prop) == "WILDCARDS" ) {
-				$loose = true;
-			} elseif ( strtoupper($prop) == "ATTRIBUTES" ) {
-				$outputAttr = explode( ",", $val );
-			} elseif( property_exists( $dept, $prop )) {
-				$dept->$prop=$val;
-			}
-		}		
+	$dList = array();
+	$dept=new Department();
+	$loose = false;
+	$outputAttr = array();
+	$attrList = getParsedBody();
+	foreach($attrList as $prop => $val){
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		} elseif ( strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		} elseif( property_exists( $dept, $prop )) {
+			$dept->$prop=$val;
+		}
+	}		
 
-		$r['error'] = false;
-		$r['errorcode'] = 200;
-		$r['department'] = specifyAttributes( $outputAttr, $dept->Search( false, $loose ));
-	}
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['department'] = specifyAttributes( $outputAttr, $dept->Search( false, $loose ));
 
 	echoResponse( $r );
 });
