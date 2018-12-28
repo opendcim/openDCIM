@@ -8,7 +8,7 @@
 <label for="searchname">',__("Search by Name:"),'</label><br>
 <input class="search" id="searchname" name="search"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search"></button>
 </form>
-<span id="advsrch">',__("Advanced"),'</span>
+<span id="advsrch">',__("Advanced"),'</span>  <span id="customsrch">[ ',__("Custom Search"),' ]</span>
 <br>
 <form action="search.php" method="post" class="hide advsearch">
 <br>
@@ -70,6 +70,9 @@
 		$('#searchadv').parents('form').height(here.top).toggle('slide',200).removeClass('hide');
 		if($('#searchadv').hasClass('ui-autocomplete-input')){$('#searchadv').autocomplete('destroy');}
 		if($(this).text()=='<?php echo __("Advanced");?>'){$(this).text('<?php echo __("Basic");?>');$('#searchadv ~ select[name="key"]').trigger('change');}else{$(this).text('<?php echo __("Advanced");?>');}
+	});
+	$('#customsrch').click(function(){
+		window.location="custom_search.php";
 	});
   </script>
   <script type="text/javascript" src="scripts/mktree.js"></script> 

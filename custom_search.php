@@ -8,6 +8,11 @@
 
   $model = new Device();
   $availFieldList = get_object_vars( $model );
+  // Append the list of DeviceCustomAttributes
+  $attrList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
+  foreach( $attrList as $ca ) {
+  	$availFieldList[$ca->Label] = true;
+  }
   // Remove the Rights and CustomValues fields since they are not directly relatable
   unset($availFieldList["Rights"]);
   unset($availFieldList["CustomValues"]);

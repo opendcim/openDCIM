@@ -122,6 +122,14 @@
 		foreach($dev as $prop => $val){
 			$dev->$prop=(isset($_GET[$prop]))?$_GET[$prop]:$val;
 		}
+		
+		// Now check for any DCAs and add them
+		$attrList=DeviceCustomAttribute::GetDeviceCustomAttributeList();
+		foreach($attrList as $ca){
+			$prop = $ca->Label;
+			$dev->$prop=(isset($_GET[$prop]))?$_GET[$prop]:$dev->$prop;
+		}
+		
 		if ( isset( $_GET["loose"] )) {
 			$devList = $dev->LooseSearch(true);
 		} else {
