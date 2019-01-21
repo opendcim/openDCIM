@@ -7,6 +7,7 @@ INSERT INTO fac_Config set Parameter='logretention', Value='90', UnitOfMeasure='
 -- Add an index to the fac_GenericLog to speed it up
 
 CREATE INDEX ObjectID on fac_GenericLog (ObjectID);
+CREATE INDEX ObjectTime on fac_GenericLog (ObjectID, Time);
 
 
 --
