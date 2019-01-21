@@ -76,6 +76,8 @@ class LogActions {
 	// Generic catch all logging function
 	static function LogThis($object,$originalobject=null){
 		global $person;
+		global $config;
+
 		$log=new LogActions();
 		$log->UserID=$person->UserID;
 
@@ -201,6 +203,12 @@ class LogActions {
 				}
 		}
 		$return=true;
+
+		// If a retention period has been set, trim the logs for this ObjectID prior to making this entry
+		if ( $config->ParameterArray["logretention"] > 0 ) {
+			LogActions::Prune( $config->ParameterArray["logretention"], $log->ObjectID );
+		}
+
 		// If there are any differences then we are upating an object otherwise
 		// this is a new object so just log the action as a create
 		if(!is_null($originalobject)){
@@ -273,6 +281,22 @@ class LogActions {
 			return false;
 		}
 		return true;
+	}
+
+	static function GetLastDeviceAction($DeviceID) {
+		$log = new LogActions();
+
+		$sql = "select * from fac_GenericLog where Class='Device' and ObjectID='".$DeviceID."' order by Time DESC limit 1";
+
+		// Return a blank entry if nothing is found
+		$result = new LogActions();
+
+		foreach ( $log->query($sql) as $dbRow ) {
+			// There can be only one
+			$result = LogActions::RowToObject($dbRow);
+		}
+
+		return $result;
 	}
 
 	static function GetLog($object=null,$limitbyclass=true){
@@ -408,6 +432,53 @@ class LogActions {
 		}
 
 		return $events;
+	}
+
+	static function Prune($retentionDays = 90, $ObjectID = null) {
+		// Put in a failsafe of a 90 days window, just in case someone calls this routine without a parameter
+		// 
+		// Methodology:   We can't simply prune every record over NN days old, because we need, at minimum,
+		// the last date/time that an object was touched by someone.   That date/time could be past the retention
+		// period, so it is more accurate to say that we will keep the last record, plus any additional that are
+		// within the specified retention period.   This isn't process intensive when done on every log touch, but
+		// when you have to do a retroactive pruning, it will definitely be a huge database resource user.
+		// 
+		// Cycle through the entire log, aggregating by ObjectID.   One by one on the ObjectID, prune all entries older
+		// than the retention period, other than the most recent record (if not within that period).
+		global $dbh;
+
+		if ( is_null( $ObjectID ) ) {
+			$outerSQL = "select distinct(ObjectID) as ObjectID from fac_GenericLog";
+			$outer = $dbh->prepare( $outerSQL );
+			$outer->execute();
+
+			$innerSQL = "select Time from fac_GenericLog where ObjectID=:ObjectID order by Time DESC Limit 1";
+			$inner = $dbh->prepare( $innerSQL );
+
+			$pruneSQL = "delete from fac_GenericLog where ObjectID=:ObjectID and Time<:Time and Action!='CertifyAudit'";
+			$pruneIt = $dbh->prepare( $pruneSQL );
+
+			while ( $row = $outer->fetch(PDO::FETCH_ASSOC) ) {
+				$inner->execute( array( ":ObjectID"=>$row["ObjectID"]));
+				echo "Pruning for ObjectID=" . $row["ObjectID"] . "\n";
+				if ( $cutOff = $inner->fetch(PDO::FETCH_ASSOC) );
+					$lastEntryDate = strtotime( $cutOff["Time"]);
+					if ( $lastEntryDate < strtotime( "-" . $retentionDays . " days" ) ) {
+						// Most current record is past the retention time, so we have to make sure we keep it
+						// Since we're simply specifying a Timestamp, if multiple values were changed with the
+						// exact same Timestamp, they'll also be retained, which is fine.
+						$pruneIt->execute( array( ":ObjectID"=>$row["ObjectID"], ":Time"=>$cutOff["Time"] ) );
+					} else {
+						// The latest entry is within the retention period, so simply execute this based off of
+						// the specified amount
+						$pruneIt->execute( array( ":ObjectID"=>$row["ObjectID"], ":Time"=>date('Y-m-d H:i:s', strtotime( '-'.$retentionDays.' days' ) ) ) );
+					}
+			}
+		} else {
+			$pruneSQL = "delete from fac_GenericLog where ObjectID=:ObjectID and Time<:Time and Action!='CertifyAudit'";
+			$pruneIt = $dbh->prepare( $pruneSQL );
+			$pruneIt->execute( array( ":ObjectID"=>$ObjectID, ":Time"=>date('Y-m-d H:i:s', strtotime( '-'.$retentionDays.' days' ) ) ) );
+		}
 	}
 }
 

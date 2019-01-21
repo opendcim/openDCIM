@@ -1680,6 +1680,10 @@ echo '<div class="main">
 					<div><input type="text" readonly="readonly" id="timezone" defaultvalue="',$config->defaults["timezone"],'" name="timezone" value="',$config->ParameterArray["timezone"],'"></div>
 				</div>
 				<div>
+					<div><label for="logretention">',__("Log Retention (Days)"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["logretention"],'" name="logretention" value="',$config->ParameterArray["logretention"],'"></div>
+				</div>
+				<div>
 					<div><label for="mDate">',__("Manufacture Date"),'</label></div>
 					<div><select id="mDate" name="mDate" defaultvalue="',$config->defaults["mDate"],'" data="',$config->ParameterArray["mDate"],'">
 							<option value="blank"',(($config->ParameterArray["mDate"]=="blank")?' selected="selected"':''),'>',__("Blank"),'</option>

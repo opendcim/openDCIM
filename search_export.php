@@ -58,10 +58,13 @@
 					$ca_date = date("d M Y",strtotime($child->$ca_row["Label"]));
 					$ca_cells .= "\t<td>{$ca_date}</td>";
 				}else{
-					$cadata=(isset($child->$ca_row["Label"]) && !is_null($child->$ca_row["Label"]))?$child->$ca_row["Label"]:"";
+					$cadata=(@isset($child->$ca_row["Label"]) && !is_null($child->$ca_row["Label"]))?$child->$ca_row["Label"]:"";
 					$ca_cells .= "\t<td>$cadata</td>";
 				}
 			}
+
+			// $lastLog = LogActions::GetLastDeviceAction( $child->DeviceID );
+			$lastLog = new LogActions();
 
 			$body .= "\t\t<tr>
 			\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
@@ -79,7 +82,14 @@
 			\t<th>$contact</th>
 			\t<td>$cwarranty</td>
 			\t<td>$cdate</td>
-			\t{$ca_cells}\n\t\t</tr>\n";
+			\t<td>$child->Status</td>
+			\t<td>$child->HalfDepth</td>
+			\t<td>$child->BackSide</td>
+			\t<td>$child->Hypervisor</td>
+			\t<td>$lastLog->Time</td>
+			\t<td>$lastLog->UserID</td>
+			\t{$ca_cells}
+			\n\t\t</tr>\n";
 
 			if($child->DeviceType=="Chassis"){
 				$chassis=processChassis($child,$dept,$row,$ca_result,$tpList,$cList);
@@ -105,7 +115,7 @@
 			$sql="SELECT a.Name AS DataCenter, b.DeviceID, c.Location, b.Position, 
 				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, 
 				b.WarrantyExpire, b.PrimaryIP, b.ParentDevice, b.PrimaryContact, b.TemplateID, 
-				b.Owner, c.CabinetID, c.DataCenterID $custom_concat FROM fac_DataCenter a,
+				b.Owner, b.Status, b.HalfDepth, b.BackSide, b.Hypervisor, c.CabinetID, c.DataCenterID $custom_concat FROM fac_DataCenter a,
 				fac_Cabinet c, fac_Device b  LEFT OUTER JOIN fac_DeviceCustomValue d on
 				b.DeviceID=d.DeviceID WHERE b.Cabinet=c.CabinetID AND c.DataCenterID=a.DataCenterID
 				$dclimit
@@ -136,6 +146,12 @@
 			\t<th>".__("Primary Contact")."</th>
 			\t<th>".__("Warranty Expiration")."</th>
 			\t<th>".__("Installation Date")."</th>
+			\t<th>".__("Device Status")."</th>
+			\t<th>".__("Half Depth")."</th>
+			\t<th>".__("Back Side")."</th>
+			\t<th>".__("Hypervisor")."</th>
+			\t<th>".__("Last Modification Time")."</th>
+			\t<th>".__("Last Modified By")."</th>
 			{$ca_headers}
 			</tr>\n\t</thead>\n\t<tbody>\n";
 
@@ -176,9 +192,12 @@
 					}
 				}
 
+				$lastLog = LogActions::GetLastDeviceAction($row["DeviceID"]);
+				// $lastLog = new LogActions();
+
 				$dev->DeviceID=$row["DeviceID"];
 				$tags=implode(",", $dev->GetTags());
-				$body.="\t\t<tr>
+				$body.= "\t\t<tr>
 				\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
 				\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
 				\t<td>{$row["Position"]}</td>
@@ -194,6 +213,12 @@
 				\t<th>$contact</th>
 				\t<td>$warranty</td>
 				\t<td>$date</td>
+				\t<td>{$row["Status"]}</td>
+				\t<td>{$row["HalfDepth"]}</td>
+				\t<td>{$row["BackSide"]}</td>
+				\t<td>{$row["Hypervisor"]}</td>
+				\t<td>{$lastLog->Time}</td>
+				\t<td>{$lastLog->UserID}</td>
 				{$ca_cells}\t\n\t\t</tr>\n";
 
 				if($row["DeviceType"]=="Chassis"){
