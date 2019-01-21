@@ -287,7 +287,7 @@ class PowerDistribution {
 	function GetPDUbyCabinet(){
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_PowerDistribution WHERE CabinetID=$this->CabinetID;";
+		$sql="SELECT * FROM fac_PowerDistribution WHERE CabinetID=$this->CabinetID ORDER BY Label ASC;";
 
 		$PDUList=array();
 		foreach($this->query($sql) as $PDURow){
