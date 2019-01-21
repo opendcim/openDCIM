@@ -927,6 +927,11 @@ class Device {
 		$updatethis=$this->WhosYourDaddy(true);
 		$updatethis->UpdateDeviceCache();
 
+		// Need to check if this device was a child and moved to a new parent
+		// if so then we need to use the $tmpDev to find it's parent and run the UpdateDeviceCache
+		// currently the device cache is getting updated with the new destination for the child
+		// but the previous location isn't creating a ghost until the full cache is rebuilt
+
 		(class_exists('LogActions'))?LogActions::LogThis($this,$tmpDev):'';
 		return true;
 	}

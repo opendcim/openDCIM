@@ -1147,7 +1147,7 @@ function bindevents() {
 		var preview=$('#imageselection #preview');
 		$(this).click(function(){
 			preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
-			preview.html('<img src="<?php echo $config->ParameterArray['picturepath'];?>/'+$(this).text()+'" alt="preview">').attr('image',$(this).text());
+			preview.html("<img src=\"<?php echo $config->ParameterArray['picturepath'];?>"+$(this).text()+'" alt="preview">').attr('image',$(this).text());
 			preview.children('img').load(function(){
 				var topmargin=0;
 				var leftmargin=0;

@@ -2275,11 +2275,11 @@ echo '<div class="main">
 				</div>
 				<div>
 					<div><label for="LDAPBaseSearch">',__("Base Search"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseSearch"],'" name="LDAPBaseSearch" value="',$config->ParameterArray["LDAPBaseSearch"],'"></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseSearch"],'" name="LDAPBaseSearch" value="',$config->ParameterArray["LDAPBaseSearch"],'" title="',__("Leave blank for Active Directory"),'"></div>
 				</div>
 				<div>
 					<div><label for="LDAPBindDN">',__("Bind DN"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$config->ParameterArray["LDAPBindDN"],'"></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$config->ParameterArray["LDAPBindDN"],'" title="%userid%@opendcim.org for Active Directory"></div>
 				</div>
 				<div>
 					<div><label for="LDAPUserSearch">',__("User Search"),'</label></div>
@@ -2288,6 +2288,14 @@ echo '<div class="main">
 				<div>
 					<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPDebug">',__("LDAP Debugging"),'</label></div>
+					<div><select id="LDAPDebug" name="LDAPDebug" defaultValue="',$config->defaults["LDAPDebug"],'" data="', $config->ParameterArray["LDAPDebug"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
 				</div>
 			</div>
 			<h3>',__("User Attributes"),'</h3>

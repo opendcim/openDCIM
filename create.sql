@@ -875,7 +875,7 @@ INSERT INTO fac_Config VALUES
 	('LDAPBaseDN', 'dc=opendcim,dc=org', 'DN', 'string', 'dc=opendcim,dc=org'),
 	('LDAPBindDN', 'cn=%userid%,ou=users,dc=opendcim,dc=org', 'DN', 'string', 'cn=%userid%,ou=users,dc=opendcim,dc=org'),
 	('LDAPBaseSearch', '(&(objectClass=posixGroup)(memberUid=%userid%))', 'DN', 'string', '(&(objectClass=posixGroup)(memberUid=%userid%))'),
-	('LDAPUserSearch', '(|(uid=%userid%))', 'DN', 'string', '(|(uid=%userid%))'),
+	('LDAPUserSearch', '(|(uid=%userid%)(sAMAccountName=%userid%))', 'DN', 'string', '(|(uid=%userid%)(sAMAccountName=%userid%))'),
 	('LDAPSessionExpiration', '0', 'Seconds', 'int', '0'),
 	('LDAPSiteAccess', 'cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
 	('LDAPReadAccess', 'cn=ReadAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=ReadAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
