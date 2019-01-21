@@ -21,6 +21,44 @@
   **/
 
 //
+//  URL:  		/api/v1/audit
+//  Method: 	GET
+//  Params:		DeviceID or CabinetID.   If both provided, DeviceID takes precedence.
+//  Returns:	Last audit date of given parameter.
+//
+
+$app->get( '/audit', function() {
+	$r = array();
+	$error = false;
+
+	$attrList = getParsedBody();
+
+	if ( isset( $attrList["DeviceID"] ) ) {
+		$auditList = LogActions::getDeviceAudits( $attrList["DeviceID"] );
+	} elseif ( isset( $attrList["CabinetID"] ) ) {
+		$log = new LogActions();
+		$log->ObjectID = $attrList["CabinetID"];
+		$log->Class = "CabinetAudit";
+		$log->Action = "CertifyAudit";
+		$auditList = $log->Search();
+	} else {
+		$error = true;
+	}
+
+
+	if ( ! $error ) {
+		$r['error'] = false;
+		$r['errorcode'] = 200;
+		$r['audit'] = $auditList;
+	} else {
+		$r['error'] = true;
+		$r['errorcode'] = 403;
+		$r["input"] = $attrList;
+	}
+
+	echoResponse( $r );
+});
+
 //	URL:  /api/v1/people
 //	Method: GET
 //	Params:  none

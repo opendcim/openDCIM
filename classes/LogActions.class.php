@@ -434,6 +434,28 @@ class LogActions {
 		return $events;
 	}
 
+	static function getDeviceAudits( $DeviceID ) {
+		global $dbh;
+
+		$dev = new Device();
+
+		$dev->DeviceID = $DeviceID;
+		$dev->GetDevice();
+
+		$sql = "select * from fac_GenericLog where (Action='Audit' and Class='Device' and ObjectID=:DeviceID) or
+			(Action='CertifyAudit' and Class='CabinetAudit' and ObjectID=:CabinetID) order by Time Desc";
+		$aud = $dbh->prepare( $sql );
+		$aud->setFetchMode( PDO::FETCH_CLASS, "LogActions" );
+		$aud->execute( array( ":DeviceID"=>$dev->DeviceID, ":CabinetID"=>$dev->Cabinet ));
+		$auditList = array();
+
+		while ( $row = $aud->fetch() ) {
+			$auditList[] = $row;
+		}
+
+		return $auditList;
+	}
+
 	static function Prune($retentionDays = 90, $ObjectID = null) {
 		// Put in a failsafe of a 90 days window, just in case someone calls this routine without a parameter
 		// 
