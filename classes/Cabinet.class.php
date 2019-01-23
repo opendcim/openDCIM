@@ -119,7 +119,13 @@ class Cabinet {
 			$dc=$_SESSION['datacenters'][$cab->DataCenterID];
 			if($dc->U1Position=="Default"){
 				global $config;
-				$cab->U1Position=$config->ParameterArray["U1Position"];
+				if($config->ParameterArray["U1Position"]!=""){
+					$cab->U1Position=$config->ParameterArray["U1Position"];
+				}else{
+					# If for some crazy reason the config value for the U1 position isn't set
+					# then just assume bottom
+					$cab->U1Position="Bottom";
+				}
 			}else{
 				$cab->U1Position=$dc->U1Position;
 			}
