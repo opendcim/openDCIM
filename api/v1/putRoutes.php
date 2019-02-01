@@ -18,6 +18,64 @@
   *
   **/
 
+//
+// URL:		/api/v1/audit
+// Method:	PUT
+// Params:	DeviceID or CabinetID.   If both specified, CabinetID takes precedence.
+// Returns:	Record as created
+// Notes:	Relies on the backend rights checks to ensure that an audit record can
+// 			only be added by someone with access to do so.
+// 			
+
+$app->put( '/audit', function() {
+	$r = array();
+	$error = false;
+
+	$attrList = getParsedBody();
+	$log = new LogActions();
+
+	if ( isset( $attrList["CabinetID"] ) ) {
+		$cab = new Cabinet();
+		$cab->CabinetID = $attrList["CabinetID"];
+		if ( $cab->GetCabinet() ) {
+			$audit = new CabinetAudit();
+			$audit->CabinetID = $attrList["CabinetID"];
+			if ( isset( $attrList["Comments"] ) ) {
+				$audit->Comments = sanitize( $attrList["Comments"] );
+			}
+			$audit->CertifyAudit();
+			$r['error'] = false;
+			$r['errorcode'] = 200;
+			$r['message'] = __("Audit record added successfully.");
+		} else {
+			$r['error'] = true;
+			$r['errorcode'] = 404;
+			$r['message'] = __("Specified CabinetID not found.");
+			$r['parameters'] = $attrList;
+		}
+	} elseif ( isset( $attrList["DeviceID"] ) ) {
+		$dev = new Device();
+		$dev->DeviceID = $attrList["DeviceID"];
+		if ( $dev->GetDevice() ) {
+			$dev->Audit();
+			$r['error'] = false;
+			$r['errorcode'] = 200;
+			$r['message'] = __("Audit record added successfully.");
+		} else {
+			$r['error'] = true;
+			$r['errorcode'] = 404;
+			$r['message'] = __("Specified DeviceID not found.");
+			$r['parameters'] = $attrList;
+		}
+	} else {
+		$r['error'] = true;
+		$r['errorcode'] = 400;
+		$r['message'] = __("Invalid input parameters.");
+		$r['parameters'] = $attrList;
+	}
+
+	echoResponse( $r );
+});
 
 //
 //	URL:	/api/v1/people/:userid
