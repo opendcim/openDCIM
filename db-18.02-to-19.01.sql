@@ -8,7 +8,13 @@ UPDATE fac_Config SET DefaultVal="(|(uid=%userid%)(sAMAccountName=%userid%))" WH
 -- Add in new configuration item for log retention
 --
 
-INSERT INTO fac_Config set Parameter='logretention', Value='90', UnitOfMeasure='days', ValType='integer', DefaultVal='90';
+INSERT INTO fac_Config set Parameter='logretention', Value='90', UnitOfMeasure='days', ValType='integer', DefaultVal='0';
+
+--
+-- Add in new configuration item for local reports
+--
+
+INSERT INTO fac_Config set Parameter='reportspath', Value='assets/reports/', UnitOfMeasure='string', ValType='string', DefaultVal='assets/reports/';
 
 -- Add an index to the fac_GenericLog to speed it up
 

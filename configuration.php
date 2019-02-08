@@ -642,7 +642,7 @@
 
 		// General - Site Specific Paths
 
-		$('#drawingpath, #picturepath').click(function(){
+		$('#drawingpath, #picturepath, #reportspath').click(function(){
 			var input=this;
 			var originalvalue=this.value;
 			$.get('',{dl: this.value}).done(function(data){
@@ -1670,6 +1670,11 @@ echo '<div class="main">
 				<div>
 					<div><label for="picturepath">',__("Relative path for Pictures"),'</label></div>
 					<div><input type="text" id="picturepath" defaultvalue="',$config->defaults["picturepath"],'" name="picturepath" value="',$config->ParameterArray["picturepath"],'" class="validate[required,custom[endWithSlashConfigurationPage]]">
+					</div>
+				</div>
+				<div>
+					<div><label for="picturepath">',__("Relative path for Local/Custom Reports"),'</label></div>
+					<div><input type="text" id="reportspath" defaultvalue="',$config->defaults["reportspath"],'" name="reportspath" value="',$config->ParameterArray["reportspath"],'" class="validate[required,custom[endWithSlashConfigurationPage]]">
 					</div>
 				</div>
 			</div> <!-- end table -->			
