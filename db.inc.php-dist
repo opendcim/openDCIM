@@ -9,7 +9,7 @@
 	}
 
 	// Set to true if you want to skip the installer check
-	$devMode = ucase(getenv('OPENDCIM_DEVMODE'))=="TRUE" ? true:false;
+	$devMode = strtoupper(getenv('OPENDCIM_DEVMODE'))=="TRUE" ? true:false;
 	$dbhost = getenv('OPENDCIM_DB_HOST') ? getenv('OPENDCIM_DB_HOST'):'localhost';
 	$dbname = getenv('OPENDCIM_DB_NAME') ? getenv('OPENDCIM_DB_NAME'):'dcim';
 	$dbuser = getenv('OPENDCIM_DB_USER') ? getenv('OPENDCIM_DB_USER'):'dcim';
