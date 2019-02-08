@@ -1673,7 +1673,7 @@ echo '<div class="main">
 					</div>
 				</div>
 				<div>
-					<div><label for="picturepath">',__("Relative path for Local/Custom Reports"),'</label></div>
+					<div><label for="reportspath">',__("Relative path for Local/Custom Reports"),'</label></div>
 					<div><input type="text" id="reportspath" defaultvalue="',$config->defaults["reportspath"],'" name="reportspath" value="',$config->ParameterArray["reportspath"],'" class="validate[required,custom[endWithSlashConfigurationPage]]">
 					</div>
 				</div>
