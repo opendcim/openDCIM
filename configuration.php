@@ -504,7 +504,7 @@
 		e.preventDefault();
 
 		var formdata=$('#smtpblock').serializeArray();
-		$.post( 'testemail.php', formdata, function(data) {
+		$.post( 'scripts/testemail.php', formdata, function(data) {
 			$('#smtptest').html(data);
 		});
 		$('#smtptest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
