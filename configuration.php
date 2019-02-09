@@ -499,6 +499,16 @@
 			}
 		});
 	};
+	
+	$('btn_smtptest').click(function(e) {
+		e.preventDefault();
+
+		var formdata=$('#smtpblock').serializeArray();
+		$.post( 'testemail.php', formdata, function(data) {
+			$('#smtptest').html(data);
+		});
+		$('#smtptest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
+	});
 
 	$(document).ready(function(){
 		// ToolTips
@@ -1979,6 +1989,7 @@ echo '<div class="main">
 			</div> <!-- end table -->
 		</div>
 		<div id="email">
+		    <fieldset id="smtpblock">
 			<div class="table">
 				<div>
 					<div><label for="SMTPServer">',__("SMTP Server"),'</label></div>
@@ -2016,7 +2027,13 @@ echo '<div class="main">
 					<div><label for="FacMgrMail">',__("Facility Manager Email"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["FacMgrMail"],'" name="FacMgrMail" value="',$config->ParameterArray["FacMgrMail"],'"></div>
 				</div>
+				<div>
+					<div></div>
+					<div><button type="button" class_id="btn_smtptest" style="display; inline-block">',__("Test Settings"),'</button></div>
+				</div>
+				<div id="smtptest" title="Testing SMTP Communications"></div>
 			</div> <!-- end table -->
+			</fieldset>
 		</div>
 		<div id="reporting">
 			<div id="imageselection" title="Image file selector">
