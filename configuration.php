@@ -500,16 +500,6 @@
 		});
 	};
 	
-	$('btn_smtptest').click(function(e) {
-		e.preventDefault();
-
-		var formdata=$('#smtpblock').serializeArray();
-		$.post( 'scripts/testemail.php', formdata, function(data) {
-			$('#smtptest').html(data);
-		});
-		$('#smtptest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
-	});
-
 	$(document).ready(function(){
 		// ToolTips
 		$('#tooltip, #cdutooltip').multiselect();
@@ -517,6 +507,18 @@
 			if($(this).attr('data')){
 				$(this).val($(this).attr('data'));
 			}
+		});
+
+		// Email test
+		$('#btn_smtptest').click(function(e) {
+console.log('click');
+			e.preventDefault();
+
+			var formdata=$('#smtpblock').serializeArray();
+			$.post( 'scripts/testemail.php', formdata, function(data) {
+				$('#smtptest > div').text(JSON.stringify(data));
+			});
+			$('#smtptest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
 		});
 
 		// Applies to everything
@@ -791,7 +793,6 @@
 			});
 
 			$('.main form').validationEngine();
-
 		}
 
 		var blankmediarow=$('<div />').html('<div><img src="images/del.gif"></div><div><input id="mediatype[]" name="mediatype[]" type="text"></div><div><select name="mediacolorcode[]"></select></div>');
@@ -1625,6 +1626,7 @@
 			}
 		});
 	}
+
   </script>
 </head>
 <body>
@@ -2029,9 +2031,9 @@ echo '<div class="main">
 				</div>
 				<div>
 					<div></div>
-					<div><button type="button" class_id="btn_smtptest" style="display; inline-block">',__("Test Settings"),'</button></div>
+					<div><button type="button" id="btn_smtptest" style="display; inline-block">',__("Test Settings"),'</button></div>
 				</div>
-				<div id="smtptest" title="Testing SMTP Communications"></div>
+				<div id="smtptest" title="Testing SMTP Communications"><div></div></div>
 			</div> <!-- end table -->
 			</fieldset>
 		</div>
