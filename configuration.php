@@ -511,7 +511,6 @@
 
 		// Email test
 		$('#btn_smtptest').click(function(e) {
-console.log('click');
 			e.preventDefault();
 
 			var formdata=$('#smtpblock').serializeArray();
