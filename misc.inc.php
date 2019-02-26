@@ -100,6 +100,12 @@ Example usage:
 function path(){
 	$path=explode("/",$_SERVER['REQUEST_URI']);
 	unset($path[(count($path)-1)]);
+	// if DCIM is running with CONTENT_PREFIX, don't inlude it into the path
+	if(isset($_SERVER['CONTEXT_PREFIX'])) {
+		if($_SERVER['CONTEXT_PREFIX'] == '/'.$path[1]){
+			unset($path[1]);
+		}
+	}
 	$path=implode("/",$path);
 	return $path;
 }
