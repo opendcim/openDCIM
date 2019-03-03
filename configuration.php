@@ -1805,11 +1805,14 @@ echo '<div class="main">
 					<div><input type="text" defaultvalue="',$config->defaults["RCILow"],'" name="RCILow" value="',$config->ParameterArray["RCILow"],'"></div>
 				</div>
 			</div> <!-- end table -->
-			<h3>',__("Virtual Machines"),'</h3>
+			<h3>',__("Expirations"),'</h3>
 			<div class="table" id="rackusage">
 				<div>
-					<div><label for="VMExpirationTime">',__("Expiration Time (Days)"),'</label></div>
+					<div><label for="VMExpirationTime">',__("Unseen Virtual Machines (Days)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["VMExpirationTime"],'" name="VMExpirationTime" value="',$config->ParameterArray["VMExpirationTime"],'"></div>
+					<div></div>
+					<div><label for="ReservationExpiration">',__("Uninstalled Reservations (Days)"),'</label></div>
+					<div><input type="text" defaultValue="',$config->defaults["ReservationExpiration"],'" name="ReservationExpiration" value="',$config->ParameterArray["ReservationExpiration"],'"></div>
 				</div>
 			</div> <!-- end table -->
 			',$tzmenu,'

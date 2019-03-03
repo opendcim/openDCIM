@@ -33,7 +33,7 @@
 			$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
-		$message->setBody(__("This is a test email sent by an administrator from the openDCIM system at") . ' ' . $_SERVER['SERVER_NAME'],'text/html');
+		$message->setBody(__("<p>This is a test email sent by an administrator from the openDCIM system at") . ' ' . $_SERVER['SERVER_NAME'] . '</p>','text/html');
 
 		try {
 			$result = $mailer->send( $message );
@@ -53,7 +53,7 @@
 	} else {
 		$status["Code"] = 200;
 		$status["Error"] = false;
-		$status["Message"] = __("Test email sent.");
+		$status["Message"] = __("Test successful.");
 	}
 
 	echo json_encode( $status );

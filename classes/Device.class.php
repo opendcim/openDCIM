@@ -1137,7 +1137,7 @@ class Device {
 		if ( $Days == null ) {
 			$sql = "select * from fac_Device where Status='Reserved' order by InstallDate ASC";
 		} else {
-			$sql = sprintf( "select * from fac_Device where Status='Reserved' and InstallDate<=(CURDATE()+%d) ORDER BY InstallDate ASC", $Days );
+			$sql = sprintf( "select * from fac_Device where Status='Reserved' and InstallDate>=(CURDATE()-%d) ORDER BY InstallDate ASC", $Days );
 		}
 		
 		$devList = array();

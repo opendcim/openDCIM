@@ -83,9 +83,27 @@
 				$dc->DataCenterID = $cab->DataCenterID;
 				$dc->GetDataCenter();
 				
-				$deptU += $devRow->Height;
+				$deleteMe = false;
+
+				if ( $config->ParameterArray["ReservationExpiration"] > 0 ) {
+					if ( strtotime( $devRow->InstallDate ) < strtotime( $config->ParameterArray["ReservationExpiration"] . " days ago" ) ) {
+						$InstallDate = __("Expired and Removed");
+						$deleteMe = true;
+					} else {
+						$InstallDate = date( "d F Y", strtotime( $devRow->InstallDate ) );
+					}
+				} else {
+					$InstallDate = date( "d F Y", strtotime( $devRow->InstallDate ) );
+				}
 				
-				$htmlMessage .= sprintf( "<tr><td>%s</td><td>%d</td><td>%s</td><td><a href=\"%s/cabnavigator.php?cabinetid=%d\">%s</a></td><td><a href=\"%s/devices.php?DeviceID=%d\">%s</a></td></tr>\n", date( "d F Y", strtotime( $devRow->InstallDate ) ), $devRow->Height, $dc->Name, $config->ParameterArray["InstallURL"], $cab->CabinetID, $cab->Location, $config->ParameterArray["InstallURL"], $devRow->DeviceID, $devRow->Label );
+				if ( $deleteMe ) {
+					// Remove the links to the soon-to-be deleted device
+					$htmlMessage .= sprintf( "<tr><td>%s</td><td>%d</td><td>%s</td><td><a href=\"%s/cabnavigator.php?cabinetid=%d\">%s</a></td><td>%s</td></tr>\n", $InstallDate, $devRow->Height, $dc->Name, $config->ParameterArray["InstallURL"], $cab->CabinetID, $cab->Location, $config->ParameterArray["InstallURL"], $devRow->DeviceID, $devRow->Label );
+				$devRow->DeleteDevice();
+				} else {
+					$htmlMessage .= sprintf( "<tr><td>%s</td><td>%d</td><td>%s</td><td><a href=\"%s/cabnavigator.php?cabinetid=%d\">%s</a></td><td><a href=\"%s/devices.php?DeviceID=%d\">%s</a></td></tr>\n", $InstallDate, $devRow->Height, $dc->Name, $config->ParameterArray["InstallURL"], $cab->CabinetID, $cab->Location, $config->ParameterArray["InstallURL"], $devRow->DeviceID, $devRow->Label );
+					$deptU += $devRow->Height;
+				}
 			}
 			
 			$totalU += $deptU;
