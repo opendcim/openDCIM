@@ -515,9 +515,9 @@
 
 			var formdata=$('#smtpblock').serializeArray();
 			$.post( 'scripts/testemail.php', formdata, function(data) {
-				$('#smtptest > div').text(JSON.stringify(data));
+				$('#smtptest > div').html(data);
+				$('#smtptest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
 			});
-			$('#smtptest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
 		});
 
 		// Applies to everything
@@ -2038,6 +2038,24 @@ echo '<div class="main">
 				<div id="smtptest" title="Testing SMTP Communications"><div></div></div>
 			</div> <!-- end table -->
 			</fieldset>
+			<div class="table">
+				<div>
+					<div><label for="PowerAlertsEmail">',__("Email Alerts on Power Poll"),'</label></div>
+					<div><select id="PowerAlertsEmail" name="PowerAlertsEmail" defaultvalue="',$config->defaults["PowerAlertsEmail"],'" data="',$config->ParameterArray["PowerAlertsEmail"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for="SensorAlertsEmail">',__("Email Alerts on Sensor Poll"),'</label></div>
+					<div><select id="SensorAlertsEmail" name="SensorAlertsEmail" defaultvalue="',$config->defaults["SensorAlertsEmail"],'" data="',$config->ParameterArray["SensorAlertsEmail"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div id="reporting">
 			<div id="imageselection" title="Image file selector">

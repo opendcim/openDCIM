@@ -33,7 +33,24 @@
 			$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
-		$message->setBody(__("<p>This is a test email sent by an administrator from the openDCIM system at") . ' ' . $_SERVER['SERVER_NAME'] . '</p>','text/html');
+		$logo=getcwd().'/images/'.$config->ParameterArray["PDFLogoFile"];
+		$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
+		
+		$style = "
+<style type=\"text/css\">
+@media print {
+	h2 {
+		page-break-before: always;
+	}
+}
+</style>";
+
+		$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Data Center Inventory Reservations"), $style, $config->ParameterArray["HeaderColor"], $logo  );
+
+		$htmlMessage .= __("<p>This is a test email sent by an administrator from the openDCIM system at") . ' ' . $_SERVER['SERVER_NAME'] . '</p>';
+
+		$message->setBody($htmlMessage,'text/html');
+
 
 		try {
 			$result = $mailer->send( $message );
@@ -47,14 +64,10 @@
 	}
 
 	if ( isset( $error ) ) {
-		$status["Code"] = 503;
-		$status["Error"] = true;
-		$status["Message"] = $error;
+		$Response = "<h2>" . __("An error has occurred:") . "</h2><p>" . $error . "</p>";
 	} else {
-		$status["Code"] = 200;
-		$status["Error"] = false;
-		$status["Message"] = __("Test successful.");
+		$Response = "<h2>" . __("SMTP Server Connection Test Successful") . "</h2>";
 	}
 
-	echo json_encode( $status );
+	echo $Response;
 ?>
