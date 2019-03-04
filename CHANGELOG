@@ -6,6 +6,22 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 19.01
+----------------
+* Ability to specify where the pictures and drawings folders are (easier for Containers)
+* Ability to specify most of the db.inc.php settings through environment variables (easier for Containers)
+* Added in a new Custom Search block which will let you search on any field of the device model
+* Added API POST and PUT routes for creating/updating cabinets
+* Added routes to retrieve and set audit logs via the API
+* Added in an index to the fac_GenericLog table to help speed up queries
+* Added a cleanup routine for logs (optional) to trim entries older than specified date
+* Added a configuration item for days beyond 'Install Date' for a reservation to be held
+* Added a report to show current reservations and the specified 'Install Date'
+* Added a configuration item allowing site admin to specify if Warning/Critical sensor polls should be emailed
+* Added the ability to pull in custom reports to the Reports page (see Wiki)
+* Fixed a CSS issue that kept the RowView from properly displaying Department colors
+* A few bug fixes, per usual
+
 Changes in 18.02
 ----------------
 * Enhanced LDAP integration, with better support for Active Directory environments

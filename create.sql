@@ -396,7 +396,9 @@ CREATE TABLE `fac_GenericLog` (
   Property varchar(40) NOT NULL,
   OldVal varchar(255) NOT NULL,
   NewVal varchar(255) NOT NULL,
-  Time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  Time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY `Object` (`ObjectID`),
+  KEY `ObjectTime` (`ObjectID`, `Time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -789,7 +791,7 @@ CREATE TABLE fac_Config (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO fac_Config VALUES
-	('Version','18.02','','',''),
+	('Version','19.01','','',''),
 	('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),
 	('ClassList','ITS, Internal, Customer','List','string','ITS, Internal, Customer'),
 	('SpaceRed','80','percentage','float','80'),
@@ -876,6 +878,7 @@ INSERT INTO fac_Config VALUES
 	('LDAPBindDN', 'cn=%userid%,ou=users,dc=opendcim,dc=org', 'DN', 'string', 'cn=%userid%,ou=users,dc=opendcim,dc=org'),
 	('LDAPBaseSearch', '(&(objectClass=posixGroup)(memberUid=%userid%))', 'DN', 'string', '(&(objectClass=posixGroup)(memberUid=%userid%))'),
 	('LDAPUserSearch', '(|(uid=%userid%)(sAMAccountName=%userid%))', 'DN', 'string', '(|(uid=%userid%)(sAMAccountName=%userid%))'),
+  ('LDAPDebug', 'enabled', 'Enabled/Disabled', 'string', 'disabled'),
 	('LDAPSessionExpiration', '0', 'Seconds', 'int', '0'),
 	('LDAPSiteAccess', 'cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
 	('LDAPReadAccess', 'cn=ReadAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org', 'DN', 'string', 'cn=ReadAccess,cn=openDCIM,ou=groups,dc=opendcim,dc=org'),
@@ -911,7 +914,12 @@ INSERT INTO fac_Config VALUES
 	("LDAPPhone3", "pager", "string", "string", "pager"),
 	("drawingpath", "drawings/", "string", "string", "drawings/"),
 	("picturepath", "pictures/", "string", "string", "pictures/"),
-	("RackRequestsActions", "disabled", "Enabled/Disabled", "string", "disabled")
+	("RackRequestsActions", "disabled", "Enabled/Disabled", "string", "disabled"),
+  ('logretention', '0', 'days', 'integer', '0'),
+  ('reportspath', 'assets/reports/', 'string', 'string', 'assets/reports/'),
+  ('ReservationExpiration', '0', 'days', 'integer', '0'),
+  ('PowerAlertsEmail', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
+  ('SensorAlertsEmail', 'disabled', 'Enabled/Disabled', 'string', 'disabled')
 ;
 
 --
