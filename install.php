@@ -1152,6 +1152,11 @@ function upgrade(){
 
 		$config->rebuild();
 	}
+	if($version=="18.02"){
+		$results[]=applyupdate("db-18.02-to-19.01.sql");
+
+		$config->rebuild();
+	}
 }
 
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
