@@ -381,11 +381,16 @@ class PowerDistribution {
 	function UpdateStats(){
 		global $config;
 		global $dbh;
+
+		$AlertList = "";
+		$htmlMessage = "";
 		
-		$sql="SELECT a.PDUID, d.SNMPVersion, b.Multiplier, b.OID1, 
-			b.OID2, b.OID3, b.ProcessingProfile, b.Voltage, c.SNMPFailureCount FROM fac_PowerDistribution a, 
-			fac_CDUTemplate b, fac_Device c, fac_DeviceTemplate d WHERE a.PDUID=c.DeviceID and a.TemplateID=b.TemplateID 
-			AND a.TemplateID=d.TemplateID AND b.Managed=true AND c.PrimaryIP>'' and c.SNMPFailureCount<3";
+		$sql="SELECT a.PDUID, a.BreakerSize, b.Voltage, b.Amperage, d.SNMPVersion, b.Multiplier, b.OID1, b.OID2, b.OID3, 
+			b.ProcessingProfile, b.Voltage, c.Label, c.SNMPFailureCount, e.Location, f.Name 
+			FROM fac_PowerDistribution a, fac_CDUTemplate b, fac_Device c, fac_DeviceTemplate d, fac_Cabinet e, fac_DataCenter f 
+			WHERE a.PDUID=c.DeviceID and a.TemplateID=b.TemplateID AND a.TemplateID=d.TemplateID and a.CabinetID=e.CabinetID and
+			e.DataCenterID=f.DataCenterID AND b.Managed=true AND c.PrimaryIP>'' and c.SNMPFailureCount<3
+			ORDER BY f.Name ASC, e.Location ASC";
 		
 		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
 		foreach($this->query($sql) as $row){
@@ -450,6 +455,22 @@ class PowerDistribution {
 				$info=$dbh->errorInfo();
 				error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
 			}
+
+			$maxWatts = $row["Voltage"] * $row["Amperage"];
+			if ( $row["BreakerSize"] == 3 ) {
+				$maxWatts *= 1.732;
+			}
+
+			// Derate everything 80% per standard
+			$maxWatts += 0.8;
+
+			if ( $config->ParameterArray["PowerAlertsEmail"] == "enabled" ) {
+				if ( $watts >= $config->ParameterArray["PowerRed"] / 100 * $maxWatts ) {
+					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], $row["Label"], $watts, __("Critical"));
+				} elseif ( $watts >= $config->ParameterArray["PowerYellow"] / 100 * $maxWatts ) {
+					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], $row["Label"], $watts, __("Warning"));
+				}
+			}
 			
 			$this->PDUID=$row["PDUID"];
 			if($ver=$this->GetSmartCDUVersion()){
@@ -458,6 +479,71 @@ class PowerDistribution {
 					$info=$dbh->errorInfo();
 					error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
 				}
+			}
+
+		}
+
+		if ( $config->ParameterArray["PowerAlertsEmail"] == "enabled" && $AlertList != "" ) {
+			// If any port other than 25 is specified, assume encryption and authentication
+			if($config->ParameterArray['SMTPPort']!= 25){
+				$transport=Swift_SmtpTransport::newInstance()
+					->setHost($config->ParameterArray['SMTPServer'])
+					->setPort($config->ParameterArray['SMTPPort'])
+					->setEncryption('ssl')
+					->setUsername($config->ParameterArray['SMTPUser'])
+					->setPassword($config->ParameterArray['SMTPPassword']);
+			}else{
+				$transport=Swift_SmtpTransport::newInstance()
+					->setHost($config->ParameterArray['SMTPServer'])
+					->setPort($config->ParameterArray['SMTPPort']);
+			}
+
+			$mailer = Swift_Mailer::newInstance($transport);
+			$message = Swift_Message::NewInstance()->setSubject( __("Data Center Power Alerts Report" ) );
+
+			// Set from address
+			try{		
+				$message->setFrom($config->ParameterArray['MailFromAddr']);
+			}catch(Swift_RfcComplianceException $e){
+				$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			}
+
+			// Add data center team to the list of recipients
+			try{		
+				$message->addTo($config->ParameterArray['FacMgrMail']);
+			}catch(Swift_RfcComplianceException $e){
+				$error.=__("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			}
+
+			$logofile=getcwd().'/images/'.$config->ParameterArray["PDFLogoFile"];
+			$logo=$message->embed(Swift_Image::fromPath($logofile)->setFilename($logofile));
+				
+			$style = "
+<style type=\"text/css\">
+@media print {
+	h2 {
+		page-break-before: always;
+	}
+}
+</style>";
+
+
+			$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Data Center Power Alerts"), $style, $config->ParameterArray["HeaderColor"], $logo  );
+
+			$htmlMessage .= sprintf( "<table>\n<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n", __("Data Center"), __("Cabinet"), __("CDU"), __("Value"), __("Alert Level") );
+
+
+			// Add the alerts to the html message, now
+			$htmlMessage .= $AlertList . "</table>\n";;
+
+			$message->setBody($htmlMessage,'text/html');
+
+			try {
+				$result = $mailer->send( $message );
+			} catch( Swift_RfcComplianceException $e) {
+				$error .= "Send: " . $e->getMessage() . "<br>\n";
+			} catch( Swift_TransportException $e) {
+				$error .= "Server: <span class=\"errmsg\">" . $e->getMessage() . "</span><br>\n";
 			}
 		}
 	}

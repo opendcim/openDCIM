@@ -31,6 +31,13 @@ CREATE INDEX ObjectID on fac_GenericLog (ObjectID);
 CREATE INDEX ObjectTime on fac_GenericLog (ObjectID, Time);
 
 --
+-- Add in new configuration items for Alert Emails
+--
+
+INSERT INTO fac_Config set Parameter='PowerAlertsEmail', Value='disabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='disabled';
+INSERT INTO fac_Config set Parameter='SensorAlertsEmail', Value='disabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='disabled';
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 

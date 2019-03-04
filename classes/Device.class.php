@@ -2335,9 +2335,13 @@ class Device {
 		global $dbh;
 
 		// If CabinetID isn't specified try to update all sensors for the system
-		$cablimit=(is_null($CabinetID))?"":" AND Cabinet=$cab->CabinetID";
-		$sql="SELECT DeviceID FROM fac_Device WHERE DeviceType=\"Sensor\" AND 
-			PrimaryIP!=\"\" AND TemplateID>0 AND SNMPFailureCount<3$cablimit;";
+		$cablimit=(is_null($CabinetID))?"":" AND a.Cabinet=$cab->CabinetID";
+		$sql="SELECT a.DeviceID, b.DataCenterID, a.Cabinet, b.Location, a.BackSide, c.Name FROM fac_Device a, fac_Cabinet b, fac_DataCenter c WHERE 
+			DeviceType=\"Sensor\" AND PrimaryIP!=\"\" AND TemplateID>0 AND SNMPFailureCount<3 AND a.Cabinet=b.CabinetID AND
+			b.DataCenterID=c.DataCenterID $cablimit order by c.Name ASC, b.Location ASC;";
+
+		$AlertList = "";
+		$htmlMessage = "";
 
 		foreach($dbh->query($sql) as $row){
 			if(!$dev=Device::BasicTests($row['DeviceID'])){
@@ -2391,6 +2395,85 @@ class Device {
 
 				error_log( "UpdateSensors::PDO Error: {$info[2]} SQL=$insertsql" );
 				return false;
+			}
+
+			// Ignore rear sensors
+			if ( $row['BackSide'] == 0 && $config->ParameterArray["SensorAlertsEmail"] == "enabled" ) {
+				if ( $temp >= $config->ParameterArray["TemperatureRed"] ) {
+					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], __("Temperature"), $temp, __("Critical"));
+				} elseif ( $temp >= $config->ParameterArray["TemperatureYellow"] ) {
+					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], __("Temperature"), $temp, __("Warning"));
+				}
+
+				if ( ( $humidity >= $config->ParameterArray["HumidityRedHigh"] ) || ( $humidity <= $config->ParameterArray["HumidityRedLow"] ) ) {
+					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], __("Humidity"), $temp, __("Critical"));
+				} elseif ( ( $humidity >= $config->ParameterArray["HumidityYellowHigh"] ) || ( $humidity <= $config->ParameterArray["HumidityYellowLow"] ) ) {
+					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], __("Humidity"), $temp, __("Warning"));
+				}
+			}
+		}
+
+		if ( $config->ParameterArray["SensorAlertsEmail"] == "enabled" && $AlertList != "" ) {
+			// If any port other than 25 is specified, assume encryption and authentication
+			if($config->ParameterArray['SMTPPort']!= 25){
+				$transport=Swift_SmtpTransport::newInstance()
+					->setHost($config->ParameterArray['SMTPServer'])
+					->setPort($config->ParameterArray['SMTPPort'])
+					->setEncryption('ssl')
+					->setUsername($config->ParameterArray['SMTPUser'])
+					->setPassword($config->ParameterArray['SMTPPassword']);
+			}else{
+				$transport=Swift_SmtpTransport::newInstance()
+					->setHost($config->ParameterArray['SMTPServer'])
+					->setPort($config->ParameterArray['SMTPPort']);
+			}
+
+			$mailer = Swift_Mailer::newInstance($transport);
+			$message = Swift_Message::NewInstance()->setSubject( __("Data Center Sensor Alerts Report" ) );
+
+			// Set from address
+			try{		
+				$message->setFrom($config->ParameterArray['MailFromAddr']);
+			}catch(Swift_RfcComplianceException $e){
+				$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			}
+
+			// Add data center team to the list of recipients
+			try{		
+				$message->addTo($config->ParameterArray['FacMgrMail']);
+			}catch(Swift_RfcComplianceException $e){
+				$error.=__("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			}
+
+			$logofile=getcwd().'/images/'.$config->ParameterArray["PDFLogoFile"];
+			$logo=$message->embed(Swift_Image::fromPath($logofile)->setFilename($logofile));
+				
+			$style = "
+<style type=\"text/css\">
+@media print {
+	h2 {
+		page-break-before: always;
+	}
+}
+</style>";
+
+
+			$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Data Center Sensor Alerts"), $style, $config->ParameterArray["HeaderColor"], $logo  );
+
+			$htmlMessage .= sprintf( "<table>\n<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n", __("Data Center"), __("Cabinet"), __("Sensor"), __("Value"), __("Alert Level") );
+
+
+			// Add the alerts to the html message, now
+			$htmlMessage .= $AlertList . "</table>\n";;
+
+			$message->setBody($htmlMessage,'text/html');
+
+			try {
+				$result = $mailer->send( $message );
+			} catch( Swift_RfcComplianceException $e) {
+				$error .= "Send: " . $e->getMessage() . "<br>\n";
+			} catch( Swift_TransportException $e) {
+				$error .= "Server: <span class=\"errmsg\">" . $e->getMessage() . "</span><br>\n";
 			}
 		}
 
