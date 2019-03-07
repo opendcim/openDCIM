@@ -18,6 +18,9 @@ if (!isset($_SESSION['samlUserdata'])) {
 	$settings = new OneLogin_Saml2_Settings($saml_settings);
 	$authRequest = new OneLogin_Saml2_AuthnRequest($settings);
 	$samlRequest = $authRequest->getRequest();
+
+	// Track the authRequest ID so the response can be validated
+	$_SESSION['saml_req_id'] = $authRequest->getID();
 	
 	$parameters = array('SAMLRequest' => $samlRequest);
 	$parameters['RelayState'] = OneLogin_Saml2_Utils::getSelfURLNoQuery();
