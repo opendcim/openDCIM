@@ -31,7 +31,7 @@ if (!$auth->isAuthenticated()) {
 // Get and clear the SAML authRequest ID to validate the response is related
 if (isset($_SESSION['saml_req_id'])) {
 	$saml_reqID = $_SESSION['saml_req_id'];
-	unset($_SESSION["saml_req_id"]);
+	unset($_SESSION['saml_req_id']);
 }
 
 if ($samlResponse->isValid($saml_reqID)) {
