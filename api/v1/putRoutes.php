@@ -219,6 +219,45 @@ $app->put( '/colorcode/:colorname', function($colorname) use ($person) {
 });
 
 //
+//	URL:	/api/v1/deparment/:departmentname
+//	Method:	PUT
+//	Params:
+//		Required: Name
+//		Optional: ExecSponsor, SDM, Classification, DeptColor
+//	Returns: record as created
+//
+$app->put( '/department/:departmentname', function($departmentname) use ($person) {
+	if ( ! $person->SiteAdmin ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+	} else {
+		$dept=new Department();
+		$vars = getParsedBody();
+
+		foreach( $vars as $prop=>$val ) {
+			if ( property_exists( $dept, $prop )) {
+				$dept->$prop = $val;
+			}
+		}
+		$dept->Name=$departmentname;
+
+		if(!$dept->CreateDepartment()){
+			$r['error']=true;
+			$r['errorcode']=400;
+			$r['message']=__("Error creating new status.");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+			$r['message']=__("New status created successfully.");
+			$r['department'][$dept->DeptID]=$dept;
+		}
+	}
+
+	echoResponse( $r );
+});
+
+//
 //	URL:	/api/v1/device/:devicelabel
 //	Method:	PUT
 //	Params:	deviceid (passed in URL)
