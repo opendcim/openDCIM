@@ -867,7 +867,7 @@ if(!function_exists("updateNavTreeHTML")){
 	we are.  It may be needed for the installation.
 */
 
-if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) ){
+if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" ){
 	header("Location: ".redirect('saml/login.php'));
 	exit;
 }
