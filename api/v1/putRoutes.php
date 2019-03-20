@@ -245,11 +245,11 @@ $app->put( '/department/:departmentname', function($departmentname) use ($person
 		if(!$dept->CreateDepartment()){
 			$r['error']=true;
 			$r['errorcode']=400;
-			$r['message']=__("Error creating new status.");
+			$r['message']=__("Error creating new department.");
 		}else{
 			$r['error']=false;
 			$r['errorcode']=200;
-			$r['message']=__("New status created successfully.");
+			$r['message']=__("New department created successfully.");
 			$r['department'][$dept->DeptID]=$dept;
 		}
 	}
