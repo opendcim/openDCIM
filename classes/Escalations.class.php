@@ -75,7 +75,9 @@ class Escalations {
 
 		$sql="SELECT * FROM fac_Escalations WHERE EscalationID=$this->EscalationID;";
 		
-		if($row=$this->query($sql)->fetch()){
+		// if($row=$this->query($sql)->fetch()){
+                if($q=$this->query($sql)){
+                        $row=$q->fetch();
 			$this->EscalationID=$row["EscalationID"];
 			$this->Details=$row["Details"];
 			$this->MakeDisplay();
