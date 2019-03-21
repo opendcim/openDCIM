@@ -34,7 +34,7 @@ $settings = array (
         // attributeConsumingService. nameFormat, attributeValue and
         // friendlyName can be omitted. Otherwise remove this section.
         "attributeConsumingService"=> array(
-                "ServiceName" => "SP test",
+                "serviceName" => "SP test",
                 "serviceDescription" => "Test Service",
                 "requestedAttributes" => array(
                     array(
@@ -93,6 +93,9 @@ $settings = array (
         'singleLogoutService' => array (
             // URL Location of the IdP where the SP will send the SLO Request
             'url' => '',
+            // URL location of the IdP where the SP will send the SLO Response (ResponseLocation)
+            // if not set, url for the SLO Request will be used
+            'responseUrl' => '',
             // SAML protocol binding to be used when returning the <Response>
             // message.  Onelogin Toolkit supports for this endpoint the
             // HTTP-Redirect binding only
@@ -101,7 +104,10 @@ $settings = array (
         // Public x509 certificate of the IdP
         'x509cert' => '',
         /*
-         *  Instead of use the whole x509cert you can use a fingerprint
+         *  Instead of use the whole x509cert you can use a fingerprint in
+         *  order to validate the SAMLResponse, but we don't recommend to use
+         *  that method on production since is exploitable by a collision
+         *  attack.
          *  (openssl x509 -noout -fingerprint -in "idp.crt" to generate it,
          *   or add for example the -sha256 , -sha384 or -sha512 parameter)
          *
