@@ -4,7 +4,7 @@
 
 	$subheader=__("Data Center Contact Detail");
 
-	if(!$person->SiteAdmin || !$person->ContactAdmin){
+	if(!$person->ContactAdmin){
 		header('Location: '.redirect());
 		exit;
 	}
