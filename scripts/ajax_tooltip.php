@@ -49,11 +49,21 @@ if($object>0){
 				DeviceID FROM fac_Device WHERE Cabinet=$cab->CabinetID AND 
 				BackSide=0 AND DeviceType=\"Sensor\");";
 			if ( $res=$dbh->query($sql) ) {
-				$temps = $res->fetch();
+				$intemps = $res->fetch();
 			} else {
 				error_log( "Tooltips::PDO Error sql=$sql ErrorInfo=" . print_r($dbh->errorInfo(), true) );
 			}
 
+			$sql="SELECT MAX(Temperature) AS Temperature, MAX(Humidity) AS Humidity,
+				MAX(LastRead) AS LastRead FROM fac_SensorReadings WHERE DeviceID IN (SELECT
+				DeviceID FROM fac_Device WHERE Cabinet=$cab->CabinetID AND
+				BackSide=1 AND DeviceType=\"Sensor\");";
+			if ( $res=$dbh->query($sql) ) {
+			    $outtemps = $res->fetch();
+			} else {
+			    error_log( "Tooltips::PDO Error sql=$sql ErrorInfo=" . print_r($dbh->errorInfo(), true) );
+			}
+			
 			// Pull wattage
 			$sql="SELECT SUM(Wattage) AS RealPower, MAX(LastRead) AS RPLastRead FROM 
 				fac_PDUStats WHERE PDUID IN (SELECT DeviceID FROM fac_Device WHERE 
@@ -70,10 +80,13 @@ if($object>0){
 			$devList=$dev->ViewDevicesByCabinet();
 			$curHeight = $cab->CabinetHeight;
 			$totalWatts = $totalWeight = $totalMoment =0;
-			$curTemp=$temps["Temperature"];
-			$curHum=$temps["Humidity"];
+			$curInTemp=$intemps["Temperature"];
+			$curInHum=$intemps["Humidity"];
+			$curOutTemp=$outtemps["Temperature"];
+			$curOutHum=$outtemps["Humidity"];
 			$curRealPower=$wattage["RealPower"];
-			$lastRead=(!is_null($temps["LastRead"]))?strftime('%c',strtotime(($temps["LastRead"]))):0;
+			$lastInRead=(!is_null($intemps["LastRead"]))?strftime('%c',strtotime(($intemps["LastRead"]))):0;
+			$lastOutRead=(!is_null($outtemps["LastRead"]))?strftime('%c',strtotime(($outtemps["LastRead"]))):0;
 			$RPlastRead=(!is_null($wattage["RPLastRead"]))?strftime('%c',strtotime(($wattage["RPLastRead"]))):0;
 			$rs='red';
 			$ys='yellow';
@@ -122,14 +135,18 @@ if($object>0){
 			if($WeightPercent>$WeightRed){$wcolor=$rs;}elseif($WeightPercent>$WeightYellow){$wcolor=$ys;}else{$wcolor=$gs;}
 			if($PowerPercent>$PowerRed){$pcolor=$rs;}elseif($PowerPercent>$PowerYellow){$pcolor=$ys;}else{$pcolor=$gs;}
 			if($RPlastRead=='0'){$rpcolor=$us;}elseif($RealPowerPercent>$RealPowerRed){$rpcolor=$rs;}elseif($RealPowerPercent>$RealPowerYellow){$rpcolor=$ys;}else{$rpcolor=$gs;}
-			if($curTemp==0){$tcolor=$us;}elseif($curTemp>$TempRed){$tcolor=$rs;}elseif($curTemp>$TempYellow){$tcolor=$ys;}else{$tcolor=$gs;}
-			if($curHum==0){$hcolor=$us;}elseif($curHum>$HumMax || $curHum<$HumMin){$hcolor=$rs;}elseif($curHum>$HumMedMax || $curHum<$HumMedMin){$hcolor=$ys;}else{$hcolor=$gs;}
+			if($curInTemp==0){$t1color=$us;}elseif($curInTemp>$TempRed){$t1color=$rs;}elseif($curInTemp>$TempYellow){$t1color=$ys;}else{$t1color=$gs;}
+			if($curOutTemp==0){$t2color=$us;}elseif($curOutTemp>$TempRed){$t2color=$rs;}elseif($curOutTemp>$TempYellow){$t2color=$ys;}else{$t2color=$gs;}
+			if($curInHum==0){$h1color=$us;}elseif($curInHum>$HumMax || $curInHum<$HumMin){$h1color=$rs;}elseif($curInHum>$HumMedMax || $curInHum<$HumMedMin){$h1color=$ys;}else{$h1color=$gs;}
+			if($curOutHum==0){$h2color=$us;}elseif($curOutHum>$HumMax || $curOutHum<$HumMin){$h2color=$rs;}elseif($curOutHum>$HumMedMax || $curOutHum<$HumMedMin){$h2color=$ys;}else{$h2color=$gs;}
 				
 			$labelsp=locale_number($used,0)." / $cab->CabinetHeight U";
 			$labelwe=locale_number($totalWeight,0)." / $cab->MaxWeight $weightunit";
 			$labelpo=locale_number($totalWatts/1000,2)." / $cab->MaxKW kW";
-			$labelte=(($curTemp>0)?locale_number($curTemp,0)."&deg;$tempunit ($lastRead)":__("no data"));
-			$labelhu=(($curHum>0)?locale_number($curHum,0)." % ($lastRead)":__("no data"));
+			$labelt1=(($curInTemp>0)?locale_number($curInTemp,0)."&deg;$tempunit ($lastInRead)":__("no data"));
+			$labelt2=(($curOutTemp>0)?locale_number($curOutTemp,0)."&deg;$tempunit ($lastOutRead)":__("no data"));
+			$labelh1=(($curInHum>0)?locale_number($curInHum,0)." % ($lastInRead)":__("no data"));
+			$labelh2=(($curOutHum>0)?locale_number($curOutHum,0)." % ($lastOutRead)":__("no data"));
 			$labelrp=(($RPlastRead!='0')?locale_number($curRealPower/1000,2)." / $cab->MaxKW kW ($RPlastRead)":__("no data"));
 			
 			$tooltip="<span>$cab->Location</span><ul>\n";
@@ -176,8 +193,10 @@ if($object>0){
 			}
 
 
-			$tooltip.="<li class=\"$tcolor\">".__("Temperature").": $labelte</li>\n";
-			$tooltip.="<li class=\"$hcolor\">".__("Humidity").": $labelhu</li></ul>\n";
+			$tooltip.="<li class=\"$t1color\">".__("Inlet Temperature").": $labelt1</li>\n";
+			$tooltip.="<li class=\"$t2color\">".__("Output Temperature").": $labelt2</li>\n";
+			$tooltip.="<li class=\"$h1color\">".__("Inlet Humidity").": $labelh1</li>\n";
+			$tooltip.="<li class=\"$h2color\">".__("Output Humidity").": $labelh2</li></ul>\n";
 		}else{
 			$tooltip=__("Quit that! You don't have rights to view this.");
 		}
