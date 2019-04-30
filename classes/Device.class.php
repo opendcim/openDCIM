@@ -2130,7 +2130,7 @@ class Device {
 				$path="../../";
 			}
 			$picturefile.=($rear)?$templ->RearPictureFile:$templ->FrontPictureFile;
-            $picturefile=html_entity_decode($picturefile,ENT_QUOTES);
+			$picturefile=html_entity_decode($picturefile,ENT_QUOTES);
 			if (!file_exists($path.$picturefile)){
 				$picturefile="pictures/P_ERROR.png";
 			}
