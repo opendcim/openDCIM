@@ -7,8 +7,6 @@
 	$searchTerm=preg_replace("/[[:cntrl:]]/","",$_REQUEST['search']);
 	//Remove any extra quotes that could get passed in from some funky js or something
 	$searchTerm=str_replace(array("'",'"'),"",$searchTerm);
-	# prevent XSS script injection reported by mullaneywt
-	$searchKey=sanitize($searchKey);
 	# prevent script injection where we display the searchTerm in the title
 	# reported by Jacob Senn, Capital One
 	$searchTerm=sanitize($searchTerm);
