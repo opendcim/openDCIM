@@ -143,12 +143,8 @@ function redirect($target = null) {
 		// $installURL isn't blank so combine it with the target to get a valid redirect target
 		$url = $installURL.$target;
 	}else{
-		// $installURL is blank so let's try to guess what the server will be for the redirect
-		if(array_key_exists('HTTPS', $_SERVER) && $_SERVER["HTTPS"]=='on') {
-			$url = "https://".$_SERVER['SERVER_NAME'].$target;
-		} else {
-			$url = "http://".@$_SERVER['SERVER_NAME'].$target;
-		}
+		// $installURL is blank so let's just give the target back
+		$url = $target;
 	}
 	return $url;
 }
