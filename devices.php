@@ -988,7 +988,7 @@ $write=($dev->Rights=="Write")?true:$write;
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <link rel="stylesheet" href="css/jquery-te-1.4.0.css" type="text/css">
-  <style type="text/css"></style>
+  <style type="text/css">#div { border: 1px solid red; margin: -1px; }</style>
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
@@ -2672,6 +2672,11 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 				$('.caption > button[value=Update]').trigger('click');
 			}
 		});
+
+		// Safari bug
+		setTimeout(function(){
+			$('#pandn > div > div > .table').height($('#pandn > div > div').height());
+		},3000);
 
 	});
 </script>
