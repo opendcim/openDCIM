@@ -2470,7 +2470,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 		print "\t\t\t</div><!-- END div.table -->\n\t\t</div>\n\t</div>\n";
 	}
 ?>
-		<div class="caption">
+		<div><div><div style="position: relative;">&nbsp;<div id="buttonbar" style="position: absolute; min-width: 400px; left: 0px; right: 0px; margin-left: auto; margin-right: auto; text-align: center;">
 <?php
 	if($write){
 		if($dev->DeviceID >0){
@@ -2490,7 +2490,8 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 	}
 ?>
 
-		</div>
+		</div></div></div>
+		<div></div></div>
 	</div> <!-- END div.table -->
 </div></div>
 </div> <!-- END div.table -->
@@ -2673,11 +2674,12 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 			}
 		});
 
-		// Safari bug
-		setTimeout(function(){
-			$('#pandn > div > div > .table').height($('#pandn > div > div').height());
-		},3000);
-
+		// Safari is garbage
+		// This is a hack to correct a problem with safari not rendering the table caption
+		// correctly.  Instead I am putting a blank row at the bottom of the device connection
+		// table then using css to center it but it has to have the element set to the width
+		// of the table
+		$('#buttonbar').width($('#pandn').width());
 	});
 </script>
 
