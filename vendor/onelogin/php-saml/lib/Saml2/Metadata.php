@@ -21,7 +21,6 @@ class OneLogin_Saml2_Metadata
      * @param array         $contacts      Contacts info
      * @param array         $organization  Organization ingo
      * @param array         $attributes
-     *
      * @return string SAML Metadata XML
      */
     public static function builder($sp, $authnsign = false, $wsign = false, $validUntil = null, $cacheDuration = null, $contacts = array(), $organization = array(), $attributes = array())
@@ -39,10 +38,10 @@ class OneLogin_Saml2_Metadata
         $sls = '';
 
         if (isset($sp['singleLogoutService'])) {
-            $slsUrl = htmlspecialchars($sp['singleLogoutService']['url'], ENT_QUOTES);
+            $sls_url = htmlspecialchars($sp['singleLogoutService']['url'], ENT_QUOTES);
             $sls = <<<SLS_TEMPLATE
         <md:SingleLogoutService Binding="{$sp['singleLogoutService']['binding']}"
-                                Location="{$slsUrl}" />
+                                Location="{$sls_url}" />
 
 SLS_TEMPLATE;
         }
@@ -151,18 +150,18 @@ ATTRIBUTEVALUE;
 METADATA_TEMPLATE;
         }
 
-        $spEntityId = htmlspecialchars($sp['entityId'], ENT_QUOTES);
-        $acsUrl = htmlspecialchars($sp['assertionConsumerService']['url'], ENT_QUOTES);
+        $sp_entity_id = htmlspecialchars($sp['entityId'], ENT_QUOTES);
+        $acs_url = htmlspecialchars($sp['assertionConsumerService']['url'], ENT_QUOTES);
         $metadata = <<<METADATA_TEMPLATE
 <?xml version="1.0"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
                      validUntil="{$validUntilTime}"
                      cacheDuration="PT{$cacheDuration}S"
-                     entityID="{$spEntityId}">
+                     entityID="{$sp_entity_id}">
     <md:SPSSODescriptor AuthnRequestsSigned="{$strAuthnsign}" WantAssertionsSigned="{$strWsign}" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
 {$sls}        <md:NameIDFormat>{$sp['NameIDFormat']}</md:NameIDFormat>
         <md:AssertionConsumerService Binding="{$sp['assertionConsumerService']['binding']}"
-                                     Location="{$acsUrl}"
+                                     Location="{$acs_url}"
                                      index="1" />
         {$strAttributeConsumingService}
     </md:SPSSODescriptor>{$strOrganization}{$strContacts}
@@ -174,15 +173,13 @@ METADATA_TEMPLATE;
     /**
      * Signs the metadata with the key/cert provided
      *
-     * @param string $metadata SAML Metadata XML
-     * @param string $key x509 key
-     * @param string $cert x509 cert
-     * @param string $signAlgorithm Signature algorithm method
-     * @param string $digestAlgorithm Digest algorithm method
+     * @param string $metadata          SAML Metadata XML
+     * @param string $key               x509 key
+     * @param string $cert              x509 cert
+     * @param string $signAlgorithm     Signature algorithm method
+     * @param string $digestAlgorithm   Digest algorithm method
      *
      * @return string Signed Metadata
-     *
-     * @throws Exception
      */
     public static function signMetadata($metadata, $key, $cert, $signAlgorithm = XMLSecurityKey::RSA_SHA1, $digestAlgorithm = XMLSecurityDSig::SHA1)
     {
@@ -193,13 +190,11 @@ METADATA_TEMPLATE;
      * Adds the x509 descriptors (sign/encriptation) to the metadata
      * The same cert will be used for sign/encrypt
      *
-     * @param string $metadata SAML Metadata XML
-     * @param string $cert x509 cert
-     * @param bool $wantsEncrypted Whether to include the KeyDescriptor for encryption
+     * @param string $metadata       SAML Metadata XML
+     * @param string $cert           x509 cert
+     * @param bool   $wantsEncrypted Whether to include the KeyDescriptor for encryption
      *
      * @return string Metadata with KeyDescriptors
-     *
-     * @throws Exception
      */
     public static function addX509KeyDescriptors($metadata, $cert, $wantsEncrypted = true)
     {

@@ -6,6 +6,43 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in Darren's Ver
+----------------
+*New Files : 
+1. css/Chart.min.css
+2. css/dygraph.css
+3. css/jquery.datetimepicker.css
+4. historicalgraph.php
+5. historicalreport.php
+6. realtimegraph.php
+7. scripts/ajax_realtime.php
+8. scripts/Chart.bundle.js
+9. scripts/Chart.bundle.min.js
+10. scripts/Chart.js
+11. scripts/Chart.min.js
+12. scripts/chartjs-plugin-colorschemes.js
+13. scripts/chartjs-plugin-colorschemes.min.js
+14. scripts/chartjs-plugin-streaming.js
+15. scripts/chartjs-plugin-streaming.min.js
+16. scripts/chartjs-plugin-zoom.js
+17. scipts/chartjs-plugin-zoom.min.js
+18. scripts/dygraph.min.js
+19. scripts/hammer.js
+20. scripts/hammer.min.js
+21. scripts/hammer.min.js.map
+22. scripts/hammer.min.map
+23. scripts/jquery.datetimepicker.js
+24. scripts/moment.js
+
+*Sensors should only be either Temperature OR Humidity sensor  
+*Added Temperature/Humidity thresholds in fac_Device table for individual sensors for flexibility in large datacenters
+*Changed fac_SensorReadings table  column 'LastRead' to TimeStamp
+*Changed fac_SensorReadings table  pKey to composite ('DeviceID','TimeStamp')
+*Changed polling script to insert data for all sensors at the same time (for better viewing experience in 'Historical Report' table)
+*Added 'Historical Report' function to view data of all sensors in a chosen datacenter in a specific time peroid
+*Added 'Historical Graph' function to see graphical view of data of all sensors in a chosen datacenter in a specific time peroid
+*Added 'Realtime Graph' function to see realtime reading of sensors in chosen datacenter
+
 Changes in 19.01
 ----------------
 * Ability to specify where the pictures and drawings folders are (easier for Containers)

@@ -75,8 +75,8 @@ CREATE TABLE fac_SensorReadings (
   DeviceID int(11) NOT NULL,
   Temperature float NOT NULL,
   Humidity float NOT NULL,
-  LastRead datetime NOT NULL,
-  PRIMARY KEY (DeviceID)
+  TimeStamp timestamp on update CURRENT_TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY (DeviceID,TimeStamp)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -299,6 +299,8 @@ CREATE TABLE fac_Device (
   Notes text NULL,
   Status varchar(20) NOT NULL DEFAULT 'Production',
   HalfDepth tinyint(1) NOT NULL DEFAULT '0',
+  TemperatureThreshold float NOT NULL DEFAULT '0',
+  HumidityThreshold float NOT NULL DEFAULT '0',
   BackSide tinyint(1) NOT NULL DEFAULT '0',
   AuditStamp DATETIME NOT NULL,
   Weight int(11) NOT NULL DEFAULT '0',
@@ -902,8 +904,8 @@ INSERT INTO fac_Config VALUES
 	('SAMLidpentityId', '', 'URL', 'string', 'https://accounts.google.com/o/saml2?idpid=XXXXXXXXX'),
 	('SAMLidpssoURL', '', 'URL', 'string', 'https://accounts.google.com/o/saml2/idp?idpid=XXXXXXXXX'),
 	('SAMLidpslsURL', '', 'URL', 'string', ''),
-	('SAMLidpcertFingerprint', '', 'string', 'string', 'FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF'),
-	('SAMLidpcertFingerprintAlgorithm', '', 'string', 'string', 'sha256'),
+	('SAMLidpcertFingerprint', '', 'string', 'string', 'FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF'),
+	('SAMLidpcertFingerprintAlgorithm', '', 'string', 'string', 'sha1'),
 	('SAMLaccountPrefix', '', 'string', 'string', 'DOMAIN\\'),
 	('SAMLaccountSuffix', '', 'string', 'string', '@example.org'),
 	("LDAPFirstName", "givenname", "string", "string", "givenname"),

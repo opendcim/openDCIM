@@ -147,7 +147,7 @@
 				$tport->TemplateID=$template->TemplateID;
 				$tport->PortNumber=$i;
 				$tport->Label=isset($_POST["powerlabel".$i])?$_POST["powerlabel".$i]:"";
-				$tport->PortNotes=isset($_POST["powerportnotes".$i])?$_POST["powerportnotes".$i]:"";
+				$tport->Notes=isset($_POST["powerportnotes".$i])?$_POST["powerportnotes".$i]:"";
 				$status=($tport->CreatePort())?$status:__("Error updating template power connections");
 			}
 			return $status;
@@ -200,8 +200,8 @@
 			$sensortemplate->Model=$template->Model;
 			$sensortemplate->TemperatureOID=$_POST['TemperatureOID'];
 			$sensortemplate->HumidityOID=$_POST['HumidityOID'];
-			$sensortemplate->TempMultiplier=$_POST['TempMultiplier'];
-			$sensortemplate->HumidityMultiplier=$_POST['HumidityMultiplier'];
+			$sensortemplate->TempMultiplier=floatval($_POST['TempMultiplier']);
+			$sensortemplate->HumidityMultiplier=($_POST['HumidityMultiplier']);
 			$sensortemplate->mUnits=$_POST['mUnits'];
 			$status=($sensortemplate->UpdateTemplate())?$status:__("Error updating cdu attributes");
 			return $status;

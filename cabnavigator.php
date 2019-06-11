@@ -617,7 +617,11 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 			var link=this;
 			$.get('api/v1/device/'+link.href.split('=').pop()+'/getsensorreadings',function(data){
 				if(!data.error){
-					$(link).after('<br>Temp:&nbsp;'+data.sensor.Temperature+'&deg;&nbsp;&nbsp;Humidity:&nbsp;'+data.sensor.Humidity+'<br>');
+					if(data.sensor.Temperature==0){
+						$(link).after('<br>Humidity:&nbsp;'+data.sensor.Humidity+'<br>');
+					} else {
+						$(link).after('<br>Temp:&nbsp;'+data.sensor.Temperature+'&deg;<br>');
+					}
 				}else{
 					$(link).after('<br>'+data.message+'<br>');
 				}

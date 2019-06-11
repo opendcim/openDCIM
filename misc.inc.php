@@ -867,7 +867,7 @@ if(!function_exists("updateNavTreeHTML")){
 	we are.  It may be needed for the installation.
 */
 
-if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" ){
+if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) ){
 	header("Location: ".redirect('saml/login.php'));
 	exit;
 }
@@ -954,6 +954,9 @@ if(($person->Disabled || ($person->PersonID==0 && $person->UserID!="cli_admin"))
 $menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=$lmenu=array();
 
 $rmenu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
+$rmenu[__("Analytics")][]='<a href="realtimegraph.php"><span>'.__("Real-Time Graph").'</span></a>';
+$rmenu[__("Analytics")][]='<a href="historicalgraph.php"><span>'.__("Historical Graph").'</span></a>';
+$rmenu[]='<a href="historicalreport.php"><span>'.__("Historical Report").'</span></a>';
 
 if($config->ParameterArray["WorkOrderBuilder"]){
 	$class=(isset($_COOKIE['workOrder']) && $_COOKIE['workOrder']!='[0]')?'':'hide';

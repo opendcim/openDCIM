@@ -114,8 +114,8 @@ REQUESTEDAUTHN;
             }
         }
 
-        $spEntityId = htmlspecialchars($spData['entityId'], ENT_QUOTES);
-        $acsUrl = htmlspecialchars($spData['assertionConsumerService']['url'], ENT_QUOTES);
+        $sp_entity_id = htmlspecialchars($spData['entityId'], ENT_QUOTES);
+        $acs_url = htmlspecialchars($spData['assertionConsumerService']['url'], ENT_QUOTES);
         $request = <<<AUTHNREQUEST
 <samlp:AuthnRequest
     xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
@@ -126,8 +126,8 @@ REQUESTEDAUTHN;
     IssueInstant="$issueInstant"
     Destination="{$idpData['singleSignOnService']['url']}"
     ProtocolBinding="{$spData['assertionConsumerService']['binding']}"
-    AssertionConsumerServiceURL="{$acsUrl}">
-    <saml:Issuer>{$spEntityId}</saml:Issuer>
+    AssertionConsumerServiceURL="{$acs_url}">
+    <saml:Issuer>{$sp_entity_id}</saml:Issuer>
 {$nameIdPolicyStr}
 {$requestedAuthnStr}
 </samlp:AuthnRequest>
@@ -141,8 +141,6 @@ AUTHNREQUEST;
      * Returns deflated, base64 encoded, unsigned AuthnRequest.
      *
      * @param bool|null $deflate Whether or not we should 'gzdeflate' the request body before we return it.
-     *
-     * @return string
      */
     public function getRequest($deflate = null)
     {

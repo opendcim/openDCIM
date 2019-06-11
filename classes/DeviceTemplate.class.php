@@ -92,8 +92,8 @@ class DeviceTemplate {
 		$Template->PSCount=$row["PSCount"];
 		$Template->NumPorts=$row["NumPorts"];
         $Template->Notes=$row["Notes"];
-        $Template->FrontPictureFile=html_entity_decode($row["FrontPictureFile"],ENT_QUOTES);
-        $Template->RearPictureFile=html_entity_decode($row["RearPictureFile"],ENT_QUOTES);
+        $Template->FrontPictureFile=$row["FrontPictureFile"];
+        $Template->RearPictureFile=$row["RearPictureFile"];
 		$Template->ChassisSlots=$row["ChassisSlots"];
 		$Template->RearChassisSlots=$row["RearChassisSlots"];
 		$Template->SNMPVersion=$row["SNMPVersion"];

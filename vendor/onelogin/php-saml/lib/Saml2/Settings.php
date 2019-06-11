@@ -88,7 +88,7 @@ class OneLogin_Saml2_Settings
     /**
      * Setting errors.
      *
-     * @var bool
+     * @var array
      */
     private $_spValidationOnly = false;
 
@@ -98,7 +98,6 @@ class OneLogin_Saml2_Settings
      * - Loads settings info from settings file or array/object provided
      *
      * @param array|object|null $settings SAML Toolkit Settings
-     * @param bool $spValidationOnly
      *
      * @throws OneLogin_Saml2_Error If any settings parameter is invalid
      * @throws Exception If OneLogin_Saml2_Settings is incorrectly supplied
@@ -150,11 +149,10 @@ class OneLogin_Saml2_Settings
 
     /**
      * Sets the paths of the different folders
-     * @suppress PhanUndeclaredConstant
      */
     private function _loadPaths()
     {
-        $basePath = dirname(dirname(__DIR__)).'/';
+        $basePath = dirname(dirname(dirname(__FILE__))).'/';
         $this->_paths = array (
             'base' => $basePath,
             'config' => $basePath,
@@ -288,10 +286,7 @@ class OneLogin_Saml2_Settings
      * Loads settings info from the settings file
      *
      * @return bool True if the settings info is valid
-     *
      * @throws OneLogin_Saml2_Error
-     *
-     * @suppress PhanUndeclaredVariable
      */
     private function _loadSettingsFromFile()
     {
@@ -305,7 +300,6 @@ class OneLogin_Saml2_Settings
             );
         }
 
-        /** @var array $settings */
         include $filename;
 
         // Add advance_settings if exists
@@ -313,7 +307,6 @@ class OneLogin_Saml2_Settings
         $advancedFilename = $this->getConfigPath().'advanced_settings.php';
 
         if (file_exists($advancedFilename)) {
-            /** @var array $advancedSettings */
             include $advancedFilename;
             $settings = array_merge($settings, $advancedSettings);
         }
@@ -531,14 +524,6 @@ class OneLogin_Saml2_Settings
                 $errors[] = 'idp_slo_url_invalid';
             }
 
-            if (isset($idp['singleLogoutService'])
-                && isset($idp['singleLogoutService']['responseUrl'])
-                && !empty($idp['singleLogoutService']['responseUrl'])
-                && !filter_var($idp['singleLogoutService']['responseUrl'], FILTER_VALIDATE_URL)
-            ) {
-                $errors[] = 'idp_slo_response_url_invalid';
-            }
-
             if (isset($settings['security'])) {
                 $security = $settings['security'];
 
@@ -608,9 +593,12 @@ class OneLogin_Saml2_Settings
                 $errors[] = 'sp_sls_url_invalid';
             }
 
-            if (isset($security['signMetadata']) && is_array($security['signMetadata']) &&
-                (!isset($security['signMetadata']['keyFileName']) || !isset($security['signMetadata']['certFileName']))) {
-                $errors[] = 'sp_signMetadata_invalid';
+            if (isset($security['signMetadata']) && is_array($security['signMetadata'])) {
+                if (!isset($security['signMetadata']['keyFileName'])
+                    || !isset($security['signMetadata']['certFileName'])
+                ) {
+                    $errors[] = 'sp_signMetadata_invalid';
+                }
             }
 
             if (((isset($security['authnRequestsSigned']) && $security['authnRequestsSigned'] == true)
@@ -807,28 +795,20 @@ class OneLogin_Saml2_Settings
     /**
      * Gets the SP metadata. The XML representation.
      *
-     * @param bool $alwaysPublishEncryptionCert When 'true', the returned metadata
-     *   will always include an 'encryption' KeyDescriptor. Otherwise, the 'encryption'
-     *   KeyDescriptor will only be included if $advancedSettings['security']['wantNameIdEncrypted']
-     *   or $advancedSettings['security']['wantAssertionsEncrypted'] are enabled.
-     * @param DateTime|null $validUntil    Metadata's valid time
-     * @param int|null      $cacheDuration Duration of the cache in seconds
-     *
      * @return string  SP metadata (xml)
-     *
      * @throws Exception
      * @throws OneLogin_Saml2_Error
      */
-    public function getSPMetadata($alwaysPublishEncryptionCert = false, $validUntil = null, $cacheDuration = null)
+    public function getSPMetadata()
     {
-        $metadata = OneLogin_Saml2_Metadata::builder($this->_sp, $this->_security['authnRequestsSigned'], $this->_security['wantAssertionsSigned'], $validUntil, $cacheDuration, $this->getContacts(), $this->getOrganization());
+        $metadata = OneLogin_Saml2_Metadata::builder($this->_sp, $this->_security['authnRequestsSigned'], $this->_security['wantAssertionsSigned'], null, null, $this->getContacts(), $this->getOrganization());
 
         $certNew = $this->getSPcertNew();
         if (!empty($certNew)) {
             $metadata = OneLogin_Saml2_Metadata::addX509KeyDescriptors(
                 $metadata,
                 $certNew,
-                $alwaysPublishEncryptionCert || $this->_security['wantNameIdEncrypted'] || $this->_security['wantAssertionsEncrypted']
+                $this->_security['wantNameIdEncrypted'] || $this->_security['wantAssertionsEncrypted']
             );
         }
 
@@ -837,7 +817,7 @@ class OneLogin_Saml2_Settings
             $metadata = OneLogin_Saml2_Metadata::addX509KeyDescriptors(
                 $metadata,
                 $cert,
-                $alwaysPublishEncryptionCert || $this->_security['wantNameIdEncrypted'] || $this->_security['wantAssertionsEncrypted']
+                $this->_security['wantNameIdEncrypted'] || $this->_security['wantAssertionsEncrypted']
             );
         }
 
@@ -908,8 +888,6 @@ class OneLogin_Saml2_Settings
      * @param string $xml Metadata's XML that will be validate
      *
      * @return Array The list of found errors
-     *
-     * @throws Exception
      */
     public function validateMetadata($xml)
     {
@@ -963,13 +941,13 @@ class OneLogin_Saml2_Settings
     {
         if (isset($this->_idp['x509certMulti'])) {
             if (isset($this->_idp['x509certMulti']['signing'])) {
-                foreach ($this->_idp['x509certMulti']['signing'] as $i => $cert) {
-                    $this->_idp['x509certMulti']['signing'][$i] = OneLogin_Saml2_Utils::formatCert($cert);
+                for ($i=0; $i < count($this->_idp['x509certMulti']['signing']); $i++) {
+                    $this->_idp['x509certMulti']['signing'][$i] = OneLogin_Saml2_Utils::formatCert($this->_idp['x509certMulti']['signing'][$i]);
                 }
             }
             if (isset($this->_idp['x509certMulti']['encryption'])) {
-                foreach ($this->_idp['x509certMulti']['encryption'] as $i => $cert) {
-                    $this->_idp['x509certMulti']['encryption'][$i] = OneLogin_Saml2_Utils::formatCert($cert);
+                for ($i=0; $i < count($this->_idp['x509certMulti']['encryption']); $i++) {
+                    $this->_idp['x509certMulti']['encryption'][$i] = OneLogin_Saml2_Utils::formatCert($this->_idp['x509certMulti']['encryption'][$i]);
                 }
             }
         }
@@ -1019,12 +997,10 @@ class OneLogin_Saml2_Settings
      * Activates or deactivates the strict mode.
      *
      * @param bool $value Strict parameter
-     *
-     * @throws Exception
      */
     public function setStrict($value)
     {
-        if (!is_bool($value)) {
+        if (! (is_bool($value))) {
             throw new Exception('Invalid value passed to setStrict()');
         }
 
@@ -1053,8 +1029,6 @@ class OneLogin_Saml2_Settings
 
     /**
      * Set a baseurl value.
-     *
-     * @param $baseurl
      */
     public function setBaseURL($baseurl)
     {
@@ -1074,7 +1048,7 @@ class OneLogin_Saml2_Settings
     /**
      * Sets the IdP certificate.
      *
-     * @param string $cert IdP certificate
+     * @param string $value IdP certificate
      */
     public function setIdPCert($cert)
     {

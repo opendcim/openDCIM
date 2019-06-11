@@ -74,9 +74,7 @@ class EscalationTimes {
         function GetEscalationTime(){
                 $sql="SELECT * FROM fac_EscalationTimes WHERE EscalationTimeID=$this->EscalationTimeID;";
 
-                //if($row=$this->query($sql)->fetch()){
-                if($q=$this->query($sql)){
-                        $row=$q->fetch();
+                if($row=$this->query($sql)->fetch()){
                         $this->EscalationTimeID=$row["EscalationTimeID"];
                         $this->TimePeriod=$row["TimePeriod"];
                         $this->MakeDisplay();

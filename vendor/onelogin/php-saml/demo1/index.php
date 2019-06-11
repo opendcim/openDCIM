@@ -1,11 +1,12 @@
 <?php
+ 
 /**
  *  SAML Handler
  */
 
 session_start();
 
-require_once dirname(__DIR__).'/_toolkit_loader.php';
+require_once dirname(dirname(__FILE__)).'/_toolkit_loader.php';
 
 require_once 'settings.php';
 
@@ -27,7 +28,7 @@ if (isset($_GET['sso'])) {
     $auth->login($returnTo);
 } else if (isset($_GET['slo'])) {
     $returnTo = null;
-    $parameters = array();
+    $paramters = array();
     $nameId = null;
     $sessionIndex = null;
     $nameIdFormat = null;
@@ -42,7 +43,7 @@ if (isset($_GET['sso'])) {
         $nameIdFormat = $_SESSION['samlNameIdFormat'];
     }
 
-    $auth->logout($returnTo, $parameters, $nameId, $sessionIndex, false, $nameIdFormat);
+    $auth->logout($returnTo, $paramters, $nameId, $sessionIndex, false, $nameIdFormat);
 
     # If LogoutRequest ID need to be saved in order to later validate it, do instead
     # $sloBuiltUrl = $auth->logout(null, $paramters, $nameId, $sessionIndex, true);
@@ -64,7 +65,7 @@ if (isset($_GET['sso'])) {
     $errors = $auth->getErrors();
 
     if (!empty($errors)) {
-        echo '<p>',implode(', ', $errors),'</p>';
+        print_r('<p>'.implode(', ', $errors).'</p>');
     }
 
     if (!$auth->isAuthenticated()) {
@@ -90,9 +91,9 @@ if (isset($_GET['sso'])) {
     $auth->processSLO(false, $requestID);
     $errors = $auth->getErrors();
     if (empty($errors)) {
-        echo '<p>Sucessfully logged out</p>';
+        print_r('<p>Sucessfully logged out</p>');
     } else {
-        echo '<p>', implode(', ', $errors), '</p>';
+        print_r('<p>'.implode(', ', $errors).'</p>');
     }
 }
 
