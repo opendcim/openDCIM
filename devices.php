@@ -954,7 +954,7 @@
 			} else if ($cvtype=="set") {
 				echo '<div><select name="',$inputname,'" id="',$inputname,'">';
 				foreach(explode(',',$dcaList[$customkey]->DefaultValue) as $dcaValue){
-					$selected=($customdata["value"]==$dcaValue)?' selected':'';
+					$selected=(trim($customdata["value"])==trim($dcaValue))?' selected':'';
 					print "\n\t<option value=\"$dcaValue\"$selected>$dcaValue</option>";
 				}
 				echo '</select></div>';
