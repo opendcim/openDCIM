@@ -79,7 +79,7 @@
 			\t<td>$cModel</td>
 			\t<td>$ctags</td>
 			\t<td>$cDepartment</td>
-			\t<th>$contact</th>
+			\t<td>$contact</td>
 			\t<td>$cwarranty</td>
 			\t<td>$cdate</td>
 			\t<td>$child->Status</td>
@@ -210,7 +210,7 @@
 				\t<td>$Model</td>
 				\t<td>$tags</td>
 				\t<td>$Department</td>
-				\t<th>$contact</th>
+				\t<td>$contact</td>
 				\t<td>$warranty</td>
 				\t<td>$date</td>
 				\t<td>{$row["Status"]}</td>
