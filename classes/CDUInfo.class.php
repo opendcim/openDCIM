@@ -140,7 +140,7 @@ class CDUInfo {
 				if($i==$dev->FirstPortNum){$saving=true;}
 				if($saving){$newList[sizeof($newList)+1]=$desc;}
 				//TIM FIX hard coded num ports
-				if(sizeof($newList)==16){break;}
+				if(sizeof($newList)==$dev->NumOutlets){break;}
 			}
 			$nameList=$newList;
 		}
@@ -168,7 +168,7 @@ class CDUInfo {
 				if($i==$dev->FirstPortNum){$saving=true;}
 				if($saving){$newList[sizeof($newList)+1]=($status==2?"up":"down");}
 				//TIM FIX hard coded num ports
-				if(sizeof($newList)==16){break;}
+				if(sizeof($newList)==$dev->NumOutlets){break;}
 			}
 			$statusList=$newList;
 		}
@@ -195,7 +195,7 @@ class CDUInfo {
 			foreach($aliasList as $i => $alias){
 				if($i==$dev->FirstPortNum){$saving=true;}
 				if($saving){$newList[sizeof($newList)+1]=$alias;}
-				if(sizeof($newList)==16){break;}
+				if(sizeof($newList)==$dev->NumOutlets){break;}
 			}
 			$aliasList=$newList;
 		}
