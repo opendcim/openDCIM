@@ -26,6 +26,8 @@ INSERT into fac_Config set Parameter='LDAPPhone3', Value='', UnitOfMeasure='stri
 --
 
 alter table fac_CDUTemplate add column OutletDescOID varchar(80) NOT NULL after VersionOID;
+alter table fac_CDUTemplate add column OutletStatusOID varchar(80) NOT NULL after OutletDescOID;
+alter table fac_CDUTemplate add column OutletStatusOn varchar(80) NOT NULL after OutletStatusOID;
 
 --
 -- New parameter for Changing cabinet labels from cabinet name to user preference based label
