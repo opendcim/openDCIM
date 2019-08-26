@@ -31,6 +31,7 @@ class CDUTemplate {
 	var $ATS;
 	var $VersionOID;
 	var $OutletDescOID;
+	var $OutletCountOID;
 	var $OutletStatusOID;
 	var $OutletStatusOn;
 	var $Multiplier;
@@ -56,6 +57,7 @@ class CDUTemplate {
 		$this->ATS=intval($this->ATS);
 		$this->VersionOID=sanitize($this->VersionOID);
 		$this->OutletDescOID=sanitize($this->OutletDescOID);
+		$this->OutletCountOID=sanitize($this->OutletCountOID);
 		$this->OutletStatusOID=sanitize($this->OutletStatusOID);
 		$this->OutletStatusOn=sanitize($this->OutletStatusOn);
 		$this->Multiplier=(in_array($this->Multiplier, $validMultipliers))?$this->Multiplier:1;
@@ -74,6 +76,7 @@ class CDUTemplate {
 		$this->Model=stripslashes($this->Model);
 		$this->VersionOID=stripslashes($this->VersionOID);
 		$this->OutletDescOID=stripslashes($this->OutletDescOID);
+		$this->OutletCountOID=stripslashes($this->OutletCountOID);
 		$this->OutletStatusOID=stripslashes($this->OutletStatusOID);
 		$this->OutletStatusOn=stripslashes($this->OutletStatusOn);
 		$this->OID1=stripslashes($this->OID1);
@@ -92,6 +95,7 @@ class CDUTemplate {
 		$template->ATS=$row["ATS"];
 		$template->VersionOID=$row["VersionOID"];
 		$template->OutletDescOID=$row["OutletDescOID"];
+		$template->OutletCountOID=$row["OutletCountOID"];
 		$template->OutletStatusOID=$row["OutletStatusOID"];
 		$template->OutletStatusOn=$row["OutletStatusOn"];
 		$template->Multiplier=$row["Multiplier"];
@@ -151,6 +155,7 @@ class CDUTemplate {
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
 			VersionOID=\"$this->VersionOID\", 
 			OutletDescOID=\"$this->OutletDescOID\",
+			OutletCountOID=\"$this->OutletCountOID\",
 			OutletStatusOID=\"$this->OutletStatusOID\",
 			OutletStatusOn=\"$this->OutletStatusOn\",
 			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
@@ -180,6 +185,7 @@ class CDUTemplate {
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
 			VersionOID=\"$this->VersionOID\", 
 			OutletDescOID=\"$this->OutletDescOID\",
+			OutletCountOID=\"$this->OutletCountOID\",
 			OutletStatusOID=\"$this->OutletStatusOID\",
 			OutletStatusOn=\"$this->OutletStatusOn\",
 			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 

@@ -27,6 +27,7 @@
 		$template->SNMPVersion = $_REQUEST['snmpversion'];
 		$template->VersionOID = $_REQUEST['versionoid'];
 		$template->OutletDescOID = $_REQUEST['outletdescoid'];
+		$template->OutletCountOID = $_REQUEST['outletcountoid'];
 		$template->OutletStatusOID = $_REQUEST['outletstatusoid'];
 		$template->OutletStatusOn = $_REQUEST['outletstatuson'];
 		$template->Multiplier = $_REQUEST['multiplier'];
@@ -143,6 +144,10 @@ echo '</select>
 <div>
 	<div><label for="outletdescoid">',__("Power Connections")." ".__("OID"),'</label></div>
 	<div><input type="text" name="outletdescoid" id="outletdescoid" value="',$template->OutletDescOID,'" size=40></div>
+</div>
+<div>
+	<div><label for="outletcountoid">',__("Power Connectioni Count")." ".__("OID"),'</label></div>
+	<div><input type="text" name="outletcountoid" id="outletcountoid" value="',$template->OutletCountOID,'" size=40></div>
 </div>
 <div>
 	<div><label for="outletstatusoid">',__("Outlet Status")." ".__("OID"),'</label></div>

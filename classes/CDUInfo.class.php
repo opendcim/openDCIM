@@ -81,17 +81,27 @@ class CDUInfo {
 		return $snmpresult;
 	}
 
+	// Returns the number of outlets in the CDU based on the SNMP response
+	// of number of outlets returned by the device.  If not if fails to the
+	// number of outlets the user configured for the device
 	static function getNumPorts($DeviceID) {
 		if(!$dev=CDUInfo::BasicTests($DeviceID)){
 			return false;
 		}
-		//TIM Need to get and store the check for number of outlet
-		//also compare to the device configured value
 
-		// We never did finish the discussion of if we should use the mib vs the oid
-		$baseOID = ".1.3.6.1.4.1.318.1.1.4.4.1.0.1";
+		$tmpl=new CDUTemplate();
+		$tmpl->TemplateID=$dev->TemplateID;
+		if(!$tmpl->GetTemplate()){
+			return false;
+		}
 
-		return self::OSS_SNMP_Lookup($dev,Null,Null,$baseOID);
+		$baseOID = $tmpl->OutletCountOID;
+
+		if ( ($numPorts=self::OSS_SNMP_Lookup($dev,Null,Null,$baseOID)) == false ){
+			$numPorts = $dev->PowerSupplyCount;
+		}
+
+		return $numPorts;
 	}
 
 	// The device this was written for did not really need this but it is 
@@ -102,8 +112,6 @@ class CDUInfo {
 			return false;
 		}
 		
-		$x=array();
-
 		$tmpl=new CDUTemplate();
 		$tmpl->TemplateID=$dev->TemplateID;
 		if(!$tmpl->GetTemplate()){
@@ -112,9 +120,7 @@ class CDUInfo {
 
 		$baseOID = $tmpl->OutletDescOID;
 
-		if ( $numPorts=self::getNumPorts($DeviceID) == false ){
-			$numPorts = $dev->PowerSupplyCount;
-		}
+		$numPorts=CDUInfo::getNumPorts($DeviceID);
 
 		$portlist =[];
 
@@ -138,9 +144,7 @@ class CDUInfo {
 
 		$baseOID = $tmpl->OutletDescOID;
 
-		if ( $numPorts=self::getNumPorts($DeviceID) == false ){
-			$numPorts = $dev->PowerSupplyCount;
-		}
+		$numPorts=CDUInfo::getNumPorts($DeviceID);
 
 		$nameList = [];
 		for ($i=1; $i<=$numPorts; $i++) {
@@ -175,9 +179,7 @@ class CDUInfo {
 
 		$baseOID = $tmpl->OutletStatusOID;
 
-		if ( $numPorts=self::getNumPorts($DeviceID) == false ){
-			$numPorts = $dev->PowerSupplyCount;
-		}
+		$numPorts=CDUInfo::getNumPorts($DeviceID);
 
 		$statusList = [];
 		for ($i=1; $i<=$numPorts; $i++) {
@@ -211,9 +213,7 @@ class CDUInfo {
 
 		$baseOID = $tmpl->OutletDescOID;
 
-		if ( $numPorts=self::getNumPorts($DeviceID) == false ){
-			$numPorts = $dev->PowerSupplyCount;
-		}
+		$numPorts=CDUInfo::getNumPorts($DeviceID);
 
 		$aliasList = [];
 		for ($i=1; $i<=$numPorts; $i++) {
