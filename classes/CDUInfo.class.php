@@ -89,7 +89,7 @@ class CDUInfo {
 		//also compare to the device configured value
 
 		// We never did finish the discussion of if we should use the mib vs the oid
-		$baseOID = ".1.3.6.1.4.1.318.1.1.4.4.1.0";
+		$baseOID = ".1.3.6.1.4.1.318.1.1.4.4.1.0.1";
 
 		return self::OSS_SNMP_Lookup($dev,Null,Null,$baseOID);
 	}
@@ -104,11 +104,18 @@ class CDUInfo {
 		
 		$x=array();
 
-		//TIM Fix this with the OID from the device template
-		// We never did finish the discussion of if we should use the mib vs the oid
-		$baseOID = ".1.3.6.1.4.1.318.1.1.4.4.2.1.4";
+		$tmpl=new CDUTemplate();
+		$tmpl->TemplateID=$dev->TemplateID;
+		if(!$tmpl->GetTemplate()){
+			return false;
+		}
 
-		$numPorts = self::getNumPorts($DeviceID);
+		$baseOID = $tmpl->OutletDescOID;
+
+		if ( $numPorts=self::getNumPorts($DeviceID) == false ){
+			$numPorts = $dev->PowerSupplyCount;
+		}
+
 		$portlist =[];
 
 		for ($i=1; $i<=$numPorts; $i++) {
@@ -123,11 +130,18 @@ class CDUInfo {
 			return false;
 		}
 
-		//TIM Fix this with the OID from the device template
-		// We never did finish the discussion of if we should use the mib vs the oid
-		$baseOID = ".1.3.6.1.4.1.318.1.1.4.4.2.1.4";
+		$tmpl=new CDUTemplate();
+		$tmpl->TemplateID=$dev->TemplateID;
+		if(!$tmpl->GetTemplate()){
+			return false;
+		}
 
-		$numPorts = self::getNumPorts($DeviceID);
+		$baseOID = $tmpl->OutletDescOID;
+
+		if ( $numPorts=self::getNumPorts($DeviceID) == false ){
+			$numPorts = $dev->PowerSupplyCount;
+		}
+
 		$nameList = [];
 		for ($i=1; $i<=$numPorts; $i++) {
 			$nameList += array($i => self::OSS_SNMP_Lookup($dev, Null, $i , $baseOID));
@@ -140,7 +154,7 @@ class CDUInfo {
 				if($i==$dev->FirstPortNum){$saving=true;}
 				if($saving){$newList[sizeof($newList)+1]=$desc;}
 				//TIM FIX hard coded num ports
-				if(sizeof($newList)==$dev->NumOutlets){break;}
+				if(sizeof($newList)==$numPorts){break;}
 			}
 			$nameList=$newList;
 		}
@@ -153,9 +167,18 @@ class CDUInfo {
 			return false;
 		}
 
-		$baseOID = ".1.3.6.1.4.1.318.1.1.26.9.2.3.1.5";
+		$tmpl=new CDUTemplate();
+		$tmpl->TemplateID=$dev->TemplateID;
+		if(!$tmpl->GetTemplate()){
+			return false;
+		}
 
-		$numPorts = self::getNumPorts($DeviceID);
+		$baseOID = $tmpl->OutletStatusOID;
+
+		if ( $numPorts=self::getNumPorts($DeviceID) == false ){
+			$numPorts = $dev->PowerSupplyCount;
+		}
+
 		$statusList = [];
 		for ($i=1; $i<=$numPorts; $i++) {
 			$statusList += array($i => self::OSS_SNMP_Lookup($dev, Null, $i , $baseOID));
@@ -166,9 +189,8 @@ class CDUInfo {
 			$newList=array();
 			foreach($statusList as $i => $status){
 				if($i==$dev->FirstPortNum){$saving=true;}
-				if($saving){$newList[sizeof($newList)+1]=($status==2?"up":"down");}
-				//TIM FIX hard coded num ports
-				if(sizeof($newList)==$dev->NumOutlets){break;}
+				if($saving){$newList[sizeof($newList)+1]=($status==$tmpl->OutletStatusOn?"up":"down");}
+				if(sizeof($newList)==$numPorts){break;}
 			}
 			$statusList=$newList;
 		}
@@ -181,9 +203,18 @@ class CDUInfo {
 			return false;
 		}
 
-		$baseOID = ".1.3.6.1.4.1.318.1.1.4.4.2.1.4";
+		$tmpl=new CDUTemplate();
+		$tmpl->TemplateID=$dev->TemplateID;
+		if(!$tmpl->GetTemplate()){
+			return false;
+		}
 
-		$numPorts = self::getNumPorts($DeviceID);
+		$baseOID = $tmpl->OutletDescOID;
+
+		if ( $numPorts=self::getNumPorts($DeviceID) == false ){
+			$numPorts = $dev->PowerSupplyCount;
+		}
+
 		$aliasList = [];
 		for ($i=1; $i<=$numPorts; $i++) {
 			$aliasList += array($i => self::OSS_SNMP_Lookup($dev, Null, $i , $baseOID));
@@ -195,7 +226,7 @@ class CDUInfo {
 			foreach($aliasList as $i => $alias){
 				if($i==$dev->FirstPortNum){$saving=true;}
 				if($saving){$newList[sizeof($newList)+1]=$alias;}
-				if(sizeof($newList)==$dev->NumOutlets){break;}
+				if(sizeof($newList)==$numPorts){break;}
 			}
 			$aliasList=$newList;
 		}
