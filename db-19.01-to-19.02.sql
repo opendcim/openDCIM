@@ -22,6 +22,12 @@ INSERT into fac_Config set Parameter='LDAPPhone2', Value='', UnitOfMeasure='stri
 INSERT into fac_Config set Parameter='LDAPPhone3', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
 
 --
+-- New fields tracked in the CDUDeviceTemplate
+--
+
+alter table fac_CDUTemplate add column OutletDescOID varchar(80) NOT NULL after VersionOID;
+
+--
 -- New parameter for Changing cabinet labels from cabinet name to user preference based label
 --
 

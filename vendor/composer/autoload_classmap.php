@@ -9,6 +9,7 @@ return array(
     'BinAudits' => $baseDir . '/classes/BinAudits.class.php',
     'BinContents' => $baseDir . '/classes/BinContents.class.php',
     'CDUTemplate' => $baseDir . '/classes/CDUTemplate.class.php',
+    'CDUInfo' => $baseDir . '/classes/CDUInfo.class.php',
     'CGIF' => $vendorDir . '/mpdf/mpdf/classes/gif.php',
     'CGIFCOLORTABLE' => $vendorDir . '/mpdf/mpdf/classes/gif.php',
     'CGIFFILEHEADER' => $vendorDir . '/mpdf/mpdf/classes/gif.php',

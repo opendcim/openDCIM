@@ -215,6 +215,7 @@
 			$cdutemplate->Managed=isset($_POST['Managed'])?1:0;
 			$cdutemplate->ATS=isset($_POST['ATS'])?1:0;
 			$cdutemplate->VersionOID=$_POST['VersionOID'];
+			$cdutemplate->OutletDescOID=$_POST['OutletDescOID'];
 			$cdutemplate->Multiplier=$_POST['Multiplier'];
 			$cdutemplate->OID1=$_POST['OID1'];
 			$cdutemplate->OID2=$_POST['OID2'];
@@ -981,6 +982,10 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 		<div>
 			<div><label for="VersionOID">',__("Firmware Version OID"),'</label></div>
 			<div><input type="text" name="VersionOID" id="VersionOID" size=40></div>
+		</div>
+		<div>
+			<div><label for="OutletDescOID">',__("Power Connections")." ".__("OID"),'</label></div>
+			<div><input type="text" name="OutletDescOID" id="OutletDescOID" size=40></div>
 		</div>
 		<div>
 		   <div><label for="Multiplier">',__("Multiplier"),'</label></div>

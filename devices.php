@@ -224,7 +224,11 @@
 		$dev->GetDevice();
 		if($dev->Rights=="Write"){
 			if($_POST['fp']==''){ // querying possible first ports
-				$portCandidates=SwitchInfo::findFirstPort($dev->DeviceID);
+				if($dev->DeviceType=='Switch'){
+					$portCandidates=SwitchInfo::findFirstPort($dev->DeviceID);
+				} else {
+					$portCandidates=CDUInfo::findFirstPort($dev->DeviceID);
+				}
 				if(count($portCandidates)>0){
 					foreach($portCandidates as $id => $portdesc){
 						$checked=($id==$dev->FirstPortNum)?' checked':'';
@@ -504,6 +508,53 @@
 			//
 			if( ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" && in_array( "Poll", $tagList ) || ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptOut" && ! in_array( "NoPoll", $tagList )))) {
 				echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
+			} else {
+				echo json_encode(array());
+			}
+		}
+		exit;
+	}
+
+	if(isset($_POST['refreshcdu'])){
+		header('Content-Type: application/json');
+		if(isset($_POST['cdunames'])){
+			$dev->DeviceID=$_POST['refreshcdu'];
+			$dev->GetDevice();
+			// This function should be hidden if they don't have rights, but just in case
+			if($dev->Rights=="Write"){
+				foreach(CDUInfo::getPortNames($_POST['refreshcdu']) as $PortNumber => $Label){
+					$cord=new PowerPorts();
+					$cord->DeviceID=$_POST['refreshcdu'];
+					$cord->PortNumber=$PortNumber;
+					$cord->Label=$Label;
+					$cord->updateLabel();
+				}
+			}
+			echo json_encode(CDUInfo::getPortNames($_POST['refreshcdu']));
+		}elseif(isset($_POST['Notes'])){
+			$dev->DeviceID=$_POST['refreshcdu'];
+			$dev->GetDevice();
+			// This function should be hidden if they don't have rights, but just in case
+			if($dev->Rights=="Write"){
+				foreach(CDUInfo::getPortAlias($_POST['refreshcdu']) as $PortNumber => $Notes){
+					$port=new DevicePorts();
+					$port->DeviceID=$_POST['refreshcdu'];
+					$port->PortNumber=$PortNumber;
+					$port->getPort();
+					$port->Notes=$Notes;
+					$port->updatePort();
+				}
+			}
+			echo json_encode(CDUInfo::getPortAlias($_POST['refreshcdu']));
+		}else{
+			$dev->DeviceID = $_POST['refreshcdu'];
+			$tagList = $dev->GetTags();
+			// The logic here is:
+			//	If you select to OptIn switch polling, only poll if you have the Poll tag assigned to this device
+			//	but if you are an OptOut site, poll everything unless it has the NoPoll tag assigned
+			//
+			if( ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" && in_array( "Poll", $tagList ) || ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptOut" && ! in_array( "NoPoll", $tagList )))) {
+				echo json_encode(CDUInfo::getPortStatus($_POST['refreshcdu']));
 			} else {
 				echo json_encode(array());
 			}
@@ -1338,6 +1389,13 @@ $(document).ready(function() {
 		if($(this).val()=='CDU'){
 			$('#cdu').show().removeClass('hide');
 			$('#NominalWatts').parent('div').parent('div').addClass('hide');
+			if($(document).data('DeviceType')!='CDU'){
+				$('#cdufirstport button:not([name="cdufirstport"])').hide();
+			}
+			if($('#DeviceID').val()>0){
+				$('#cdufirstport').show().removeClass('hide');
+				$('.switch div[id^="ppst"]').show();
+			}
 		}else{
 			$('#cdu').hide();
 			$('#NominalWatts').parent('div').parent('div').removeClass('hide');
@@ -1431,6 +1489,88 @@ $(document).ready(function() {
 			$.post('',{refreshswitch: devid}).done(function(data){
 				$.each(data, function(i,portstatus){
 					$('#st'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
+				});
+				modal.dialog('destroy');
+			});
+		}
+	}
+
+	$('#cdufirstport button[name=cdufirstport]').click(function(){
+		// S.U.T. Update the IP and snmp community then click on the switch controls.
+		// we'll combat that with a limited device update.
+		$.post('api/v1/device/'+$('#DeviceID').val(),{PrimaryIP: $('#PrimaryIP').val(), SNMPCommunity: $('#SNMPCommunity').val()}).done(function(){
+
+			var modal=$('<div />', {id: 'modal', title: 'Select CDU first port'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"></div>').dialog({
+				appendTo: 'body',
+				modal: true,
+				close: function(){$(this).dialog('destroy');}
+			});
+			$.post('',{fp: '', devid: $('#DeviceID').val()}).done(function(data){
+				$('#modaltext').html(data);
+				$('#modaltext input').change(function(){
+					var fpnum=$(this).val();
+					$.post('',{fp: fpnum, devid: $('#DeviceID').val()}).done(function(data){
+						$('input[name=FirstPortNum]').val(fpnum);
+						$('#modalstatus').html(data);
+						$('#modal').dialog('destroy');
+					}).then(refreshcdu($('#DeviceID').val(),true));
+				});
+			});
+		}).error(function(data){
+			$('#messages').text('data.message');
+		});
+
+	});
+
+	$('#cdufirstport button[name=cdurefresh]').click(function(){
+		refreshcdu($('#DeviceID').val());
+	});
+	$('#cdufirstport button[name=cduname]').click(function(){
+		refreshcdu($('#DeviceID').val(),'cdunames');
+	});
+	$('#cdufirstport button[name=cduNotes]').click(function(){
+		refreshcdu($('#DeviceID').val(),'Notes');
+	});
+	if ($(':input[name=DeviceType]').val()=='CDU'){
+		refreshcdu($('#DeviceID').val());
+	}
+
+	function refreshcdu(devid,cdunames){
+		var modal=$('<div />', {id: 'modal', title: 'Please wait...'}).html('<div id="modaltext"><img src="images/animatedswitch.gif" style="width: 100%;"><br>Polling device...</div><br><div id="modalstatus" class="warning"></div>').dialog({
+			appendTo: 'body',
+			minWidth: 500,
+			closeOnEscape: false,
+			dialogClass: "no-close",
+			modal: true
+		});
+		if(cdunames){
+			if(cdunames=='cdunames'){
+				$.post('',{refreshcdu: devid, cdunames: cdunames}).done(function(data){
+					$.each(data, function(i,Label){
+						if(Label){
+							$('#ppcn'+i).text(Label);
+						}else{
+							$('#ppcn'+i).text('');
+						}
+					});
+					modal.dialog('destroy');
+				});
+			}else{
+				$.post('',{refreshcdu: devid, Notes: cdunames}).done(function(data){
+					$.each(data, function(i,Notes){
+						if(Notes){
+							$('#ppn'+i).text(Notes);
+						}else{
+							$('#ppn'+i).text('');
+						}
+					});
+					modal.dialog('destroy');
+				});
+			}
+		}else{
+			$.post('',{refreshcdu: devid}).done(function(data){
+				$.each(data, function(i,portstatus){
+					$('#ppst'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
 				});
 				modal.dialog('destroy');
 			});
@@ -2176,6 +2316,10 @@ echo '
 <fieldset id="firstport" class="hide">
 	<legend>'.__("Switch SNMP").'</legend>
 	<div><p>'.__("Use these buttons to set the first port for the switch, check the status of the ports again, or attempt to load the Port Name Labels from the switch device.").'</p><button type="button" name="firstport">'.__("Set First Port").'</button><button type="button" name="refresh">'.__("Refresh Status").'</button><button type="button" name="name">'.__("Refresh Port Names").'</button><button type="button" name="Notes">'.__("Refresh Port Notes").'</button></div>
+</fieldset>
+<fieldset id="cdufirstport" class="show">
+	<legend>'.__("CDU SNMP").'</legend>
+	<div><p>'.__("Use these buttons to set the first power outlet for the CDU, check the status of the oultets again, or attempt to load the Outlet Name Labels from the CDU device.").'</p><button type="button" name="cdufirstport">'.__("Set First Outlet").'</button><button type="button" name="cdurefresh">'.__("Refresh Status").'</button><button type="button" name="cduname">'.__("Refresh Port Names").'</button><button type="button" name="cduNotes">'.__("Refresh Port Notes").'</button></div>
 </fieldset>';
 
 	//
@@ -2328,9 +2472,10 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 					<div id=\"ppcn\">".__("Port Name")."</div>
 					<div>".__("Device")."</div>
 					<div>".__("Device Port")."</div>
-					<div>".__("Notes")."</div>
-<!--				<div>".__("Panel")."</div> -->
-				</div>\n";
+					<div id=\"ppn\">".__("Notes")."</div>";
+					if($dev->DeviceType=='CDU'){print "\t\t\t\t<div id=\"ppst\">".__("Status")."</div>";}
+print "<!--				<div>".__("Panel")."</div> -->
+					</div>\n";
 			foreach($pwrCords as $i => $cord){
 				$tmppdu=new Device();
 				$tmppdu->DeviceID=$cord->ConnectedDeviceID;
@@ -2346,13 +2491,15 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 					$cord->ConnectedDeviceID=0;
 					$cord->ConnectedPort=0;
 				}
+				if($dev->DeviceType=='CDU'){$linkList[$i]=(isset($linkList[$i]))?$linkList[$i]:'err';}
 				print "\t\t\t\t<div data-port=$i>
 					<div>$i</div>
-					<div data-default=\"$cord->Label\">$cord->Label</div>
+					<div id=\"ppcn$i\" data-default=\"$cord->Label\">$cord->Label</div>
 					<div data-default=$cord->ConnectedDeviceID><a href=\"devices.php?DeviceID=$cord->ConnectedDeviceID\">$tmppdu->Label</a></div>
 					<div data-default=$cord->ConnectedPort>$tmpcord->Label</div>
-					<div data-default=\"$cord->Notes\">$cord->Notes</div>
-				</div>\n";
+					<div id=\"ppn$i\" data-default=\"$cord->Notes\">$cord->Notes</div>";
+					if($dev->DeviceType=='CDU'){print "\t\t\t\t<div id=\"ppst$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
+				print "\t\t\t\t</div>\n";
 			}
 
 			print "			</div><!-- END div.table --></div>\n		</div><!-- END power connections -->\n		<!-- Spacer --><div><div>&nbsp;</div><div>$connectioncontrols</div></div><!-- END Spacer -->\n";
@@ -2528,6 +2675,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 	if(!$write){
 		print "\t\t//Disable all input if they don't have rights.
 		$('#firstport button[name=firstport],#firstport button[name=name]').hide();
+		$('#cdufirstport button[name=cdufirstport],#cdufirstport button[name=cduname]').hide();
 		$('.main input, .main select').prop('disabled', true);";
 	}
 ?>

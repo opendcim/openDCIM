@@ -26,6 +26,7 @@
 		$template->ATS = isset($_REQUEST['ats'])?1:0;
 		$template->SNMPVersion = $_REQUEST['snmpversion'];
 		$template->VersionOID = $_REQUEST['versionoid'];
+		$template->OutletDescOID = $_REQUEST['outletdescoid'];
 		$template->Multiplier = $_REQUEST['multiplier'];
 		$template->OID1 = $_REQUEST['oid1'];
 		$template->OID2 = $_REQUEST['oid2'];
@@ -136,6 +137,10 @@ echo '</select>
 <div>
 	<div><label for="versionoid">',__("Firmware Version OID"),'</label></div>
 	<div><input type="text" name="versionoid" id="versionoid" value="',$template->VersionOID,'" size=40></div>
+</div>
+<div>
+	<div><label for="outletdescoid">',__("Power Connections")." ".__("OID"),'</label></div>
+	<div><input type="text" name="outletdescoid" id="outletdescoid" value="',$template->OutletDescOID,'" size=40></div>
 </div>
 <div>
    <div><label for="multiplier">',__("Multiplier"),'</label></div>

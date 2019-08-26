@@ -30,6 +30,7 @@ class CDUTemplate {
 	var $Managed;
 	var $ATS;
 	var $VersionOID;
+	var $OutletDescOID;
 	var $Multiplier;
 	var $OID1;
 	var $OID2;
@@ -52,6 +53,7 @@ class CDUTemplate {
 		$this->Managed=intval($this->Managed);
 		$this->ATS=intval($this->ATS);
 		$this->VersionOID=sanitize($this->VersionOID);
+		$this->OutletDescOID=sanitize($this->OutletDescOID);
 		$this->Multiplier=(in_array($this->Multiplier, $validMultipliers))?$this->Multiplier:1;
 		$this->OID1=sanitize($this->OID1);
 		$this->OID2=sanitize($this->OID2);
@@ -67,6 +69,7 @@ class CDUTemplate {
 	function MakeDisplay(){
 		$this->Model=stripslashes($this->Model);
 		$this->VersionOID=stripslashes($this->VersionOID);
+		$this->OutletDescOID=stripslashes($this->OutletDescOID);
 		$this->OID1=stripslashes($this->OID1);
 		$this->OID2=stripslashes($this->OID2);
 		$this->OID3=stripslashes($this->OID3);
@@ -82,6 +85,7 @@ class CDUTemplate {
 		$template->Managed=$row["Managed"];
 		$template->ATS=$row["ATS"];
 		$template->VersionOID=$row["VersionOID"];
+		$template->OutletDescOID=$row["OutletDescOID"];
 		$template->Multiplier=$row["Multiplier"];
 		$template->OID1=$row["OID1"];
 		$template->OID2=$row["OID2"];
@@ -138,6 +142,7 @@ class CDUTemplate {
 		$sql="INSERT INTO fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
 			VersionOID=\"$this->VersionOID\", 
+			OutletDescOID=\"$this->OutletDescOID\",
 			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
 			OID3=\"$this->OID3\", ATSStatusOID=\"$this->ATSStatusOID\", ATSDesiredResult=\"$this->ATSDesiredResult\",
 			ProcessingProfile=\"$this->ProcessingProfile\", 
@@ -164,6 +169,7 @@ class CDUTemplate {
 		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
 			VersionOID=\"$this->VersionOID\", 
+			OutletDescOID=\"$this->OutletDescOID\",
 			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
 			OID3=\"$this->OID3\", ATSStatusOID=\"$this->ATSStatusOID\", ATSDesiredResult=\"$this->ATSDesiredResult\",
 			ProcessingProfile=\"$this->ProcessingProfile\", 
