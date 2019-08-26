@@ -537,12 +537,12 @@
 			// This function should be hidden if they don't have rights, but just in case
 			if($dev->Rights=="Write"){
 				foreach(CDUInfo::getPortAlias($_POST['refreshcdu']) as $PortNumber => $Notes){
-					$port=new DevicePorts();
-					$port->DeviceID=$_POST['refreshcdu'];
-					$port->PortNumber=$PortNumber;
-					$port->getPort();
-					$port->Notes=$Notes;
-					$port->updatePort();
+					$cord=new PowerPorts();
+					$cord->DeviceID=$_POST['refreshcdu'];
+					$cord->PortNumber=$PortNumber;
+					$cord->getPort();
+					$cord->Notes=$Notes;
+					$cord->updatePort();
 				}
 			}
 			echo json_encode(CDUInfo::getPortAlias($_POST['refreshcdu']));
