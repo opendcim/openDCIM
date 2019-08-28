@@ -131,6 +131,10 @@ class CDUInfo {
 		return $portlist;
 	}
 
+	// There appears to be no good reason to refresh the port names
+	// Unlike switches, the name of the outlet is not returned 
+	// it is left here for now to verify against a real device
+/*
 	static function getPortNames($DeviceID,$portid=null){
 		if(!$dev=CDUInfo::BasicTests($DeviceID)){
 			return false;
@@ -165,7 +169,7 @@ class CDUInfo {
 
 		return $nameList;
 	}
-	
+*/	
 	static function getPortStatus($DeviceID,$portid=null){
 		if(!$dev=CDUInfo::BasicTests($DeviceID)){
 			return false;

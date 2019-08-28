@@ -224,11 +224,9 @@
 		$dev->GetDevice();
 		if($dev->Rights=="Write"){
 			if($_POST['fp']==''){ // querying possible first ports
-				if($dev->DeviceType=='Switch'){
-					$portCandidates=SwitchInfo::findFirstPort($dev->DeviceID);
-				} else {
-					$portCandidates=CDUInfo::findFirstPort($dev->DeviceID);
-				}
+				$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
+				$portCandidates=$deviceclass::findFirstPort($dev->DeviceID);
+
 				if(count($portCandidates)>0){
 					foreach($portCandidates as $id => $portdesc){
 						$checked=($id==$dev->FirstPortNum)?' checked':'';
@@ -1525,9 +1523,9 @@ $(document).ready(function() {
 	$('#cdufirstport button[name=cdurefresh]').click(function(){
 		refreshcdu($('#DeviceID').val());
 	});
-	$('#cdufirstport button[name=cduname]').click(function(){
-		refreshcdu($('#DeviceID').val(),'cdunames');
-	});
+//	$('#cdufirstport button[name=cduname]').click(function(){
+//		refreshcdu($('#DeviceID').val(),'cdunames');
+//	});
 	$('#cdufirstport button[name=cduNotes]').click(function(){
 		refreshcdu($('#DeviceID').val(),'Notes');
 	});
@@ -2319,7 +2317,9 @@ echo '
 </fieldset>
 <fieldset id="cdufirstport" class="show">
 	<legend>'.__("CDU SNMP").'</legend>
-	<div><p>'.__("Use these buttons to set the first power outlet for the CDU, check the status of the oultets again, or attempt to load the Outlet Name Labels from the CDU device.").'</p><button type="button" name="cdufirstport">'.__("Set First Outlet").'</button><button type="button" name="cdurefresh">'.__("Refresh Status").'</button><button type="button" name="cduname">'.__("Refresh Port Names").'</button><button type="button" name="cduNotes">'.__("Refresh Port Notes").'</button></div>
+	<!-- Uncomment the next line and remove the following to re-enable refreshing port names -->
+	<!--<div><p>'.__("Use these buttons to set the first power outlet for the CDU, check the status of the oultets again, or attempt to load the Outlet Name Labels from the CDU device.").'</p><button type="button" name="cdufirstport">'.__("Set First Outlet").'</button><button type="button" name="cdurefresh">'.__("Refresh Status").'</button><button type="button" name="cduname">'.__("Refresh Port Names").'</button><button type="button" name="cduNotes">'.__("Refresh Port Notes").'</button></div> -->
+	<div><p>'.__("Use these buttons to set the first power outlet for the CDU, check the status of the oultets again, or attempt to load the Outlet Name Labels from the CDU device.").'</p><button type="button" name="cdufirstport">'.__("Set First Outlet").'</button><button type="button" name="cdurefresh">'.__("Refresh Status").'</button><button type="button" name="cduNotes">'.__("Refresh Port Notes").'</button></div>
 </fieldset>';
 
 	//
