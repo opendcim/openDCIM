@@ -464,17 +464,30 @@
 		buildCustomAttributes($template, $dev);
 		exit;
 	}
-	if(isset($_POST['refreshswitch'])){
+	if(isset($_POST['refreshswitch']) || isset($_POST['refreshcdu'])){
 		header('Content-Type: application/json');
-		if(isset($_POST['names'])){
-			$dev->DeviceID=$_POST['refreshswitch'];
+		if(isset($POST['refreshswitch'])) {
+			$refreshdevice = 'refreshswitch';
+		}
+		else {
+			$refreshdevice = 'refreshcdu';
+		}
+
+		if(isset($_POST['names'])){ // add or isset($_POST['cdunames']) to enable cdunames refresh
+			$dev->DeviceID=$_POST[$refreshdevice];
 			$dev->GetDevice();
-			$names = SwitchInfo::getPortNames($_POST['refreshswitch']);
+			$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
+			$names = $deviceclass::getPortNames($_POST['refreshswitch']);
 			// This function should be hidden if they don't have rights, but just in case
 			if($dev->Rights=="Write"){
+
 				foreach($names as $PortNumber => $Label){
-					$port=new DevicePorts();
-					$port->DeviceID=$_POST['refreshswitch'];
+					if ($refreshdevice == 'refreshswitch'){
+						$port=new DevicePorts();
+					} else {
+						$port=new PowerPorts();
+					}
+					$port->DeviceID=$_POST[$refreshdevice];
 					$port->PortNumber=$PortNumber;
 					$port->Label=$Label;
 					$port->updateLabel();
@@ -482,14 +495,20 @@
 			}
 			echo json_encode($names);
 		}elseif(isset($_POST['Notes'])){
-			$dev->DeviceID=$_POST['refreshswitch'];
+			$dev->DeviceID=$_POST[$refreshdevice];
 			$dev->GetDevice();
-			$alias = SwitchInfo::getPortAlias($_POST['refreshswitch']);
+			$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
+			$alias = $deviceclass::getPortAlias($_POST['refreshswitch']);
 			// This function should be hidden if they don't have rights, but just in case
 			if($dev->Rights=="Write"){
+				$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
 				foreach($alias as $PortNumber => $Notes){
-					$port=new DevicePorts();
-					$port->DeviceID=$_POST['refreshswitch'];
+					if ($refreshdevice == 'refreshswitch'){
+						$port=new DevicePorts();
+					} else {
+						$port=new PowerPorts();
+					}
+					$port->DeviceID=$_POST[$refreshdevice];
 					$port->PortNumber=$PortNumber;
 					$port->getPort();
 					$port->Notes=$Notes;
@@ -498,61 +517,16 @@
 			}
 			echo json_encode($alias);
 		}else{
-			$dev->DeviceID = $_POST['refreshswitch'];
+			$dev->DeviceID = $_POST[$refreshdevice];
+			$dev->GetDevice();
 			$tagList = $dev->GetTags();
+			$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
 			// The logic here is:
 			//	If you select to OptIn switch polling, only poll if you have the Poll tag assigned to this device
 			//	but if you are an OptOut site, poll everything unless it has the NoPoll tag assigned
 			//
 			if( ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" && in_array( "Poll", $tagList ) || ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptOut" && ! in_array( "NoPoll", $tagList )))) {
-				echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
-			} else {
-				echo json_encode(array());
-			}
-		}
-		exit;
-	}
-
-	if(isset($_POST['refreshcdu'])){
-		header('Content-Type: application/json');
-		if(isset($_POST['cdunames'])){
-			$dev->DeviceID=$_POST['refreshcdu'];
-			$dev->GetDevice();
-			// This function should be hidden if they don't have rights, but just in case
-			if($dev->Rights=="Write"){
-				foreach(CDUInfo::getPortNames($_POST['refreshcdu']) as $PortNumber => $Label){
-					$cord=new PowerPorts();
-					$cord->DeviceID=$_POST['refreshcdu'];
-					$cord->PortNumber=$PortNumber;
-					$cord->Label=$Label;
-					$cord->updateLabel();
-				}
-			}
-			echo json_encode(CDUInfo::getPortNames($_POST['refreshcdu']));
-		}elseif(isset($_POST['Notes'])){
-			$dev->DeviceID=$_POST['refreshcdu'];
-			$dev->GetDevice();
-			// This function should be hidden if they don't have rights, but just in case
-			if($dev->Rights=="Write"){
-				foreach(CDUInfo::getPortAlias($_POST['refreshcdu']) as $PortNumber => $Notes){
-					$cord=new PowerPorts();
-					$cord->DeviceID=$_POST['refreshcdu'];
-					$cord->PortNumber=$PortNumber;
-					$cord->getPort();
-					$cord->Notes=$Notes;
-					$cord->updatePort();
-				}
-			}
-			echo json_encode(CDUInfo::getPortAlias($_POST['refreshcdu']));
-		}else{
-			$dev->DeviceID = $_POST['refreshcdu'];
-			$tagList = $dev->GetTags();
-			// The logic here is:
-			//	If you select to OptIn switch polling, only poll if you have the Poll tag assigned to this device
-			//	but if you are an OptOut site, poll everything unless it has the NoPoll tag assigned
-			//
-			if( ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" && in_array( "Poll", $tagList ) || ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptOut" && ! in_array( "NoPoll", $tagList )))) {
-				echo json_encode(CDUInfo::getPortStatus($_POST['refreshcdu']));
+				echo json_encode($deviceclass::getPortStatus($_POST[$refreshdevice]));
 			} else {
 				echo json_encode(array());
 			}
