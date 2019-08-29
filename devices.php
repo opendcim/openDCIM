@@ -1439,7 +1439,7 @@ $(document).ready(function() {
 			if(names=='names'){
 				$.post('',{refreshdevice: devid, names: names, devicecalling: devicecalling}).done(function(data){
 					$.each(data, function(i,Label){
-						if(devicecalling=='refreshswitch') {
+						if(devicecalling=='switch') {
 							if(Label){
 								$('#spn'+i).text(Label);
 							}else{
@@ -1458,7 +1458,7 @@ $(document).ready(function() {
 			}else{
 				$.post('',{refreshdevice: devid, Notes: names, devicecalling: devicecalling }).done(function(data){
 					$.each(data, function(i,Notes){
-						if(devicecalling=='refreshswitch') {
+						if(devicecalling=='switch') {
 							if(Notes){
 								$('#n'+i).text(Notes);
 							}else{
@@ -1478,7 +1478,7 @@ $(document).ready(function() {
 		}else{
 			$.post('',{refreshdevice: devid, devicecalling: devicecalling}).done(function(data){
 				$.each(data, function(i,portstatus){
-					if(devicecalling=='refreshswitch') {
+					if(devicecalling=='switch') {
 						$('#st'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
 					}else{
 						$('#ppst'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
