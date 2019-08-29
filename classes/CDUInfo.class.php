@@ -126,7 +126,8 @@ class CDUInfo {
 
 		for ($i=1; $i<=$numPorts; $i++) {
 			$portlist += array($i => self::OSS_SNMP_Lookup($dev, Null, $i , $baseOID));
-		}	
+			if ( $portlist[$i] == false ) {break;}
+		}
 
 		return $portlist;
 	}
@@ -151,8 +152,10 @@ class CDUInfo {
 		$numPorts=CDUInfo::getNumPorts($DeviceID);
 
 		$nameList = [];
+
 		for ($i=1; $i<=$numPorts; $i++) {
 			$nameList += array($i => self::OSS_SNMP_Lookup($dev, Null, $i , $baseOID));
+			if ( $nameList[$i] == false ) {break;}
 		}	
 
 		if(is_array($nameList)){
@@ -186,8 +189,10 @@ class CDUInfo {
 		$numPorts=CDUInfo::getNumPorts($DeviceID);
 
 		$statusList = [];
+
 		for ($i=1; $i<=$numPorts; $i++) {
 			$statusList += array($i => self::OSS_SNMP_Lookup($dev, Null, $i , $baseOID));
+			if ( $statusList[$i] == false ) {break;}
 		}
 
 		if(is_array($statusList)){
@@ -220,10 +225,12 @@ class CDUInfo {
 		$numPorts=CDUInfo::getNumPorts($DeviceID);
 
 		$aliasList = [];
+
 		for ($i=1; $i<=$numPorts; $i++) {
 			$aliasList += array($i => self::OSS_SNMP_Lookup($dev, Null, $i , $baseOID));
+			if ( $aliasList[$i] == false ) {break;}
 		}
-		
+
 		if(is_array($aliasList)){
 			$saving=false;
 			$newList=array();
@@ -234,8 +241,8 @@ class CDUInfo {
 			}
 			$aliasList=$newList;
 		}
-		
-		return $aliasList;	
+
+		return $aliasList;
 	}
 }
 ?>
