@@ -464,30 +464,29 @@
 		buildCustomAttributes($template, $dev);
 		exit;
 	}
-	if(isset($_POST['refreshswitch']) || isset($_POST['refreshcdu'])){
+	if(isset($_POST['refreshdevice'])){
 		header('Content-Type: application/json');
-		if(isset($POST['refreshswitch'])) {
-			$refreshdevice = 'refreshswitch';
-		}
-		else {
-			$refreshdevice = 'refreshcdu';
+		if(isset($_POST['devicecalling'])) {
+			$refreshdevice = $_POST['devicecalling'];
+		}else{
+			echo json_encode(array());
+			exit;
 		}
 
 		if(isset($_POST['names'])){ // add or isset($_POST['cdunames']) to enable cdunames refresh
-			$dev->DeviceID=$_POST[$refreshdevice];
+			$dev->DeviceID=$_POST['refreshdevice'];
 			$dev->GetDevice();
 			$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
 			$names = $deviceclass::getPortNames($_POST['refreshswitch']);
 			// This function should be hidden if they don't have rights, but just in case
 			if($dev->Rights=="Write"){
-
 				foreach($names as $PortNumber => $Label){
 					if ($refreshdevice == 'refreshswitch'){
 						$port=new DevicePorts();
 					} else {
 						$port=new PowerPorts();
 					}
-					$port->DeviceID=$_POST[$refreshdevice];
+					$port->DeviceID=$_POST['refreshdevice'];
 					$port->PortNumber=$PortNumber;
 					$port->Label=$Label;
 					$port->updateLabel();
@@ -495,7 +494,7 @@
 			}
 			echo json_encode($names);
 		}elseif(isset($_POST['Notes'])){
-			$dev->DeviceID=$_POST[$refreshdevice];
+			$dev->DeviceID=$_POST['refreshdevice'];
 			$dev->GetDevice();
 			$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
 			$alias = $deviceclass::getPortAlias($_POST['refreshswitch']);
@@ -508,7 +507,7 @@
 					} else {
 						$port=new PowerPorts();
 					}
-					$port->DeviceID=$_POST[$refreshdevice];
+					$port->DeviceID=$_POST['refreshdevice'];
 					$port->PortNumber=$PortNumber;
 					$port->getPort();
 					$port->Notes=$Notes;
@@ -517,7 +516,7 @@
 			}
 			echo json_encode($alias);
 		}else{
-			$dev->DeviceID = $_POST[$refreshdevice];
+			$dev->DeviceID = $_POST['refreshdevice'];
 			$dev->GetDevice();
 			$tagList = $dev->GetTags();
 			$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
@@ -526,7 +525,7 @@
 			//	but if you are an OptOut site, poll everything unless it has the NoPoll tag assigned
 			//
 			if( ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" && in_array( "Poll", $tagList ) || ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptOut" && ! in_array( "NoPoll", $tagList )))) {
-				echo json_encode($deviceclass::getPortStatus($_POST[$refreshdevice]));
+				echo json_encode($deviceclass::getPortStatus($_POST['refreshdevice']));
 			} else {
 				echo json_encode(array());
 			}
@@ -1390,16 +1389,16 @@ $(document).ready(function() {
 		getfirstport($('#DeviceID').val(), 'switch');
 	});
 	$('#firstport button[name=refresh]').click(function(){
-		refreshswitch($('#DeviceID').val());
+		refreshdevice('switch', $('#DeviceID').val());
 	});
 	$('#firstport button[name=name]').click(function(){
-		refreshswitch($('#DeviceID').val(),'names');
+		refreshdevice('switch', $('#DeviceID').val(),'names');
 	});
 	$('#firstport button[name=Notes]').click(function(){
-		refreshswitch($('#DeviceID').val(),'Notes');
+		refreshdevice('switch', $('#DeviceID').val(),'Notes');
 	});
 	if ($(':input[name=DeviceType]').val()=='Switch'){
-		refreshswitch($('#DeviceID').val());
+		refreshdevice('switch', $('#DeviceID').val());
 	}
 
 	function getfirstport(devid, devicecalling) {
@@ -1428,7 +1427,7 @@ $(document).ready(function() {
 
 	}
 
-	function refreshswitch(devid,names){
+	function refreshdevice(devicecalling,devid,names){
 		var modal=$('<div />', {id: 'modal', title: 'Please wait...'}).html('<div id="modaltext"><img src="images/animatedswitch.gif" style="width: 100%;"><br>Polling device...</div><br><div id="modalstatus" class="warning"></div>').dialog({
 			appendTo: 'body',
 			minWidth: 500,
@@ -1438,32 +1437,52 @@ $(document).ready(function() {
 		});
 		if(names){
 			if(names=='names'){
-				$.post('',{refreshswitch: devid, names: names}).done(function(data){
+				$.post('',{refreshdevice: devid, names: names, devicecalling: devicecalling}).done(function(data){
 					$.each(data, function(i,Label){
-						if(Label){
-							$('#spn'+i).text(Label);
+						if(devicecalling=='refreshswitch') {
+							if(Label){
+								$('#spn'+i).text(Label);
+							}else{
+								$('#spn'+i).text('');
+							}
 						}else{
-							$('#spn'+i).text('');
+							if(Label){
+								$('#ppcn'+i).text(Label);
+							}else{
+								$('#ppcn'+i).text('');
+							}
 						}
 					});
 					modal.dialog('destroy');
 				});
 			}else{
-				$.post('',{refreshswitch: devid, Notes: names}).done(function(data){
+				$.post('',{refreshdevice: devid, Notes: names, devicecalling: devicecalling }).done(function(data){
 					$.each(data, function(i,Notes){
-						if(Notes){
-							$('#n'+i).text(Notes);
+						if(devicecalling=='refreshswitch') {
+							if(Notes){
+								$('#n'+i).text(Notes);
+							}else{
+								$('#n'+i).text('');
+							}
 						}else{
-							$('#n'+i).text('');
+							if(Notes){
+								$('#ppn'+i).text(Notes);
+							}else{
+								$('#ppn'+i).text('');
+							}
 						}
 					});
 					modal.dialog('destroy');
 				});
 			}
 		}else{
-			$.post('',{refreshswitch: devid}).done(function(data){
+			$.post('',{refreshdevice: devid, devicecalling: devicecalling}).done(function(data){
 				$.each(data, function(i,portstatus){
-					$('#st'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
+					if(devicecalling=='refreshswitch') {
+						$('#st'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
+					}else{
+						$('#ppst'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
+					}
 				});
 				modal.dialog('destroy');
 			});
@@ -1474,59 +1493,18 @@ $(document).ready(function() {
 		getfirstport($('#DeviceID').val(), 'CDU');
 	});
 	$('#cdufirstport button[name=cdurefresh]').click(function(){
-		refreshcdu($('#DeviceID').val());
+		refreshdevice('cdu', $('#DeviceID').val());
 	});
 //	$('#cdufirstport button[name=cduname]').click(function(){
-//		refreshcdu($('#DeviceID').val(),'cdunames');
+//		refreshdevice('cdu', $('#DeviceID').val(),'cdunames');
 //	});
 	$('#cdufirstport button[name=cduNotes]').click(function(){
-		refreshcdu($('#DeviceID').val(),'Notes');
+		refreshdevice('cdu', $('#DeviceID').val(),'Notes');
 	});
 	if ($(':input[name=DeviceType]').val()=='CDU'){
-		refreshcdu($('#DeviceID').val());
+		refreshdevice('cdu', $('#DeviceID').val());
 	}
 
-	function refreshcdu(devid,cdunames){
-		var modal=$('<div />', {id: 'modal', title: 'Please wait...'}).html('<div id="modaltext"><img src="images/animatedswitch.gif" style="width: 100%;"><br>Polling device...</div><br><div id="modalstatus" class="warning"></div>').dialog({
-			appendTo: 'body',
-			minWidth: 500,
-			closeOnEscape: false,
-			dialogClass: "no-close",
-			modal: true
-		});
-		if(cdunames){
-			if(cdunames=='cdunames'){
-				$.post('',{refreshcdu: devid, cdunames: cdunames}).done(function(data){
-					$.each(data, function(i,Label){
-						if(Label){
-							$('#ppcn'+i).text(Label);
-						}else{
-							$('#ppcn'+i).text('');
-						}
-					});
-					modal.dialog('destroy');
-				});
-			}else{
-				$.post('',{refreshcdu: devid, Notes: cdunames}).done(function(data){
-					$.each(data, function(i,Notes){
-						if(Notes){
-							$('#ppn'+i).text(Notes);
-						}else{
-							$('#ppn'+i).text('');
-						}
-					});
-					modal.dialog('destroy');
-				});
-			}
-		}else{
-			$.post('',{refreshcdu: devid}).done(function(data){
-				$.each(data, function(i,portstatus){
-					$('#ppst'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
-				});
-				modal.dialog('destroy');
-			});
-		}
-	}
 <?php
 	// hide all the js functions if they don't have write permissions
 	if($write){
