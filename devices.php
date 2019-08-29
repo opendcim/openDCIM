@@ -1386,7 +1386,7 @@ $(document).ready(function() {
 	}).change();
 
 	$('#firstport button[name=firstport]').click(function(){
-		getfirstport($('#DeviceID').val(), 'switch');
+		getfirstport('switch', $('#DeviceID').val());
 	});
 	$('#firstport button[name=refresh]').click(function(){
 		refreshdevice('switch', $('#DeviceID').val());
@@ -1401,7 +1401,7 @@ $(document).ready(function() {
 		refreshdevice('switch', $('#DeviceID').val());
 	}
 
-	function getfirstport(devid, devicecalling) {
+	function getfirstport(devicecalling, devid) {
 		// S.U.T. Update the IP and snmp community then click on the switch controls.
 		// we'll combat that with a limited device update.
 		$.post('api/v1/device/'+$('#DeviceID').val(),{PrimaryIP: $('#PrimaryIP').val(), SNMPCommunity: $('#SNMPCommunity').val()}).done(function(){
@@ -1418,7 +1418,7 @@ $(document).ready(function() {
 						$('input[name=FirstPortNum]').val(fpnum);
 						$('#modalstatus').html(data);
 						$('#modal').dialog('destroy');
-					}).then(refreshswitch($('#DeviceID').val(),true));
+					}).then(refreshdevice($('#DeviceID').val(),true));
 				});
 			});
 		}).error(function(data){
@@ -1490,7 +1490,7 @@ $(document).ready(function() {
 	}
 
 	$('#cdufirstport button[name=cdufirstport]').click(function(){
-		getfirstport($('#DeviceID').val(), 'CDU');
+		getfirstport('CDU', $('#DeviceID').val());
 	});
 	$('#cdufirstport button[name=cdurefresh]').click(function(){
 		refreshdevice('cdu', $('#DeviceID').val());
