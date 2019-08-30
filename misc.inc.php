@@ -868,6 +868,8 @@ if(!function_exists("updateNavTreeHTML")){
 */
 
 if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" ){
+	$savedurl = $_SERVER['SCRIPT_NAME'] . "?" . sanitize($_SERVER['QUERY_STRING']);
+	setcookie( 'targeturl', $savedurl, time()+60 );
 	header("Location: ".redirect('saml/login.php'));
 	exit;
 }
