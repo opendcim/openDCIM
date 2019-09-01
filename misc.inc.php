@@ -98,7 +98,7 @@ Example usage:
 	exit;
 */
 function path(){
-	$path=explode("/",$_SERVER['REQUEST_URI']);
+	$path=explode("/",sanitize($_SERVER['REQUEST_URI']));
 	unset($path[(count($path)-1)]);
 	$path=implode("/",$path);
 	return $path;
@@ -870,7 +870,7 @@ if(!function_exists("updateNavTreeHTML")){
 if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" ){
 	$savedurl = $_SERVER['SCRIPT_NAME'] . "?" . sanitize($_SERVER['QUERY_STRING']);
 	setcookie( 'targeturl', $savedurl, time()+60 );
-	header("Location: ".redirect($config->ParameterArray["InstallURL"].'/saml/login.php'));
+	header("Location: ".redirect('saml/login.php'));
 	exit;
 }
 
