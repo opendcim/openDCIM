@@ -30,6 +30,7 @@ class CDUTemplate {
 	var $Managed;
 	var $ATS;
 	var $VersionOID;
+	var $OutletNameOID;
 	var $OutletDescOID;
 	var $OutletCountOID;
 	var $OutletStatusOID;
@@ -56,6 +57,7 @@ class CDUTemplate {
 		$this->Managed=intval($this->Managed);
 		$this->ATS=intval($this->ATS);
 		$this->VersionOID=sanitize($this->VersionOID);
+		$this->OutletNameOID=sanitize($this->OutletNameOID);
 		$this->OutletDescOID=sanitize($this->OutletDescOID);
 		$this->OutletCountOID=sanitize($this->OutletCountOID);
 		$this->OutletStatusOID=sanitize($this->OutletStatusOID);
@@ -75,6 +77,7 @@ class CDUTemplate {
 	function MakeDisplay(){
 		$this->Model=stripslashes($this->Model);
 		$this->VersionOID=stripslashes($this->VersionOID);
+		$this->OutletNameOID=stripslashes($this->OutletNameOID);
 		$this->OutletDescOID=stripslashes($this->OutletDescOID);
 		$this->OutletCountOID=stripslashes($this->OutletCountOID);
 		$this->OutletStatusOID=stripslashes($this->OutletStatusOID);
@@ -94,6 +97,7 @@ class CDUTemplate {
 		$template->Managed=$row["Managed"];
 		$template->ATS=$row["ATS"];
 		$template->VersionOID=$row["VersionOID"];
+		$template->OutletNameOID=$row["OutletNameOID"];
 		$template->OutletDescOID=$row["OutletDescOID"];
 		$template->OutletCountOID=$row["OutletCountOID"];
 		$template->OutletStatusOID=$row["OutletStatusOID"];
@@ -154,6 +158,7 @@ class CDUTemplate {
 		$sql="INSERT INTO fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
 			VersionOID=\"$this->VersionOID\", 
+			OutletNameOID=\"$this->OutletNameOID\",
 			OutletDescOID=\"$this->OutletDescOID\",
 			OutletCountOID=\"$this->OutletCountOID\",
 			OutletStatusOID=\"$this->OutletStatusOID\",
@@ -184,6 +189,7 @@ class CDUTemplate {
 		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
 			VersionOID=\"$this->VersionOID\", 
+			OutletNameOID=\"$this->OutletNameOID\",
 			OutletDescOID=\"$this->OutletDescOID\",
 			OutletCountOID=\"$this->OutletCountOID\",
 			OutletStatusOID=\"$this->OutletStatusOID\",

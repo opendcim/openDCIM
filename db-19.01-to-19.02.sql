@@ -25,7 +25,8 @@ INSERT into fac_Config set Parameter='LDAPPhone3', Value='', UnitOfMeasure='stri
 -- New fields tracked in the CDUDeviceTemplate
 --
 
-alter table fac_CDUTemplate add column OutletDescOID varchar(80) NOT NULL after VersionOID;
+alter table fac_CDUTemplate add column OutletNameOID varchar(80) NOT NULL after VersionOID;
+alter table fac_CDUTemplate add column OutletDescOID varchar(80) NOT NULL after OutletNameOID;
 alter table fac_CDUTemplate add column OutletCountOID varchar(80) NOT NULL after OutletDescOID;
 alter table fac_CDUTemplate add column OutletStatusOID varchar(80) NOT NULL after OutletCountOID;
 alter table fac_CDUTemplate add column OutletStatusOn varchar(80) NOT NULL after OutletStatusOID;

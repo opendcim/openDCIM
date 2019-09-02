@@ -154,6 +154,7 @@ CREATE TABLE fac_CDUTemplate (
   ATS int(1) NOT NULL,
   SNMPVersion varchar(2) NOT NULL DEFAULT '2c',
   VersionOID varchar(80) NOT NULL,
+  OutletNameOID varchar(80) NOT NULL,
   OutletDescOID varchar(80) NOT NULL,
   OutletCountOID varchar(80) NOT NULL,
   OutletStatusOID varchar(80) NOT NULL,

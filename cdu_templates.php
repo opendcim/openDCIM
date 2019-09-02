@@ -26,6 +26,7 @@
 		$template->ATS = isset($_REQUEST['ats'])?1:0;
 		$template->SNMPVersion = $_REQUEST['snmpversion'];
 		$template->VersionOID = $_REQUEST['versionoid'];
+		$template->OutletNameOID = $_REQUEST['outletnameoid'];
 		$template->OutletDescOID = $_REQUEST['outletdescoid'];
 		$template->OutletCountOID = $_REQUEST['outletcountoid'];
 		$template->OutletStatusOID = $_REQUEST['outletstatusoid'];
@@ -142,11 +143,15 @@ echo '</select>
 	<div><input type="text" name="versionoid" id="versionoid" value="',$template->VersionOID,'" size=40></div>
 </div>
 <div>
+	<div><label for="outletnameoid">',__("Power Outlet Name")." ".__("OID"),'</label></div>
+	<div><input type="text" name="outletnameoid" id="outletnameoid" value="',$template->OutletNameOID,'" size=40></div>
+</div>
+<div>
 	<div><label for="outletdescoid">',__("Power Connections")." ".__("OID"),'</label></div>
 	<div><input type="text" name="outletdescoid" id="outletdescoid" value="',$template->OutletDescOID,'" size=40></div>
 </div>
 <div>
-	<div><label for="outletcountoid">',__("Power Connectioni Count")." ".__("OID"),'</label></div>
+	<div><label for="outletcountoid">',__("Power Connections Count")." ".__("OID"),'</label></div>
 	<div><input type="text" name="outletcountoid" id="outletcountoid" value="',$template->OutletCountOID,'" size=40></div>
 </div>
 <div>
