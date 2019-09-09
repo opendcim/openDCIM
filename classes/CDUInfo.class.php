@@ -97,7 +97,7 @@ class CDUInfo {
 
 		$baseOID = $tmpl->OutletCountOID;
 
-		if ( ($numPorts=self::OSS_SNMP_Lookup($dev,Null,Null,$baseOID)) == false ){
+		if ( ($numPorts=self::OSS_SNMP_Lookup($dev,Null,Null,$baseOID)) === false ){
 			$numPorts = $dev->PowerSupplyCount;
 		}
 
@@ -126,7 +126,7 @@ class CDUInfo {
 
 		for ($i=1; $i<=$numPorts; $i++) {
 			$portlist += array($i => self::OSS_SNMP_Lookup($dev, Null, $i , $baseOID));
-			if ( $portlist[$i] == false ) {break;}
+			if ( $portlist[$i] === false ) {break;}
 		}
 
 		return $portlist;
@@ -151,7 +151,7 @@ class CDUInfo {
 
 		for ($i=1; $i<=$numPorts; $i++) {
 			$nameList += array($i => self::OSS_SNMP_Lookup($dev, Null, $i , $baseOID));
-			if ( $nameList[$i] == false ) {break;}
+			if ( $nameList[$i] === false ) {break;}
 		}	
 
 		if(is_array($nameList)){
@@ -187,7 +187,7 @@ class CDUInfo {
 
 		for ($i=1; $i<=$numPorts; $i++) {
 			$statusList += array($i => self::OSS_SNMP_Lookup($dev, Null, $i , $baseOID));
-			if ( $statusList[$i] == false ) {break;}
+			if ( $statusList[$i] === false ) {break;}
 		}
 
 		if(is_array($statusList)){
@@ -223,7 +223,7 @@ class CDUInfo {
 
 		for ($i=1; $i<=$numPorts; $i++) {
 			$aliasList += array($i => self::OSS_SNMP_Lookup($dev, Null, $i , $baseOID));
-			if ( $aliasList[$i] == false ) {break;}
+			if ( $aliasList[$i] === false ) {break;}
 		}
 
 		if(is_array($aliasList)){
