@@ -1501,7 +1501,7 @@ $(document).ready(function() {
 	$('#cdufirstport button[name=cduNotes]').click(function(){
 		refreshdevice('cdu', $('#DeviceID').val(),'Notes');
 	});
-	if ($(':input[name=DeviceType]').val()=='CDU'){
+	if ($(':input[name=DeviceType]').val()=='CDU' && $(':input[name=DeviceID]').val()!=''){
 		refreshdevice('cdu', $('#DeviceID').val());
 	}
 
