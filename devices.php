@@ -1418,7 +1418,7 @@ $(document).ready(function() {
 						$('input[name=FirstPortNum]').val(fpnum);
 						$('#modalstatus').html(data);
 						$('#modal').dialog('destroy');
-					}).then(refreshdevice($('#DeviceID').val(),true));
+					}).then(refreshdevice($('#DeviceType').val(),$('#DeviceID').val(),true));
 				});
 			});
 		}).error(function(data){
