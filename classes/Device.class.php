@@ -755,6 +755,17 @@ class Device {
 			}
 		}
 
+		// SUT #1179 - User somehow managed to set the position to 0 while leaveing
+		// a height set and the way we build the rack specifically to not show
+		// position zero these devices won't show on the rack so shove this up above
+		// the rack and make them fix it
+		if($this->Position==0 && $this->Height==0){
+			$cab=new Cabinet();
+			$cab->CabinetID=$this->Cabinet;
+			$cab->GetCabinet();
+			$this->Position=$cab->CabinetHeight+1;
+		}
+
 		// Force all uppercase for labels
 		$this->Label=transform($this->Label);
 		$this->SerialNo=transform($this->SerialNo);
