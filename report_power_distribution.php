@@ -23,7 +23,7 @@ class PDF extends FPDF {
   
 	function Header() {
 		$this->pdfconfig = new Config();
-    	$logofile = 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'];
+    	$logofile =  $this->pdfconfig->ParameterArray['PDFLogoFile'];
     	if ( file_exists( $logofile )) {
     		$this->Image( $logofile,10,8,100);
     	}

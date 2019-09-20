@@ -115,7 +115,7 @@
         $objDrawing->setWorksheet($sheet);
         $objDrawing->setName("Logo");
         $objDrawing->setDescription("Logo");
-        $apath = __DIR__ . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR;
+        $apath = __DIR__ . DIRECTORY_SEPARATOR ;
         $objDrawing->setPath($apath . $config->ParameterArray['PDFLogoFile']);
         $objDrawing->setCoordinates('A1');
         $objDrawing->setOffsetX(5);

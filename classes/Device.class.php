@@ -2457,7 +2457,7 @@ class Device {
 				$error.=__("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 			}
 
-			$logofile=getcwd().'/images/'.$config->ParameterArray["PDFLogoFile"];
+			$logofile=getcwd().'/'.$config->ParameterArray["PDFLogoFile"];
 			$logo=$message->embed(Swift_Image::fromPath($logofile)->setFilename($logofile));
 				
 			$style = "

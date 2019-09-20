@@ -607,7 +607,7 @@ if (!isset($_REQUEST['action'])){
 
 	$row++;
 	$activeSheet->setSelectedCell('K1');
-	$logo=getcwd().'/images/'.$config->ParameterArray["PDFLogoFile"];
+	$logo=getcwd().'/'.$config->ParameterArray["PDFLogoFile"];
 	$img = new PHPExcel_Worksheet_Drawing();
 	$img->setName($config->ParameterArray["PDFLogoFile"]);
 	$img->setPath($logo);
