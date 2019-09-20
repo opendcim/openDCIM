@@ -72,7 +72,7 @@
 			$error.=__("Data center team address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
-		$logo='images/'.$config->ParameterArray["PDFLogoFile"];
+		$logo=$config->ParameterArray["PDFLogoFile"];
 		$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
 
 		$htmlMessage='<!doctype html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>ITS Data Center Inventory</title></head><body><div id="header" style="padding: 5px 0;background: '.$config->ParameterArray["HeaderColor"].';"><center><img src="'.$logo.'"></center></div><div class="page"><p><h3>'.__("ITS Facilities Rack Request").'</h3>'."\n";

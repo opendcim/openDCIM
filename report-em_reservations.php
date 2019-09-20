@@ -33,7 +33,7 @@
 		$error.=__("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 	}
 
-	$logo=getcwd().'/images/'.$config->ParameterArray["PDFLogoFile"];
+	$logo=getcwd().'/'.$config->ParameterArray["PDFLogoFile"];
 	$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
 	
 	$style = "
