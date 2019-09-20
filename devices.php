@@ -954,7 +954,7 @@
 			} else if ($cvtype=="set") {
 				echo '<div><select name="',$inputname,'" id="',$inputname,'">';
 				foreach(explode(',',$dcaList[$customkey]->DefaultValue) as $dcaValue){
-					$selected=($customdata["value"]==$dcaValue)?' selected':'';
+					$selected=(trim($customdata["value"])==trim($dcaValue))?' selected':'';
 					print "\n\t<option value=\"$dcaValue\"$selected>$dcaValue</option>";
 				}
 				echo '</select></div>';
@@ -988,7 +988,7 @@ $write=($dev->Rights=="Write")?true:$write;
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/validationEngine.jquery.css" type="text/css">
   <link rel="stylesheet" href="css/jquery-te-1.4.0.css" type="text/css">
-  <style type="text/css"></style>
+  <style type="text/css">#div { border: 1px solid red; margin: -1px; }</style>
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
@@ -2470,7 +2470,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 		print "\t\t\t</div><!-- END div.table -->\n\t\t</div>\n\t</div>\n";
 	}
 ?>
-		<div class="caption">
+		<div><div><div style="position: relative;">&nbsp;<div id="buttonbar" style="position: absolute; min-width: 400px; left: 0px; right: 0px; margin-left: auto; margin-right: auto; text-align: center;">
 <?php
 	if($write){
 		if($dev->DeviceID >0){
@@ -2490,7 +2490,8 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 	}
 ?>
 
-		</div>
+		</div></div></div>
+		<div></div></div>
 	</div> <!-- END div.table -->
 </div></div>
 </div> <!-- END div.table -->
@@ -2673,6 +2674,12 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 			}
 		});
 
+		// Safari is garbage
+		// This is a hack to correct a problem with safari not rendering the table caption
+		// correctly.  Instead I am putting a blank row at the bottom of the device connection
+		// table then using css to center it but it has to have the element set to the width
+		// of the table
+		$('#buttonbar').width($('#pandn').width());
 	});
 </script>
 

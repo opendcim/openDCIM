@@ -1069,7 +1069,7 @@ div.cabinet {
 .device .table.style > div:nth-child(2n+1) > div:first-child {background-color: lightGray;border-left: 1px solid grey;}
 .device .table > div > div {min-width: 100px;}
 .device .caption {margin-top: 2em;}
-.device .table .table .table, .right .table + .table {background-color: white;width: 100%;}
+.device .table .table .table, .right .table + .table {background-color: white;width: 100%; height: 100%;}
 .device .table .table .table > div > div {padding: 3px;}
 .right .table + .table {margin-top: 1em;}
 
