@@ -5,7 +5,7 @@
 	$subheader=__("Map Selector");
 
 	if ( !$person->SiteAdmin && !isset( $_REQUEST['cabinetid']) && !isset($_REQUEST['panelid'])) {
-		header("Location: ".reirect());
+		header("Location: ".redirect());
 		exit;
 	}
 
