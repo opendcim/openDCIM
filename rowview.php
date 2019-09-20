@@ -73,7 +73,7 @@
 		$body.=BuildCabinet($cabinet->CabinetID,$side);
 	}
 
-	$dcID=$cabinets[0]->DataCenterID;
+	$dcID=$cabrow->DataCenterID;
 	$dc->DataCenterID=$dcID;
 	$dc->GetDataCenterbyID();
 
