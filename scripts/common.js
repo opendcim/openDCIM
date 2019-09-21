@@ -1012,7 +1012,7 @@ function startmap(){
 			var row=false;
 			obj.ZoneID=0;
 		} else {
-			var label=obj.Location;
+			var label=obj.ShowCabinetLabel;
 			var name='cab'+obj.CabinetID;
 			var href='cabnavigator.php?cabinetid='+obj.CabinetID;
 			var row=obj.CabRowID==0?false:true;
