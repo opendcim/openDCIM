@@ -72,7 +72,7 @@
 			$error.=__("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 		}
 
-		$logo=getcwd().'/images/'.$config->ParameterArray["PDFLogoFile"];
+		$logo=getcwd().'/'.$config->ParameterArray["PDFLogoFile"];
 		$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
 
 		$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>Device Port Connections</title></head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\">\n", $config->ParameterArray["HeaderColor"], $logo );

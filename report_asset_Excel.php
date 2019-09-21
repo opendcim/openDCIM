@@ -1574,7 +1574,7 @@ function writeFrontPageContent($worksheet, $config, $DProps)
     $objDrawing->setWorksheet($worksheet);
     $objDrawing->setName($DProps['Front Page']['Logo Name']);
     $objDrawing->setDescription($DProps['Front Page']['Logo Description']);
-    $apath = __DIR__ . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR;
+    $apath = __DIR__ . DIRECTORY_SEPARATOR ;
     $objDrawing->setPath($apath . $config->ParameterArray['PDFLogoFile']);
     $objDrawing->setCoordinates('A1');
     $objDrawing->setOffsetX(5);

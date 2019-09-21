@@ -24,8 +24,8 @@ class PDF extends FPDF {
 	function Header() {
 		$this->pdfconfig = new Config();
 		$this->Link( 10, 8, 100, 20, 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'] );
-        if ( file_exists( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
-            $this->Image( 'images/' . $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
+        if ( file_exists(  $this->pdfconfig->ParameterArray['PDFLogoFile'] )) {
+            $this->Image(  $this->pdfconfig->ParameterArray['PDFLogoFile'],10,8,100);
         }
     	$this->SetFont($this->pdfconfig->ParameterArray['PDFfont'],'B',12);
     	$this->Cell(120);

@@ -93,7 +93,7 @@ textarea {white-space: pre;word-wrap: break-word;}
 /*  Header/logo */
 #header{
 	padding:5px 0;
-	background:<?php echo $config->ParameterArray['HeaderColor']; ?> url(../images/<?php echo $config->ParameterArray['PDFLogoFile']; ?>) no-repeat left center;
+	background:<?php echo $config->ParameterArray['HeaderColor']; ?> url(../<?php echo $config->ParameterArray['PDFLogoFile']; ?>) no-repeat left center;
 	height:66px;
 	position: relative;
 }

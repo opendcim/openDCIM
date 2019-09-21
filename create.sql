@@ -812,7 +812,7 @@ INSERT INTO fac_Config VALUES
 	('annualCostPerUYear','200','Dollars','float','200'),
 	('Locale','en_US.utf8','TextLocale','string','en_US.utf8'),
 	('timezone', 'America/Chicago', 'string', 'string', 'America/Chicago'),
-	('PDFLogoFile','logo.png','Filename','string','logo.png'),
+	('PDFLogoFile','images/logo.png','Filename','string','images/logo.png'),
 	('PDFfont','Arial','Font','string','Arial'),
 	('SMTPServer','smtp.your.domain','Server','string','smtp.your.domain'),
 	('SMTPPort','25','Port','int','25'),
