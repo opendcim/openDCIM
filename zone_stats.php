@@ -341,6 +341,11 @@ echo '
 				},500);
 			}else{
 				var firstcabinet=$('#dc<?php echo $dc->DataCenterID;?> > ul > li:first-child').attr('id');
+				// If we have no children,
+				if (typeof firstcabinet == 'undefined') {
+					// use the 1st-born child of our parent: may, or may not, be us
+					firstcabinet=$('#dc<?php echo $dc->DataCenterID;?> ').attr('id');
+				}
 				expandToItem('datacenters',firstcabinet);
 			}
 		}

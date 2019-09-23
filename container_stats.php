@@ -137,6 +137,11 @@ echo '<div class="main">
 				},500);
 			}else{
 				var firstcabinet=$('#c<?php echo $c->ContainerID;?> > ul > li:first-child').attr('id');
+				// If we have no children,
+				if (typeof firstcabinet == 'undefined') {
+					// use the 1st-born child of our parent: may, or may not, be us
+					firstcabinet=$('#c<?php echo $c->ContainerID;?> ').attr('id');
+				}
 				expandToItem('datacenters',firstcabinet);
 			}
 		}
