@@ -867,7 +867,8 @@ if(!function_exists("updateNavTreeHTML")){
 	we are.  It may be needed for the installation.
 */
 
-if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" ){
+if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage))
+{
 	$savedurl = $_SERVER['SCRIPT_NAME'] . "?" . sanitize($_SERVER['QUERY_STRING']);
 	setcookie( 'targeturl', $savedurl, time()+60 );
 	header("Location: ".redirect('saml/login.php'));
@@ -916,7 +917,7 @@ if(!People::Current()){
 	if(AUTHENTICATION=="Oauth"){
 		header("Location: ".redirect('oauth/login.php'));
 		exit;
-	} elseif ( AUTHENTICATION=="Saml"){
+	} elseif ( AUTHENTICATION=="Saml" && !isset($loginPage) ){
 		header("Location: ".redirect('saml/login.php'));
 		exit;
 	} elseif ( AUTHENTICATION=="LDAP" && !isset($loginPage) ) {
@@ -1011,6 +1012,14 @@ if( AUTHENTICATION == "LDAP" ) {
 	}
 	$lmenu[]='<a href="login_ldap.php?logout"><span>'.__("Logout").'</span></a>';
 }
+# Can really think that this is necessary - here for completemess
+#if( AUTHENTICATION == "Saml" ) {
+#	// Clear out the Reports menu button and create the Login menu button when not logged in
+#	if ( isset($loginPage) ) {
+#		$rmenu = array();
+#	}
+#	$lmenu[]='<a href="saml/logout.php"><span>'.__("Logout").'</span></a>';
+#}
 
 function download_file($archivo, $downloadfilename = null) {
 	if (file_exists($archivo)) {
