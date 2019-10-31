@@ -30,8 +30,8 @@
 
 if ( isset( $config ) ){
 	date_default_timezone_set($config->ParameterArray['timezone']);
-} elseif ( isset( $_ENV["TZ"])) {
-	date_default_timezone_set( $_ENV["TZ"]);
+} elseif ( getenv("TZ" != "" ) {
+	date_default_timezone_set( getenv("TZ"));
 }
 
 // Pull in the Composer autoloader
