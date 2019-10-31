@@ -17,7 +17,7 @@ $upgrade=false;
 $result=$dbh->prepare("SHOW TABLES;");
 $result->execute();
 if($result->rowCount()==0){ // No tables in the DB so try to install.
-	require_once( "classes/People.inc.php" );
+	require_once( "classes/People.class.php" );
 	$results[]=applyupdate("create.sql");
 	$person = new People();
 	$person->UserID='dcim';
@@ -370,7 +370,7 @@ if(isset($results)){
 //Installation Complete
 	if($nodept=="" && $nodc=="" && $nocab==""){ // All three primary sections have had at least one item created
 		if(!isset($_REQUEST['complete']) && !isset($_REQUEST['dept']) && !isset($_REQUEST['cab']) && !isset($_REQUEST['dc']) && !isset($_REQUEST['ldap'])){
-			header('Location: '.redirect("install.php?complete&preflight-ok"));
+			header('Location: '.redirect("index.php"));
 		}
 		//enable the finish menu option
 		$complete=true;

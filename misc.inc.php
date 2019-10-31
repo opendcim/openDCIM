@@ -876,7 +876,12 @@ if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="c
 }
 
 if(!(isset($devMode)&&$devMode)) {
-       if (( isset($config) && method_exists( "config", "ParameterArray" ) && $config->ParameterArray( "Version" ) == VERSION ) || ( ! method_exists( "config", "ParameterArray" ) ) ) {
+	$sql = "select Value from fac_Config where Parameter='Version'";
+	if ( $r = $dbh->query( $sql ))
+		$version = $r->fetchColumn();
+	else
+		$version = "";
+	if ( VERSION != $version ) {
 		if(file_exists("install.php") && basename($_SERVER['SCRIPT_NAME'])!="install.php" ){
 			// new installs need to run the install first.
 			header("Location: ".redirect('install.php'));
