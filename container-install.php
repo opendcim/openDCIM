@@ -17,6 +17,7 @@ $upgrade=false;
 $result=$dbh->prepare("SHOW TABLES;");
 $result->execute();
 if($result->rowCount()==0){ // No tables in the DB so try to install.
+	require_once( "classes/People.inc.php" );
 	$results[]=applyupdate("create.sql");
 	$person = new People();
 	$person->UserID='dcim';
@@ -160,7 +161,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 
 	// Check the detected version against the code version.  Update the current
 	// code version at the top of this file each time we update.
-	$upgrade=($codeversion!=$version)?true:false;
+	$upgrade=(VERSION!=$version)?true:false;
 
 function upgrade(){
 	global $version;
@@ -212,7 +213,7 @@ if(isset($results)){
 	fclose($fh);
 	print "<p>Anything shown here is just a notice.  It is not necessarily an error.  We will occasionally have to repeat database modifications that will fail and will show here. <b>This is behavior is to be expected</b>. Take note of any errors displayed in red then press F5 to reload this page until it goes to the configuration screen.</p>";
 }else{
-	echo '<p class="success">All is well.  Please remove install.php to return to normal functionality</p>';
+	echo '<meta http-equiv="refresh" content="0; url=index.php">';
 }
 ?>
 </body>
