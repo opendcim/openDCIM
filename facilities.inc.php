@@ -28,7 +28,11 @@
 	developers, functions have been split out into more granular groupings.
 */
 
-date_default_timezone_set($config->ParameterArray['timezone']);
+if ( isset( $config ) ){
+	date_default_timezone_set($config->ParameterArray['timezone']);
+} elseif ( isset( $_ENV["TZ"])) {
+	date_default_timezone_set( $_ENV["TZ"]);
+}
 
 // Pull in the Composer autoloader
 require_once( __DIR__ . "/vendor/autoload.php" );
