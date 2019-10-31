@@ -23,7 +23,11 @@ if (!isset($_SESSION['samlUserdata'])) {
 	$_SESSION['saml_req_id'] = $authRequest->getID();
 	
 	$parameters = array('SAMLRequest' => $samlRequest);
-	$parameters['RelayState'] = OneLogin_Saml2_Utils::getSelfURLNoQuery();
+
+	if(isset($_COOKIE['targeturl'])){
+		$relayto = html_entity_decode($_COOKIE['targeturl']);
+	}
+	$parameters['RelayState'] = (isset($relayto)?OneLogin_Saml2_Utils::getSelfURLhost().$relayto:OneLogin_Saml2_Utils::getSelfURLhost());
 
     	$idpData = $settings->getIdPData();
 	$ssoUrl = $idpData['singleSignOnService']['url'];
