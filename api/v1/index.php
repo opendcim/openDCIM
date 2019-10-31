@@ -5,7 +5,7 @@
 	// Not really a loginPage, but this variable will keep us from getting redirected when
 	// using LDAP auth and there's no session (so true RESTful API capability)
 	//
-	if ( AUTHENTICATION == "LDAP" ) {
+	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == 'Saml' ) {
 		$loginPage = true;
 	}
 
@@ -132,7 +132,7 @@ $app->add(function($request, $response, $next) use($person) {
 
 //	Slim Framework 2 middleware
 $app->hook( 'slim.before.dispatch', function() use($person) {
-	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" ) {
+	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" || AUTHENTICATION == "Saml" ) {
 		// Getting request headers
 		$headers = apache_request_headers();
 		$response = array();
@@ -161,6 +161,9 @@ $app->hook( 'slim.before.dispatch', function() use($person) {
 			$response['error'] = true;
 			$response['message'] = _("Access Denied");
 			$response['errorcode'] = 401;
+			echoResponse($response );
+			$app->stop();
+
 		}
 	}
 
