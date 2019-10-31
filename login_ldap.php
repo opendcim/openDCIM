@@ -87,6 +87,8 @@
 				$person->UserID = "dcim";
 				if ( ! $person->GetPersonByUserID() ) {
 					$person->SiteAdmin=true;
+					$person->WriteAccess=true;
+					$person->ReadAccess=true;
 					$person->ContactAdmin=true;
 					$person->LastName='Administrator';
 					$person->FirstName='Emergency';

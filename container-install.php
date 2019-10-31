@@ -22,6 +22,11 @@ if($result->rowCount()==0){ // No tables in the DB so try to install.
 	$person = new People();
 	$person->UserID='dcim';
 	$person->SiteAdmin=true;
+	$person->WriteAccess=true;
+	$person->ReadAccess=true;
+	$person->ContactAdmin=true;
+	$person->LastName='Administrator';
+	$person->FirstName='Emergency';
 	$person->CreatePerson();
 
 	header('Location: index.php');
