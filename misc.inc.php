@@ -2,7 +2,7 @@
 /* All functions contained herein will be general use functions */
 
 /* Create a quick reference for datacenter data */
-$_SESSION['datacenters']=DataCenter::GetDCList(true);
+@$_SESSION['datacenters']=DataCenter::GetDCList(true);
 
 /* Generic html sanitization routine */
 
@@ -876,7 +876,7 @@ if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="c
 }
 
 if(!(isset($devMode)&&$devMode)) {
-       if (( isset($config) && method_exists( $config, "ParameterArray" ) && $config->ParameterArray( "Version" ) == VERSION )) {
+       if (( isset($config) && method_exists( "config", "ParameterArray" ) && $config->ParameterArray( "Version" ) == VERSION ) || ( ! method_exists( "config", "ParameterArray" ) ) ) {
 		if(file_exists("install.php") && basename($_SERVER['SCRIPT_NAME'])!="install.php" ){
 			// new installs need to run the install first.
 			header("Location: ".redirect('install.php'));

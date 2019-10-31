@@ -28,7 +28,7 @@
 	developers, functions have been split out into more granular groupings.
 */
 
-if ( isset( $config ) ){
+if ( isset( $config ) && method_exists( "config", "ParameterArray" ) ){
 	date_default_timezone_set($config->ParameterArray['timezone']);
 } elseif ( getenv("TZ") != "" ) {
 	date_default_timezone_set( getenv("TZ"));
