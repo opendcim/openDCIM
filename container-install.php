@@ -18,6 +18,10 @@ $result=$dbh->prepare("SHOW TABLES;");
 $result->execute();
 if($result->rowCount()==0){ // No tables in the DB so try to install.
 	$results[]=applyupdate("create.sql");
+	$person = new People();
+	$person->UserID='dcim';
+	$person->SiteAdmin=true;
+	$person->CreatePerson();
 }
 
 // Functions for upgrade / installing db objects
@@ -133,9 +137,6 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 	}elseif(AUTHENTICATION=="Oauth" || AUTHENTICATION=="LDAP" || AUTHENTICATION=="Saml"){
 		if ( isset( $_SESSION['userid'] ) ) {
 			$person->UserID=$_SESSION['userid'];
-		} else {
-			// Fresh installation
-			$person->UserID='dcim';
 		}
 	}
 
@@ -144,8 +145,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 	   create an admin user (all rights) as the current
 	   user.  */
 
-	$table=($usePeople)?'fac_People':'fac_User';	
-	$sql="SELECT COUNT(*) AS TotalUsers FROM $table;";
+	$sql="SELECT COUNT(*) AS TotalUsers FROM fac_People;";
 	$users=$dbh->query($sql)->fetchColumn();
 
 //  test for openDCIM version

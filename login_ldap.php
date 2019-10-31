@@ -85,7 +85,13 @@
 				$_SESSION['userid'] = "dcim";
 				$_SESSION['LoginTime']=time();
 				$person->UserID = "dcim";
-				$person->GetPersonByUserID();
+				if ( ! $person->GetPersonByUserID() ) {
+					$person->SiteAdmin=true;
+					$person->ContactAdmin=true;
+					$person->LastName='Administrator';
+					$person->FirstName='Emergency';
+					$person->CreatePerson();
+				}
 				session_commit();
 
 				if(isset($_COOKIE['targeturl'])){
