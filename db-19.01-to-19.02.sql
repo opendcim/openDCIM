@@ -22,6 +22,12 @@ INSERT into fac_Config set Parameter='LDAPPhone2', Value='', UnitOfMeasure='stri
 INSERT into fac_Config set Parameter='LDAPPhone3', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
 
 --
+-- New parameter for Changing cabinet labels from cabinet name to user preference based label
+--
+
+insert into fac_Config set Parameter='AssignCabinetLabels', Value='OwnerName', UnitOfMeasure='string', ValType='string', DefaultVal='OwnerName';
+
+--
 -- Bump up the database version (uncomment below once released)
 --
 
