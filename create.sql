@@ -805,6 +805,7 @@ INSERT INTO fac_Config VALUES
 	('CriticalColor','#cc0000','HexColor','string','#cc0000'),
 	('CautionColor','#cccc00','HexColor','string','#cccc00'),
 	('GoodColor','#0a0','HexColor','string','#0a0'),
+	('FreeSpaceColor', '#FFFFFF', 'HexColor', 'string', '#FFFFFF'),
 	('MediaEnforce', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
 	('OutlineCabinets', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
 	('LabelCabinets', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
