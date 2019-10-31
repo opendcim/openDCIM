@@ -919,7 +919,8 @@ INSERT INTO fac_Config VALUES
   ('reportspath', 'assets/reports/', 'string', 'string', 'assets/reports/'),
   ('ReservationExpiration', '0', 'days', 'integer', '0'),
   ('PowerAlertsEmail', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
-  ('SensorAlertsEmail', 'disabled', 'Enabled/Disabled', 'string', 'disabled')
+  ('SensorAlertsEmail', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
+  ('AssignCabinetLabels','OwnerName','Name','string','OwnerName')
 ;
 
 --
