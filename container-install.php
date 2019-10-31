@@ -1,6 +1,5 @@
 <?php
 
-require_once( "preflight.php" );
 require_once( "version.php" );
 
 // Make sure that a db.inc.php has been created

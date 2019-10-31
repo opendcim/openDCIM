@@ -40,7 +40,7 @@
 			define('AUTHENTICATION', getenv('OPENDCIM_AUTH'));
 		}
 
-		define( "AUTHENTICATION", "Apache" );
+		@define( "AUTHENTICATION", "Apache" );
 
 	/* If you want to use Oauth authentication, comment the above 3 lines, uncomment the next 4 lines
 	   and place your authentication handler in login.php (create symbolic link). 

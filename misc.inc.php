@@ -875,13 +875,13 @@ if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="c
 	exit;
 }
 
-if((isset($devMode)&&$devMode) || ( isset($config) && method_exists( $config, "ParameterArray" ) && $config->ParameterArray( "Version" ) == VERSION )) {
-	// Development mode, so don't apply the upgrades
-}else{
-	if(file_exists("install.php") && basename($_SERVER['SCRIPT_NAME'])!="install.php" ){
-		// new installs need to run the install first.
-		header("Location: ".redirect('install.php'));
-		exit;
+if(!(isset($devMode)&&$devMode)) {
+       if ( isset($config) && method_exists( $config, "ParameterArray" ) && $config->ParameterArray( "Version" ) == VERSION )) {
+		if(file_exists("install.php") && basename($_SERVER['SCRIPT_NAME'])!="install.php" ){
+			// new installs need to run the install first.
+			header("Location: ".redirect('install.php'));
+			exit;
+		}
 	}
 }
 
