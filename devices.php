@@ -467,9 +467,10 @@
 		if(isset($_POST['names'])){
 			$dev->DeviceID=$_POST['refreshswitch'];
 			$dev->GetDevice();
+			$names = SwitchInfo::getPortNames($_POST['refreshswitch']);
 			// This function should be hidden if they don't have rights, but just in case
 			if($dev->Rights=="Write"){
-				foreach(SwitchInfo::getPortNames($_POST['refreshswitch']) as $PortNumber => $Label){
+				foreach($names as $PortNumber => $Label){
 					$port=new DevicePorts();
 					$port->DeviceID=$_POST['refreshswitch'];
 					$port->PortNumber=$PortNumber;
@@ -477,13 +478,14 @@
 					$port->updateLabel();
 				}
 			}
-			echo json_encode(SwitchInfo::getPortNames($_POST['refreshswitch']));
+			echo json_encode($names);
 		}elseif(isset($_POST['Notes'])){
 			$dev->DeviceID=$_POST['refreshswitch'];
 			$dev->GetDevice();
+			$alias = SwitchInfo::getPortAlias($_POST['refreshswitch']);
 			// This function should be hidden if they don't have rights, but just in case
 			if($dev->Rights=="Write"){
-				foreach(SwitchInfo::getPortAlias($_POST['refreshswitch']) as $PortNumber => $Notes){
+				foreach($alias as $PortNumber => $Notes){
 					$port=new DevicePorts();
 					$port->DeviceID=$_POST['refreshswitch'];
 					$port->PortNumber=$PortNumber;
@@ -492,7 +494,7 @@
 					$port->updatePort();
 				}
 			}
-			echo json_encode(SwitchInfo::getPortAlias($_POST['refreshswitch']));
+			echo json_encode($alias);
 		}else{
 			$dev->DeviceID = $_POST['refreshswitch'];
 			$tagList = $dev->GetTags();
