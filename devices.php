@@ -477,7 +477,7 @@
 			$dev->DeviceID=$_POST['refreshdevice'];
 			$dev->GetDevice();
 			$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
-			$names = $deviceclass::getPortNames($_POST['refreshswitch']);
+			$names = $deviceclass::getPortNames($_POST['refreshdevice']);
 			// This function should be hidden if they don't have rights, but just in case
 			if($dev->Rights=="Write"){
 				foreach($names as $PortNumber => $Label){
@@ -497,7 +497,7 @@
 			$dev->DeviceID=$_POST['refreshdevice'];
 			$dev->GetDevice();
 			$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
-			$alias = $deviceclass::getPortAlias($_POST['refreshswitch']);
+			$alias = $deviceclass::getPortAlias($_POST['refreshdevice']);
 			// This function should be hidden if they don't have rights, but just in case
 			if($dev->Rights=="Write"){
 				$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
