@@ -161,6 +161,9 @@ $app->hook( 'slim.before.dispatch', function() use($person) {
 			$response['error'] = true;
 			$response['message'] = _("Access Denied");
 			$response['errorcode'] = 401;
+			echoResponse($response );
+			$app->stop();
+
 		}
 	}
 
