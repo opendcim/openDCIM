@@ -875,7 +875,7 @@ if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="c
 	exit;
 }
 
-if((isset($devMode)&&$devMode) || $config->ParameterArray( "Version" ) == VERSION ) {
+if((isset($devMode)&&$devMode) || ( isset($config) && $config->ParameterArray( "Version" ) == VERSION )) {
 	// Development mode, so don't apply the upgrades
 }else{
 	if(file_exists("install.php") && basename($_SERVER['SCRIPT_NAME'])!="install.php" ){

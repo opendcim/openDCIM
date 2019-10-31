@@ -30,7 +30,7 @@
 
 if ( isset( $config ) ){
 	date_default_timezone_set($config->ParameterArray['timezone']);
-} elseif ( getenv("TZ" != "" ) {
+} elseif ( getenv("TZ") != "" ) {
 	date_default_timezone_set( getenv("TZ"));
 }
 
