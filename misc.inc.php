@@ -876,7 +876,7 @@ if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="c
 }
 
 if(!(isset($devMode)&&$devMode)) {
-       if ( isset($config) && method_exists( $config, "ParameterArray" ) && $config->ParameterArray( "Version" ) == VERSION )) {
+       if (( isset($config) && method_exists( $config, "ParameterArray" ) && $config->ParameterArray( "Version" ) == VERSION )) {
 		if(file_exists("install.php") && basename($_SERVER['SCRIPT_NAME'])!="install.php" ){
 			// new installs need to run the install first.
 			header("Location: ".redirect('install.php'));
