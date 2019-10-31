@@ -2352,6 +2352,10 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
+				<div>
+					<div><label for="LDAP_Debug_Password">',__("Emergency Bypass Password"),'</label></div>
+					<div><input type="password" defaultvalue="',$config->defaults["LDAP_Debug_Password"],'" name="LDAP_Debug_Password" value="',$config->ParameterArray["LDAP_Debug_Password"],'"></div>
+				</div>
 			</div>
 			<h3>',__("User Attributes"),'</h3>
 			<div class="table">
