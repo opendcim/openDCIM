@@ -4,9 +4,6 @@
 	// so we will simply start a session here (which will not cause any issues if auto_start is already set to 1) unless
 	// we are being invoked from the command line
 
-	if ( php_sapi_name() != "cli" ) {
-	      session_start();
-	}
 
 	// If the php-redis module is loaded AND the environment variable to enable it has been set, use it
 	if ( extension_loaded( 'redis' ) && strtoupper(getenv('OPENDCIM_REDIS_ENABLED'))=='TRUE' ) {
@@ -15,6 +12,10 @@
 
 		ini_set( 'session.save_handler', 'redis' );
 		ini_set( 'session.save_path', 'tcp://'.$redishost.':6379?auth='.$redispass );
+	}
+
+	if ( php_sapi_name() != "cli" ) {
+	      session_start();
 	}
 
 	// Set to true if you want to skip the installer check
