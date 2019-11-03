@@ -481,7 +481,7 @@
 			// This function should be hidden if they don't have rights, but just in case
 			if($dev->Rights=="Write"){
 				foreach($names as $PortNumber => $Label){
-					if ($refreshdevice == 'refreshswitch'){
+					if ($refreshdevice == 'switch'){
 						$port=new DevicePorts();
 					} else {
 						$port=new PowerPorts();
@@ -502,7 +502,7 @@
 			if($dev->Rights=="Write"){
 				$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
 				foreach($alias as $PortNumber => $Notes){
-					if ($refreshdevice == 'refreshswitch'){
+					if ($refreshdevice == 'switch'){
 						$port=new DevicePorts();
 					} else {
 						$port=new PowerPorts();
