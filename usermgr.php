@@ -233,7 +233,7 @@ echo '<div class="main">
 
 	foreach($userList as $userRow){
 		if($userRights->PersonID == $userRow->PersonID){$selected='selected';}else{$selected="";}
-		print "<option value=$userRow->PersonID $selected>" . $userRow->LastName . ", " . $userRow->FirstName. "</option>\n";
+		print "<option value=$userRow->PersonID $selected>" . $userRow->LastName . ", " . $userRow->FirstName . " (" . $userRow->UserID . ")" . "</option>\n";
 	}
 
 echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact for this many devices"),'" id="PrimaryContact"></span></div>
