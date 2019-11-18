@@ -1124,10 +1124,14 @@ class Device {
 		return $descList;
 	}
 	
-	function GetParentDevices(){
+	function GetParentDevices( $parDev = null ) {
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 OR RearChassisSlots>0 ORDER BY Label ASC;";
+		if ( $parDev != null ) {
+			$sql="SELECT * FROM fac_Device WHERE DeviceID=". $parDev. ";";
+		} else {
+	  		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 OR RearChassisSlots>0 ORDER BY Label ASC;";
+		}
 
 		$parentList=array();
 		foreach($dbh->query($sql) as $row){
