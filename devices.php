@@ -785,11 +785,8 @@
 				$pDev->DeviceID=$dev->ParentDevice;
 				$pDev->GetDevice();
 
-				if(isset($_POST['editparent'])){
-					$parentList=$pDev->GetParentDevices();
-				}else{
-					$parentList=$pDev->GetParentDevices($dev->ParentDevice);
-				}
+				// Get full list of potential ParentDevices
+				$parentList=$pDev->GetParentDevices(false);
 
 				//$cab->CabinetID=$pDev->Cabinet;
 				//JMGA: changed for multichassis
@@ -1864,10 +1861,6 @@ echo '
 				print "\t\t\t\t<option value=\"$parDev->DeviceID\"$selected data-ChassisSlots=$parDev->ChassisSlots data-RearChassisSlots=$parDev->RearChassisSlots data-CabinetID=$parDev->Cabinet>$parDev->Label</option>\n";
 			}
 			print "\t\t\t</select></div>\n";
-
-			if(!isset($_POST['editparent'])){
-				print "<input type=\"hidden\" name=\"editparent\" value=\"true\"><button type=\"submit\">". __("Fetch"). "</button>\n";
-			}
 		}
 
 echo '		</div>
