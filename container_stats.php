@@ -41,10 +41,14 @@ include( "sidebar.inc.php" );
 
 if ( $config->ParameterArray["mUnits"] == "english" ) {
     $vol = __("Square Feet");
+    $volunit = "ft&sup2;";
     $density = __("Watts per Square Foot");
+    $densunit = "W/ft&sup2;";	
 } else {
     $vol = __("Square Meters");
-    $density = __("Watts per Square Meter" );
+    $volunit = "m&sup2;";
+    $density = __("Watts per Square Meter");
+    $densunit = "W/m&sup2;";
 }
 
 echo '<div class="main">
@@ -60,56 +64,56 @@ echo '<div class="main">
 	<div>',__("Available"),'</div>
   </div>
   <div>
-	<div>',sprintf(__("Total U")." %5d",$cStats["TotalU"]),'</div>
-	<div>',sprintf("%3d",$cStats["Infrastructure"]),'</div>
-	<div>',sprintf("%3d",$cStats["Occupied"]),'</div>
-	<div>',sprintf("%3d",$cStats["Allocated"]),'</div>
-	<div>',sprintf("%3d",$cStats["Available"]),'</div>
+	<div>',sprintf(__("Total U")." %s",number_format($cStats["TotalU"])),'</div>
+	<div align="right">',sprintf("%s",number_format($cStats["Infrastructure"])),'</div>
+	<div align="right">',sprintf("%s",number_format($cStats["Occupied"])),'</div>
+	<div align="right">',sprintf("%s",number_format($cStats["Allocated"])),'</div>
+	<div align="right">',sprintf("%s",number_format($cStats["Available"])),'</div>
   </div>
   <div>
 	<div>',__("Percentage"),'</div>
-	<div>',(($cStats["TotalU"])?sprintf("%3.1f%%",$cStats["Infrastructure"]/$cStats["TotalU"]*100):"0"),'</div>
-	<div>',(($cStats["TotalU"])?sprintf("%3.1f%%",$cStats["Occupied"]/$cStats["TotalU"]*100):"0"),'</div>
-	<div>',(($cStats["TotalU"])?sprintf("%3.1f%%",$cStats["Allocated"]/$cStats["TotalU"]*100):"0"),'</div>
-	<div>',(($cStats["TotalU"])?sprintf("%3.1f%%",$cStats["Available"]/$cStats["TotalU"]*100):"0"),'</div>
+	<div align="right">',(($cStats["TotalU"])?sprintf("%3.1f%%",$cStats["Infrastructure"]/$cStats["TotalU"]*100):"0"),'</div>
+	<div align="right">',(($cStats["TotalU"])?sprintf("%3.1f%%",$cStats["Occupied"]/$cStats["TotalU"]*100):"0"),'</div>
+	<div align="right">',(($cStats["TotalU"])?sprintf("%3.1f%%",$cStats["Allocated"]/$cStats["TotalU"]*100):"0"),'</div>
+	<div align="right">',(($cStats["TotalU"])?sprintf("%3.1f%%",$cStats["Available"]/$cStats["TotalU"]*100):"0"),'</div>
   </div>
   </div> <!-- END div.table -->
   <div class="table border">
   <div>
         <div>',__("Data Centers"),'</div>
-        <div>',sprintf("%s ",number_format($cStats["DCs"],0, ",", ".")),'</div>
+        <div>',sprintf("%s ",number_format($cStats["DCs"])),'</div>
   </div>
   <div>
         <div>',__("Computed Wattage"),'</div>
-        <div>',sprintf("%7d %s", $cStats["ComputedWatts"], __("Watts")),'</div>
+        <div>',sprintf("%s",number_format($cStats["ComputedWatts"]/1000)),' kW</div>
   </div>
   <div>
 		<div>',__("Measured Wattage"), '</div>
-		<div>',sprintf("%7d %s", $cStats["MeasuredWatts"], __("Watts")),'</div>
+		<div>',sprintf("%s",number_format($cStats["MeasuredWatts"]/1000)),' kW</div>
   </div>
     <div>
-		<div>',__("Design Maximum (kW)"),'</div>
-		<div>',sprintf("%s kW",number_format($cStats["MaxkW"],0, ",", ".") ),'</div>
+		<div>',__("Design Maximum"),'</div>
+		<div>',sprintf("%s",number_format($cStats["MaxkW"])),' kW</div>
   </div>
   <div>
         <div>',__("BTU Computation from Watts"),'</div>
-        <div>',sprintf("%s ".__("BTU"),number_format($cStats["ComputedWatts"]*3.412,0, ",", ".") ),'</div>
+        <div>',sprintf("%s",number_format($cStats["ComputedWatts"]*3.412/1000)),' kBTU</div>
   </div>
   <div>
         <div>',__("Data Center Size"),'</div>
-        <div>',sprintf("%s ".$vol,number_format($cStats["SquareFootage"],0, ",", ".")),'</div>
+        <div>',sprintf("%s ".$volunit,number_format($cStats["SquareFootage"])),'</div>
   </div>
   <div>
         <div>',$density,'</div>
-        <div>',(($cStats["SquareFootage"]>0)?sprintf("%s ".__("Watts"),number_format($cStats["ComputedWatts"]/$cStats["SquareFootage"],0, ",", ".")):"0 ".__("Watts")),'</div>
+        <div>',(($cStats["SquareFootage"]>0)?sprintf("%s ".$densunit,number_format($cStats["ComputedWatts"]/$cStats["SquareFootage"])):"0 ").'</div>
   </div>
   <div>
         <div>',__("Minimum Cooling Tonnage Required"),'</div>
-        <div>',sprintf("%s ".__("Tons"),number_format($cStats["ComputedWatts"]*3.412*1.15/12000,0, ",", ".")),'</div>
+        <div>',sprintf("%s ".__("Tons"),number_format($cStats["ComputedWatts"]*3.412*1.15/12000)),'</div>
   </div>
   <div>
     <div>',__("Total Cabinets"),'</div>
-    <div>',sprintf( "%s", number_format($cStats["TotalCabinets"],0,",",".")),'</div>
+    <div>',sprintf( "%s", number_format($cStats["TotalCabinets"])),'</div>
   </div>
 </div> <!-- END div.table -->
 </div>

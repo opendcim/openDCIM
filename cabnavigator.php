@@ -274,7 +274,7 @@ $body.='<div id="infopanel">
 			<td>'.__("Computed Watts").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$PowerColor.'; width: '.$PowerPercent.'%;">
-						<div class="meter-text">'; $body.=sprintf("%d kW / %d kW",round($totalWatts/1000),$cab->MaxKW);$body.='</div>
+						<div class="meter-text">'; $body.=sprintf("%.2f kW / %d kW",$totalWatts/1000,$cab->MaxKW);$body.='</div>
 					</div>
 				</div>
 			</td>
@@ -283,7 +283,7 @@ $body.='<div id="infopanel">
 			<td>'.__("Measured Watts").'
 				<div class="meter-wrap">
 					<div class="meter-value" style="background-color: '.$MeasuredColor.'; width: '.$MeasuredPercent.'%;">
-						<div class="meter-text">'; $body.=sprintf("%d kW / %d kW",round($measuredWatts/1000),$cab->MaxKW);$body.='</div>
+						<div class="meter-text">'; $body.=sprintf("%.2f kW / %d kW",$measuredWatts/1000,$cab->MaxKW);$body.='</div>
 					</div>
 				</div>
 			</td>
