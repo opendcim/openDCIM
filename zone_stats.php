@@ -323,6 +323,18 @@ echo '
 		</ul>
 	</li>
 </ul>';
+
+print "<br>";
+$cabrow=new CabRow();
+$cabrow->ZoneID=$_GET["zone"];
+$cabrowlist=$cabrow->GetCabRowsByZones();
+foreach($cabrowlist as $cabRow){
+	print " <a href=\"rowview.php?row=$cabRow->CabRowID\">[ ".__("Return to Row")." $cabRow->Name ]</a><br>";
+}
+
+if($dc->DataCenterID>0){
+	print " <a href=\"dc_stats.php?dc=$dc->DataCenterID\">[ ".__("Return to")." $dc->Name ]</a>";
+}
 ?>
 
 </div><!-- END div.main -->

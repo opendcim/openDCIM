@@ -167,8 +167,15 @@ $('#centeriehack').width($('#centeriehack div.cabinet').length * 278);
 </script>
 </div></div>
 <?php
+	print "<br>";
+	if($cabrow->ZoneID){ 
+		$zone=new Zone();
+		$zone->ZoneID=$cabrow->ZoneID;
+		$zone->GetZone();
+		print " <a href=\"zone_stats.php?zone=$zone->ZoneID\">[ ".__("Return to Zone")." $zone->Description ]</a>";
+	}
 	if($dcID>0){
-		print "	<br><br><br><a href=\"dc_stats.php?dc=$dcID\">[ ".__("Return to")." $dc->Name ]</a>";
+		print "<br><a href=\"dc_stats.php?dc=$dcID\">[ ".__("Return to")." $dc->Name ]</a>";
 	}
 ?>
 </div>  <!-- END div.main -->
