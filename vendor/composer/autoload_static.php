@@ -109,7 +109,6 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         'RackRequest' => __DIR__ . '/../..' . '/classes/RackRequest.class.php',
         'SEA' => __DIR__ . '/..' . '/mpdf/mpdf/classes/sea.php',
         'SVG' => __DIR__ . '/..' . '/mpdf/mpdf/classes/svg.php',
-        'SensorReadings' => __DIR__ . '/../..' . '/classes/SensorReadings.class.php',
         'SensorTemplate' => __DIR__ . '/../..' . '/classes/SensorTemplate.class.php',
         'Slot' => __DIR__ . '/../..' . '/classes/Slot.class.php',
         'Supplies' => __DIR__ . '/../..' . '/classes/Supplies.class.php',

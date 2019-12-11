@@ -65,7 +65,6 @@ return array(
     'RackRequest' => $baseDir . '/classes/RackRequest.class.php',
     'SEA' => $vendorDir . '/mpdf/mpdf/classes/sea.php',
     'SVG' => $vendorDir . '/mpdf/mpdf/classes/svg.php',
-    'SensorReadings' => $baseDir . '/classes/SensorReadings.class.php',
     'SensorTemplate' => $baseDir . '/classes/SensorTemplate.class.php',
     'Slot' => $baseDir . '/classes/Slot.class.php',
     'Supplies' => $baseDir . '/classes/Supplies.class.php',
