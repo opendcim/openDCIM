@@ -155,7 +155,7 @@ $app->post( '/powerport/:deviceid', function($deviceid) use ($person) {
 });
 
 //
-//  URL:    /api/v1/cabinet
+//  URL:    /api/v1/cabinet/:cabinetid
 //  Method:	POST
 //  Params:
 //  	Required: CabinetID
@@ -163,13 +163,14 @@ $app->post( '/powerport/:deviceid', function($deviceid) use ($person) {
 //  Returns: record as created
 //  
 
-$app->post( '/cabinet', function() use ($person) {
+$app->post( '/cabinet/:cabinetid', function($cabinetid) use ($person) {
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
 		$r['message'] = __("Access Denied");
 	} else {
 		$cab = new Cabinet();
+		$cab->CabinetID=$cabinetid;
 		$vars = getParsedBody();
 
 		foreach ($vars as $prop=>$val) {
