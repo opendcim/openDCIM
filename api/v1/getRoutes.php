@@ -1137,4 +1137,48 @@ $app->get( '/cabrow/:cabrowid/devices', function($cabrowid) {
 });
 
 
+//
+//	URL:		/api/v1/sensorreadings
+//	Method:	GET
+//	Params:	none
+//	Returns:	Sensor readings for all sensors
+
+$app->get( '/sensorreadings', function() {
+	$sensorreadings=new SensorReadings();
+	$outputAttr = array();
+	$attrList = getParsedBody();
+
+	foreach($attrList as $prop => $val){
+		if (strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		}
+	}
+
+	$r['error']=false;
+	$r['errorcode']=200;
+	$r['sensorreadings']=specifyAttributes($outputAttr, $sensorreadings->Search(false));
+	echoResponse( $r );	
+});
+
+//
+//	URL:		/api/v1/sensorreadings/:sensorid
+//	Method:	GET
+//	Params:	none
+//	Returns:	Sensor readings for :sensorid
+
+$app->get( '/sensorreadings/:sensorid', function($sensorid) {
+	$sensorreadings=new SensorReadings();
+	$sensorreadings->SensorID=$sensorid;
+
+	if(!$sensorreadings->GetSensorReadingsByID()){
+		$r['error']=true;
+		$r['errorcode']=404;
+		$r['message']=__("No sensor readings found with SensorID ").$sensorid;
+	}else{
+		$r['error']=false;
+		$r['errorcode']=200;
+		$r['sensorreadings']=$sensorreadings;
+	}
+	echoResponse( $r );
+});
 ?>
