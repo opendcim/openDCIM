@@ -1138,25 +1138,33 @@ $app->get( '/cabrow/:cabrowid/devices', function($cabrowid) {
 
 
 //
-//      URL:    /api/v1/sensorreadings
-//      Method: GET
-//      Params: none
-//      Returns: Sensor readings for all sensors
+//	URL:		/api/v1/sensorreadings
+//	Method:	GET
+//	Params:	none
+//	Returns:	Sensor readings for all sensors
 
 $app->get( '/sensorreadings', function() {
-	 $sensorreadings=new SensorReadings();
+	$sensorreadings=new SensorReadings();
+	$outputAttr = array();
+	$attrList = getParsedBody();
 
-        $r['error']=false;
-        $r['errorcode']=200;
-        $r['sensorreadings']=$sensorreadings->Search(false);
-        echoResponse( $r );	
+	foreach($attrList as $prop => $val){
+		if (strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		}
+	}
+
+	$r['error']=false;
+	$r['errorcode']=200;
+	$r['sensorreadings']=specifyAttributes($outputAttr, $sensorreadings->Search(false));
+	echoResponse( $r );	
 });
 
 //
-//	URL:	/api/v1/sensorreadings/:sensorid
-//	Method: GET
-//	Params: none
-//	Returns: Sensor readings for :sensorid
+//	URL:		/api/v1/sensorreadings/:sensorid
+//	Method:	GET
+//	Params:	none
+//	Returns:	Sensor readings for :sensorid
 
 $app->get( '/sensorreadings/:sensorid', function($sensorid) {
 	$sensorreadings=new SensorReadings();
@@ -1164,15 +1172,13 @@ $app->get( '/sensorreadings/:sensorid', function($sensorid) {
 
 	if(!$sensorreadings->GetSensorReadingsByID()){
 		$r['error']=true;
-                $r['errorcode']=404;
-                $r['message']=__("No sensor readings found with SensorID ").$sensorid;
+		$r['errorcode']=404;
+		$r['message']=__("No sensor readings found with SensorID ").$sensorid;
 	}else{
 		$r['error']=false;
-        	$r['errorcode']=200;
-	        $r['sensorreadings']=$sensorreadings;
+		$r['errorcode']=200;
+		$r['sensorreadings']=$sensorreadings;
 	}
 	echoResponse( $r );
 });
-
-
 ?>

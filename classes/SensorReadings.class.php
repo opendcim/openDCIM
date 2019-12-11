@@ -41,9 +41,6 @@ class SensorReadings {
 	static function RowToObject($row){
 		$m=new SensorReadings();
 		$m->SensorID=$row["DeviceID"];
-		$m->Label=$row["Label"];
-		$m->Cabinet=$row["Cabinet"];
-		$m->BackSide=$row["BackSide"];
 		$m->Temperature=$row["Temperature"];
 		$m->Humidity= $row["Humidity"];
 		$m->LastRead=$row["LastRead"];
@@ -90,45 +87,31 @@ class SensorReadings {
 			UPDATE Temperature=$this->Temperature,Humidity=$this->Humidity,LastRead=\"".date("Y-m-d H:i:s", strtotime($this->LastRead))."\";";
 
 		if(!$dbh->query($sql)){
-                        $info=$dbh->errorInfo();
+			$info=$dbh->errorInfo();
 
-                        error_log("UpdateSensorReadings::PDO Error: {$info[2]} SQL=$sql" );
-                        return false;
-                }
-		return true;				
+			error_log("UpdateSensorReadings::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
+		return true;
 	}
 
-	function Search($indexedbyid=false,$loose=false){
-                $o=new stdClass();
-                // Store any values that have been added before we make them safe 
-                foreach($this as $prop => $val){
-                        if(isset($val)){
-                                $o->$prop=$val;
-                        }
-                }
+		function Search($indexedbyid=false){
+		// Make everything safe for us to search with
+		$this->MakeSafe();
 
-                // Make everything safe for us to search with
-                $this->MakeSafe();
+		$sql="SELECT * FROM fac_Device a, fac_SensorReadings b WHERE a.DeviceType='Sensor' AND a.DeviceID=b.DeviceID;";
 
-                // This will store all our extended sql
-                $sqlextend="";
-                foreach($o as $prop => $val){
-                        extendsql($prop,$this->$prop,$sqlextend,$loose);
-                }
+		$sensorreadingsList=array();
+		foreach($this->query($sql) as $sensorreadingsRow){
+			if($indexedbyid){
+				$sensorreadingsList[$sensorreadingsRow["DeviceID"]]=SensorReadings::RowToObject($sensorreadingsRow);
+			}else{
+				$sensorreadingsList[]=SensorReadings::RowToObject($sensorreadingsRow);
+			}
+		}
 
-                $sql="SELECT * FROM fac_Device a, fac_SensorReadings b $sqlextend WHERE a.DeviceType='Sensor' AND a.DeviceID=b.DeviceID;";
+		return $sensorreadingsList;
+		}
 
-                $sensorreadingsList=array();
-                foreach($this->query($sql) as $sensorreadingsRow){
-                        if($indexedbyid){
-                                $sensorreadingsList[$sensorreadingsRow["DeviceID"]]=SensorReadings::RowToObject($sensorreadingsRow);
-                        }else{
-                                $sensorreadingsList[]=SensorReadings::RowToObject($sensorreadingsRow);
-                        }
-                }
-
-                return $sensorreadingsList;
-        }
-	
 }
 ?>
