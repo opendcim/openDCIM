@@ -562,4 +562,89 @@ $app->post( '/manufacturer/:manufacturerid', function($manufacturerid) use ($per
 	echoResponse( $r );
 });
 
+//
+//	URL:		/api/v1/sensorreadings/:sensorid
+//	Method:	POST
+//	Params:
+//		Required:	sensorid
+//		Optional:	Temperature, Humnidity, LastRead
+//	Returns:	true/false on update operation
+
+$app->post( '/sensorreadings/:sensorid', function($sensorid) use ($person) {
+	$sensorreadings=new SensorReadings();
+	$sensorreadings->SensorID=$sensorid;
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!$sensorreadings->GetSensorReadingsByID()){
+			$r['error']=true;
+			$r['errorcode']=404;
+			$r['message']=__("No sensor readings found with SensorID ").$sensorid;
+		}else{
+			$vars = getParsedBody();
+			foreach($vars as $prop => $val){
+				if ( property_exists($sensorreadings, $prop)) {
+					$sensorreadings->$prop=$val;
+				}
+			}
+			if(!$sensorreadings->UpdateSensorReadings()){
+				$r['message']=__("Sensor readings update failed");	
+			}else{
+				$r['error']=false;
+				$r['errorcode']=200;
+			}
+		}
+	}
+
+	echoResponse( $r );
+});
+
+//	URL:	/api/v1/pdustats/:pduid
+//	Method: POST
+//	Params: 
+//		Required: pduid
+//		Optional: Wattage, LastRead
+//	Returns: true/false on update operation
+
+$app->post( '/pdustats/:pduid', function($pduid) use ($person) {
+	$pdustats=new PDUStats();
+	$pdustats->PDUID=$pduid;
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!$pdustats->GetPDUStatsByID()){
+			$r['error']=true;
+			$r['errorcode']=404;
+			$r['message']=__("No PDU stats found with PDUID ").$pduid;
+		}else{
+			$vars = getParsedBody();
+			foreach($vars as $prop => $val){
+				if ( property_exists($pdustats, $prop)) {
+					$pdustats->$prop=$val;
+				}
+			}
+
+		if(!$pdustats->UpdatePDUStats()){
+				$r['message']=__("PDU stats update failed");
+			}else{
+				$r['error']=false;
+				$r['errorcode']=200;
+			}
+		}
+	}
+
+	echoResponse( $r );
+});
+
+
 ?>

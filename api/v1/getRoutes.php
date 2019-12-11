@@ -1137,4 +1137,96 @@ $app->get( '/cabrow/:cabrowid/devices', function($cabrowid) {
 });
 
 
+//
+//	URL:		/api/v1/sensorreadings
+//	Method:	GET
+//	Params:	none
+//	Returns:	Sensor readings for all sensors
+
+$app->get( '/sensorreadings', function() {
+	$sensorreadings=new SensorReadings();
+	$outputAttr = array();
+	$attrList = getParsedBody();
+
+	foreach($attrList as $prop => $val){
+		if (strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		}
+	}
+
+	$r['error']=false;
+	$r['errorcode']=200;
+	$r['sensorreadings']=specifyAttributes($outputAttr, $sensorreadings->Search(false));
+	echoResponse( $r );	
+});
+
+//
+//	URL:	/api/v1/sensorreadings/:sensorid
+//	Method:	GET
+//	Params:	none
+//	Returns:	Sensor readings for :sensorid
+
+$app->get( '/sensorreadings/:sensorid', function($sensorid) {
+	$sensorreadings=new SensorReadings();
+	$sensorreadings->SensorID=$sensorid;
+
+	if(!$sensorreadings->GetSensorReadingsByID()){
+		$r['error']=true;
+		$r['errorcode']=404;
+		$r['message']=__("No sensor readings found with SensorID ").$sensorid;
+	}else{
+		$r['error']=false;
+		$r['errorcode']=200;
+		$r['sensorreadings']=$sensorreadings;
+	}
+	echoResponse( $r );
+});
+
+
+//
+//	URL:	/api/v1/pdustats
+//	Method:	GET
+//	Params:	none
+//	Returns:	PDU Stats reading for all pdus
+
+$app->get( '/pdustats', function() {
+	$pdustats=new PDUStats();
+	$outputAttr = array();
+	$attrList = getParsedBody();
+
+	foreach($attrList as $prop => $val){
+		if (strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		} 
+	}
+
+	$r['error']=false;
+	$r['errorcode']=200;
+	$r['pdustats']=specifyAttributes($outputAttr, $pdustats->Search(false));
+	echoResponse( $r );
+});
+
+//
+//	URL:	/api/v1/pdustats/:pduid
+//	Method:	GET
+//	Params:	pduid
+//	Returns:	PDU Stats reading for pduid
+
+$app->get( '/pdustats/:pduid', function($pduid) {
+	$pdustats=new PDUStats();
+	$pdustats->PDUID=$pduid;
+
+	if(!$pdustats->GetPDUStatsByID()){
+		$r['error']=true;
+		$r['errorcode']=404;
+		$r['message']=__("No PDU Stats found with PDUID ").$pduid;
+	}else{
+		$r['error']=false;
+		$r['errorcode']=200;
+		$r['pdustats']=$pdustats;
+	}
+	echoResponse( $r );
+});
+
+
 ?>
