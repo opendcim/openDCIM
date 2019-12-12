@@ -801,18 +801,34 @@ class Device {
 			error_log("UpdateDevice::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
-		
+
 		// Device has been changed to be a CDU from something else so we need to 
 		// create the extra records
 		if($this->DeviceType=="CDU" && $tmpDev->DeviceType!=$this->DeviceType){
 			$pdu=new PowerDistribution();
+			foreach($pdu as $prop => $val){
+                                if(isset($this->$prop)){
+                                        $pdu->$prop=$this->$prop;
+                                }
+                        }
 			$pdu->CreatePDU($dev->DeviceID);
 		// Device was changed from CDU to something else, clean up the extra shit
 		}elseif($tmpDev->DeviceType=="CDU" && $tmpDev->DeviceType!=$this->DeviceType){
 			$pdu=new PowerDistribution();
 			$pdu->PDUID=$this->DeviceID;
 			$pdu->DeletePDU();
-		}
+		// Device is CDU, update params if any supplied.	
+		}elseif($this->DeviceType=="CDU"){
+                        $pdu=new PowerDistribution();
+                        $pdu->PDUID=$this->DeviceID;
+                        foreach($pdu as $prop => $val){
+                                if(isset($this->$prop)){
+                                        $pdu->$prop=$this->$prop;
+                                }
+                        }
+                        $pdu->UpdatePDU();
+                }
+
 
 		// If we made it to a device update and the number of ports available don't 
 		// match the device, just fix it.

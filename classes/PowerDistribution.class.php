@@ -201,7 +201,7 @@ class PowerDistribution {
 		$sql="INSERT INTO fac_PowerDistribution SET Label=\"$this->Label\", 
 			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID, 
 			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\", 
-			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, 
+			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, FirmwareVersion=\"$this->FirmwareVersion\",
 			PanelPole=\"$this->PanelPole\", InputAmperage=$this->InputAmperage, 
 			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, 
 			PanelPole2=$this->PanelPole2$sqladdon;";
@@ -230,7 +230,7 @@ class PowerDistribution {
 		$sql="UPDATE fac_PowerDistribution SET Label=\"$this->Label\", 
 			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID, 
 			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\", 
-			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, 
+			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, FirmwareVersion=\"$this->FirmwareVersion\", 
 			PanelPole=\"$this->PanelPole\", InputAmperage=$this->InputAmperage, 
 			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2
 			WHERE PDUID=$this->PDUID;";
