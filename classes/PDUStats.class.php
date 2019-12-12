@@ -44,25 +44,15 @@ class PDUStats {
 		return $m;
 	}
 
-	function prepare( $sql ) {
-		global $dbh;
-		return $dbh->prepare( $sql );
-	}
-	
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
 	}
 	
-	function exec($sql){
-		global $dbh;
-		return $dbh->exec($sql);
-	}
-	
 	function GetPDUStatsByID(){
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_PowerDistribution a, fac_PDUStats b WHERE a.PDUID=$this->PDUID AND a.PDUID=b.PDUID;";
+		$sql="SELECT * FROM fac_PDUStats WHERE PDUID=$this->PDUID;";
 
 		if($row=$this->query($sql)->fetch()){
 			foreach(PDUStats::RowToObject($row) as $prop => $value){
@@ -92,10 +82,17 @@ class PDUStats {
 		return true;
 	}
 
-	function Search($indexedbyid=false){
+	function Search($indexedbyid=false,$loose=false){
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_PowerDistribution a, fac_PDUStats b WHERE a.PDUID=b.PDUID;";
+		$sqlextend="";
+		foreach($this as $prop => $val){
+			if($val){
+				extendsql($prop,$val,$sqlextend,$loose);
+			}
+		}
+
+		$sql="SELECT * FROM fac_PDUStats $sqlextend;";
 
 		$pdustatsList=array();
 		foreach($this->query($sql) as $pdustatsRow){

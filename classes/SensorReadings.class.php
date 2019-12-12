@@ -47,25 +47,15 @@ class SensorReadings {
 		return $m;
 	}
 
-	function prepare( $sql ) {
-		global $dbh;
-		return $dbh->prepare( $sql );
-	}
-	
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
 	}
 	
-	function exec($sql){
-		global $dbh;
-		return $dbh->exec($sql);
-	}
-	
 	function GetSensorReadingsByID(){
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_Device a, fac_SensorReadings b WHERE a.DeviceID=$this->SensorID AND a.DeviceType='Sensor' AND a.DeviceID=b.DeviceID;";
+		$sql="SELECT * FROM fac_SensorReadings WHERE DeviceID=$this->SensorID;";
 
 		if($row=$this->query($sql)->fetch()){
 			foreach(SensorReadings::RowToObject($row) as $prop => $value){
@@ -95,10 +85,17 @@ class SensorReadings {
 		return true;
 	}
 
-		function Search($indexedbyid=false){
+	function Search($indexedbyid=false,$loose=false){
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_Device a, fac_SensorReadings b WHERE a.DeviceType='Sensor' AND a.DeviceID=b.DeviceID;";
+		$sqlextend="";
+		foreach($this as $prop => $val){
+			if($val){
+				extendsql($prop,$val,$sqlextend,$loose);
+			}
+		}
+
+		$sql="SELECT * FROM fac_SensorReadings $sqlextend;";
 
 		$sensorreadingsList=array();
 		foreach($this->query($sql) as $sensorreadingsRow){
@@ -110,7 +107,7 @@ class SensorReadings {
 		}
 
 		return $sensorreadingsList;
-		}
+	}
 
 }
 ?>

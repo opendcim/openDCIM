@@ -1147,16 +1147,21 @@ $app->get( '/sensorreadings', function() {
 	$sensorreadings=new SensorReadings();
 	$outputAttr = array();
 	$attrList = getParsedBody();
+	$loose = false;
 
 	foreach($attrList as $prop => $val){
-		if (strtoupper($prop) == "ATTRIBUTES" ) {
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		}elseif(strtoupper($prop) == "ATTRIBUTES" ) {
 			$outputAttr = explode( ",", $val );
+		}elseif (property_exists( $sensorreadings, $prop )) {
+			$sensorreadings->$prop=$val;
 		}
 	}
 
 	$r['error']=false;
 	$r['errorcode']=200;
-	$r['sensorreadings']=specifyAttributes($outputAttr, $sensorreadings->Search(false));
+	$r['sensorreadings']=specifyAttributes($outputAttr, $sensorreadings->Search(false,$loose));
 	echoResponse( $r );	
 });
 
@@ -1172,16 +1177,15 @@ $app->get( '/sensorreadings/:sensorid', function($sensorid) {
 
 	if(!$sensorreadings->GetSensorReadingsByID()){
 		$r['error']=true;
-		$r['errorcode']=404;
-		$r['message']=__("No sensor readings found with SensorID ").$sensorid;
+                $r['errorcode']=404;
+                $r['message']=__("No sensor readings found with SensorID ").$sensorid;
 	}else{
 		$r['error']=false;
-		$r['errorcode']=200;
-		$r['sensorreadings']=$sensorreadings;
+        	$r['errorcode']=200;
+	        $r['sensorreadings']=$sensorreadings;
 	}
 	echoResponse( $r );
 });
-
 
 //
 //	URL:	/api/v1/pdustats
@@ -1193,16 +1197,21 @@ $app->get( '/pdustats', function() {
 	$pdustats=new PDUStats();
 	$outputAttr = array();
 	$attrList = getParsedBody();
+	$loose = false;
 
 	foreach($attrList as $prop => $val){
-		if (strtoupper($prop) == "ATTRIBUTES" ) {
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		}elseif(strtoupper($prop) == "ATTRIBUTES" ) {
 			$outputAttr = explode( ",", $val );
+		}elseif (property_exists( $pdustats, $prop )) {
+			$pdustats->$prop=$val;
 		} 
 	}
 
 	$r['error']=false;
 	$r['errorcode']=200;
-	$r['pdustats']=specifyAttributes($outputAttr, $pdustats->Search(false));
+	$r['pdustats']=specifyAttributes($outputAttr, $pdustats->Search(false,$loose));
 	echoResponse( $r );
 });
 
@@ -1228,5 +1237,55 @@ $app->get( '/pdustats/:pduid', function($pduid) {
 	echoResponse( $r );
 });
 
+//
+//      URL:    /api/v1/vminventory
+//      Method: GET
+//      Params: none
+//      Returns: All VMs info 
+
+$app->get( '/vminventory', function() {
+        $vm = new VM();
+        $outputAttr = array();
+        $attrList = getParsedBody();
+	$loose = false;
+
+        foreach($attrList as $prop => $val){
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+                        $loose = true;
+                }elseif(strtoupper($prop) == "ATTRIBUTES" ) {
+                        $outputAttr = explode( ",", $val );
+                }elseif (property_exists( $vm, $prop )) {
+                        $vm->$prop=$val;
+                }
+
+        }
+
+        $r['error']=false;
+        $r['errorcode']=200;
+        $r['vminventory']=specifyAttributes($outputAttr, $vm->SearchVM(false,$loose));
+        echoResponse( $r );
+});
+
+//
+//      URL:    /api/v1/vminventory/:vmindex
+//      Method: GET
+//      Params: vmindex
+//      Returns: VM Inventory data for vmindex
+
+$app->get( '/vminventory/:vmindex', function($vmindex) {
+        $vm=new VM();
+        $vm->VMIndex=$vmindex;
+
+        if(!$vm->GetVMbyIndex()){
+                $r['error']=true;
+                $r['errorcode']=404;
+                $r['message']=__("No VM information found with VMIndex ").$vmindex;
+        }else{
+                $r['error']=false;
+                $r['errorcode']=200;
+                $r['vminventory']=$vm;
+        }
+        echoResponse( $r );
+});
 
 ?>

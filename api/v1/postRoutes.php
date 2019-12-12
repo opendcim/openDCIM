@@ -646,5 +646,46 @@ $app->post( '/pdustats/:pduid', function($pduid) use ($person) {
 	echoResponse( $r );
 });
 
+//      URL:    /api/v1/vminventory/:vmindex
+//      Method: POST
+//      Params: 
+//              Required: vmindex
+//              Optional: all other
+//      Returns: true/false on update operation
+
+$app->post( '/vminventory/:vmindex', function($vmindex) use ($person) {
+        $vm=new VM();
+        $vm->VMIndex=$vmindex;
+
+        $r['error']=true;
+        $r['errorcode']=400;
+
+        if(!$person->SiteAdmin){
+                $r['errorcode']=401;
+                $r['message']=__("Access Denied");
+        }else{
+                if(!$vm->GetVMbyIndex()){
+                        $r['error']=true;
+                        $r['errorcode']=404;
+                        $r['message']=__("No VM found with VMIndex ").$vmindex;
+                }else{
+                        $vars = getParsedBody();
+                        foreach($vars as $prop => $val){
+                                if ( property_exists($vm, $prop)) {
+                                        $vm->$prop=$val;
+                                }
+                        }
+
+                        if(!$vm->UpdateVM()){
+                                $r['message']=__("VM update failed");
+                        }else{
+                                $r['error']=false;
+                                $r['errorcode']=200;
+                        }
+                }
+        }
+
+        echoResponse( $r );
+});
 
 ?>
