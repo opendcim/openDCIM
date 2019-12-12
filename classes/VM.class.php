@@ -168,6 +168,22 @@ class VM {
 		}
 		return true;                            
 	}
+
+	function DeleteVM() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="DELETE from fac_VMInventory WHERE VMIndex=$this->VMIndex;";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("DeleteVM::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
+		return true;
+	}
   
 	function UpdateVMOwner() {
 		global $dbh;

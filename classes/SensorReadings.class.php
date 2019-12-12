@@ -85,6 +85,22 @@ class SensorReadings {
 		return true;
 	}
 
+	function DeleteSensorReadings(){
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="DELETE from fac_SensorReadings where DeviceID=$this->SensorID;";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("DeleteSensorReadings::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
+		return true;
+	}
+
 	function Search($indexedbyid=false,$loose=false){
 		$this->MakeSafe();
 

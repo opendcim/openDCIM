@@ -82,6 +82,22 @@ class PDUStats {
 		return true;
 	}
 
+	function DeletePDUStats() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="DELETE from fac_PDUStats WHERE PDUID=$this->PDUID;";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+			
+			error_log("DeletePDUStats::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
+		return true;
+	}
+
 	function Search($indexedbyid=false,$loose=false){
 		$this->MakeSafe();
 
