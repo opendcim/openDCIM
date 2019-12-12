@@ -624,48 +624,86 @@ $app->put( '/manufacturer/:name', function($name) use($person) {
 	echoResponse( $r );
 });
 
-//      URL:    /api/v1/vminventory/:deviceid/:vmname
-//      Method: PUT
-//      Params: 
-//              Required: vmname,deviceid
-//              Optional: all other
-//      Returns: true/false on update operation
+//	URL:	/api/v1/vminventory/:deviceid/:vmname
+//	Method:	PUT
+//	Params:
+//		Required: vmname,deviceid
+//		Optional: all other
+//	Returns: true/false on update operation
 
 $app->put( '/vminventory/:deviceid/:vmname', function($deviceid,$vmname) use ($person) {
-        $vm=new VM();
-        $vm->vmName=$vmname;
+	$vm=new VM();
+	$vm->vmName=$vmname;
 	$vm->DeviceID=$deviceid;
 
-        $r['error']=true;
-        $r['errorcode']=400;
+	$r['error']=true;
+	$r['errorcode']=400;
 
-        if(!$person->SiteAdmin){
-                $r['errorcode']=401;
-                $r['message']=__("Access Denied");
-        }else{
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
 		$dev=new Device($vm->DeviceID);
-                if(!$dev->GetDevice()){
+		if(!$dev->GetDevice()){
 			$r['error']=true;
-                        $r['errorcode']=404;
-                        $r['message']=__("No Device found with DeviceID ").$deviceid;
+			$r['errorcode']=404;
+			$r['message']=__("No Device found with DeviceID ").$deviceid;
 		}else{
-                        $vars = getParsedBody();
-                        foreach($vars as $prop => $val){
-                                if ( property_exists($vm, $prop)) {
-                                        $vm->$prop=$val;
-                                }
-                        }
+			$vars = getParsedBody();
+			foreach($vars as $prop => $val){
+				if ( property_exists($vm, $prop)) {
+					$vm->$prop=$val;
+				}
+			}
 
-                        if(!$vm->CreateVM()){
-                                $r['message']=__("VM creation failed");
-                        }else{
-                                $r['error']=false;
-                                $r['errorcode']=200;
-                        }
-                }
-        }
+			if(!$vm->CreateVM()){
+				$r['message']=__("VM creation failed");
+			}else{
+				$r['error']=false;
+				$r['errorcode']=200;
+				$r['vminventory']=$vm;
+			}
+		}
+	}
 
-        echoResponse( $r );
+	echoResponse( $r );
+});
+
+//	URL:	/api/v1/powerpanel/:panelname
+//	Method: PUT
+//	Params: 
+//	Required: panelname
+//	Optional: all other
+//	Returns: Record as created
+
+$app->put( '/powerpanel/:panelname', function($panelname) use ($person) {
+	$pp=new PowerPanel();
+	$pp->PanelLabel=$panelname;
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		$vars = getParsedBody();
+		foreach($vars as $prop => $val){
+			if ( property_exists($pp, $prop)) {
+				$pp->$prop=$val;
+			}
+		}
+
+		if(!$pp->createPanel()){
+			$r['message']=__("Powerpanel creation failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+			$r['powerpanel']=$pp;
+		}
+	}
+
+	echoResponse( $r );
 });
 
 
