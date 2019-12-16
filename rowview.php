@@ -175,7 +175,7 @@ $('#centeriehack').width($('#centeriehack div.cabinet').length * 278);
 ?>
 </div>  <!-- END div.main -->
 <?php
-	if ($person->SiteAdmin || $person->RackAdmin) {
+	if ($person->SiteAdmin || $person->RackAdmin || $person->WriteAccess) {
                 print '<div><input type="hidden" name="cabinetdraggable" id="cabinetdraggable" value="yes"></div>';
         }
 ?>
