@@ -581,23 +581,17 @@ $app->post( '/sensorreadings/:sensorid', function($sensorid) use ($person) {
 		$r['errorcode']=401;
 		$r['message']=__("Access Denied");
 	}else{
-		if(!$sensorreadings->GetSensorReadingsByID()){
-			$r['error']=true;
-			$r['errorcode']=404;
-			$r['message']=__("No sensor readings found with SensorID ").$sensorid;
+		$vars = getParsedBody();
+		foreach($vars as $prop => $val){
+			if ( property_exists($sensorreadings, $prop)) {
+				$sensorreadings->$prop=$val;
+			}
+		}
+		if(!$sensorreadings->UpdateSensorReadings()){
+			$r['message']=__("Sensor readings update failed");	
 		}else{
-			$vars = getParsedBody();
-			foreach($vars as $prop => $val){
-				if ( property_exists($sensorreadings, $prop)) {
-					$sensorreadings->$prop=$val;
-				}
-			}
-			if(!$sensorreadings->UpdateSensorReadings()){
-				$r['message']=__("Sensor readings update failed");	
-			}else{
-				$r['error']=false;
-				$r['errorcode']=200;
-			}
+			$r['error']=false;
+			$r['errorcode']=200;
 		}
 	}
 
@@ -622,24 +616,18 @@ $app->post( '/pdustats/:pduid', function($pduid) use ($person) {
 		$r['errorcode']=401;
 		$r['message']=__("Access Denied");
 	}else{
-		if(!$pdustats->GetPDUStatsByID()){
-			$r['error']=true;
-			$r['errorcode']=404;
-			$r['message']=__("No PDU stats found with PDUID ").$pduid;
-		}else{
-			$vars = getParsedBody();
-			foreach($vars as $prop => $val){
-				if ( property_exists($pdustats, $prop)) {
-					$pdustats->$prop=$val;
-				}
+		$vars = getParsedBody();
+		foreach($vars as $prop => $val){
+			if ( property_exists($pdustats, $prop)) {
+				$pdustats->$prop=$val;
 			}
+		}
 
 		if(!$pdustats->UpdatePDUStats()){
-				$r['message']=__("PDU stats update failed");
-			}else{
-				$r['error']=false;
-				$r['errorcode']=200;
-			}
+			$r['message']=__("PDU stats update failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
 		}
 	}
 
