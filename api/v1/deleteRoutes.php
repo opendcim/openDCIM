@@ -281,6 +281,32 @@ $app->delete( '/vminventory/:vmindex', function($vmindex) use ($person) {
 	echoResponse( $r );
 });
 
+//	URL:	/api/v1/vminventory/expirevms/:days
+//	Method:	DELETE
+//	Params:
+//		Required:	days
+//	Returns: true
+$app->delete( '/vminventory/expirevms/:days', function($days) use ($person) {
+	if ( ! $person->SiteAdmin ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+	} else {
+		if (!intval($days)) {
+			$r['error'] = true;
+			$r['errorcode'] = 401;
+			$r['message'] = __("Invalid parameter (days)");
+		} else {
+			$vm=new VM();
+			$vm->ExpireVMs($days);
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	echoResponse( $r );
+});
+
 //	URL:	/api/v1/powerpanel/:panelid
 //	Method:	DELETE
 //	Params:
