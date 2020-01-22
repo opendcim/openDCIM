@@ -462,7 +462,7 @@ class PowerDistribution {
 			}
 
 			// Derate everything 80% per standard
-			$maxWatts += 0.8;
+			$maxWatts *= 0.8;
 
 			if ( $config->ParameterArray["PowerAlertsEmail"] == "enabled" ) {
 				if ( $watts >= $config->ParameterArray["PowerRed"] / 100 * $maxWatts ) {
