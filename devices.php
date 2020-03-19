@@ -224,7 +224,9 @@
 		$dev->GetDevice();
 		if($dev->Rights=="Write"){
 			if($_POST['fp']==''){ // querying possible first ports
-				$portCandidates=SwitchInfo::findFirstPort($dev->DeviceID);
+				$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
+				$portCandidates=$deviceclass::findFirstPort($dev->DeviceID);
+
 				if(count($portCandidates)>0){
 					foreach($portCandidates as $id => $portdesc){
 						$checked=($id==$dev->FirstPortNum)?' checked':'';
@@ -462,17 +464,29 @@
 		buildCustomAttributes($template, $dev);
 		exit;
 	}
-	if(isset($_POST['refreshswitch'])){
+	if(isset($_POST['refreshdevice'])){
 		header('Content-Type: application/json');
+		if(isset($_POST['devicecalling'])) {
+			$refreshdevice = $_POST['devicecalling'];
+		}else{
+			echo json_encode(array());
+			exit;
+		}
+
 		if(isset($_POST['names'])){
-			$dev->DeviceID=$_POST['refreshswitch'];
+			$dev->DeviceID=$_POST['refreshdevice'];
 			$dev->GetDevice();
-			$names = SwitchInfo::getPortNames($_POST['refreshswitch']);
+			$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
+			$names = $deviceclass::getPortNames($_POST['refreshdevice']);
 			// This function should be hidden if they don't have rights, but just in case
 			if($dev->Rights=="Write"){
 				foreach($names as $PortNumber => $Label){
-					$port=new DevicePorts();
-					$port->DeviceID=$_POST['refreshswitch'];
+					if ($refreshdevice == 'switch'){
+						$port=new DevicePorts();
+					} else {
+						$port=new PowerPorts();
+					}
+					$port->DeviceID=$_POST['refreshdevice'];
 					$port->PortNumber=$PortNumber;
 					$port->Label=$Label;
 					$port->updateLabel();
@@ -480,14 +494,20 @@
 			}
 			echo json_encode($names);
 		}elseif(isset($_POST['Notes'])){
-			$dev->DeviceID=$_POST['refreshswitch'];
+			$dev->DeviceID=$_POST['refreshdevice'];
 			$dev->GetDevice();
-			$alias = SwitchInfo::getPortAlias($_POST['refreshswitch']);
+			$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
+			$alias = $deviceclass::getPortAlias($_POST['refreshdevice']);
 			// This function should be hidden if they don't have rights, but just in case
 			if($dev->Rights=="Write"){
+				$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
 				foreach($alias as $PortNumber => $Notes){
-					$port=new DevicePorts();
-					$port->DeviceID=$_POST['refreshswitch'];
+					if ($refreshdevice == 'switch'){
+						$port=new DevicePorts();
+					} else {
+						$port=new PowerPorts();
+					}
+					$port->DeviceID=$_POST['refreshdevice'];
 					$port->PortNumber=$PortNumber;
 					$port->getPort();
 					$port->Notes=$Notes;
@@ -496,14 +516,16 @@
 			}
 			echo json_encode($alias);
 		}else{
-			$dev->DeviceID = $_POST['refreshswitch'];
+			$dev->DeviceID = $_POST['refreshdevice'];
+			$dev->GetDevice();
 			$tagList = $dev->GetTags();
+			$deviceclass=$dev->DeviceType.'Info'; //SwitchInfo or CDUInfo
 			// The logic here is:
 			//	If you select to OptIn switch polling, only poll if you have the Poll tag assigned to this device
 			//	but if you are an OptOut site, poll everything unless it has the NoPoll tag assigned
 			//
 			if( ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptIn" && in_array( "Poll", $tagList ) || ( $config->ParameterArray["NetworkCapacityReportOptIn"] == "OptOut" && ! in_array( "NoPoll", $tagList )))) {
-				echo json_encode(SwitchInfo::getPortStatus($_POST['refreshswitch']));
+				echo json_encode($deviceclass::getPortStatus($_POST['refreshdevice']));
 			} else {
 				echo json_encode(array());
 			}
@@ -1338,6 +1360,13 @@ $(document).ready(function() {
 		if($(this).val()=='CDU'){
 			$('#cdu').show().removeClass('hide');
 			$('#NominalWatts').parent('div').parent('div').addClass('hide');
+			if($(document).data('DeviceType')!='CDU'){
+				$('#cdufirstport button:not([name="cdufirstport"])').hide();
+			}
+			if($('#DeviceID').val()>0){
+				$('#cdufirstport').show().removeClass('hide');
+				$('.switch div[id^="ppst"]').show();
+			}
 		}else{
 			$('#cdu').hide();
 			$('#NominalWatts').parent('div').parent('div').removeClass('hide');
@@ -1357,11 +1386,26 @@ $(document).ready(function() {
 	}).change();
 
 	$('#firstport button[name=firstport]').click(function(){
+		getfirstport('switch', $('#DeviceID').val());
+	});
+	$('#firstport button[name=refresh]').click(function(){
+		refreshdevice('switch', $('#DeviceID').val());
+	});
+	$('#firstport button[name=name]').click(function(){
+		refreshdevice('switch', $('#DeviceID').val(),'names');
+	});
+	$('#firstport button[name=Notes]').click(function(){
+		refreshdevice('switch', $('#DeviceID').val(),'Notes');
+	});
+	if ($(':input[name=DeviceType]').val()=='Switch'){
+		refreshdevice('switch', $('#DeviceID').val());
+	}
+
+	function getfirstport(devicecalling, devid) {
 		// S.U.T. Update the IP and snmp community then click on the switch controls.
 		// we'll combat that with a limited device update.
 		$.post('api/v1/device/'+$('#DeviceID').val(),{PrimaryIP: $('#PrimaryIP').val(), SNMPCommunity: $('#SNMPCommunity').val()}).done(function(){
-
-			var modal=$('<div />', {id: 'modal', title: 'Select switch first port'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"></div>').dialog({
+			var modal=$('<div />', {id: 'modal', title: 'Select ' + devicecalling + ' first port'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning"></div>').dialog({
 				appendTo: 'body',
 				modal: true,
 				close: function(){$(this).dialog('destroy');}
@@ -1374,28 +1418,16 @@ $(document).ready(function() {
 						$('input[name=FirstPortNum]').val(fpnum);
 						$('#modalstatus').html(data);
 						$('#modal').dialog('destroy');
-					}).then(refreshswitch($('#DeviceID').val(),true));
+					}).then(refreshdevice($('#DeviceType').val(),$('#DeviceID').val(),true));
 				});
 			});
 		}).error(function(data){
 			$('#messages').text('data.message');
 		});
 
-	});
-	$('#firstport button[name=refresh]').click(function(){
-		refreshswitch($('#DeviceID').val());
-	});
-	$('#firstport button[name=name]').click(function(){
-		refreshswitch($('#DeviceID').val(),'names');
-	});
-	$('#firstport button[name=Notes]').click(function(){
-		refreshswitch($('#DeviceID').val(),'Notes');
-	});
-	if ($(':input[name=DeviceType]').val()=='Switch'){
-		refreshswitch($('#DeviceID').val());
 	}
 
-	function refreshswitch(devid,names){
+	function refreshdevice(devicecalling,devid,names){
 		var modal=$('<div />', {id: 'modal', title: 'Please wait...'}).html('<div id="modaltext"><img src="images/animatedswitch.gif" style="width: 100%;"><br>Polling device...</div><br><div id="modalstatus" class="warning"></div>').dialog({
 			appendTo: 'body',
 			minWidth: 500,
@@ -1405,37 +1437,74 @@ $(document).ready(function() {
 		});
 		if(names){
 			if(names=='names'){
-				$.post('',{refreshswitch: devid, names: names}).done(function(data){
+				$.post('',{refreshdevice: devid, names: names, devicecalling: devicecalling}).done(function(data){
 					$.each(data, function(i,Label){
-						if(Label){
-							$('#spn'+i).text(Label);
+						if(devicecalling=='switch') {
+							if(Label){
+								$('#spn'+i).text(Label);
+							}else{
+								$('#spn'+i).text('');
+							}
 						}else{
-							$('#spn'+i).text('');
+							if(Label){
+								$('#ppcn'+i).text(Label);
+							}else{
+								$('#ppcn'+i).text('');
+							}
 						}
 					});
 					modal.dialog('destroy');
 				});
 			}else{
-				$.post('',{refreshswitch: devid, Notes: names}).done(function(data){
+				$.post('',{refreshdevice: devid, Notes: names, devicecalling: devicecalling }).done(function(data){
 					$.each(data, function(i,Notes){
-						if(Notes){
-							$('#n'+i).text(Notes);
+						if(devicecalling=='switch') {
+							if(Notes){
+								$('#n'+i).text(Notes);
+							}else{
+								$('#n'+i).text('');
+							}
 						}else{
-							$('#n'+i).text('');
+							if(Notes){
+								$('#ppn'+i).text(Notes);
+							}else{
+								$('#ppn'+i).text('');
+							}
 						}
 					});
 					modal.dialog('destroy');
 				});
 			}
 		}else{
-			$.post('',{refreshswitch: devid}).done(function(data){
+			$.post('',{refreshdevice: devid, devicecalling: devicecalling}).done(function(data){
 				$.each(data, function(i,portstatus){
-					$('#st'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
+					if(devicecalling=='switch') {
+						$('#st'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
+					}else{
+						$('#ppst'+i).html($('<span>').addClass('ui-icon').addClass('status').addClass(portstatus));
+					}
 				});
 				modal.dialog('destroy');
 			});
 		}
 	}
+
+	$('#cdufirstport button[name=cdufirstport]').click(function(){
+		getfirstport('CDU', $('#DeviceID').val());
+	});
+	$('#cdufirstport button[name=cdurefresh]').click(function(){
+		refreshdevice('cdu', $('#DeviceID').val());
+	});
+	$('#cdufirstport button[name=cduname]').click(function(){
+		refreshdevice('cdu', $('#DeviceID').val(),'names');
+	});
+	$('#cdufirstport button[name=cduNotes]').click(function(){
+		refreshdevice('cdu', $('#DeviceID').val(),'Notes');
+	});
+	if ($(':input[name=DeviceType]').val()=='CDU' && $(':input[name=DeviceID]').val()!=''){
+		refreshdevice('cdu', $('#DeviceID').val());
+	}
+
 <?php
 	// hide all the js functions if they don't have write permissions
 	if($write){
@@ -2176,6 +2245,10 @@ echo '
 <fieldset id="firstport" class="hide">
 	<legend>'.__("Switch SNMP").'</legend>
 	<div><p>'.__("Use these buttons to set the first port for the switch, check the status of the ports again, or attempt to load the Port Name Labels from the switch device.").'</p><button type="button" name="firstport">'.__("Set First Port").'</button><button type="button" name="refresh">'.__("Refresh Status").'</button><button type="button" name="name">'.__("Refresh Port Names").'</button><button type="button" name="Notes">'.__("Refresh Port Notes").'</button></div>
+</fieldset>
+<fieldset id="cdufirstport" class="hide">
+	<legend>'.__("CDU SNMP").'</legend>
+	<div><p>'.__("Use these buttons to set the first power outlet for the CDU, check the status of the oultets again, or attempt to load the Outlet Name Labels from the CDU device.").'</p><button type="button" name="cdufirstport">'.__("Set First Outlet").'</button><button type="button" name="cdurefresh">'.__("Refresh Status").'</button><button type="button" name="cduname">'.__("Refresh Port Names").'</button><button type="button" name="cduNotes">'.__("Refresh Port Notes").'</button></div>
 </fieldset>';
 
 	//
@@ -2328,9 +2401,10 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 					<div id=\"ppcn\">".__("Port Name")."</div>
 					<div>".__("Device")."</div>
 					<div>".__("Device Port")."</div>
-					<div>".__("Notes")."</div>
-<!--				<div>".__("Panel")."</div> -->
-				</div>\n";
+					<div id=\"ppn\">".__("Notes")."</div>";
+					if($dev->DeviceType=='CDU'){print "\t\t\t\t<div id=\"ppst\">".__("Status")."</div>";}
+print "<!--				<div>".__("Panel")."</div> -->
+					</div>\n";
 			foreach($pwrCords as $i => $cord){
 				$tmppdu=new Device();
 				$tmppdu->DeviceID=$cord->ConnectedDeviceID;
@@ -2346,13 +2420,15 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 					$cord->ConnectedDeviceID=0;
 					$cord->ConnectedPort=0;
 				}
+				if($dev->DeviceType=='CDU'){$linkList[$i]=(isset($linkList[$i]))?$linkList[$i]:'err';}
 				print "\t\t\t\t<div data-port=$i>
 					<div>$i</div>
-					<div data-default=\"$cord->Label\">$cord->Label</div>
+					<div id=\"ppcn$i\" data-default=\"$cord->Label\">$cord->Label</div>
 					<div data-default=$cord->ConnectedDeviceID><a href=\"devices.php?DeviceID=$cord->ConnectedDeviceID\">$tmppdu->Label</a></div>
 					<div data-default=$cord->ConnectedPort>$tmpcord->Label</div>
-					<div data-default=\"$cord->Notes\">$cord->Notes</div>
-				</div>\n";
+					<div id=\"ppn$i\" data-default=\"$cord->Notes\">$cord->Notes</div>";
+					if($dev->DeviceType=='CDU'){print "\t\t\t\t<div id=\"ppst$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
+				print "\t\t\t\t</div>\n";
 			}
 
 			print "			</div><!-- END div.table --></div>\n		</div><!-- END power connections -->\n		<!-- Spacer --><div><div>&nbsp;</div><div>$connectioncontrols</div></div><!-- END Spacer -->\n";
@@ -2528,6 +2604,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 	if(!$write){
 		print "\t\t//Disable all input if they don't have rights.
 		$('#firstport button[name=firstport],#firstport button[name=name]').hide();
+		$('#cdufirstport button[name=cdufirstport],#cdufirstport button[name=cduname]').hide();
 		$('.main input, .main select').prop('disabled', true);";
 	}
 ?>
