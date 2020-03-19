@@ -270,6 +270,15 @@ $(document).ready(function(){
 		}else{
 			editnotes($('#editbtn'));
 		}
+
+		try {
+			var disable = document.getElementById('disablejqte').value;
+			if (disable == 'yes') {
+				$('.jqte_editor').prop('contenteditable','false');
+				$('.jqte_toolbar').hide();
+				$('#editbtn').hide();
+			}
+		} catch {}
 	});
 
 	$('#editbtn').click(function(){

@@ -2289,9 +2289,14 @@ echo '	</div>
 			<div>$chDev->DeviceType</div>
 		</div>\n";
 	}
-echo '		<div class="caption">
-			<button type="submit" id="adddevice" value="Child" name="action">',__("Add Device"),'</button>
-			<input type="hidden" id="ParentDevice" name="ParentDevice" disabled value="',$dev->DeviceID,'">
+
+echo '		<div class="caption">';
+
+		if ($write) {
+			echo '<button type="submit" id="adddevice" value="Child" name="action">',__("Add Device"),'</button>';
+		}
+
+echo '		<input type="hidden" id="ParentDevice" name="ParentDevice" disabled value="',$dev->DeviceID,'">
 		</div>';
 	}else{
 echo '		<div class="caption">
@@ -2382,7 +2387,8 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 		print "\t</div></div></div></div>\n";
 
 		// The input box and button
-		print "\t\t\t<div><div><button type=\"button\">Add note</button><div><input /></div></div></div>\n";
+		if (!$write) { $hideaddnotes="style=\"display: none;\"";}
+		print "\t\t\t<div><div><button type=\"button\" $hideaddnotes>Add note</button><div><input /></div></div></div>\n";
 
 
 		print "\t\t  </div></div>\n\t\t</div>\n";
@@ -2597,6 +2603,13 @@ print "<!--				<div>".__("Panel")."</div> -->
 
 </div><!-- END div.main -->
 </div><!-- END div.page -->
+
+<?php
+	// disables the jqte editor for Notes if no write access.       
+	if ($write) { $nojqte="no";} else { $nojqte="yes";}
+	echo '<div><input type="hidden" name="disablejqte" id="disablejqte" value="',$nojqte,'"></div>';
+?>
+
 <script type="text/javascript">
 	var portrights=$.parseJSON('<?php echo json_encode($jsondata); ?>');
 	portrights['admin']=<?php echo ($person->WriteAccess)?'true':'false'; ?>;
@@ -2718,10 +2731,16 @@ print "<!--				<div>".__("Panel")."</div> -->
 			});
 		});
 
-		// Make the cabinet and template selections smart comboboxes
+		// Make the cabinet and template selections smart comboboxes if user can write
+<?php
+	if ($write) {
+?>
 		$('#CabinetID').combobox();
 		$('#TemplateID').combobox();
 		$('select[name=ParentDevice]').combobox();
+<?php
+	}
+?>
 
 		// Hide this for now
 		$('#devicetype-limiter').parent('div').hide();
