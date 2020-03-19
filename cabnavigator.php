@@ -670,6 +670,13 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 </div>'; ?>
 </div>  <!-- END div.main -->
 
+<?php
+if($person->CanWrite($cab->AssignedTo) || $person->SiteAdmin) {
+    echo '<div><input type="hidden" name="cabinetdraggable" id="cabinetdraggable" value="yes"></div>';
+}
+?>
+
+
 <div class="clear"></div>
 </div>
 <script type="text/javascript">

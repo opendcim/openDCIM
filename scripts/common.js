@@ -1459,6 +1459,8 @@ function intersectRect(r1, r2) {
 
 // function to make server objects draggable in the UI
 function initdrag(){
+   var isdraggable = document.getElementById('cabinetdraggable').value;
+   if (isdraggable == 'yes') {
 	$('.draggable').draggable({
 		helper: 'clone',
 		grid: [ 220, 1 ],
@@ -1646,6 +1648,7 @@ function initdrag(){
 			$('#tt').remove();
 		}
 	});
+   } // if isdraggable
 }
 
 function InsertDevice(obj){
