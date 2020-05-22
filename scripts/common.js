@@ -270,6 +270,15 @@ $(document).ready(function(){
 		}else{
 			editnotes($('#editbtn'));
 		}
+
+		try {
+			var disable = document.getElementById('disablejqte').value;
+			if (disable == 'yes') {
+				$('.jqte_editor').prop('contenteditable','false');
+				$('.jqte_toolbar').hide();
+				$('#editbtn').hide();
+			}
+		} catch {}
 	});
 
 	$('#editbtn').click(function(){
@@ -1450,6 +1459,8 @@ function intersectRect(r1, r2) {
 
 // function to make server objects draggable in the UI
 function initdrag(){
+   var isdraggable = document.getElementById('cabinetdraggable').value;
+   if (isdraggable == 'yes') {
 	$('.draggable').draggable({
 		helper: 'clone',
 		grid: [ 220, 1 ],
@@ -1637,6 +1648,7 @@ function initdrag(){
 			$('#tt').remove();
 		}
 	});
+   } // if isdraggable
 }
 
 function InsertDevice(obj){

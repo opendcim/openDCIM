@@ -4,6 +4,16 @@
 	// so we will simply start a session here (which will not cause any issues if auto_start is already set to 1) unless
 	// we are being invoked from the command line
 
+
+	// If the php-redis module is loaded AND the environment variable to enable it has been set, use it
+	if ( extension_loaded( 'redis' ) && strtoupper(getenv('OPENDCIM_REDIS_ENABLED'))=='TRUE' ) {
+		$redishost = getenv('OPENDCIM_REDIS_HOST') ? getenv('OPENDCIM_REDIS_HOST'):'redis';
+		$redispass = getenv('OpENDCIM_REDIS_PASS') ? getenv('OPENDCIM_REDIS_PASS'):'dcim';
+
+		ini_set( 'session.save_handler', 'redis' );
+		ini_set( 'session.save_path', 'tcp://'.$redishost.':6379?auth='.$redispass );
+	}
+
 	if ( php_sapi_name() != "cli" ) {
 	      session_start();
 	}

@@ -30,6 +30,11 @@ class CDUTemplate {
 	var $Managed;
 	var $ATS;
 	var $VersionOID;
+	var $OutletNameOID;
+	var $OutletDescOID;
+	var $OutletCountOID;
+	var $OutletStatusOID;
+	var $OutletStatusOn;
 	var $Multiplier;
 	var $OID1;
 	var $OID2;
@@ -52,6 +57,11 @@ class CDUTemplate {
 		$this->Managed=intval($this->Managed);
 		$this->ATS=intval($this->ATS);
 		$this->VersionOID=sanitize($this->VersionOID);
+		$this->OutletNameOID=sanitize($this->OutletNameOID);
+		$this->OutletDescOID=sanitize($this->OutletDescOID);
+		$this->OutletCountOID=sanitize($this->OutletCountOID);
+		$this->OutletStatusOID=sanitize($this->OutletStatusOID);
+		$this->OutletStatusOn=sanitize($this->OutletStatusOn);
 		$this->Multiplier=(in_array($this->Multiplier, $validMultipliers))?$this->Multiplier:1;
 		$this->OID1=sanitize($this->OID1);
 		$this->OID2=sanitize($this->OID2);
@@ -67,6 +77,11 @@ class CDUTemplate {
 	function MakeDisplay(){
 		$this->Model=stripslashes($this->Model);
 		$this->VersionOID=stripslashes($this->VersionOID);
+		$this->OutletNameOID=stripslashes($this->OutletNameOID);
+		$this->OutletDescOID=stripslashes($this->OutletDescOID);
+		$this->OutletCountOID=stripslashes($this->OutletCountOID);
+		$this->OutletStatusOID=stripslashes($this->OutletStatusOID);
+		$this->OutletStatusOn=stripslashes($this->OutletStatusOn);
 		$this->OID1=stripslashes($this->OID1);
 		$this->OID2=stripslashes($this->OID2);
 		$this->OID3=stripslashes($this->OID3);
@@ -82,6 +97,11 @@ class CDUTemplate {
 		$template->Managed=$row["Managed"];
 		$template->ATS=$row["ATS"];
 		$template->VersionOID=$row["VersionOID"];
+		$template->OutletNameOID=$row["OutletNameOID"];
+		$template->OutletDescOID=$row["OutletDescOID"];
+		$template->OutletCountOID=$row["OutletCountOID"];
+		$template->OutletStatusOID=$row["OutletStatusOID"];
+		$template->OutletStatusOn=$row["OutletStatusOn"];
 		$template->Multiplier=$row["Multiplier"];
 		$template->OID1=$row["OID1"];
 		$template->OID2=$row["OID2"];
@@ -138,6 +158,11 @@ class CDUTemplate {
 		$sql="INSERT INTO fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
 			VersionOID=\"$this->VersionOID\", 
+			OutletNameOID=\"$this->OutletNameOID\",
+			OutletDescOID=\"$this->OutletDescOID\",
+			OutletCountOID=\"$this->OutletCountOID\",
+			OutletStatusOID=\"$this->OutletStatusOID\",
+			OutletStatusOn=\"$this->OutletStatusOn\",
 			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
 			OID3=\"$this->OID3\", ATSStatusOID=\"$this->ATSStatusOID\", ATSDesiredResult=\"$this->ATSDesiredResult\",
 			ProcessingProfile=\"$this->ProcessingProfile\", 
@@ -164,6 +189,11 @@ class CDUTemplate {
 		$sql="UPDATE fac_CDUTemplate SET ManufacturerID=$this->ManufacturerID, 
 			Model=\"$this->Model\", Managed=$this->Managed, ATS=$this->ATS,
 			VersionOID=\"$this->VersionOID\", 
+			OutletNameOID=\"$this->OutletNameOID\",
+			OutletDescOID=\"$this->OutletDescOID\",
+			OutletCountOID=\"$this->OutletCountOID\",
+			OutletStatusOID=\"$this->OutletStatusOID\",
+			OutletStatusOn=\"$this->OutletStatusOn\",
 			Multiplier=\"$this->Multiplier\", OID1=\"$this->OID1\", OID2=\"$this->OID2\", 
 			OID3=\"$this->OID3\", ATSStatusOID=\"$this->ATSStatusOID\", ATSDesiredResult=\"$this->ATSDesiredResult\",
 			ProcessingProfile=\"$this->ProcessingProfile\", 

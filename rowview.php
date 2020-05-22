@@ -113,11 +113,13 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
   <script type="text/javascript" src="scripts/common.js?v',filemtime('scripts/common.js'),'"></script>
   <script type="text/javascript">
 	$(document).ready(function() {
-		$(".cabinet .error").append("*");
-		$("<button>",{type: "button"}).text("'.__("Add new cabinet").'").click(function(){
+		$(".cabinet .error").append("*");';
+if ($person->RackAdmin || $person->SiteAdmin) {
+		echo '$("<button>",{type: "button"}).text("'.__("Add new cabinet").'").click(function(){
 			document.location.href="cabinets.php?dcid=',$dcID,'&zoneid=',$cabrow->ZoneID,'&cabrowid=',$cabrow->CabRowID,'";
-		}).prependTo($(".main"));
-		$("<button>",{id: "reverse", type: "button"}).text("'.(isset($_GET["rear"])?__("Front View"):__("Rear View")).'").click(function(){
+		}).prependTo($(".main"));';
+}
+		echo '$("<button>",{id: "reverse", type: "button"}).text("'.(isset($_GET["rear"])?__("Front View"):__("Rear View")).'").click(function(){
 			document.location.href="rowview.php?row=',$cabrow->CabRowID.(isset($_GET["rear"])?"":"&rear"),'";
 		}).prependTo($(".main"));';
 
@@ -172,6 +174,11 @@ $('#centeriehack').width($('#centeriehack div.cabinet').length * 278);
 	}
 ?>
 </div>  <!-- END div.main -->
+<?php
+	if ($person->SiteAdmin || $person->RackAdmin || $person->WriteAccess) {
+                print '<div><input type="hidden" name="cabinetdraggable" id="cabinetdraggable" value="yes"></div>';
+        }
+?>
 
 <div class="clear"></div>
 </div>

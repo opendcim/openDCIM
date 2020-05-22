@@ -1155,6 +1155,7 @@ div.cabinet {
 .switch .status, .power .status, .patchpanel .down { background-image: url("../images/portstatus.png");}
 .switch .down, .patchpanel .down { background-position: left; }
 .switch .up { background-position: right; }
+.power .up { background-position: right; }
 
 .chassis .table input{text-align:center;}
 .chassis .table > div > div{text-align:center;}

@@ -215,6 +215,11 @@
 			$cdutemplate->Managed=isset($_POST['Managed'])?1:0;
 			$cdutemplate->ATS=isset($_POST['ATS'])?1:0;
 			$cdutemplate->VersionOID=$_POST['VersionOID'];
+			$cdutemplate->OutletNameOID=$_POST['OutletNameOID'];
+			$cdutemplate->OutletDescOID=$_POST['OutletDescOID'];
+			$cdutemplate->OutletCountOID=$_POST['OutletCountOID'];
+			$cdutemplate->OutletStatusOID=$_POST['OutletStatusOID'];
+			$cdutemplate->OutletStatusOn=$_POST['OutletStatusOn'];
 			$cdutemplate->Multiplier=$_POST['Multiplier'];
 			$cdutemplate->OID1=$_POST['OID1'];
 			$cdutemplate->OID2=$_POST['OID2'];
@@ -981,6 +986,26 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 		<div>
 			<div><label for="VersionOID">',__("Firmware Version OID"),'</label></div>
 			<div><input type="text" name="VersionOID" id="VersionOID" size=40></div>
+		</div>
+		<div>
+			<div><label for="OutletNameOID">',__("Power Outlet Name")." ".__("OID"),'</label></div>
+			<div><input type="text" name="OutletNameOID" id="OutletNameOID" size=40></div>
+		</div>
+		<div>
+			<div><label for="OutletDescOID">',__("Power Connections")." ".__("OID"),'</label></div>
+			<div><input type="text" name="OutletDescOID" id="OutletDescOID" size=40></div>
+		</div>
+		<div>
+			<div><label for="OutletCountOID">',__("Power Connection Count")." ".__("OID"),'</label></div>
+			<div><input type="text" name="OutletCountOID" id="OutletCountOID" size=40></div>
+		</div>
+		<div>
+			<div><label for="OutletStatusOID">',__("Outlet State")." ".__("OID"),'</label></div>
+			<div><input type="text" name="OutletStatusOID" id="OutletStatusOID" size=40></div>
+		</div>
+		<div>
+			<div><label for="OutletStatusOn">',__("Outlet Status On State"),'</label></div>
+			<div><input type="text" name="OutletStatusOn" id="OutletStatusOn" size=40></div>
 		</div>
 		<div>
 		   <div><label for="Multiplier">',__("Multiplier"),'</label></div>
