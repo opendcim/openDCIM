@@ -6,6 +6,8 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'RobRichards\\XMLSecLibs\\' => array($vendorDir . '/robrichards/xmlseclibs/src'),
     'ProxmoxVE\\' => array($vendorDir . '/zzantares/proxmoxve/src'),
+    'OneLogin\\' => array($vendorDir . '/onelogin/php-saml/src'),
     'Box\\Spout\\' => array($vendorDir . '/box/spout/src/Spout'),
 );

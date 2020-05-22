@@ -127,7 +127,7 @@ class OneLogin_Saml2_LogoutResponse
                 $security = $this->_settings->getSecurityData();
 
                 if ($security['wantXMLValidation']) {
-                    $res = OneLogin_Saml2_Utils::validateXML($this->document, 'saml-schema-protocol-2.0.xsd', $this->_settings->isDebugActive());
+                    $res = OneLogin_Saml2_Utils::validateXML($this->document, 'saml-schema-protocol-2.0.xsd', $this->_settings->isDebugActive(), $this->_settings->getSchemasPath());
                     if (!$res instanceof DOMDocument) {
                         throw new OneLogin_Saml2_ValidationError(
                             "Invalid SAML Logout Response. Not match the saml-schema-protocol-2.0.xsd",
@@ -161,11 +161,26 @@ class OneLogin_Saml2_LogoutResponse
                 // Check destination
                 if ($this->document->documentElement->hasAttribute('Destination')) {
                     $destination = $this->document->documentElement->getAttribute('Destination');
-                    if (!empty($destination) && strpos($destination, $currentURL) === false) {
-                        throw new OneLogin_Saml2_ValidationError(
-                            "The LogoutResponse was received at $currentURL instead of $destination",
-                            OneLogin_Saml2_ValidationError::WRONG_DESTINATION
-                        );
+                    if (empty($destination)) {
+                        if (!$security['relaxDestinationValidation']) {
+                            throw new OneLogin_Saml2_ValidationError(
+                                "The LogoutResponse has an empty Destination value",
+                                OneLogin_Saml2_ValidationError::EMPTY_DESTINATION
+                            );
+                        }
+                    } else {
+                        $urlComparisonLength = $security['destinationStrictlyMatches'] ? strlen($destination) : strlen($currentURL);
+                        if (strncmp($destination, $currentURL, $urlComparisonLength) !== 0) {
+                            $currentURLNoRouted = OneLogin_Saml2_Utils::getSelfURLNoQuery();
+                            $urlComparisonLength = $security['destinationStrictlyMatches'] ? strlen($destination) : strlen($currentURLNoRouted);
+
+                            if (strncmp($destination, $currentURLNoRouted, $urlComparisonLength) !== 0) {
+                                throw new OneLogin_Saml2_ValidationError(
+                                    "The LogoutResponse was received at $currentURL instead of $destination",
+                                    OneLogin_Saml2_ValidationError::WRONG_DESTINATION
+                                );
+                            }
+                        }
                     }
                 }
 

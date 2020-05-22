@@ -2,7 +2,7 @@
 
 $advancedSettings = array (
 
-    // Compression settings 
+    // Compression settings
     // Handle if the getRequest/getResponse methods will return the Request/Response deflated.
     // But if we provide a $deflate boolean parameter to the getRequest or getResponse
     // method it will have priority over the compression settings.
@@ -36,7 +36,11 @@ $advancedSettings = array (
          False || True (use sp certs) || array (
                                                     keyFileName => 'metadata.key',
                                                     certFileName => 'metadata.crt'
-                                                )
+                                               )
+                                      || array (
+                                                    'x509cert' => '',
+                                                    'privateKey' => ''
+                                               )
         */
         'signMetadata' => false,
 
@@ -80,6 +84,16 @@ $advancedSettings = array (
         // If true, SAMLResponses with an empty value at its Destination
         // attribute will not be rejected for this fact.
         'relaxDestinationValidation' => false,
+
+        // If true, Destination URL should strictly match to the address to
+        // which the response has been sent.
+        // Notice that if 'relaxDestinationValidation' is true an empty Destintation
+        // will be accepted.
+        'destinationStrictlyMatches' => false,
+
+        // If true, SAMLResponses with an InResponseTo value will be rejectd if not
+        // AuthNRequest ID provided to the validation method.
+        'rejectUnsolicitedResponsesWithInResponseTo' => false,
 
         // Algorithm that the toolkit will use on signing process. Options:
         //    'http://www.w3.org/2000/09/xmldsig#rsa-sha1'

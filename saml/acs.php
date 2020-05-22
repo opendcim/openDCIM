@@ -38,7 +38,7 @@ if ($samlResponse->isValid($saml_reqID)) {
 	$check_username = $samlResponse->getNameId();
 	$attributes = $samlResponse->getAttributes();
 	if (!empty($attributes)) {
-                $alias = $attributes['fn'][0] . " " . $attributes['ln'][0];
+                $alias = $attributes['urn:oid:2.5.4.42'][0] . " " . $attributes['urn:oid:2.5.4.4'][0];
 	}
 
         // Remove the prefix and suffix from the user name
@@ -68,7 +68,7 @@ if ($samlResponse->isValid($saml_reqID)) {
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-<?php echo ($config->ParameterArray["SAMLShowSuccessPage"]=='enabled' ? '<meta http-equiv="refresh" content="2;url='.$_POST['RelayState'].'">' : '') 
+<?php echo ($config->ParameterArray["SAMLShowSuccessPage"]=='enabled' ? '<meta http-equiv="refresh" content="10;url='.$_POST['RelayState'].'">' : '') 
 ?>
 <head>
 <title>SAML client results</title>
@@ -77,7 +77,8 @@ if ($samlResponse->isValid($saml_reqID)) {
 <?php
 		echo '<h1>', HtmlSpecialChars($check_username),
 			' you have logged in successfully with SAML!</h1>';
-		echo '<pre>', HtmlSpecialChars(print_r($check_username, 1)), '</pre>';
+		echo '<pre>', HtmlSpecialChars(print_r($check_username, 1));
+		echo print_r($attributes, true);
 ?>
 </body>
 </html>

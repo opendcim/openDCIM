@@ -29,7 +29,7 @@ if (!isset($_SESSION['samlUserdata'])) {
 	}
 	$parameters['RelayState'] = (isset($relayto)?OneLogin_Saml2_Utils::getSelfURLhost().$relayto:OneLogin_Saml2_Utils::getSelfURLhost());
 
-    	$idpData = $settings->getIdPData();
+    $idpData = $settings->getIdPData();
 	$ssoUrl = $idpData['singleSignOnService']['url'];
 	$url = OneLogin_Saml2_Utils::redirect($ssoUrl, $parameters, true);
 

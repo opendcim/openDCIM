@@ -11,9 +11,17 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
     );
 
     public static $prefixLengthsPsr4 = array (
+        'R' => 
+        array (
+            'RobRichards\\XMLSecLibs\\' => 23,
+        ),
         'P' => 
         array (
             'ProxmoxVE\\' => 10,
+        ),
+        'O' => 
+        array (
+            'OneLogin\\' => 9,
         ),
         'B' => 
         array (
@@ -22,9 +30,17 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
     );
 
     public static $prefixDirsPsr4 = array (
+        'RobRichards\\XMLSecLibs\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/robrichards/xmlseclibs/src',
+        ),
         'ProxmoxVE\\' => 
         array (
             0 => __DIR__ . '/..' . '/zzantares/proxmoxve/src',
+        ),
+        'OneLogin\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/onelogin/php-saml/src',
         ),
         'Box\\Spout\\' => 
         array (

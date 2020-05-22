@@ -44,7 +44,7 @@ class Config{
 					}
 					$i++;
 				}
-					
+				
 				$sql='update fac_Config set Value=\''.sanitize($valueStr).'\' where Parameter=\''.$key.'\'';
 				if(!$dbh->query($sql)){
 					$info=$dbh->errorInfo();

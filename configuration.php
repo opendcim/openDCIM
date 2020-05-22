@@ -14,6 +14,73 @@
 		exit;
 	}
 
+	define("TOOLKIT_PATH", './vendor/onelogin/php-saml/');
+	require_once(TOOLKIT_PATH . '_toolkit_loader.php');
+	require_once( "./saml/settings.php" );
+
+	/*
+	 * Automatic Key/Cert Generation Function for Saml
+	 */
+	if ( $config->ParameterArray["SAMLGenNewCert"] == "enabled" ) {
+		// Clear the flag for generating a new certificate
+		$config->ParameterArray['SAMLGenNewCert']='disabled';
+		// Force a save, because multiplexing browsers can cause it to make several copies at once
+		$config->UpdateParameter('SAMLGenNewCert', 'disabled' );
+
+		error_log( "Generating new Key and Certificate for SAML ServiceProvider" );
+
+		$keyConfig = array(
+		    "digest_alg" => "sha512",
+		    "private_key_bits" => 4096,
+		    "private_key_type" => OPENSSL_KEYTYPE_RSA,
+		);
+		   
+		// Create the private and public key
+		$res = openssl_pkey_new($keyConfig);
+
+		// Extract the private key from $res to $privKey
+		$keyHeader = array("-----BEGIN PRIVATE KEY----- "," -----END PRIVATE KEY-----"); //headers to strip
+		openssl_pkey_export($res, $newKey );
+		$config->ParameterArray["SAMLspprivateKey"] = str_replace($keyHeader, '', $newKey);;
+
+		// Fill in the DN
+		$dn = array(
+		    "countryName" => $config->ParameterArray["SAMLCertCountry"] != "" ? $config->ParameterArray["SAMLCertCountry"]:$config->defaults["SAMLCertCountry"],
+		    "stateOrProvinceName" => $config->ParameterArray["SAMLCertProvince"] != "" ? $config->ParameterArray["SAMLCertProvince"]:$config->defaults["SAMLCertProvince"],
+		    "organizationName" => $config->ParameterArray["SAMLCertOrganization"] != "" ? $config->ParameterArray["SAMLCertOrganization"]:$config->defaults["SAMLCertOrganization"],
+		    "organizationalUnitName" => "openDCIM",
+		    "commonName" => "openDCIM SP Cert"
+		);
+
+		$req_csr = openssl_csr_new($dn, $req_key);
+		$req_cert = openssl_csr_sign($req_csr, NULL, $req_key, 365);
+
+		$certHeader = array("-----BEGIN CERTIFICATE----- "," -----END CERTIFICATE-----");
+		openssl_x509_export( $req_cert, $newCert );
+		$config->ParameterArray["SAMLspx509cert"] = str_replace( $certHeader, "", $newCert );
+	}
+
+	// Automagically pull down information from the Identity Provider via the metadata if requested
+	if ( $config->ParameterArray["SAMLRefreshIdPMetadata"]=='enabled' ) {
+		// Force a save, because multiplexing browsers can cause it to make several copies at once
+		$config->ParameterArray['SAMLRefreshIdPMetadata']='disabled';
+		$config->UpdateParameter('SAMLRefreshIdPMetadata', 'disabled' );
+
+		$parser = new OneLogin_Saml2_IdPMetadataParser;
+		error_log( "Downloading new IdP Metadata from " . $config->ParameterArray["SAMLIdPMetadataURL"]);
+		$IdPSettings = $parser->parseRemoteXML($config->ParameterArray["SAMLIdPMetadataURL"]);
+
+		$config->ParameterArray["SAMLidpentityId"]=$IdPSettings['idp']['entityId'];
+		$config->ParameterArray["SAMLidpx509cert"]=$IdPSettings['idp']['x509cert'];
+		$config->ParameterArray["SAMLidpslsURL"]=$IdPSettings['idp']['singleLogoutService']['url'];
+		$config->ParameterArray["SAMLidpssoURL"]=$IdPSettings['idp']['singleSignOnService']['url'];
+	}
+
+	$savedspx509cert = $config->ParameterArray["SAMLspx509cert"];
+	$savedspprivateKey = $config->ParameterArray["SAMLspprivateKey"];
+	$savedidpx509cert = $config->ParameterArray["SAMLidpx509cert"];
+
+
 	function BuildDirectoryList($returnjson=false,$path="."){
 		$path=trim($path);
 		# Make sure we don't have any path shenanigans going on
@@ -22,7 +89,7 @@
 		$path=trim($path,"/");
 		# if path is empty revert to the current directory
 		$path=($path)?$path:'.';
-		$here=end(explode(DIRECTORY_SEPARATOR,getcwd()));
+		$here=@end(explode(DIRECTORY_SEPARATOR,getcwd()));
 		$breadcrumb="<a href=\"?dl=\">$here</a>/";
 		$breadcrumbpath="";
 		if($path!='.'){
@@ -236,9 +303,16 @@
 				$List=explode(", ",$_REQUEST[$key]);
 				$config->ParameterArray[$key]=$List;
 			}else{
-				$config->ParameterArray[$key]=$_REQUEST[$key];
+				// Not all values are inputs on the screen
+				@$config->ParameterArray[$key]=$_REQUEST[$key];
 			}
 		}
+
+		// All kinds of hackery to keep the x509 certs and key from being sent to the browser - there's no need for it
+		$config->ParameterArray["SAMLspx509cert"] = $savedspx509cert;
+		$config->ParameterArray["SAMLspprivateKey"] = $savedspprivateKey;
+		$config->ParameterArray["SAMLidpx509cert"] = $savedidpx509cert;
+
 		$config->UpdateConfig();
 
 		//Disable all tooltip items and clear the SortOrder
@@ -2433,22 +2507,6 @@ echo '<div class="main">
 			<h3>',__("SAML Authentication Configuration"),'</h3>
 			<div class="table">
 				<div>
-					<div><label for="SAMLStrict">',__("Strict"),'</label></div>
-					<div><select id="SAMLStrict" name="SAMLStrict" defaultValue="',$config->defaults["SAMLStrict"],'" data="', $config->ParameterArray["SAMLStrict"],'">
-							<option value="disabled">',__("Disabled"),'</option>
-							<option value="enabled">',__("Enabled"),'</option>
-						</select>
-					</div>
-				</div>
-				<div>
-					<div><label for="SAMLDebug">',__("Debug"),'</label></div>
-				<div><select id="SAMLDebug" name="SAMLDebug" defaultValue="',$config->defaults["SAMLDebug"],'" data="', $config->ParameterArray["SAMLDebug"],'">
-							<option value="disabled">',__("Disabled"),'</option>
-							<option value="enabled">',__("Enabled"),'</option>
-						</select>
-					</div>
-				</div>
-				<div>
 					<div><label for="SAMLBaseURL">',__("Base URL"),'</label></div>
 					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLBaseURL"],'" name="SAMLBaseURL" value="',$config->ParameterArray["SAMLBaseURL"],'"></div>
 				</div>
@@ -2461,34 +2519,47 @@ echo '<div class="main">
 					</div>
 				</div>
 			</div>
-			<h3>',__("SAML Service Provider Configuration"),'</h3>
+			<h3>',__("SAML SP Information and Certificate Generation"),'</h3>
 			<div class="table">
 				<div>
 					<div><label for="SAMLspentityId">',__("Entity ID"),'</label></div>
 					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLspentityId"],'" name="SAMLspentityId" value="',$config->ParameterArray["SAMLspentityId"],'"></div>
 				</div>
 				<div>
-					<div><label for="SAMLspacsURL">',__("ACS URL"),'</label></div>
-					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLspacsURL"],'" name="SAMLspacsURL" value="',$config->ParameterArray["SAMLspacsURL"],'"></div>
+					<div><label for="SAMLCertCountry">',__("Country (2 Character)"),'</label></div>
+					<div><input type="text" size="3" defaultvalue="',$config->defaults["SAMLCertCountry"],'" name="SAMLCertCountry" value="',$config->ParameterArray["SAMLCertCountry"],'"></div>
 				</div>
 				<div>
-					<div><label for="SAMLspslsURL">',__("SLS URL"),'</label></div>
-					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLspslsURL"],'" name="SAMLspslsURL" value="',$config->ParameterArray["SAMLspslsURL"],'"></div>
+					<div><label for="SAMLCertProvince">',__("State or Province"),'</label></div>
+					<div><input type="text" size="3" defaultvalue="',$config->defaults["SAMLCertProvince"],'" name="SAMLCertProvince" value="',$config->ParameterArray["SAMLCertProvince"],'"></div>
 				</div>
 				<div>
-					<div><label for="SAMLspx509cert">',__("x509 Certificate"),'</label></div>
-					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLspx509cert"],'" name="SAMLspx509cert" value="',$config->ParameterArray["SAMLspx509cert"],'"></div>
-				</div>
-				<div>
-					<div><label for="SAMLspprivateKey">',__("Private Key"),'</label></div>
-					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLspprivateKey"],'" name="SAMLspprivateKey" value="',$config->ParameterArray["SAMLspprivateKey"],'"></div>
-				</div>
+					<div><label for="SAMLCertOrganization">',__("Organization"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLCertOrganization"],'" name="SAMLCertOrganization" value="',$config->ParameterArray["SAMLCertOrganization"],'"></div>
+				</div>';
+ 			if ( $config->ParameterArray["SAMLspx509cert"] != "" ) {
+ 				$data = openssl_x509_parse(str_replace(array("&#13;", "&#10;"), array(chr(13), chr(10)), $config->ParameterArray["SAMLspx509cert"]));
+
+				$validFrom = date('Y-m-d H:i:s', $data['validFrom_time_t']);
+				$validTo = date('Y-m-d H:i:s', $data['validTo_time_t']);
+			
+
+				echo '<div>
+					<div>',__("Current Expiration:"),'</div>
+					<div>',$validTo,'</div>
+				</div>';
+ 			}
+ 			echo '
 			</div>
 			<h3>',__("SAML Identity Provider Configuration"),'</h3>
 			<div class="table">
 				<div>
-					<div><label for="SAMLidpentityId">',__("Entity ID"),'</label></div>
+					<div><label for="SAMLidpentityId">',__("IdP entityId"),'</label></div>
 					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLidpentityId"],'" name="SAMLidpentityId" value="',$config->ParameterArray["SAMLidpentityId"],'"></div>
+				</div>
+				<div>
+					<div><label for="SAMLIdPMetadataURL">',__("IdP Metadata URL"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLIdPMetadataURL"],'" name="SAMLIdPMetadataURL" value="',$config->ParameterArray["SAMLIdPMetadataURL"],'"></div>
 				</div>
 				<div>
 					<div><label for="SAMLidpssoURL">',__("SSO URL"),'</label></div>
@@ -2499,12 +2570,12 @@ echo '<div class="main">
 					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLidpslsURL"],'" name="SAMLidpslsURL" value="',$config->ParameterArray["SAMLidpslsURL"],'"></div>
 				</div>
 				<div>
-					<div><label for="SAMLidpcertFingerprint">',__("Certificate Fingerprint"),'</label></div>
-					<div><input type="text" size="50" defaultvalue="',$config->defaults["SAMLidpcertFingerprint"],'" name="SAMLidpcertFingerprint" value="',$config->ParameterArray["SAMLidpcertFingerprint"],'"></div>
-				</div>
-				<div>
-					<div><label for="SAMLidpcertFingerprintAlgorithm">',__("Certificate Fingerprint Algorithm"),'</label></div>
-					<div><input type="text" size="20" defaultvalue="',$config->defaults["SAMLidpcertFingerprintAlgorithm"],'" name="SAMLidpcertFingerprintAlgorithm" value="',$config->ParameterArray["SAMLidpcertFingerprintAlgorithm"],'"></div>
+					<div><label for="SAMLRefreshIdPMetadata">',__("Refresh IdP Metadata?"),'</label></div>
+					<div><select id="SAMLRefreshIdPMetadata" name="SAMLRefreshIdPMetadata" defaultValue="',$config->defaults["SAMLRefreshIdPMetadata"],'" data="', $config->ParameterArray["SAMLRefreshIdPMetadata"],'">
+							<option value="disabled">',__("No"),'</option>
+							<option value="enabled">',__("Yes"),'</option>
+						</select>
+					</div>
 				</div>
 			</div>
 			<h3>',__("SAML Account Configuration"),'</h3>
