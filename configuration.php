@@ -39,9 +39,8 @@
 		$res = openssl_pkey_new($keyConfig);
 
 		// Extract the private key from $res to $privKey
-		$keyHeader = array("-----BEGIN PRIVATE KEY----- "," -----END PRIVATE KEY-----"); //headers to strip
 		openssl_pkey_export($res, $newKey );
-		$config->ParameterArray["SAMLspprivateKey"] = str_replace($keyHeader, '', $newKey);;
+		$config->ParameterArray["SAMLspprivateKey"] = $newKey;
 
 		// Fill in the DN
 		$dn = array(
@@ -55,9 +54,8 @@
 		$req_csr = openssl_csr_new($dn, $req_key);
 		$req_cert = openssl_csr_sign($req_csr, NULL, $req_key, 365);
 
-		$certHeader = array("-----BEGIN CERTIFICATE----- "," -----END CERTIFICATE-----");
 		openssl_x509_export( $req_cert, $newCert );
-		$config->ParameterArray["SAMLspx509cert"] = str_replace( $certHeader, "", $newCert );
+		$config->ParameterArray["SAMLspx509cert"] = $newCert;
 	}
 
 	// Automagically pull down information from the Identity Provider via the metadata if requested
