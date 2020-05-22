@@ -1017,6 +1017,11 @@ if( AUTHENTICATION == "LDAP" ) {
 	}
 	$lmenu[]='<a href="login_ldap.php?logout"><span>'.__("Logout").'</span></a>';
 }
+
+if (AUTHENTICATION == "Saml" ) {
+	$lmenu[]='<a href="saml/logout.php"><span>'.__("Logout").'</span></a>';
+}
+
 # Can really think that this is necessary - here for completemess
 #if( AUTHENTICATION == "Saml" ) {
 #	// Clear out the Reports menu button and create the Login menu button when not logged in
