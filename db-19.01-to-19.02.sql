@@ -14,12 +14,13 @@ INSERT into fac_Config set Parameter='LDAP_Debug_Password', Value='', UnitOfMeas
 -- New parameters for mapping SAML/LDAP entries to fields in the database
 --
 
-INSERT into fac_Config set Parameter='LDAPFirstName', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
-INSERT into fac_Config set Parameter='LDAPLastName', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
-INSERT into fac_Config set Parameter='LDAPEmail', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
-INSERT into fac_Config set Parameter='LDAPPhone1', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
-INSERT into fac_Config set Parameter='LDAPPhone2', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
-INSERT into fac_Config set Parameter='LDAPPhone3', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
+INSERT into fac_Config set Parameter='SAMLGroupAttribute', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='memberOf';
+INSERT into fac_Config set Parameter='AttrFirstName', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='givenName';
+INSERT into fac_Config set Parameter='AttrLastName', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='sn';
+INSERT into fac_Config set Parameter='AttrEmail', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='mail';
+INSERT into fac_Config set Parameter='AttrPhone1', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
+INSERT into fac_Config set Parameter='AttrPhone2', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
+INSERT into fac_Config set Parameter='AttrPhone3', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
 
 --
 -- New fields tracked in the CDUDeviceTemplate
@@ -50,9 +51,9 @@ DELETE from fac_Config where Parameter='SAMLspacsURL';
 DELETE from fac_Config where Parameter='SAMLspslsURL';
 ALTER TABLE fac_Config MODIFY Value text;
 INSERT into fac_Config set Parameter='SAMLidpx509cert', Value='', UnitOfMeasure='string',ValType='string', DefaultVal='';
-INSERT into fac_Config set Parameter='SAMLGenNewCert', Value='disabled', UnitOfMeasure='string', ValType='string', DefaultVal='disabled';
+INSERT into fac_Config set Parameter='SAMLGenNewCert', Value='disabled', UnitOfMeasure='string', ValType='string', DefaultVal='No';
 INSERT into fac_Config set Parameter='SAMLIdPMetadataURL', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='';
-INSERT into fac_Config set Parameter='SAMLRefreshIdPMetadata', Value='disabled', UnitOfMeasure='string', ValType='string', DefaultVal='disabled';
+INSERT into fac_Config set Parameter='SAMLRefreshIdPMetadata', Value='disabled', UnitOfMeasure='string', ValType='string', DefaultVal='No';
 INSERT into fac_Config set Parameter='SAMLCertCountry', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='US';
 INSERT into fac_Config set Parameter='SAMLCertProvince', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='Tennessee';
 INSERT into fac_Config set Parameter='SAMLCertOrganization', Value='', UnitOfMeasure='string', ValType='string', DefaultVal='openDCIM User';

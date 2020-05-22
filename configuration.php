@@ -1722,6 +1722,7 @@ echo '<div class="main">
 			<li><a href="#tt">',__("ToolTips"),'</a></li>
 			<li><a href="#cc">',__("Cabling"),'</a></li>
 			<li><a href="#dca">',__("Custom Device Attributes"),'</a></li>
+			<li><a href="#mappers">',__("Attribute Mapping"),'</a></li>
 			<li><a href="#ldap">',__("LDAP"),'</a></li>
 			<li><a href="#saml">',__("SAML"),'</a></li>
 			<li><a href="#preflight">',__("Pre-Flight Check"),'</a></li>
@@ -2389,75 +2390,40 @@ echo '<div class="main">
 				</div>
 			</div>
 		</div>
-		<div id="ldap">
-			<h3>',__("LDAP Authentication and Authorization Configuration"),'</h3>
+		<div id="mappers">
+			<h3>',__("LDAP or SAML Attribute Mapping"),'</h3>
 			<div class="table">
 				<div>
-					<div><label for="LDAPServer">',__("LDAP Server URI"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$config->ParameterArray["LDAPServer"],'"></div>
+					<div><label for="AttrFirstName">',__("FirstName"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["AttrFirstName"],'" name="AttrFirstName" value="',$config->ParameterArray["AttrFirstName"],'"></div>
 				</div>
 				<div>
-					<div><label for="LDAPBaseDN">',__("Base DN"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$config->ParameterArray["LDAPBaseDN"],'"></div>
+					<div><label for="AttrLastName">',__("Last Name"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["AttrLastName"],'" name="AttrLastName" value="',$config->ParameterArray["AttrLastName"],'"></div>
 				</div>
 				<div>
-					<div><label for="LDAPBaseSearch">',__("Base Search"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseSearch"],'" name="LDAPBaseSearch" value="',$config->ParameterArray["LDAPBaseSearch"],'" title="',__("Leave blank for Active Directory"),'"></div>
+					<div><label for="AttrEmail">',__("Email"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["AttrEmail"],'" name="AttrEmail" value="',$config->ParameterArray["AttrEmail"],'"></div>
 				</div>
 				<div>
-					<div><label for="LDAPBindDN">',__("Bind DN"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$config->ParameterArray["LDAPBindDN"],'" title="%userid%@opendcim.org for Active Directory"></div>
+					<div><label for="AttrPhone1">',__("Phone1"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["AttrPhone1"],'" name="AttrPhone1" value="',$config->ParameterArray["AttrPhone1"],'"></div>
 				</div>
 				<div>
-					<div><label for="LDAPUserSearch">',__("User Search"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPUserSearch"],'" name="LDAPUserSearch" value="',$config->ParameterArray["LDAPUserSearch"],'"></div>
+					<div><label for="AttrPhone2">',__("Phone2"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["AttrPhone2"],'" name="AttrPhone2" value="',$config->ParameterArray["AttrPhone2"],'"></div>
 				</div>
 				<div>
-					<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPDebug">',__("LDAP Debugging"),'</label></div>
-					<div><select id="LDAPDebug" name="LDAPDebug" defaultValue="',$config->defaults["LDAPDebug"],'" data="', $config->ParameterArray["LDAPDebug"],'">
-							<option value="disabled">',__("Disabled"),'</option>
-							<option value="enabled">',__("Enabled"),'</option>
-						</select>
-					</div>
-				</div>
-				<div>
-					<div><label for="LDAP_Debug_Password">',__("Emergency Bypass Password"),'</label></div>
-					<div><input type="password" defaultvalue="',$config->defaults["LDAP_Debug_Password"],'" name="LDAP_Debug_Password" value="',$config->ParameterArray["LDAP_Debug_Password"],'"></div>
+					<div><label for="AttrPhone3">',__("Phone3"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["AttrPhone3"],'" name="AttrPhone3" value="',$config->ParameterArray["AttrPhone3"],'"></div>
 				</div>
 			</div>
-			<h3>',__("User Attributes"),'</h3>
+			<h3>',__("Group Mapping"),'</h3>
 			<div class="table">
 				<div>
-					<div><label for="LDAPFirstName">',__("First Name"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPFirstName"],'" name="LDAPFirstName" value="',$config->ParameterArray["LDAPFirstName"],'"></div>
+					<div><label for="SAMLGroupAttribute">',__("SAML Attribute containing Groups"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLGroupAttribute"],'" name="SAMLGroupAttribute" value="',$config->ParameterArray["SAMLGroupAttribute"],'"></div>
 				</div>
-				<div>
-					<div><label for="LDAPLastName">',__("Last Name"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPLastName"],'" name="LDAPLastName" value="',$config->ParameterArray["LDAPLastName"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPEmail">',__("Email"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPEmail"],'" name="LDAPEmail" value="',$config->ParameterArray["LDAPEmail"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPPhone1">',__("Phone1"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPPhone1"],'" name="LDAPPhone1" value="',$config->ParameterArray["LDAPPhone1"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPPhone2">',__("Phone2"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPPhone2"],'" name="LDAPPhone2" value="',$config->ParameterArray["LDAPPhone2"],'"></div>
-				</div>
-				<div>
-					<div><label for="LDAPPhone3">',__("Phone3"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["LDAPPhone3"],'" name="LDAPPhone3" value="',$config->ParameterArray["LDAPPhone3"],'"></div>
-				</div>
-			</div>
-			<h3>',__("Group Distinguished Names"),'</h3>
-			<div class="table">
 				<div>
 					<div><label for="LDAPSiteAccess">',__("Site Access"),'</label></div>
 					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPSiteAccess"],'" name="LDAPSiteAccess" value="',$config->ParameterArray["LDAPSiteAccess"],'"></div>
@@ -2499,7 +2465,47 @@ echo '<div class="main">
 					<div><input type="text" size="60" defaultvalue="',$config->defaults["LDAPSiteAdmin"],'" name="LDAPSiteAdmin" value="',$config->ParameterArray["LDAPSiteAdmin"],'"></div>
 				</div>
 			</div>
-
+		</div>
+		<div id="ldap">
+			<h3>',__("LDAP Authentication and Authorization Configuration"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="LDAPServer">',__("LDAP Server URI"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPServer"],'" name="LDAPServer" value="',$config->ParameterArray["LDAPServer"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPBaseDN">',__("Base DN"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseDN"],'" name="LDAPBaseDN" value="',$config->ParameterArray["LDAPBaseDN"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPBaseSearch">',__("Base Search"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPBaseSearch"],'" name="LDAPBaseSearch" value="',$config->ParameterArray["LDAPBaseSearch"],'" title="',__("Leave blank for Active Directory"),'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPBindDN">',__("Bind DN"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPBindDN"],'" name="LDAPBindDN" value="',$config->ParameterArray["LDAPBindDN"],'" title="%userid%@opendcim.org for Active Directory"></div>
+				</div>
+				<div>
+					<div><label for="LDAPUserSearch">',__("User Search"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPUserSearch"],'" name="LDAPUserSearch" value="',$config->ParameterArray["LDAPUserSearch"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPSessionExpiration">',__("LDAP Session Expiration (Seconds)"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["LDAPSessionExpiration"],'" name="LDAPSessionExpiration" value="',$config->ParameterArray["LDAPSessionExpiration"],'"></div>
+				</div>
+				<div>
+					<div><label for="LDAPDebug">',__("LDAP Debugging"),'</label></div>
+					<div><select id="LDAPDebug" name="LDAPDebug" defaultValue="',$config->defaults["LDAPDebug"],'" data="', $config->ParameterArray["LDAPDebug"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for="LDAP_Debug_Password">',__("Emergency Bypass Password"),'</label></div>
+					<div><input type="password" defaultvalue="',$config->defaults["LDAP_Debug_Password"],'" name="LDAP_Debug_Password" value="',$config->ParameterArray["LDAP_Debug_Password"],'"></div>
+				</div>
+			</div>
 		</div>
 			<div id="saml">
 			<h3>',__("SAML Authentication Configuration"),'</h3>
@@ -2548,6 +2554,14 @@ echo '<div class="main">
 				</div>';
  			}
  			echo '
+ 				<div>
+ 					<div><label for="SAMLGenNewCert">',__("Generate new key/cert?"),'</label></div>
+					<div><select id="SAMLGenNewCert" name="SAMLGenNewCert" defaultValue="',$config->defaults["SAMLGenNewCert"],'" data="', $config->ParameterArray["SAMLGenNewCert"],'">
+							<option value="disabled">',__("No"),'</option>
+							<option value="enabled">',__("Yes"),'</option>
+						</select>
+					</div>
+				</div>
 			</div>
 			<h3>',__("SAML Identity Provider Configuration"),'</h3>
 			<div class="table">
