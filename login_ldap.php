@@ -147,18 +147,20 @@
 					// makes it easier to check access rights by replicating the user's rights from LDAP into the
 					// local db for the session.  Revoke all rights every login and pull a fresh set from LDAP.
 					$person->UserID=$ldapUser;
-					$person->GetPersonByUserID();
+					if ( ! $person->GetPersonByUserID() )
+						$person->CreatePerson();
+
 					$person->revokeAll();
 
 					// GetPersonByUserID just populated our person object, update it with the 
 					// info we just pulled from ldap, if they are a valid user we'll update the
 					// db version of their name below, suppress any errors for missing attributes
-					@$person->FirstName=$ldapResults[0][$config->ParameterArray['LDAPFirstName']][0];
-					@$person->LastName =$ldapResults[0][$config->ParameterArray['LDAPLastName']][0];
-					@$person->Email    =$ldapResults[0][$config->ParameterArray['LDAPEmail']][0];
-					@$person->Phone1   =$ldapResults[0][$config->ParameterArray['LDAPPhone1']][0];
-					@$person->Phone2   =$ldapResults[0][$config->ParameterArray['LDAPPhone2']][0];
-					@$person->Phone3   =$ldapResults[0][$config->ParameterArray['LDAPPhone3']][0];
+					@$person->FirstName=$ldapResults[0][$config->ParameterArray['AttrFirstName']][0];
+					@$person->LastName =$ldapResults[0][$config->ParameterArray['AttrLastName']][0];
+					@$person->Email    =$ldapResults[0][$config->ParameterArray['AttrEmail']][0];
+					@$person->Phone1   =$ldapResults[0][$config->ParameterArray['AttrPhone1']][0];
+					@$person->Phone2   =$ldapResults[0][$config->ParameterArray['AttrPhone2']][0];
+					@$person->Phone3   =$ldapResults[0][$config->ParameterArray['AttrPhone3']][0];
 
 					if($config->ParameterArray['LDAPSiteAccess']=="" || isUserInLDAPGroup($config, $ldapConn, $config->ParameterArray['LDAPSiteAccess'], $ldapUser)){
 						// No specific group membership required to access openDCIM or they have a match to the group required
@@ -184,6 +186,9 @@
 								debug_error_log("$ldapUser has $accessType by membership in $groupDN");
 							}
 						}
+
+						$person->UpdatePerson();
+
 						unset($accessType);
 					}else{
 						debug_error_log(__("LDAP authentication successful, but access denied based on lacking group membership.  Username: $ldapUser"));

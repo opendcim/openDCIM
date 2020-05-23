@@ -2395,27 +2395,27 @@ echo '<div class="main">
 			<div class="table">
 				<div>
 					<div><label for="AttrFirstName">',__("FirstName"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["AttrFirstName"],'" name="AttrFirstName" value="',$config->ParameterArray["AttrFirstName"],'"></div>
+					<div><input type="text" size="40" defaultvalue="',$config->defaults["AttrFirstName"],'" name="AttrFirstName" value="',$config->ParameterArray["AttrFirstName"],'"></div>
 				</div>
 				<div>
 					<div><label for="AttrLastName">',__("Last Name"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["AttrLastName"],'" name="AttrLastName" value="',$config->ParameterArray["AttrLastName"],'"></div>
+					<div><input type="text" size="40" defaultvalue="',$config->defaults["AttrLastName"],'" name="AttrLastName" value="',$config->ParameterArray["AttrLastName"],'"></div>
 				</div>
 				<div>
 					<div><label for="AttrEmail">',__("Email"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["AttrEmail"],'" name="AttrEmail" value="',$config->ParameterArray["AttrEmail"],'"></div>
+					<div><input type="text" size="40" defaultvalue="',$config->defaults["AttrEmail"],'" name="AttrEmail" value="',$config->ParameterArray["AttrEmail"],'"></div>
 				</div>
 				<div>
 					<div><label for="AttrPhone1">',__("Phone1"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["AttrPhone1"],'" name="AttrPhone1" value="',$config->ParameterArray["AttrPhone1"],'"></div>
+					<div><input type="text" size="40" defaultvalue="',$config->defaults["AttrPhone1"],'" name="AttrPhone1" value="',$config->ParameterArray["AttrPhone1"],'"></div>
 				</div>
 				<div>
 					<div><label for="AttrPhone2">',__("Phone2"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["AttrPhone2"],'" name="AttrPhone2" value="',$config->ParameterArray["AttrPhone2"],'"></div>
+					<div><input type="text" size="40" defaultvalue="',$config->defaults["AttrPhone2"],'" name="AttrPhone2" value="',$config->ParameterArray["AttrPhone2"],'"></div>
 				</div>
 				<div>
 					<div><label for="AttrPhone3">',__("Phone3"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["AttrPhone3"],'" name="AttrPhone3" value="',$config->ParameterArray["AttrPhone3"],'"></div>
+					<div><input type="text" size="40" defaultvalue="',$config->defaults["AttrPhone3"],'" name="AttrPhone3" value="',$config->ParameterArray["AttrPhone3"],'"></div>
 				</div>
 			</div>
 			<h3>',__("Group Mapping"),'</h3>
