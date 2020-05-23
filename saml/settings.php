@@ -14,7 +14,7 @@ $saml_settings = array(
 			'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
 		),
 		'singleLogoutService' => array(
-            'url' => $config->ParameterArray["SAMLBaseURL"] . "/saml/logout.php",
+            'url' => $config->ParameterArray["SAMLBaseURL"] . "/saml/sls.php",
 			'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
 		),
 		'NameIDFormat' => 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',

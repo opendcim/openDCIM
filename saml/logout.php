@@ -29,9 +29,6 @@ $samlRequest = $logoutRequest->getRequest();
 
 $parameters = array('SAMLRequest' => $samlRequest);
 
-unset($_SESSION['saml_req_id']);
-unset($_SESSION['userid']);
-
 $url = OneLogin_Saml2_Utils::redirect($sloUrl, $parameters, true);
 
 header("Location: $url");

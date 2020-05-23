@@ -81,9 +81,6 @@ if ($samlResponse->isValid($saml_reqID)) {
 			$person->revokeAll();
 			$groupList = $attributes[$config->ParameterArray["SAMLGroupAttribute"]];
 
-			error_log( "GroupList Attribute: " . $config->ParameterArray["SAMLGroupAttribute"] );
-			error_log( print_r($groupList, true ) );
-
 			if ( in_array( $config->ParameterArray["LDAPSiteAccess"], $groupList ) )
 				$person->SiteAccess = true;
 			if ( in_array( $config->ParameterArray["LDAPReadAccess"], $groupList ) )
