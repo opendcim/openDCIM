@@ -119,7 +119,7 @@ if ($samlResponse->isValid($saml_reqID)) {
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-<?php echo ($config->ParameterArray["SAMLShowSuccessPage"]=='enabled' ? '<meta http-equiv="refresh" content="2;url='.$_POST['RelayState'].'">' : '') 
+<?php echo ($config->ParameterArray["SAMLShowSuccessPage"]=='enabled' ? '<meta http-equiv="refresh" content="10;url='.$_POST['RelayState'].'">' : '') 
 ?>
 <head>
 <title>SAML client results</title>
