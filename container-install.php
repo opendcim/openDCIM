@@ -17,6 +17,7 @@ $upgrade=false;
 $result=$dbh->prepare("SHOW TABLES;");
 $result->execute();
 if($result->rowCount()==0){ // No tables in the DB so try to install.
+	console.log("Detected fresh installation.   Creating database tables.");
 	require_once( "classes/People.class.php" );
 	$results[]=applyupdate("create.sql");
 	$person = new People();
@@ -179,12 +180,20 @@ function upgrade(){
 
 
 	if($version=="18.01"){
+		console.log("Applying database update from 18.01 to 18.02");
 		$results[]=applyupdate("db-18.01-to-18.02.sql");
 
 		$config->rebuild();
 	}
 	if($version=="18.02"){
+		console.log("Applying database update from 18.02 to 19.01");
 		$results[]=applyupdate("db-18.02-to-19.01.sql");
+
+		$config->rebuild();
+	}
+	if($version=="19.01"){
+		console.log("Applying database update from 19.01 to 20.01");
+		$results[]=applyupdate("db-19.01-to-20.01.sql");
 
 		$config->rebuild();
 	}
@@ -377,6 +386,7 @@ if(isset($results)){
 //Installation Complete
 	if($nodept=="" && $nodc=="" && $nocab==""){ // All three primary sections have had at least one item created
 		if(!isset($_REQUEST['complete']) && !isset($_REQUEST['dept']) && !isset($_REQUEST['cab']) && !isset($_REQUEST['dc']) && !isset($_REQUEST['ldap'])){
+			console.log( "Installation complete.   Redirecting to main entrypoint.")
 			header('Location: '.redirect("index.php"));
 		}
 		//enable the finish menu option
