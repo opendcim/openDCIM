@@ -91,13 +91,13 @@ echo '			</select>
 	header('Content-Disposition: attachment; filename="opendcim.xml"');
 	
 	print "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<datacenter>\n
-	<ID>$datacenter->DataCenterID</ID>
+	<DataCenterID>$datacenter->DataCenterID</DataCenterID>
 	<Name>$datacenter->Name</Name>
 	<Size>$datacenter->SquareFootage</Size>\n";
 	
 	foreach($cabList as $cabRow){
 		print "\t<cabinet>
-		<ID>$cabRow->CabinetID</ID>
+		<CabinetID>$cabRow->CabinetID</CabinetID>
 		<Location>$cabRow->Location</Location>
 		<Height>$cabRow->CabinetHeight</Height>
 		<FrontEdge>$cabRow->FrontEdge</FrontEdge>
@@ -115,7 +115,7 @@ echo '			</select>
 			$power=$devRow->GetDeviceTotalPower();
 			$totalWatts+=$power;
 			print "\t\t<Device>
-			<ID>$devRow->DeviceID</ID>
+			<DeviceID>$devRow->DeviceID</DeviceID>
 			<Label>$devRow->Label</Label>
 			<Position>$devRow->Position</Position>
 			<Height>$devRow->Height</Height>

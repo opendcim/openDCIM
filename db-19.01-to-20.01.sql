@@ -62,4 +62,4 @@ INSERT into fac_Config set Parameter='SAMLCertOrganization', Value='', UnitOfMea
 -- Bump up the database version (uncomment below once released)
 --
 
--- UPDATE fac_Config set Value="20.01" WHERE Parameter="Version";
+UPDATE fac_Config set Value="20.01" WHERE Parameter="Version";

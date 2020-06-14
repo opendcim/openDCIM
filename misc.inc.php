@@ -883,6 +883,7 @@ if(!(isset($devMode)&&$devMode)) {
 		$version = "";
 	if ( VERSION != $version ) {
 		if(file_exists("install.php") && basename($_SERVER['SCRIPT_NAME'])!="install.php" ){
+			error_log("Newer version codebase than database, redirecting to installation script.");
 			// new installs need to run the install first.
 			header("Location: ".redirect('install.php'));
 			exit;
