@@ -91,9 +91,15 @@ if ( file_exists( $config->ParameterArray["reportspath"] . "localreports.json" )
 
 	$array = json_decode($reportRaw,true);
 
-
 	foreach($array as $k=>$val) {
-		if ( isset( $val["DisplayName"] ) && isset( $val["FileName"] ) && file_exists( $config->ParameterArray["reportspath"] . $val["FileName"] ) ) {
+		// Look for a parameter and trim it off in the file_exists check
+                if ( strpos( $val["FileName"], "?" ) > 0 ) {
+                        $checkFile = substr( $val["FileName"], 0, strpos( $val["FileName"], "?" ));
+                } else {
+                        $checkFile = $val["FileName"];
+                }
+
+		if ( isset( $val["DisplayName"] ) && isset( $val["FileName"] ) && file_exists( $config->ParameterArray["reportspath"] . $checkFile ) ) {
 			echo '		<a href="',$config->ParameterArray["reportspath"] . $val["FileName"],'">',$val["DisplayName"],'</a>';
 		}
 	}
