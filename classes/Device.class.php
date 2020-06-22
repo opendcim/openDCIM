@@ -2418,9 +2418,9 @@ class Device {
 				}
 
 				if ( ( $humidity >= $config->ParameterArray["HumidityRedHigh"] ) || ( $humidity <= $config->ParameterArray["HumidityRedLow"] ) ) {
-					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], __("Humidity"), $temp, __("Critical"));
+					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], __("Humidity"), $humidity, __("Critical"));
 				} elseif ( ( $humidity >= $config->ParameterArray["HumidityYellowHigh"] ) || ( $humidity <= $config->ParameterArray["HumidityYellowLow"] ) ) {
-					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], __("Humidity"), $temp, __("Warning"));
+					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], __("Humidity"), $humidity, __("Warning"));
 				}
 			}
 		}
