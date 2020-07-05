@@ -97,8 +97,8 @@
       $fieldNum++;
     }
 
-    $content .= "<div><div><span title=\"" . __("The type of key field that is being used to match devices in openDCIM.  Only one type may be specified per file.") . "\">" . __("KeyField") . "</span></div><div><select name='KeyField'>";
-    foreach( array( "Label", "Hostname", "AssetTag", "SerialNo" ) as $option ) {
+    $content .= "<div><div><span title=\"" . __("The type of key field that is being used to match devices in openDCIM.  Only one type may be specified per file.   ie - If you choose DatabaseKey, then DeviceID, Cabinet, and DataCenterID fields must utilize the applicable ID.") . "\">" . __("KeyField") . "</span></div><div><select name='KeyField'>";
+    foreach( array( "Label", "Hostname", "AssetTag", "SerialNo", "DatabaseKey" ) as $option ) {
       $content .= "<option val=\"$option\">$option</option>";
     }
 
@@ -142,6 +142,8 @@
       case "SerialNo":
         $idField = "SerialNo";
         break;
+      case "DatabaseKey":
+        $idField = "DeviceID";
     }
 
     // Now go through the values in the sheet to validate the required key fields to see if there are any errors before
@@ -186,45 +188,53 @@
         $tmpDev->GetDevice();
       }
 
-      $DataCenterID = 0;
-      $st = $dbh->prepare( "select count(DataCenterID) as TotalMatches, DataCenterID from fac_DataCenter where ucase(Name)=ucase(:Name)" );
-      if ( $row["DataCenterID"] != "" ) {
-        $st->execute( array( ":Name" => $row["DataCenterID"] ));
-        if ( ! $dcRow = $st->fetch()) {
-          $info = $dbh->errorInfo();
-          error_log( "PDO Error: {$info[2]}");
-          $rowError = true;
-        }
+      if ( $idField == "DeviceID" ) {
+        $DataCenterID = $row["DataCenterID"];
+      } else {
+        $DataCenterID = 0;
+        $st = $dbh->prepare( "select count(DataCenterID) as TotalMatches, DataCenterID from fac_DataCenter where ucase(Name)=ucase(:Name)" );
+        if ( $row["DataCenterID"] != "" ) {
+          $st->execute( array( ":Name" => $row["DataCenterID"] ));
+          if ( ! $dcRow = $st->fetch()) {
+            $info = $dbh->errorInfo();
+            error_log( "PDO Error: {$info[2]}");
+            $rowError = true;
+          }
 
-        if ( $dcRow["TotalMatches"] != 1 ) {
-          $rowError = true;
-          $tmpCon .= "<li>DataCenterID: " . $row["DataCenterID"] . " is not unique or not found.";
-        } else {
-          $DataCenterID = $dcRow["DataCenterID"];
-        }
-      }
-
-      $CabinetID = 0;
-      // To check validity of cabinets, we have to know the data center for that specific cabinet.
-      $st = $dbh->prepare( "select count(CabinetID) as TotalMatches, CabinetID from fac_Cabinet where ucase(Location)=ucase( :Location ) and DataCenterID=:DataCenter" );
-      if ( $DataCenterID>0 ) {
-        $st->execute( array( ":Location"=>$row["Cabinet"], ":DataCenter"=>$DataCenterID ));
-        if ( ! $cabRow = $st->fetch()) {
-          $info = $dbh->errorInfo();
-          error_log( "PDO Error: {$info[2]}");
-          $rowError = true;
-        }
-
-        if ( $cabRow["TotalMatches"] != 1 ) {
-          $rowError = true;
-          $tmpCon .= "<li>" . __("Cabinet") . ": " . $row["DataCenterID"] . " - " . $row["Cabinet"];
-        } else {
-          $CabinetID = $cabRow["CabinetID"];
+          if ( $dcRow["TotalMatches"] != 1 ) {
+            $rowError = true;
+            $tmpCon .= "<li>DataCenterID: " . $row["DataCenterID"] . " is not unique or not found.";
+          } else {
+            $DataCenterID = $dcRow["DataCenterID"];
+          }
         }
       }
 
-      // Do not check for collision on a delete
-      if ( $DataCenterID>0 ) {
+      if ( $idField == "DeviceID" ) {
+        $CabinetID = $row["Cabinet"];
+      } else {
+        $CabinetID = 0;
+        // To check validity of cabinets, we have to know the data center for that specific cabinet.
+        $st = $dbh->prepare( "select count(CabinetID) as TotalMatches, CabinetID from fac_Cabinet where ucase(Location)=ucase( :Location ) and DataCenterID=:DataCenter" );
+        if ( $DataCenterID>0 ) {
+          $st->execute( array( ":Location"=>$row["Cabinet"], ":DataCenter"=>$DataCenterID ));
+          if ( ! $cabRow = $st->fetch()) {
+            $info = $dbh->errorInfo();
+            error_log( "PDO Error: {$info[2]}");
+            $rowError = true;
+          }
+
+          if ( $cabRow["TotalMatches"] != 1 ) {
+            $rowError = true;
+            $tmpCon .= "<li>" . __("Cabinet") . ": " . $row["DataCenterID"] . " - " . $row["Cabinet"];
+          } else {
+            $CabinetID = $cabRow["CabinetID"];
+          }
+        }
+      }
+
+      // Do not check for collision on a delete or on a Storage Room (Cabinet = -1) move
+      if ( $DataCenterID>0 && $CabinetID != -1 ) {
         $st = $dbh->prepare( "select DeviceID, Label from fac_Device where ParentDevice=0 and Cabinet=:CabinetID and (Position between :StartPos and :EndPos or Position+Height between :StartPos2 and :EndPos2)" );
 
         if ( $tmpDev->DeviceID > 0 ) {
@@ -310,6 +320,9 @@
         case "SerialNo":
           $idField = "SerialNo";
           break;
+        case "DatabaseKey";
+          $idField = "DeviceID";
+          break;
       }
 
       /*
@@ -317,20 +330,28 @@
        *  Section for looking up the DeviceID and setting the true DeviceID in the dev variable
        *
        */
-      $st = $dbh->prepare( "select count(DeviceID) as TotalMatches, DeviceID from fac_Device where ucase(" . $idField . ")=ucase(:SourceDeviceID)" );
-      $st->execute( array( ":SourceDeviceID"=>$row["DeviceID"] ));
-      if ( ! $val = $st->fetch() ) {
-        $info = $dbh->errorInfo();
-        error_log( "PDO Error: {$info[2]}");
-        $rowError = true;
-      }
-
-      if ( $val["TotalMatches"] == 1 ) {
-        $dev->DeviceID = $val["DeviceID"];
-        $dev->GetDevice();
+      if ( $idField == "DeviceID" ) {
+        $dev->DeviceID = $row["DeviceID"];
+        if ( ! $dev->GetDevice() ) {
+          error_log( "DeviceID = ${DeviceID} not found." );
+          $rowError = true;
+        }
       } else {
-        $rowError = true;
-        $content .= "<li>Device: $idField = " . $row["DeviceID"] . " is not unique or not found.";
+        $st = $dbh->prepare( "select count(DeviceID) as TotalMatches, DeviceID from fac_Device where ucase(" . $idField . ")=ucase(:SourceDeviceID)" );
+        $st->execute( array( ":SourceDeviceID"=>$row["DeviceID"] ));
+        if ( ! $val = $st->fetch() ) {
+          $info = $dbh->errorInfo();
+          error_log( "PDO Error: {$info[2]}");
+          $rowError = true;
+        }
+
+        if ( $val["TotalMatches"] == 1 ) {
+          $dev->DeviceID = $val["DeviceID"];
+          $dev->GetDevice();
+        } else {
+          $rowError = true;
+          $content .= "<li>Device: $idField = " . $row["DeviceID"] . " is not unique or not found.";
+        }
       }
 
       if ( $row["DataCenterID"] == "" ) {
@@ -338,27 +359,34 @@
         $dev->DeleteDevice();
         $content .= "<li>Device: $idField = " . $row["DeviceID"] . " deleted.";
       } else {
-        // Now start getting the foreign keys as needed and set them in the $dev variable
-        $st = $dbh->prepare( "select DataCenterID from fac_DataCenter where ucase(Name)=ucase(:Name)" );
-        $st->execute( array( ":Name" => $row["DataCenterID"] ));
-        if ( ! $val = $st->fetch()) {
-          // We just checked this, so there really shouldn't be an issue unless the db died
-          $info = $dbh->errorInfo();
-          error_log( "PDO Error: {$info[2]} (Data Center search)");
-          $rowError = true;
+        if ( $idField == "DeviceID" ) {
+          // In the special case of the StorageRoom, the CabinetID is set to -1 and the Position field indicates
+          // which DataCenterID storage room to put it in, so we use the DataCenterID for that variable.
+          $dev->Cabinet = $row["Cabinet"];
+          $dev->Position = $row["DataCenterID"];
         } else {
-          $dev->DataCenterID = $val["DataCenterID"];
-        }
+          // Now start getting the foreign keys as needed and set them in the $dev variable
+          $st = $dbh->prepare( "select DataCenterID from fac_DataCenter where ucase(Name)=ucase(:Name)" );
+          $st->execute( array( ":Name" => $row["DataCenterID"] ));
+          if ( ! $val = $st->fetch()) {
+            // We just checked this, so there really shouldn't be an issue unless the db died
+            $info = $dbh->errorInfo();
+            error_log( "PDO Error: {$info[2]} (Data Center search)");
+            $rowError = true;
+          } else {
+            $dev->DataCenterID = $val["DataCenterID"];
+          }
 
-        $st = $dbh->prepare( "select CabinetID from fac_Cabinet where ucase(Location)=ucase(:Location) and DataCenterID=:DataCenterID" );
-        $st->execute( array( ":Location" => $row["Cabinet"], ":DataCenterID"=>$dev->DataCenterID ));
-        if ( ! $val = $st->fetch()) {
-          $info = $dbh->errorInfo();
-          error_log( "PDO Error: {$info[2]} (Cabinet search)");
-          $rowError = true;
-        } else {
-          $dev->Cabinet = $val["CabinetID"];
-          $dev->Position = $row["Position"];
+          $st = $dbh->prepare( "select CabinetID from fac_Cabinet where ucase(Location)=ucase(:Location) and DataCenterID=:DataCenterID" );
+          $st->execute( array( ":Location" => $row["Cabinet"], ":DataCenterID"=>$dev->DataCenterID ));
+          if ( ! $val = $st->fetch()) {
+            $info = $dbh->errorInfo();
+            error_log( "PDO Error: {$info[2]} (Cabinet search)");
+            $rowError = true;
+          } else {
+            $dev->Cabinet = $val["CabinetID"];
+            $dev->Position = $row["Position"];
+          }
         }
 
         if ( ! $rowError && ! $dev->UpdateDevice() ) {
