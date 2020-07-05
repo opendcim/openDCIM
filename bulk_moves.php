@@ -210,8 +210,9 @@
         }
       }
 
-      if ( $idField == "DeviceID" ) {
+      if ( $idField == "DeviceID" || strtoupper($row["Cabinet"]) == "STORAGE ROOM") {
         $CabinetID = $row["Cabinet"];
+        $CabinetID = -1;
       } else {
         $CabinetID = 0;
         // To check validity of cabinets, we have to know the data center for that specific cabinet.
@@ -377,15 +378,20 @@
             $dev->DataCenterID = $val["DataCenterID"];
           }
 
-          $st = $dbh->prepare( "select CabinetID from fac_Cabinet where ucase(Location)=ucase(:Location) and DataCenterID=:DataCenterID" );
-          $st->execute( array( ":Location" => $row["Cabinet"], ":DataCenterID"=>$dev->DataCenterID ));
-          if ( ! $val = $st->fetch()) {
-            $info = $dbh->errorInfo();
-            error_log( "PDO Error: {$info[2]} (Cabinet search)");
-            $rowError = true;
+          if ( strtoupper($row["Cabinet"]) == "STORAGE ROOM" ) {
+            $dev->Cabinet = -1;
+            $dev->Position = $dev->DataCenterID;
           } else {
-            $dev->Cabinet = $val["CabinetID"];
-            $dev->Position = $row["Position"];
+            $st = $dbh->prepare( "select CabinetID from fac_Cabinet where ucase(Location)=ucase(:Location) and DataCenterID=:DataCenterID" );
+            $st->execute( array( ":Location" => $row["Cabinet"], ":DataCenterID"=>$dev->DataCenterID ));
+            if ( ! $val = $st->fetch()) {
+              $info = $dbh->errorInfo();
+              error_log( "PDO Error: {$info[2]} (Cabinet search)");
+              $rowError = true;
+            } else {
+              $dev->Cabinet = $val["CabinetID"];
+              $dev->Position = $row["Position"];
+            }
           }
         }
 
