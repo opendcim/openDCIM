@@ -580,6 +580,22 @@
 	$copyerr=__("This device is a copy of an existing device.  Remember to set the new location before saving.");
 	$childList=array();
 
+	// Delete selected paths when deleting a device
+	// pci is a list of all the selected paths the user wanted to remove
+	// pic[0] = DeviceID pci[1] = PortNumber
+	if(isset($_REQUEST['pci'])&& $_REQUEST['pci'] != null)
+	{
+		foreach($_REQUEST['pci'] as $port)
+		{
+			$path = new DevicePorts();   
+			$path->DeviceID=$port[0];
+			$path->PortNumber=$port[1];
+			$path->getPort();
+			$path->removeConnection();
+		}
+		exit;
+	}
+
 	// This page was called from somewhere so let's do stuff.
 	// If this page wasn't called then present a blank record for device creation.
 	if(isset($_REQUEST['action'])||isset($_REQUEST['DeviceID'])){
@@ -1668,24 +1684,70 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 				$('#InstallDate').datepicker("setDate",d);
 			}
 		});
-		// Delete device confirmation dialog
+
+		// Delete device connections dialog
 		$('button[value="Delete"]').click(function(e){
-					var form=$(this).parents('form');
+			var form=$(this).parents('form');
 			var btn=$(this);
-<?php echo '				dialog.find(\'span + span\').text("',__("This device will be deleted and there is no undo. Are you sure?"),'");'; ?>
-			dialog.dialog({
-				resizable: false,
+			var pwc = <?php echo GetJavascriptArrayOfPotentialPathToDelete($dev->DeviceID);?>; //paths with connection
+			var pathList=document.getElementById("deleteselectedpaths");
+			for (i = 0; i < pwc.length; i++) {																			//%2==0 because we want it checked when its 0 or 2
+				pathList.insertAdjacentHTML("beforeend", "<input type=\"checkbox\" id=\""+pwc[i][0]+","+pwc[i][1]+"\""+(pwc[i][3]%2==0?"checked":"")+">"+pwc[i][2]+"</input><br>");
+																			//If 2 or 3 then make it disabled
+				document.getElementById(pwc[i][0]+","+pwc[i][1]).disabled = pwc[i][3]>1?true:false;
+			}
+			$('#deleteselectedpaths').removeClass('hide').dialog({
+				title: "Select paths to delete",
 				modal: true,
-				buttons: {
-<?php echo '				',__("Yes"),': function(){'; ?>
-						$(this).dialog("destroy");
+				width: 'auto',
+				buttons: {	'Delete device and selected paths': function(){  
+						var checked = $("#deleteselectedpaths :checkbox:checked");
+						var pci = [];// Port connection Info
+						var index =0;
+						$.each(checked,function(index,value){
+							pci[index] = value.id.split(",");
+							index++;
+						});
+
+						if(pci.length != 0)
+						{
+							// Info for excel sheet here because it might be deleted before it can read
+							var exceldata=[];
+							var jndex=0;
+							$.each(pwc,function (indexc, valuec){
+								$.each(pci,function(indexi,valuei){
+									if(valuei[0] == valuec[0] && valuei[1] == valuec[1] )
+									{
+										exceldata[jndex]=valuec[2];
+										jndex++;
+									}
+								});
+							});
+
+							$('<form>', {"id": "pciform",
+								"name": "pciform",
+								"method": "post",
+								"target": "_blank",
+								"action": '/export_paths_to_remove.php'
+								}).append('<input type="hidden" name="pci" value="'+encodeURI(JSON.stringify(exceldata))+'"/>').appendTo($('body'));
+							$("#pciform").submit();
+						}
+
+						// Deletes the paths
+						$.post('',{pci: pci});
+						// Deletes the device
 						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
 						form.validationEngine("detach");
 						form.submit();
+						$(this).dialog("close");
 					},
-<?php echo '				',__("No"),': function(){'; ?>
-						$(this).dialog("destroy");
+					Cancel: function(){
+						$(this).dialog("close");
 					}
+				},
+				close: function(){
+					$("#deleteselectedpaths").empty();
+					$(this).dialog("destroy");
 				}
 			});
 		});
@@ -2598,6 +2660,9 @@ print "<!--				<div>".__("Panel")."</div> -->
 <div id="auditconfirm" class="hide">
 	<p><?php print __("Do you certify that you have completed an audit of this device?"); ?></p>
 </div>
+
+
+<div id="deleteselectedpaths" class="hide"></div>
 
 <div id="pdutest" title="Testing SNMP Communications"></div>
 

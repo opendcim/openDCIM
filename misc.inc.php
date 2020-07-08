@@ -1272,4 +1272,85 @@ class JobQueue {
 		}
 	}
 }
+
+function GetJavascriptArrayOfPotentialPathToDelete($DeviceID)
+{
+	// data type wanted [DeviceID(int),portNumber(int),Label(String),Status(enum-int)]
+	//Status Enum
+	// Check=0
+	// Unchecked = 1
+	// ForceCheck=2
+	// ForceUnChecked=3
+
+	$pathsToRemove = array();
+	$dev = new Device;
+	$dev->DeviceID=$DeviceID;
+	$dev->GetDevice();	
+	$numPorts = $dev->Ports;
+	$startPortNum = 1;
+	if($dev->DeviceType == "Chassis"){
+		$childDevices = $dev->GetDeviceChildren();
+		foreach($childDevices as $device){
+			$childPaths = json_decode(GetJavascriptArrayOfPotentialPathToDelete($device->DeviceID));
+			foreach($childPaths as $cp){
+				array_push($pathsToRemove,$cp);
+			}
+		}
+	}
+	else if ($dev->DeviceType == "Patch Panel"){
+		$startPortNum = $numPorts *-1;
+	}
+
+	if($dev->DeviceType != "Chasis")
+	{
+		for($portNumber = $startPortNum; $portNumber <= $numPorts; $portNumber++){
+			if($dev->DeviceType == "Patch Panel" && $portNumber == 0){$portNumber++;}
+			$enddev = DevicePorts::GetEndPathDevice($dev->DeviceID,$portNumber);
+			$paths = DevicePorts::followPathToEndPoint($dev->DeviceID,$portNumber);			
+			$pp = new DevicePorts;//previous path					
+			foreach($paths as $path){
+				$tp = new DevicePorts;
+				$tp->DeviceID=$path->ConnectedDeviceID;
+				$tp->PortNumber=$path->ConnectedPort;
+				$tp->getPort();
+				$conDev=new Device;
+				$conDev->DeviceID=$path->ConnectedDeviceID;
+				$conDev->GetDevice();	
+				$startDev = new Device;
+				$startDev->DeviceID=$path->DeviceID;
+				$startDev->getDevice();	
+				
+				if( $path->ConnectedPort != null && $tp->DeviceID != null && $tp != $pp){
+					// By default all front connections are checked
+					// Change to 1 if wanted to be be uncheck but checkable
+					$enumval = 0;
+					//Check if from the device
+					// Make it required
+					if($dev->DeviceID == $startDev->DeviceID ) 
+					{$enumval=2;}
+					// is a connection you will never remove by accident (ex a permanant connection)
+					// This example will never allow you to choose a back link to remove only front connections
+					// But it will still show rear links the checkboxs are just disabled
+					// 
+					// Add conditions to not be able to remove a path here 
+					else if($path->PortNumber<0)
+					{$enumval=3;}
+
+					// Is a front connection so checked by default but can uncheck
+
+					array_push($pathsToRemove,array(
+						$startDev->DeviceID,
+						intval($path->PortNumber),
+						$startDev->Label." | ".$path->Label.($path->PortNumber<0?"(Rear)":"")." -> ".$conDev->Label." | ".$tp->Label.($path->PortNumber<0?"(Rear)":"")."",
+						$enumval
+					));					
+
+					$pp=$path;
+				}			
+			}		
+		}	
+	}	
+
+	return json_encode($pathsToRemove);
+}
 ?>
