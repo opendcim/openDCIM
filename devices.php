@@ -550,6 +550,93 @@
 		echo json_encode($wattage);
 		exit;
 	}
+
+	//GetPotentialPathsToDelete
+	if(isset($_POST['getpptd']))
+	{		
+		function GetJavascriptArrayOfPotentialPathToDelete($DeviceID)
+		{
+			// data type wanted [DeviceID(int),portNumber(int),Label(String),Status(enum-int)]
+			//Status Enum
+			// Check=0
+			// Unchecked = 1
+			// ForceCheck=2
+			// ForceUnChecked=3
+
+			$pathsToRemove = array();
+			$dev = new Device;
+			$dev->DeviceID=$DeviceID;
+			$dev->GetDevice();	
+			$numPorts = $dev->Ports;
+			$startPortNum = 1;
+			if($dev->DeviceType == "Chassis"){
+				$childDevices = $dev->GetDeviceChildren();
+				foreach($childDevices as $device){
+					$childPaths = json_decode(GetJavascriptArrayOfPotentialPathToDelete($device->DeviceID));
+					foreach($childPaths as $cp){
+						array_push($pathsToRemove,$cp);
+					}
+				}
+			}
+			else if ($dev->DeviceType == "Patch Panel"){
+				$startPortNum = $numPorts *-1;
+			}
+
+			if($dev->DeviceType != "Chasis")
+			{
+				for($portNumber = $startPortNum; $portNumber <= $numPorts; $portNumber++){
+					if($dev->DeviceType == "Patch Panel" && $portNumber == 0){$portNumber++;}
+					$enddev = DevicePorts::GetEndPathDevice($dev->DeviceID,$portNumber);
+					$paths = DevicePorts::followPathToEndPoint($dev->DeviceID,$portNumber);			
+					$pp = new DevicePorts;//previous path					
+					foreach($paths as $path){
+						$tp = new DevicePorts;
+						$tp->DeviceID=$path->ConnectedDeviceID;
+						$tp->PortNumber=$path->ConnectedPort;
+						$tp->getPort();
+						$conDev=new Device;
+						$conDev->DeviceID=$path->ConnectedDeviceID;
+						$conDev->GetDevice();	
+						$startDev = new Device;
+						$startDev->DeviceID=$path->DeviceID;
+						$startDev->getDevice();	
+						
+						if( $path->ConnectedPort != null && $tp->DeviceID != null && $tp != $pp){
+							// By default all front connections are checked
+							// Change to 1 if wanted to be be uncheck but checkable
+							$enumval = 0;
+							//Check if from the device
+							// Make it required
+							if($dev->DeviceID == $startDev->DeviceID ) 
+							{$enumval=2;}
+							// is a connection you will never remove by accident (ex a permanant connection)
+							// This example will never allow you to choose a back link to remove only front connections
+							// But it will still show rear links the checkboxs are just disabled
+							// 
+							// Add conditions to not be able to remove a path here 
+							else if($path->PortNumber<0)
+							{$enumval=3;}
+
+							array_push($pathsToRemove,array(
+								$startDev->DeviceID,
+								intval($path->PortNumber),
+								$startDev->Label." | ".$path->Label.($path->PortNumber<0?"(Rear)":"")." -> ".$conDev->Label." | ".$tp->Label.($path->PortNumber<0?"(Rear)":"")."",
+								$enumval
+							));					
+
+							$pp=$path;
+						}			
+					}		
+				}	
+			}	
+
+			return json_encode($pathsToRemove);
+		}
+		header('Content-Type: application/json');
+		echo GetJavascriptArrayOfPotentialPathToDelete($_POST['getpptd']);
+		exit;
+	}
+
 	// END AJAX
 
 	// Not really AJAX calls since there's no return, but special actions
@@ -1685,71 +1772,84 @@ print "		var dialog=$('<div>').prop('title',\"".__("Verify Delete Device")."\").
 			}
 		});
 
-		// Delete device connections dialog
+		//Delete device confirmation dialog
 		$('button[value="Delete"]').click(function(e){
 			var form=$(this).parents('form');
 			var btn=$(this);
-			var pwc = <?php echo GetJavascriptArrayOfPotentialPathToDelete($dev->DeviceID);?>; //paths with connection
-			var pathList=document.getElementById("deleteselectedpaths");
-			for (i = 0; i < pwc.length; i++) {																			//%2==0 because we want it checked when its 0 or 2
-				pathList.insertAdjacentHTML("beforeend", "<input type=\"checkbox\" id=\""+pwc[i][0]+","+pwc[i][1]+"\""+(pwc[i][3]%2==0?"checked":"")+">"+pwc[i][2]+"</input><br>");
-																			//If 2 or 3 then make it disabled
-				document.getElementById(pwc[i][0]+","+pwc[i][1]).disabled = pwc[i][3]>1?true:false;
-			}
-			$('#deleteselectedpaths').removeClass('hide').dialog({
-				title: "Select paths to delete",
-				modal: true,
-				width: 'auto',
-				buttons: {	'Delete device and selected paths': function(){  
-						var checked = $("#deleteselectedpaths :checkbox:checked");
-						var pci = [];// Port connection Info
-						var index =0;
-						$.each(checked,function(index,value){
-							pci[index] = value.id.split(",");
-							index++;
-						});
-
-						if(pci.length != 0)
-						{
-							// Info for excel sheet here because it might be deleted before it can read
-							var exceldata=[];
-							var jndex=0;
-							$.each(pwc,function (indexc, valuec){
-								$.each(pci,function(indexi,valuei){
-									if(valuei[0] == valuec[0] && valuei[1] == valuec[1] )
-									{
-										exceldata[jndex]=valuec[2];
-										jndex++;
-									}
+			var pwc=[];//paths with connection
+			// Will be up to date if path is added or removed
+			var answer = $.ajax({
+				url: "",
+				method: "POST",
+				data: {getpptd:$('#DeviceID').val()}
+			}).done(function (data){
+				pwc = data;
+				var pathList=document.getElementById("deleteselectedpaths");
+				for (i = 0; i < pwc.length; i++) {
+					pathList.insertAdjacentHTML("beforeend", "<input type=\"checkbox\" id=\""+pwc[i][0]+","+pwc[i][1]+"\""+(pwc[i][3]<2?"checked":"")+">"+pwc[i][2]+"</input><br>");
+					//add checked
+					document.getElementById(pwc[i][0]+","+pwc[i][1]).disabled = pwc[i][3]>0?true:false;
+				}
+				$('#deleteselectedpaths').removeClass('hide').dialog({
+					title: "Select paths to delete",
+					modal: true,
+					width: 'auto',
+					buttons: {
+						'Delete device and selected paths': function(){  
+							var checked = $("#deleteselectedpaths :checkbox:checked");
+							var pci = [];
+							var index =0;
+							$.each(checked,function(index,value){
+								// Port connection Info
+								pci[index] = value.id.split(",");
+								index++;
+							});							
+							
+							// Create excel sheet
+							if(pci.length != 0)
+							{
+								// Info for excel sheet here because it might be deleted before it can read
+								var exceldata=[];
+								var jndex=0;
+								$.each(pwc,function (indexc, valuec){
+									$.each(pci,function(indexi,valuei){
+										if(valuei[0] == valuec[0] && valuei[1] == valuec[1] )
+										{
+											exceldata[jndex]=valuec[2];
+											jndex++;
+										}
+									});
 								});
-							});
-
-							$('<form>', {"id": "pciform",
+								
+								$('<form>', {"id": "pciform",
 								"name": "pciform",
 								"method": "post",
 								"target": "_blank",
 								"action": '/export_paths_to_remove.php'
 								}).append('<input type="hidden" name="pci" value="'+encodeURI(JSON.stringify(exceldata))+'"/>').appendTo($('body'));
-							$("#pciform").submit();
-						}
+								$("#pciform").submit();
+							}
 
-						// Deletes the paths
-						$.post('',{pci: pci});
-						// Deletes the device
-						form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
-						form.validationEngine("detach");
-						form.submit();
-						$(this).dialog("close");
+							// Deletes the paths
+							$.post('',{pci: pci});
+							
+							// Deletes the device
+							form.append('<input type="hidden" name="'+btn.attr("name")+'" value="'+btn.val()+'">');
+							form.validationEngine("detach");
+							form.submit();
+							$(this).dialog("close");										
+						},
+						Cancel: function(){
+							$(this).dialog("close");
+						}
 					},
-					Cancel: function(){
-						$(this).dialog("close");
+					close: function(){
+						$("#deleteselectedpaths").empty();
+						$(this).dialog("destroy");
 					}
-				},
-				close: function(){
-					$("#deleteselectedpaths").empty();
-					$(this).dialog("destroy");
-				}
-			});
+
+				});
+			});			
 		});
 
 		$('#Ports').change(function(){
