@@ -554,9 +554,9 @@
 	//GetPotentialPathsToDelete
 	if(isset($_POST['getpptd']))
 	{		
-		function GetJavascriptArrayOfPotentialPathToDelete($DeviceID)
+		function GetPotentialPathsToDelete($DeviceID)
 		{
-			// data type wanted [DeviceID(int),portNumber(int),Label(String),Status(enum-int)]
+			// Data type being made [DeviceID(int),portNumber(int),Label(String),Status(enum-int)]
 			//Status Enum
 			// Check=0
 			// Unchecked = 1
@@ -572,7 +572,7 @@
 			if($dev->DeviceType == "Chassis"){
 				$childDevices = $dev->GetDeviceChildren();
 				foreach($childDevices as $device){
-					$childPaths = json_decode(GetJavascriptArrayOfPotentialPathToDelete($device->DeviceID));
+					$childPaths = json_decode(GetPotentialPathsToDelete($device->DeviceID));
 					foreach($childPaths as $cp){
 						array_push($pathsToRemove,$cp);
 					}
@@ -602,17 +602,16 @@
 						$startDev->getDevice();	
 						
 						if( $path->ConnectedPort != null && $tp->DeviceID != null && $tp != $pp){
-							// By default all front connections are checked
-							// Change to 1 if wanted to be be uncheck but checkable
+							// By default all front connections are checked and uncheckable
+							// Change to 1 if it is wanted to be unchecked but checkable
 							$enumval = 0;
-							//Check if from the device
+							//Check if connection is coming from the device
 							// Make it required
 							if($dev->DeviceID == $startDev->DeviceID ) 
 							{$enumval=2;}
-							// is a connection you will never remove by accident (ex a permanant connection)
+							// Is a connection you will never remove by accident (ex a permanant connection)
 							// This example will never allow you to choose a back link to remove only front connections
-							// But it will still show rear links the checkboxs are just disabled
-							// 
+							// But it will still show rear connections but the checkboxs will be disabled 
 							// Add conditions to not be able to remove a path here 
 							else if($path->PortNumber<0)
 							{$enumval=3;}
@@ -633,7 +632,7 @@
 			return json_encode($pathsToRemove);
 		}
 		header('Content-Type: application/json');
-		echo GetJavascriptArrayOfPotentialPathToDelete($_POST['getpptd']);
+		echo GetPotentialPathsToDelete($_POST['getpptd']);
 		exit;
 	}
 
