@@ -76,8 +76,6 @@
 		exit;
 	}
 
-	$savedidpx509cert = $config->ParameterArray["SAMLidpx509cert"];
-
 
 	function BuildDirectoryList($returnjson=false,$path="."){
 		$path=trim($path);
@@ -305,9 +303,6 @@
 				@$config->ParameterArray[$key]=$_REQUEST[$key];
 			}
 		}
-
-		// All kinds of hackery to keep the x509 certs and key from being sent to the browser - there's no need for it
-		$config->ParameterArray["SAMLidpx509cert"] = $savedidpx509cert;
 
 		$config->UpdateConfig();
 
