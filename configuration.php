@@ -2572,9 +2572,11 @@ echo '<div class="main">
 
 				$validFrom = date('Y-m-d H:i:s', $data['validFrom_time_t']);
 				$validTo = date('Y-m-d H:i:s', $data['validTo_time_t']);
-			
+			} else {
+				$validTo = "No Certificate";
+			}	
 
-				echo '<div>
+			echo '<div>
 					<div>',__("Certificate Expiration"),'</div>
 					<div><input type="text" size="20" id="SPCertExpiration" name="SPCertExpiration" readonly value="',$validTo,'"></div>
 				</div>
@@ -2585,9 +2587,7 @@ echo '<div class="main">
 				<div>
 					<div>',__("SP x509 Certificate"),'</div>
 					<div><textarea cols="60" rows="10" id="SAMLspx509cert" name="SAMLspx509cert">', $config->ParameterArray["SAMLspx509cert"], '</textarea></div>
-				</div>';
- 			}
- 			echo '
+				</div>
  				<div>
  					<div><label for="SAMLGenNewCert"></label></div>
 					<div><div><button type="button" id="btn_spcert" style="display; inline-block">',__("Generate/Renew Certificate"),'</button></div>
