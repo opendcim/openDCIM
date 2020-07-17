@@ -62,19 +62,18 @@
 	}
 
 	// Automagically pull down information from the Identity Provider via the metadata if requested
-	if ( $config->ParameterArray["SAMLRefreshIdPMetadata"] == 'enabled' ) {
-		// Force a save, because multiplexing browsers can cause it to make several copies at once
-		$config->ParameterArray['SAMLRefreshIdPMetadata'] = 'disabled';
-
+	if ( isset( $_POST["RefreshMetadata"]) ) {
 		$parser = new OneLogin_Saml2_IdPMetadataParser;
-		error_log( "Downloading new IdP Metadata from " . $config->ParameterArray["SAMLIdPMetadataURL"]);
-		$IdPSettings = $parser->parseRemoteXML($config->ParameterArray["SAMLIdPMetadataURL"]);
+		error_log( "Downloading new IdP Metadata from " . $_POST["SAMLIdPMetadataURL"]);
+		$IdPSettings = $parser->parseRemoteXML($_POST["SAMLIdPMetadataURL"]);
 
-		$config->ParameterArray["SAMLidpentityId"] = $IdPSettings['idp']['entityId'];
-		$config->ParameterArray["SAMLidpx509cert"] = $IdPSettings['idp']['x509cert'];
-		$config->ParameterArray["SAMLidpslsURL"] = $IdPSettings['idp']['singleLogoutService']['url'];
-		$config->ParameterArray["SAMLidpssoURL"] = $IdPSettings['idp']['singleSignOnService']['url'];
-		$config->UpdateConfig();
+		$retVal["SAMLidpentityId"] = $IdPSettings['idp']['entityId'];
+		$retVal["SAMLidpx509cert"] = $IdPSettings['idp']['x509cert'];
+		$retVal["SAMLidpslsURL"] = $IdPSettings['idp']['singleLogoutService']['url'];
+		$retVal["SAMLidpssoURL"] = $IdPSettings['idp']['singleSignOnService']['url'];
+		
+		echo json_encode($retVal);
+		exit;
 	}
 
 	$savedidpx509cert = $config->ParameterArray["SAMLidpx509cert"];
@@ -594,6 +593,23 @@
 				$('#SPCertExpiration').val(obj.SAMLspCertExpiration);
 			} )
 		});
+
+		// Get IdP Metadata
+
+		$('#btn_refreshidpmetadata').click(function(e) {
+			e.preventDefault();
+
+			var formdata=$('#idpinfo').serializeArray();
+			formdata.push({name: "RefreshMetadata", value: "1"});
+			$.post( 'configuration.php', formdata, function(data) {
+				var obj=JSON.parse(data);
+				$('#SAMLidpssoURL').val(obj.SAMLidpssoURL);
+				$('#SAMLidpslsURL').val(obj.SAMLidpslsURL);
+				$('#SAMLidpentityId').val(obj.SAMLidpentityId);
+				$('#SAMLidpx509cert').val(obj.SAMLidpx509cert);
+			} )
+		});
+
 
 		// Email test
 		$('#btn_smtptest').click(function(e) {
@@ -2568,17 +2584,17 @@ echo '<div class="main">
 					<div><input type="text" size="20" id="SPCertExpiration" name="SPCertExpiration" readonly value="',$validTo,'"></div>
 				</div>
 				<div>
-					<div>',__("Private Key"),'</div>
+					<div>',__("SP Private Key"),'</div>
 					<div><textarea cols="60" rows="10" id="SAMLspprivateKey" name="SAMLspprivateKey">', $config->ParameterArray["SAMLspprivateKey"], '</textarea></div>
 				</div>
 				<div>
-					<div>',__("Certificate"),'</div>
+					<div>',__("SP x509 Certificate"),'</div>
 					<div><textarea cols="60" rows="10" id="SAMLspx509cert" name="SAMLspx509cert">', $config->ParameterArray["SAMLspx509cert"], '</textarea></div>
 				</div>';
  			}
  			echo '
  				<div>
- 					<div><label for="SAMLGenNewCert">',__("Generate new key/cert?"),'</label></div>
+ 					<div><label for="SAMLGenNewCert"></label></div>
 					<div><div><button type="button" id="btn_spcert" style="display; inline-block">',__("Generate/Renew Certificate"),'</button></div>
 					</div>
 				</div>
@@ -2604,11 +2620,12 @@ echo '<div class="main">
 					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLidpslsURL"],'" name="SAMLidpslsURL" value="',$config->ParameterArray["SAMLidpslsURL"],'"></div>
 				</div>
 				<div>
-					<div><label for="SAMLRefreshIdPMetadata">',__("Refresh IdP Metadata?"),'</label></div>
-					<div><select id="SAMLRefreshIdPMetadata" name="SAMLRefreshIdPMetadata" defaultValue="',$config->defaults["SAMLRefreshIdPMetadata"],'" data="', $config->ParameterArray["SAMLRefreshIdPMetadata"],'">
-							<option value="disabled">',__("No"),'</option>
-							<option value="enabled">',__("Yes"),'</option>
-						</select>
+					<div>',__("IdP x509 Certificate"),'</div>
+					<div><textarea cols="60" rows="10" id="SAMLidpx509cert" name="SAMLidpx509cert">', $config->ParameterArray["SAMLidpx509cert"], '</textarea></div>
+				</div>
+				<div>
+					<div><label for="SAMLRefreshIdPMetadata"></label></div>
+					<div><div><button type="button" id="btn_refreshidpmetadata" style="display; inline-block">',__("Refresh IdP Metadata"),'</button></div>
 					</div>
 				</div>
 			</div>
