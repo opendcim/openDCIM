@@ -72,7 +72,7 @@ class Config{
 		}else{
 			$sql="UPDATE fac_Config SET Value=\"$value\" WHERE Parameter=\"$parameter\";";
 			if($dbh->query($sql)){
-				return true;
+				return $value;
 			}else{
 				$info=$dbh->errorInfo();
 				error_log("UpdateParamter::PDO Error: {$info[2]} SQL=$sql");

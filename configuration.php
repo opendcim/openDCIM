@@ -21,12 +21,7 @@
 	/*
 	 * Automatic Key/Cert Generation Function for Saml
 	 */
-	if ( $config->ParameterArray["SAMLGenNewCert"] == "enabled" ) {
-		// Clear the flag for generating a new certificate
-		$config->ParameterArray['SAMLGenNewCert']='disabled';
-		// Force a save, because multiplexing browsers can cause it to make several copies at once
-		$config->UpdateParameter('SAMLGenNewCert', 'disabled' );
-
+	if ( isset($_POST["NewSPCert"])) {
 		error_log( "Generating new Key and Certificate for SAML ServiceProvider" );
 
 		$keyConfig = array(
@@ -40,13 +35,13 @@
 
 		// Extract the private key from $res to $privKey
 		openssl_pkey_export($res, $newKey );
-		$config->ParameterArray["SAMLspprivateKey"] = $newKey;
+		$retVal["SAMLspprivateKey"] = $newKey;
 
 		// Fill in the DN
 		$dn = array(
-		    "countryName" => $config->ParameterArray["SAMLCertCountry"] != "" ? $config->ParameterArray["SAMLCertCountry"]:$config->defaults["SAMLCertCountry"],
-		    "stateOrProvinceName" => $config->ParameterArray["SAMLCertProvince"] != "" ? $config->ParameterArray["SAMLCertProvince"]:$config->defaults["SAMLCertProvince"],
-		    "organizationName" => $config->ParameterArray["SAMLCertOrganization"] != "" ? $config->ParameterArray["SAMLCertOrganization"]:$config->defaults["SAMLCertOrganization"],
+		    "countryName" => $_POST["SAMLCertCountry"] != "" ? $_POST["SAMLCertCountry"]:$config->defaults["SAMLCertCountry"],
+		    "stateOrProvinceName" => $_POST["SAMLCertProvince"] != "" ? $_POST["SAMLCertProvince"]:$config->defaults["SAMLCertProvince"],
+		    "organizationName" => $_POST["SAMLCertOrganization"] != "" ? $_POST["SAMLCertOrganization"]:$config->defaults["SAMLCertOrganization"],
 		    "organizationalUnitName" => "openDCIM",
 		    "commonName" => "openDCIM SP Cert"
 		);
@@ -55,27 +50,33 @@
 		$req_cert = openssl_csr_sign($req_csr, NULL, $req_key, 365);
 
 		openssl_x509_export( $req_cert, $newCert );
-		$config->ParameterArray["SAMLspx509cert"] = $newCert;
+		$retVal["SAMLspx509cert"] = $newCert;
+
+		$data = openssl_x509_parse(str_replace(array("&#13;", "&#10;"), array(chr(13), chr(10)), $newCert));
+		$validTo = date('Y-m-d H:i:s', $data['validTo_time_t']);
+
+		$retVal["SAMLspCertExpiration"] = $validTo;
+
+		echo json_encode($retVal);
+		exit;
 	}
 
 	// Automagically pull down information from the Identity Provider via the metadata if requested
-	if ( $config->ParameterArray["SAMLRefreshIdPMetadata"]=='enabled' ) {
+	if ( $config->ParameterArray["SAMLRefreshIdPMetadata"] == 'enabled' ) {
 		// Force a save, because multiplexing browsers can cause it to make several copies at once
-		$config->ParameterArray['SAMLRefreshIdPMetadata']='disabled';
-		$config->UpdateParameter('SAMLRefreshIdPMetadata', 'disabled' );
+		$config->ParameterArray['SAMLRefreshIdPMetadata'] = 'disabled';
 
 		$parser = new OneLogin_Saml2_IdPMetadataParser;
 		error_log( "Downloading new IdP Metadata from " . $config->ParameterArray["SAMLIdPMetadataURL"]);
 		$IdPSettings = $parser->parseRemoteXML($config->ParameterArray["SAMLIdPMetadataURL"]);
 
-		$config->ParameterArray["SAMLidpentityId"]=$IdPSettings['idp']['entityId'];
-		$config->ParameterArray["SAMLidpx509cert"]=$IdPSettings['idp']['x509cert'];
-		$config->ParameterArray["SAMLidpslsURL"]=$IdPSettings['idp']['singleLogoutService']['url'];
-		$config->ParameterArray["SAMLidpssoURL"]=$IdPSettings['idp']['singleSignOnService']['url'];
+		$config->ParameterArray["SAMLidpentityId"] = $IdPSettings['idp']['entityId'];
+		$config->ParameterArray["SAMLidpx509cert"] = $IdPSettings['idp']['x509cert'];
+		$config->ParameterArray["SAMLidpslsURL"] = $IdPSettings['idp']['singleLogoutService']['url'];
+		$config->ParameterArray["SAMLidpssoURL"] = $IdPSettings['idp']['singleSignOnService']['url'];
+		$config->UpdateConfig();
 	}
 
-	$savedspx509cert = $config->ParameterArray["SAMLspx509cert"];
-	$savedspprivateKey = $config->ParameterArray["SAMLspprivateKey"];
 	$savedidpx509cert = $config->ParameterArray["SAMLidpx509cert"];
 
 
@@ -307,8 +308,6 @@
 		}
 
 		// All kinds of hackery to keep the x509 certs and key from being sent to the browser - there's no need for it
-		$config->ParameterArray["SAMLspx509cert"] = $savedspx509cert;
-		$config->ParameterArray["SAMLspprivateKey"] = $savedspprivateKey;
 		$config->ParameterArray["SAMLidpx509cert"] = $savedidpx509cert;
 
 		$config->UpdateConfig();
@@ -579,6 +578,21 @@
 			if($(this).attr('data')){
 				$(this).val($(this).attr('data'));
 			}
+		});
+
+		// Generate SP Cert
+
+		$('#btn_spcert').click(function(e) {
+			e.preventDefault();
+
+			var formdata=$('#spcertinfo').serializeArray();
+			formdata.push({name: "NewSPCert", value: "1"});
+			$.post( 'configuration.php', formdata, function(data) {
+				var obj=JSON.parse(data);
+				$('#SAMLspprivateKey').val(obj.SAMLspprivateKey);
+				$('#SAMLspx509cert').val(obj.SAMLspx509cert);
+				$('#SPCertExpiration').val(obj.SAMLspCertExpiration);
+			} )
 		});
 
 		// Email test
@@ -2524,6 +2538,7 @@ echo '<div class="main">
 				</div>
 			</div>
 			<h3>',__("SAML SP Information and Certificate Generation"),'</h3>
+			<fieldset id="spcertinfo">
 			<div class="table">
 				<div>
 					<div><label for="SAMLspentityId">',__("Entity ID"),'</label></div>
@@ -2549,21 +2564,28 @@ echo '<div class="main">
 			
 
 				echo '<div>
-					<div>',__("Current Expiration:"),'</div>
-					<div>',$validTo,'</div>
+					<div>',__("Certificate Expiration"),'</div>
+					<div><input type="text" size="20" id="SPCertExpiration" name="SPCertExpiration" readonly value="',$validTo,'"></div>
+				</div>
+				<div>
+					<div>',__("Private Key"),'</div>
+					<div><textarea cols="60" rows="10" id="SAMLspprivateKey" name="SAMLspprivateKey">', $config->ParameterArray["SAMLspprivateKey"], '</textarea></div>
+				</div>
+				<div>
+					<div>',__("Certificate"),'</div>
+					<div><textarea cols="60" rows="10" id="SAMLspx509cert" name="SAMLspx509cert">', $config->ParameterArray["SAMLspx509cert"], '</textarea></div>
 				</div>';
  			}
  			echo '
  				<div>
  					<div><label for="SAMLGenNewCert">',__("Generate new key/cert?"),'</label></div>
-					<div><select id="SAMLGenNewCert" name="SAMLGenNewCert" defaultValue="',$config->defaults["SAMLGenNewCert"],'" data="', $config->ParameterArray["SAMLGenNewCert"],'">
-							<option value="disabled">',__("No"),'</option>
-							<option value="enabled">',__("Yes"),'</option>
-						</select>
+					<div><div><button type="button" id="btn_spcert" style="display; inline-block">',__("Generate/Renew Certificate"),'</button></div>
 					</div>
 				</div>
 			</div>
+			</fieldset>
 			<h3>',__("SAML Identity Provider Configuration"),'</h3>
+			<fieldset id="idpinfo">
 			<div class="table">
 				<div>
 					<div><label for="SAMLidpentityId">',__("IdP entityId"),'</label></div>
@@ -2590,6 +2612,7 @@ echo '<div class="main">
 					</div>
 				</div>
 			</div>
+			</fieldset>
 			<h3>',__("SAML Account Configuration"),'</h3>
 			<div class="table">
 				<div>
