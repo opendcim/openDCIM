@@ -427,7 +427,17 @@ echo '		</select>
 ?>
 </div></div>
 
-<?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
+<?php
+	if ($panel->ParentPanelID) {
+		echo '<a href="power_panel.php?PanelID=', $panel->ParentPanelID, '">[ ',__("Return to Parent Panel"),' ]</a><br>';
+	}
+	foreach($dcList as $dc) {
+		if ($panel->MapDataCenterID and $panel->MapDataCenterID==$dc->DataCenterID) {
+			echo '<a href="dc_stats.php?dc=', $dc->DataCenterID, '">[ ',__("Return to"),' ',$dc->Name.' ]</a><br>'; 
+		}
+	}
+
+echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>
 <!-- hiding modal dialogs here so they can be translated easily -->
 <div class="hide">
 	<div title="',__("Power panel delete confirmation"),'" id="deletemodal">

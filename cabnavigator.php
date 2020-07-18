@@ -646,6 +646,22 @@ if($config->ParameterArray["CDUToolTips"]=='enabled'){
 ?>
 </div> <!-- END div#centeriehack -->
 </div></div>
+
+<?php 
+if($cab->ZoneID){
+	$zone=new Zone();
+	$zone->ZoneID=$cab->ZoneID;
+	$zone->GetZone();
+	echo '<a href="zone_stats.php?zone=',$zone->ZoneID,'">[ ',sprintf(__("Return to Zone %s"),$zone->Description),' ]</a><br>';
+}
+if ($cab->CabRowID) {
+	$cabrow=new CabRow();
+	$cabrow->CabRowID=$cab->CabRowID;
+	$cabrow->GetCabRow();
+	echo '<a href="rowview.php?row=',$cabrow->CabRowID,'">[ ',sprintf(__("Return to Row %s"),$cabrow->Name),' ]</a><br>';
+}
+?>
+
 <?php echo '<a href="dc_stats.php?dc=',$dcID,'">[ ',sprintf(__("Return to %s"),$dc->Name),' ]</a>
 <!-- hiding modal dialogs here so they can be translated easily -->
 <div class="hide">
