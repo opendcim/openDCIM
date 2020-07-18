@@ -9,7 +9,8 @@ are simply testing, as some functionality can break between releases.
 Changes in 20.01
 ----------------
 * Complete overhaul of the SAML Integration.   Tested against KeyCloak and Ping Federate.  Should be pretty much standard.
-* Container build - if you want an "Easy Button" for setup, deploy as a container.   If orchestrating, limit to 1 container at a time (session handling).
+* Container build - if you want an "Easy Button" for setup, deploy as a container.
+* Support for redis session handling - if you run multiple backends, you need to enable this to keep session handling straight
 * User Manager - UserID is now displayed in the pick list, not just First/Last Name
 * Some fixes for metric system users
 * Performance improvements
