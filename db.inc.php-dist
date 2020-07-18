@@ -25,6 +25,7 @@
 	$dbuser = getenv('OPENDCIM_DB_USER') ? getenv('OPENDCIM_DB_USER'):'dcim';
 	$dbpass = getenv('OPENDCIM_DB_PASS') ? getenv('OPENDCIM_DB_PASS'):'dcim';
 	$dbport = getenv('OPENDCIM_DB_PORT') ? getenv('OPENDCIM_DB_PORT'):'3306';
+	$initialAdminUser = getenv('OPENDCIM_ADMIN_USER') ? getenv('OPENDCIM_ADMIN_USER'):'dcim';
 
 	$locale = "en_US";
 	$codeset = "UTF-8";

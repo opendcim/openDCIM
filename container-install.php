@@ -21,7 +21,7 @@ if($result->rowCount()==0){ // No tables in the DB so try to install.
 	require_once( "classes/People.class.php" );
 	$results[]=applyupdate("create.sql");
 	$person = new People();
-	$person->UserID='dcim';
+	$person->UserID=$initialAdminUser;
 	$person->SiteAdmin=true;
 	$person->WriteAccess=true;
 	$person->ReadAccess=true;
