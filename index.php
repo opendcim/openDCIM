@@ -12,7 +12,7 @@
 
 	$sql = 'select count(*) as DCs from fac_DataCenter';
 	$row=$dbh->query($sql)->fetch();
-	$DCs = $row['DCs'];
+	$DCs = number_format($row['DCs']);
 
 	// Overall Statistics
 	$sql='SELECT SUM(NominalWatts) AS Power,
@@ -26,14 +26,15 @@
 
 	$row=$dbh->query($sql)->fetch();
 
-	$StatsDevices=$row['Devices'];
-	$StatsServers=$row['Servers'];
-	$StatsSize=$row['Size'];
-	$StatsVM=$row['VMcount'];
-	$StatsHost=$row["VMhosts"];
-	$StatsCabinet=$row["CabinetCount"];
-	$StatsPower=$row['Power'];
-	$StatsHeat=$StatsPower * 3.412 / 12000;
+	$StatsDevices=number_format($row['Devices']);
+	$StatsServers=number_format($row['Servers']);
+	$StatsSize=number_format($row['Size']);
+	$StatsVM=number_format($row['VMcount']);
+	$StatsHost=number_format($row["VMhosts"]);
+	$StatsCabinet=number_format($row["CabinetCount"]);
+	$StatsPower=number_format($row['Power'] / 1000);
+	$StatsHeat=number_format($row['Power'] * 3.412 / 12000);
+	$StatsVirtualization=number_format(intval($row['VMcount']/(($row['VMhosts']==0)?1:$row['VMhosts'])));
   
 	$dc = new DataCenter();
 	$dcList = $dc->GetDCList();
@@ -103,45 +104,45 @@ echo '
 </div>';
 echo '
 <div>
-  <div>',__("DC Count"),'</div>
-  <div>',$DCs,'</div>
+  <div>',__("Data Centers"),'</div>
+  <div align="right">',$DCs,'</div>
 </div>';
 echo '
 <div>
   <div>',__("Physical Server Count"),'</div>
-  <div>',$StatsServers,'</div>
+  <div align="right">',$StatsServers,'</div>
 </div>
 <div>
   <div>',__("Other Device Count"),'</div>
-  <div>',$StatsDevices,'</div>
+  <div align="right">',$StatsDevices,'</div>
 </div>
 <div>
   <div>',__("Space"),' (1U=1.75")</div>
-  <div>',$StatsSize,' U</div>
+  <div align="right">',$StatsSize,' U</div>
 </div>
 <div>
   <div>',__("Power Consumption"),'</div>
-  <div>',sprintf("%.2f kW",$StatsPower/1000),'</div>
+  <div align="right">',$StatsPower,' kW</div>
 </div>
 <div>
   <div>',__("Heat Produced"),'</div>
-  <div>',sprintf("%.2f Tons",$StatsHeat),'</div>
+  <div align="right">',$StatsHeat,' Tons</div>
 </div>
 <div>
   <div>',__("Virtual Machines"),'</div>
-  <div>',$StatsVM,'</div>
+  <div align="right">',$StatsVM,'</div>
 </div>
 <div>
-	<div>',__("VM Hosts"),'</div>
-	<div>',$StatsHost,'</div>
+  <div>',__("VM Hosts"),'</div>
+  <div align="right">',$StatsHost,'</div>
 </div>
 <div>
-	<div>',__("Virtualization Ratio"),'</div>
-	<div>',intval($StatsVM/(($StatsHost==0)?1:$StatsHost)),':1</div>
+  <div>',__("Virtualization Ratio"),'</div>
+  <div align="right">',$StatsVirtualization,':1</div>
 </div>
 <div>
-	<div>',__("Total Cabinets"),'</div>
-	<div>',$StatsCabinet,'</div>
+  <div>',__("Total Cabinets"),'</div>
+  <div align="right">',$StatsCabinet,'</div>
 </div>
 </div> <!-- END div.table -->
 	<div>';
