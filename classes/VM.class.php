@@ -39,6 +39,18 @@ class VM {
 	var $vmState;
 	var $Owner;
 	var $PrimaryContact;
+
+	function MakeSafe(){
+		$this->VMIndex=intval($this->VMIndex);
+ 		$this->DeviceID=intval($this->DeviceID);
+		$this->vmID=intval($this->vmID);
+		$this->vmName=sanitize($this->vmName);
+		$this->vmState=sanitize($this->vmState);
+		$this->Owner=intval($this->Owner);
+		$this->PrimaryContact=intval($this->PrimaryContact);
+ 		$this->LastUpdated=sanitize($this->LastUpdated);
+ 	}
+
   
 	static function RowToObject($dbRow){
 		/*
@@ -72,9 +84,18 @@ class VM {
 
 		return $vmList;
 	}
+
+
+	function query($sql){
+                global $dbh;
+                return $dbh->query($sql);
+        }
+
  
 	function GetVMbyIndex() {
 		global $dbh;
+
+		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_VMInventory WHERE VMIndex=$this->VMIndex;";
 
@@ -86,6 +107,82 @@ class VM {
 			}
 			return true;
 		}
+	}
+
+
+	function SearchVM($indexedbyid=false,$loose=false){
+		$this->MakeSafe();
+
+		$sqlextend="";
+                foreach($this as $prop => $val){
+                        if($val){
+                                extendsql($prop,$val,$sqlextend,$loose);
+                        }
+                }
+
+		$sql="SELECT *  FROM fac_VMInventory $sqlextend;";
+
+		$VMList=array();
+		foreach($this->query($sql) as $VMRow){
+			if($indexedbyid){
+				$VMList[$VMRow["VMIndex"]]=VM::RowToObject($VMRow);
+			}else{
+				$VMList[]=VM::RowToObject($VMRow);
+			}
+		}
+		return $VMList;
+	}
+
+	function CreateVM() {
+		global $dbh;
+
+                $this->MakeSafe();
+
+		$sql="INSERT INTO fac_VMInventory (DeviceID,LastUpdated,vmID,vmName,vmState,Owner,PrimaryContact) VALUES
+			($this->DeviceID,\"".date("Y-m-d H:i:s", strtotime($this->LastUpdated))."\",$this->vmID,
+                        \"".$this->vmName."\",\"".$this->vmState."\",$this->Owner,$this->PrimaryContact);";
+
+		if(!$dbh->query($sql)){
+                        $info=$dbh->errorInfo();
+			
+			error_log("CreateVM::PDO Error: {$info[2]} SQL=$sql" );
+                        return false;
+                }
+                return true;
+	}
+	
+	function UpdateVM() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="UPDATE fac_VMInventory SET DeviceID=$this->DeviceID,LastUpdated=\"".date("Y-m-d H:i:s", strtotime($this->LastUpdated))."\",vmID=$this->vmID,
+			vmName=\"".$this->vmName."\",vmState=\"".$this->vmState."\",Owner=$this->Owner,PrimaryContact=$this->PrimaryContact WHERE
+			VMIndex=$this->VMIndex;";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("UpdateVM::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
+		return true;                            
+	}
+
+	function DeleteVM() {
+		global $dbh;
+
+		$this->MakeSafe();
+
+		$sql="DELETE from fac_VMInventory WHERE VMIndex=$this->VMIndex;";
+
+		if(!$dbh->query($sql)){
+			$info=$dbh->errorInfo();
+
+			error_log("DeleteVM::PDO Error: {$info[2]} SQL=$sql" );
+			return false;
+		}
+		return true;
 	}
   
 	function UpdateVMOwner() {

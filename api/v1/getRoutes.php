@@ -1137,4 +1137,205 @@ $app->get( '/cabrow/:cabrowid/devices', function($cabrowid) {
 });
 
 
+//
+//	URL:		/api/v1/sensorreadings
+//	Method:	GET
+//	Params:	none
+//	Returns:	Sensor readings for all sensors
+
+$app->get( '/sensorreadings', function() {
+	$sensorreadings=new SensorReadings();
+	$outputAttr = array();
+	$attrList = getParsedBody();
+	$loose = false;
+
+	foreach($attrList as $prop => $val){
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		}elseif(strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		}elseif (property_exists( $sensorreadings, $prop )) {
+			$sensorreadings->$prop=$val;
+		}
+	}
+
+	$r['error']=false;
+	$r['errorcode']=200;
+	$r['sensorreadings']=specifyAttributes($outputAttr, $sensorreadings->Search(false,$loose));
+	echoResponse( $r );	
+});
+
+//
+//	URL:	/api/v1/sensorreadings/:sensorid
+//	Method:	GET
+//	Params:	none
+//	Returns:	Sensor readings for :sensorid
+
+$app->get( '/sensorreadings/:sensorid', function($sensorid) {
+	$sensorreadings=new SensorReadings();
+	$sensorreadings->SensorID=$sensorid;
+
+	if(!$sensorreadings->GetSensorReadingsByID()){
+		$r['error']=true;
+                $r['errorcode']=404;
+                $r['message']=__("No sensor readings found with SensorID ").$sensorid;
+	}else{
+		$r['error']=false;
+        	$r['errorcode']=200;
+	        $r['sensorreadings']=$sensorreadings;
+	}
+	echoResponse( $r );
+});
+
+//
+//	URL:	/api/v1/pdustats
+//	Method:	GET
+//	Params:	none
+//	Returns:	PDU Stats reading for all pdus
+
+$app->get( '/pdustats', function() {
+	$pdustats=new PDUStats();
+	$outputAttr = array();
+	$attrList = getParsedBody();
+	$loose = false;
+
+	foreach($attrList as $prop => $val){
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		}elseif(strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		}elseif (property_exists( $pdustats, $prop )) {
+			$pdustats->$prop=$val;
+		} 
+	}
+
+	$r['error']=false;
+	$r['errorcode']=200;
+	$r['pdustats']=specifyAttributes($outputAttr, $pdustats->Search(false,$loose));
+	echoResponse( $r );
+});
+
+//
+//	URL:	/api/v1/pdustats/:pduid
+//	Method:	GET
+//	Params:	pduid
+//	Returns:	PDU Stats reading for pduid
+
+$app->get( '/pdustats/:pduid', function($pduid) {
+	$pdustats=new PDUStats();
+	$pdustats->PDUID=$pduid;
+
+	if(!$pdustats->GetPDUStatsByID()){
+		$r['error']=true;
+		$r['errorcode']=404;
+		$r['message']=__("No PDU Stats found with PDUID ").$pduid;
+	}else{
+		$r['error']=false;
+		$r['errorcode']=200;
+		$r['pdustats']=$pdustats;
+	}
+	echoResponse( $r );
+});
+
+//
+//	URL:	/api/v1/vminventory
+//	Method:	GET
+//	Params:	none
+//	Returns:	All VMs info 
+
+$app->get( '/vminventory', function() {
+	$vm = new VM();
+	$outputAttr = array();
+	$attrList = getParsedBody();
+	$loose = false;
+
+	foreach($attrList as $prop => $val){
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		}elseif(strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		}elseif (property_exists( $vm, $prop )) {
+			$vm->$prop=$val;
+		}
+	}
+
+	$r['error']=false;
+	$r['errorcode']=200;
+	$r['vminventory']=specifyAttributes($outputAttr, $vm->SearchVM(false,$loose));
+	echoResponse( $r );
+});
+
+//
+//	URL:	/api/v1/vminventory/:vmindex
+//	Method:	GET
+//	Params:	vmindex
+//	Returns:	VM Inventory data for vmindex
+
+$app->get( '/vminventory/:vmindex', function($vmindex) {
+	$vm=new VM();
+	$vm->VMIndex=$vmindex;
+
+	if(!$vm->GetVMbyIndex()){
+		$r['error']=true;
+		$r['errorcode']=404;
+		$r['message']=__("No VM information found with VMIndex ").$vmindex;
+	}else{
+		$r['error']=false;
+		$r['errorcode']=200;
+		$r['vminventory']=$vm;
+	}
+	echoResponse( $r );
+});
+
+//
+//	URL:	/api/v1/powerpanel
+//	Method:	GET
+//	Params:	none
+//	Returns:	All Powerpanel info
+
+$app->get( '/powerpanel', function() {
+	$pp = new PowerPanel();
+	$outputAttr = array();
+	$attrList = getParsedBody();
+	$loose = false;
+
+	foreach($attrList as $prop => $val){
+		if ( strtoupper($prop) == "WILDCARDS" ) {
+			$loose = true;
+		}elseif(strtoupper($prop) == "ATTRIBUTES" ) {
+			$outputAttr = explode( ",", $val );
+		}elseif (property_exists( $pp, $prop )) {
+			$pp->$prop=$val;
+		}
+	}
+
+	$r['error']=false;
+	$r['errorcode']=200;
+	$r['powerpanel']=specifyAttributes($outputAttr, $pp->Search(false,$loose));
+	echoResponse( $r );
+});
+
+//
+//	URL:	/api/v1/powerpanel/:panelid
+//	Method:	GET
+//	Params:	panelid
+//	Returns:	Data for panelid
+
+$app->get( '/powerpanel/:panelid', function($panelid) {
+	$pp=new PowerPanel();
+	$pp->PanelID=$panelid;
+
+	if(!$pp->getPanel()){
+		$r['error']=true;
+		$r['errorcode']=404;
+		$r['message']=__("No Powerpanel information found for PanelID ").$panelid;
+	}else{
+		$r['error']=false;
+		$r['errorcode']=200;
+		$r['powerpanel']=$pp;
+	}
+	echoResponse( $r );
+});
+
+
 ?>
