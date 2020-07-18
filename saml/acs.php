@@ -14,7 +14,7 @@ require_once('settings.php');
  * Saml authentication
  */
 
-$auth = new OneLogin_Saml2_Auth($saml_settings);
+$auth = new OneLogin\Saml2\Auth($saml_settings);
 $auth->processResponse();
 $errors = $auth->getErrors();
 
@@ -23,8 +23,8 @@ if (!empty($errors)) {
 }
 
 $idpResponse = $_POST['SAMLResponse'];
-$settings = new OneLogin_Saml2_Settings($saml_settings);
-$samlResponse = new OneLogin_Saml2_Response($settings, $idpResponse);
+$settings = new OneLogin\Saml2\Settings($saml_settings);
+$samlResponse = new OneLogin\Saml2\Response($settings, $idpResponse);
 if (!$auth->isAuthenticated()) {
 	exit();
 }

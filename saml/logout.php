@@ -10,7 +10,7 @@ require_once(TOOLKIT_PATH . '_toolkit_loader.php');
 
 require_once('settings.php');
 
-$samlSettings = new OneLogin_Saml2_Settings($saml_settings);
+$samlSettings = new OneLogin\Saml2\Settings($saml_settings);
 
 $idpData = $samlSettings->getIdPData();
 if (isset($idpData['singleLogoutService']) && isset($idpData['singleLogoutService']['url'])) {
@@ -20,15 +20,15 @@ if (isset($idpData['singleLogoutService']) && isset($idpData['singleLogoutServic
 }
 
 if (isset($_SESSION['IdPSessionIndex']) && !empty($_SESSION['IdPSessionIndex'])) {
-    $logoutRequest = new OneLogin_Saml2_LogoutRequest($samlSettings, null, $_SESSION['IdPSessionIndex']);
+    $logoutRequest = new OneLogin\Saml2\LogoutRequest($samlSettings, null, $_SESSION['IdPSessionIndex']);
 } else {
-    $logoutRequest = new OneLogin_Saml2_LogoutRequest($samlSettings);
+    $logoutRequest = new OneLogin\Saml2\LogoutRequest($samlSettings);
 }
 
 $samlRequest = $logoutRequest->getRequest();
 
 $parameters = array('SAMLRequest' => $samlRequest);
 
-$url = OneLogin_Saml2_Utils::redirect($sloUrl, $parameters, true);
+$url = OneLogin\Saml2\Utils::redirect($sloUrl, $parameters, true);
 
 header("Location: $url");

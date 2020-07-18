@@ -9,14 +9,15 @@ define("TOOLKIT_PATH", '../vendor/onelogin/php-saml/');
 require_once(TOOLKIT_PATH . '_toolkit_loader.php');
 
 require_once('settings.php');
+require_once '../vendor/autoload.php';
 
 /**
  * Saml authentication
  */
 
 if (!isset($_SESSION['samlUserdata'])) {
-	$settings = new OneLogin_Saml2_Settings($saml_settings);
-	$authRequest = new OneLogin_Saml2_AuthnRequest($settings);
+	$settings = new OneLogin\Saml2\Settings($saml_settings);
+	$authRequest = new OneLogin\Saml2\AuthnRequest($settings);
 	$samlRequest = $authRequest->getRequest();
 
 	// Track the authRequest ID so the response can be validated
@@ -27,11 +28,11 @@ if (!isset($_SESSION['samlUserdata'])) {
 	if(isset($_COOKIE['targeturl'])){
 		$relayto = html_entity_decode($_COOKIE['targeturl']);
 	}
-	$parameters['RelayState'] = (isset($relayto)?OneLogin_Saml2_Utils::getSelfURLhost().$relayto:OneLogin_Saml2_Utils::getSelfURLhost());
+	$parameters['RelayState'] = (isset($relayto)?OneLogin\Saml2\Utils::getSelfURLhost().$relayto:OneLogin\Saml2\Utils::getSelfURLhost());
 
     $idpData = $settings->getIdPData();
 	$ssoUrl = $idpData['singleSignOnService']['url'];
-	$url = OneLogin_Saml2_Utils::redirect($ssoUrl, $parameters, true);
+	$url = OneLogin\Saml2\Utils::redirect($ssoUrl, $parameters, true);
 
 	header("Location: $url");
     }
