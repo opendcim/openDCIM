@@ -164,7 +164,7 @@ class Device {
 		$this->Notes=stripslashes($this->Notes);
 	}
 
-	static function RowToObject($dbRow,$filterrights=true,$extendmodel=true){
+	static function RowToObject($dbRow,$filterrights=true,$extendmodel=true,$customvalues=true){
 		/*
 		 * Generic function that will take any row returned from the fac_Devices
 		 * table and convert it to an object for use in array or other
@@ -219,7 +219,10 @@ class Device {
 		$dev->BackSide=$dbRow["BackSide"];
 		$dev->AuditStamp=$dbRow["AuditStamp"];
 		$dev->Weight=$dbRow["Weight"];
-		$dev->GetCustomValues();
+
+		if($customvalues){
+			$dev->GetCustomValues();
+		}
 		
 		$dev->MakeDisplay();
 
@@ -720,6 +723,14 @@ class Device {
 		// CLI call
 		if( php_sapi_name() != "cli" && $tmpDev->Rights!='Write'){return false;}
 	
+		// Check the user's permissions to attach to ParentDevice
+		if($this->ParentDevice){
+                        $parent=new Device();
+                        $parent->DeviceID=$this->ParentDevice;
+                        $parent->GetDevice();
+			if($parent->Rights!='Write'){return false;}
+                }
+		
 		$this->MakeSafe();	
 
 		if($tmpDev->Cabinet!=$this->Cabinet){
@@ -1140,17 +1151,18 @@ class Device {
 		return $descList;
 	}
 	
-	function GetParentDevices(){
+	function GetParentDevices($fullinfo=true) {
 		global $dbh;
 		
 		$sql="SELECT * FROM fac_Device WHERE ChassisSlots>0 OR RearChassisSlots>0 ORDER BY Label ASC;";
 
 		$parentList=array();
 		foreach($dbh->query($sql) as $row){
-			// Assigning here will trigger the FilterRights method and check the cabinet rights
-			$temp=Device::RowToObject($row);
-			if($temp->DeviceID==$this->ParentDevice || $temp->Rights=="Write"){
-				$parentList[]=$temp;
+			if($fullinfo){			
+				// Assigning here will trigger the FilterRights method and check the cabinet rights
+				$parentList[]=Device::RowToObject($row);
+			}else{
+				$parentList[]=Device::RowToObject($row,false,false,false);
 			}
 		}
 		

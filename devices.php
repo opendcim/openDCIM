@@ -807,7 +807,8 @@
 				$pDev->DeviceID=$dev->ParentDevice;
 				$pDev->GetDevice();
 
-				$parentList=$pDev->GetParentDevices();
+				// Get full list of potential ParentDevices
+				$parentList=$pDev->GetParentDevices(false);
 
 				//$cab->CabinetID=$pDev->Cabinet;
 				//JMGA: changed for multichassis
