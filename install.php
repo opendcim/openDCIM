@@ -1,6 +1,6 @@
 <?php
-$codeversion="20.01";
 
+require_once( "version.php" );
 require_once( "preflight.php" );
 
 // Make sure that a db.inc.php has been created
@@ -1154,6 +1154,12 @@ function upgrade(){
 	}
 	if($version=="18.02"){
 		$results[]=applyupdate("db-18.02-to-19.01.sql");
+
+		$config->rebuild();
+	}
+	if($version=="19.01"){
+		error_log("Applying database update from 19.01 to 20.01");
+		$results[]=applyupdate("db-19.01-to-20.01.sql");
 
 		$config->rebuild();
 	}

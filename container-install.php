@@ -167,6 +167,15 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 		$version=$result->fetchColumn();//sets version number
 	}
 
+	if ( $version < "18.01" ) {
+		echo '<html>
+		<h1>Fatal error.</h1>
+		<p>You are attempting to upgrade a prior installation that is not supported in the containerized version of
+		openDCIM.   You must first upgrade your non-containerized installation to at least version 18.01, which is the minimum
+		version supported for upgrading in the containerized distribution.</p>';
+		exit;
+	}
+
 	// Check the detected version against the code version.  Update the current
 	// code version at the top of this file each time we update.
 	$upgrade=(VERSION!=$version)?true:false;
