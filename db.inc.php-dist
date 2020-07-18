@@ -8,7 +8,7 @@
 	// If the php-redis module is loaded AND the environment variable to enable it has been set, use it
 	if ( extension_loaded( 'redis' ) && strtoupper(getenv('OPENDCIM_REDIS_ENABLED'))=='TRUE' ) {
 		$redishost = getenv('OPENDCIM_REDIS_HOST') ? getenv('OPENDCIM_REDIS_HOST'):'redis';
-		$redispass = getenv('OpENDCIM_REDIS_PASS') ? getenv('OPENDCIM_REDIS_PASS'):'dcim';
+		$redispass = getenv('OPENDCIM_REDIS_PASS') ? getenv('OPENDCIM_REDIS_PASS'):'dcim';
 
 		ini_set( 'session.save_handler', 'redis' );
 		ini_set( 'session.save_path', 'tcp://'.$redishost.':6379?auth='.$redispass );
