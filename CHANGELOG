@@ -6,6 +6,20 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 20.01
+----------------
+* Complete overhaul of the SAML Integration.   Tested against KeyCloak and Ping Federate.  Should be pretty much standard.
+* Container build - if you want an "Easy Button" for setup, deploy as a container.   If orchestrating, limit to 1 container at a time (session handling).
+* User Manager - UserID is now displayed in the pick list, not just First/Last Name
+* Some fixes for metric system users
+* Performance improvements
+* New API routes
+* Bulk Move/Deletes now supports using the DB Key field for devices and data centers
+* Ability to pass parameters in localreports.json for localized reports
+* LDAP login enhancements for better compatibility
+* Added a database/config entry for allowing an "Emergency Login" (under the LDAP section)
+* Full details available at https://github.com/samilliken/openDCIM/milestone/19?closed=1
+
 Changes in 19.01
 ----------------
 * Ability to specify where the pictures and drawings folders are (easier for Containers)
