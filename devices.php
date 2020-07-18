@@ -2017,8 +2017,17 @@ echo '
 		   </select></div>
 		</div>
 	</div> <!-- END div.table -->
-</fieldset>
-<fieldset id="deviceimages">
+</fieldset>';
+
+		if ($dev->DeviceType=='Sensor'){
+echo '<fieldset id="sensorreadings">
+		   <legend>'.__("Sensor Readings").'</legend>
+		   <div id="sensorreadout">
+		   </div>
+		</fieldset>';
+		}
+
+echo '<fieldset id="deviceimages">
 	<legend>'.__("Device Images").'</legend>
 	<div>';
 		$frontpic=($templ->FrontPictureFile!='')?' src="'.$config->ParameterArray['picturepath'].'/'.$templ->FrontPictureFile.'"':'';
@@ -2622,6 +2631,19 @@ print "<!--				<div>".__("Panel")."</div> -->
 	}
 ?>
 	$(document).ready(function() {
+
+              //Fill in sensorreadings
+              $('#sensorreadings').append(function(){
+			var devid = $('#DeviceID').val();	
+			$.get('api/v1/device/'+devid+'/getsensorreadings',function(data){
+                                if(!data.error){
+                                        $('#sensorreadout').append('<br>Temp:&nbsp;'+data.sensor.Temperature+'&deg;&nbsp;&nbsp;Humidity:&nbsp;'+data.sensor.Humidity+'<br>Last&nbsp;Read:&nbsp;'+data.sensor.LastRead+'<br>');
+                                }else{
+                                        $('#sensorreadout').append('<br>'+data.message+'<br>');
+                                }
+                        });     
+              });
+
 		// Don't attempt to open the datacenter tree until it is loaded
 		function opentree(){
 			if($('#datacenters .bullet').length==0){
