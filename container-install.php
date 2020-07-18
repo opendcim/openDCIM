@@ -384,13 +384,6 @@ if(isset($results)){
 
 	
 //Installation Complete
-	if($nodept=="" && $nodc=="" && $nocab==""){ // All three primary sections have had at least one item created
-		if(!isset($_REQUEST['complete']) && !isset($_REQUEST['dept']) && !isset($_REQUEST['cab']) && !isset($_REQUEST['dc']) && !isset($_REQUEST['ldap'])){
-			error_log( "Installation complete.   Redirecting to main entrypoint.");
-			header('Location: '.redirect("index.php"));
-		}
-		//enable the finish menu option
-		$complete=true;
-	}
-
+	error_log( "Installation complete.   Redirecting to main entrypoint.");
+	header('Location: '.redirect("index.php"));
 ?>

@@ -13,7 +13,7 @@ require_once(TOOLKIT_PATH . '_toolkit_loader.php');
 
 require_once('settings.php');
 
-$auth = new OneLogin_Saml2_Auth($saml_settings);
+$auth = new OneLogin\Saml2\Auth($saml_settings);
 
 $auth->processSLO();
 

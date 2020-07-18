@@ -68,8 +68,8 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
     public static $classMap = array (
         'BinAudits' => __DIR__ . '/../..' . '/classes/BinAudits.class.php',
         'BinContents' => __DIR__ . '/../..' . '/classes/BinContents.class.php',
-        'CDUTemplate' => __DIR__ . '/../..' . '/classes/CDUTemplate.class.php',
         'CDUInfo' => __DIR__ . '/../..' . '/classes/CDUInfo.class.php',
+        'CDUTemplate' => __DIR__ . '/../..' . '/classes/CDUTemplate.class.php',
         'CGIF' => __DIR__ . '/..' . '/mpdf/mpdf/classes/gif.php',
         'CGIFCOLORTABLE' => __DIR__ . '/..' . '/mpdf/mpdf/classes/gif.php',
         'CGIFFILEHEADER' => __DIR__ . '/..' . '/mpdf/mpdf/classes/gif.php',
