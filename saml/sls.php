@@ -20,7 +20,8 @@ $auth->processSLO();
 $errors = $auth->getErrors();
 
 if (empty($errors)) {
-    header("Location: " . $config->ParameterArray["InstallURL"]);
+	error_log( "Logged out, redirecting back to home page.");
+    header("Location: " . $config->ParameterArray["SAMLBaseURL"]);
 } else {
     echo implode(', ', $errors);
 }
