@@ -63,7 +63,7 @@
 
 	// Automagically pull down information from the Identity Provider via the metadata if requested
 	if ( isset( $_POST["RefreshMetadata"]) ) {
-		$parser = new OneLogin_Saml2_IdPMetadataParser;
+		$parser = new OneLogin\Saml2\IdPMetadataParser;
 		error_log( "Downloading new IdP Metadata from " . $_POST["SAMLIdPMetadataURL"]);
 		$IdPSettings = $parser->parseRemoteXML($_POST["SAMLIdPMetadataURL"]);
 
