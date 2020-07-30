@@ -278,7 +278,7 @@ $(document).ready(function(){
 				$('.jqte_toolbar').hide();
 				$('#editbtn').hide();
 			}
-		} catch {}
+		} catch(e) {}
 	});
 
 	$('#editbtn').click(function(){
