@@ -111,8 +111,8 @@ class Cabinet {
 		
 	    global $config;
 	    if($config->ParameterArray["AssignCabinetLabels"]=="OwnerName"){
-	    $cab->DeptID=$dbRow["AssignedTo"];
-	    $dept = new Department();
+	    $dept=new Department();
+	    $dept->DeptID=$dbRow["AssignedTo"];
 	    $dept->GetDeptByID();
 	    $cab->ShowCabinetLabel=$dept->Name;}
 
