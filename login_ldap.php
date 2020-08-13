@@ -118,7 +118,7 @@
 
 				$ldapUser=ldap_escape(htmlspecialchars($_POST['username']),null,LDAP_ESCAPE_FILTER);
 				$ldapDN=str_replace("%userid%",$ldapUser,$config->ParameterArray['LDAPBindDN']);
-				$ldapPassword=ldap_escape($_POST['password'],null,LDAP_ESCAPE_FILTER);
+				$ldapPassword=$_POST['password'];
 
 				$ldapBind=ldap_bind($ldapConn,$ldapDN,$ldapPassword);
 

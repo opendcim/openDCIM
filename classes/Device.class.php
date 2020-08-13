@@ -655,7 +655,7 @@ class Device {
 		if ($this->ChassisSlots>0 || $this->RearChassisSlots>0){
 			$descList=$this->GetDeviceDescendants();
 			foreach($descList as $child){
-				$child->Dispose();
+				$child->Dispose( $DispositionID );
 			}
 		}
 
