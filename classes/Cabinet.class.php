@@ -87,6 +87,7 @@ class Cabinet {
 		 * Generic function that will take any row returned from the fac_Cabinet
 		 * table and convert it to an object for use in array or other
 		 */
+		global $config;
 		$cab=new Cabinet();
 		$cab->CabinetID=$dbRow["CabinetID"];
 		$cab->DataCenterID=$dbRow["DataCenterID"];
@@ -108,19 +109,22 @@ class Cabinet {
 		$cab->FrontEdge=$dbRow["FrontEdge"];
 		$cab->Notes=$dbRow["Notes"];
 		$cab->U1Position=$dbRow["U1Position"];
-		
-	    global $config;
-	    if($config->ParameterArray["AssignCabinetLabels"]=="OwnerName"){
-	    $dept=new Department();
-	    $dept->DeptID=$dbRow["AssignedTo"];
-	    $dept->GetDeptByID();
-	    $cab->ShowCabinetLabel=$dept->Name;}
 
-	    if($config->ParameterArray["AssignCabinetLabels"]=="KeyLockInformation"){
-	       $cab->ShowCabinetLabel=$dbRow["Keylock"]; }
-
-	    if($config->ParameterArray["AssignCabinetLabels"]=="ModelNo"){
-	       $cab->ShowCabinetLabel=$dbRow["Model"];  }
+		switch($config->ParameterArray["AssignCabinetLabels"]){
+			case "OwnerName":
+				$dept=new Department($cab->AssignedTo);
+				$dept->GetDeptByID();
+				$cab->ShowCabinetLabel=$dept->Name;
+				break;
+			case "KeyLockInformation":
+				$cab->ShowCabinetLabel=$cab->Keylock;
+				break;
+			case "ModelNo":
+				$cab->ShowCabinetLabel=$cab->Model;
+				break;
+			default:
+				$cab->ShowCabinetLabel=$cab->Location;
+		}
 
 		if($filterrights){
 			$cab->FilterRights();

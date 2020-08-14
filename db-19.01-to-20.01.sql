@@ -37,7 +37,7 @@ alter table fac_CDUTemplate add column OutletStatusOn varchar(80) NOT NULL after
 --
 
 insert into fac_Config set Parameter='RackRequestsActions', Value='Disabled', UnitOfMeasure='string', ValType='string', DefaultVal='disabled';
-insert into fac_Config set Parameter='AssignCabinetLabels', Value='OwnerName', UnitOfMeasure='string', ValType='string', DefaultVal='OwnerName';
+insert into fac_Config set Parameter='AssignCabinetLabels', Value='Location', UnitOfMeasure='string', ValType='string', DefaultVal='Location';
 
 --
 -- Changes for streamlining the Saml configuration

@@ -35,6 +35,13 @@ class Department {
 	var $Classification;
 	var $DeptColor;
 
+	public function __construct($deptid=false){
+		if($deptid){
+			$this->DeptID=$deptid;
+		}
+		return $this;
+	}
+
 	function MakeSafe(){
 		$this->DeptID=intval($this->DeptID);
 		$this->Name=sanitize($this->Name);

@@ -2065,6 +2065,7 @@ echo '<div class="main">
 					<div><label for="AssignCabinetLabels">',__("Which Cabinet Label?"),'</label></div>
 					<div><select id="AssignCabinetLabels" name="AssignCabinetLabels" defaultvalue="',$config->defaults["AssignCabinetLabels"],'" data="',$config->ParameterArray["AssignCabinetLabels"],'">
 
+							<option value="Location">',__("Location"),'</option>
 							<option value="OwnerName">',__("Owner Name"),'</option>
 							<option value="KeyLockInformation">',__("Key Lock Information"),'</option>
 							<option value="ModelNo">',__("Model No"),'</option> 
