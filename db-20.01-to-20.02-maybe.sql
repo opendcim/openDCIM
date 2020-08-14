@@ -1,8 +1,8 @@
 --
--- New parameter for Changing cabinet labels from cabinet name to user preference based label
+-- Set correct default value for cabinet label preference to be what we had prior to v20.01 
 --
 
-insert into fac_Config set Parameter='AssignCabinetLabels', Value='Location', UnitOfMeasure='string', ValType='string', DefaultVal='Location';
+UPDATE fac_Config SET DefaultVal = 'Location' WHERE fac_Config.Parameter = 'AssignCabinetLabels';
 
 --
 -- Bump up the database version (uncomment below once released)
