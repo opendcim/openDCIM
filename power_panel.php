@@ -66,8 +66,6 @@
 	if(isset($_REQUEST["PanelID"])&&($_REQUEST["PanelID"] >0)){
 		$panel->PanelID=(isset($_POST['PanelID']) ? $_POST['PanelID'] : $_GET['PanelID']);
 		$panel->getPanel();
-		$pdu->PanelID = $panel->PanelID;
-		$pduList=$pdu->GetPDUbyPanel();
 
 		$panelCap = $panel->PanelVoltage * $panel->MainBreakerSize * sqrt(3);
 		

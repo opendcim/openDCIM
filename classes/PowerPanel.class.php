@@ -312,7 +312,7 @@ class PowerPanel {
 			MainBreakerSize=$this->MainBreakerSize, PanelVoltage=$this->PanelVoltage, 
 			NumberScheme=\"$this->NumberScheme\", ParentPanelID=$this->ParentPanelID,
 			ParentBreakerName=\"$this->ParentBreakerName\", TemplateID=$this->TemplateID,
-			MapDataCenterID=$this->MapDataCenterID, MapX1=$this->MapX1,
+			MapDataCenterID=$this->MapDataCenterID, MapX1=$this->MapX1, MapX2=$this->MapX2,
 			MapY1=$this->MapY1,MapY2=$this->MapY2;";
 
 		if(!$this->exec($sql)){
