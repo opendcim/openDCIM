@@ -1,6 +1,12 @@
 openDCIM System Requirements
 -------------------------------
 
+The most updated instructions will always be at https://wiki.opendcim.org.   Please refer to that
+website if you are not already familiar with the setup.   This file covers basics, but is not the
+authoritative source.
+
+The containerized application setup is a bit different.   Again, see the wiki.
+
 LAMP server (Linux / Apache / MySQL / PHP)
 
 Windows with PHP on IIS or Apache should work fine as well, but has not been tested.  If you
@@ -34,7 +40,7 @@ Fill in the blanks for user, pass, database, server.
 
 It is suggested that you run openDCIM under SSL, preferably on its own IP address and server
 name.  This is because the system relies upon the web server to authenticate users and pass that
-information to the scripts.  Refer to the Apache (or other web server software) documenation on
+information to the scripts.  Refer to the Apache (or other web server software) documentation on
 how exactly to accomplish this.  It is recommended that you configure the server as
 
 https://dcim.yourdomain.com
@@ -43,8 +49,17 @@ You can choose to either authenticate against a local password file, LDAP, or an
 supported by your web server software.  The main thing is to authenticate users before entering
 the site.
 
+3.  Setup your file structure
 
-3.  Log in to the site
+Assuming that you expanded the archive into /var/www/html, you need to ensure that the apache process
+owner is also the owner of the directory /var/www/html/assets and has write access, as that it where all
+of the various pictures, drawings, etc will need to be stored.   If you are running multiple back
+end instances behind a load balancer, this would be the one folder that should be mounted from an
+NFS server or SAN.   There are some other folders that apache will need write access to for caching, but
+the tar file already has the proper permissions set.   If you get errors that you can't write to a folder
+that appears to be writable, the first thing to check would be SELinux.
+
+4.  Log in to the site
 
 Whoever logs in to the website first automatically becomes the site administrator!  This can be
 changed later, but in order to work at all the system has to define at least one administrator.
