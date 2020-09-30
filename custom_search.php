@@ -153,7 +153,7 @@
 				$.get('api/v1/devicestatus').done(function(data){
 					select=$('<select />').attr('name','Status');
 					for(var i in data.devicestatus){
-						select.append($('<option />').text(data.devicestatus[i].Status).val(data.devicestatus[i].StatusID));
+						select.append($('<option />').text(data.devicestatus[i].Status).val(data.devicestatus[i].Status));
 					}
 					searchfield.append(select);
 				});
