@@ -1,0 +1,1174 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "openDCIM",
+    "description": "openDCIM is an open source data center inventory management application. API documentation shows the primary model for the data being returned.   However, in many GET routes a union of multiple models are returned, which is why your results may vary.  For PUT and POST routes, you should only push the primary model.   Additionally, CustomDeviceAtrributes will be returned and can be posted, but are not in the documentation as they are custom by nature.",
+    "version": "20.01",
+    "contact": {
+      "url": "https://opendcim.org"
+    },
+    "license": {
+      "name": "GPLv3"
+    }
+  },
+  "host": "opendcim.org",
+  "basePath": "/demo/api/v1",
+  "tags": [
+    {
+      "name": "openDCIM",
+      "description": "Everything about your Data Center Inventory.",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "http://wiki.opendcim.org"
+      }
+    }
+  ],
+  "paths": {
+    "/audit": {
+      "get": {
+        "summary": "Audit history for the requested device",
+        "tags": [
+          "AuditLogs"
+        ],
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetAuditInfo",
+        "parameters": [
+          {
+            "name": "CabinetID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "CabinetID of the cabinet you would like audit information from.",
+            "allowEmptyValue": true
+          },
+          {
+            "name": "DeviceID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "The DeviceID that you want the audit information for. ",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Audit"
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/cabinet": {
+      "get": {
+        "summary": "Information about one or more cabinets",
+        "tags": [
+          "Cabinet"
+        ],
+        "description": "If no parameters are specified, all record information that you are authorized to view is returned.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetCabinet",
+        "parameters": [
+          {
+            "name": "CabinetID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific CabinetID for a record to retrieve from the database",
+            "allowEmptyValue": true
+          },
+          {
+            "name": "DataCenterID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific DataCenterID to filter results by",
+            "allowEmptyValue": true
+          },
+          {
+            "name": "CabRowID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific CabRowID to filter results by",
+            "allowEmptyValue": true
+          },
+          {
+            "name": "ZoneID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific ZoneID to filter results by",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Cabinet"
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/datacenter": {
+      "get": {
+        "summary": "Information about one or more data centers",
+        "tags": [
+          "DataCenter"
+        ],
+        "description": "If no parameters are specified, all record information that you are authorized to view is returned.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetDataCenter",
+        "parameters": [
+          {
+            "name": "DataCenterID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific DataCenterID for a record to retrieve from the database",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DataCenter"
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/department": {
+      "get": {
+        "summary": "Information about one or more departments",
+        "tags": [
+          "Department"
+        ],
+        "description": "If no parameters are specified, all record information that you are authorized to view is returned.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetDepartmentInfo",
+        "parameters": [
+          {
+            "name": "DepartmentID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific DepartmentID for a record to retrieve from the database.",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Department"
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/device": {
+      "get": {
+        "summary": "Information about one or more devices",
+        "tags": [
+          "Device"
+        ],
+        "description": "If no parameters are specified, all record information that you are authorized to view is returned.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetDevice",
+        "parameters": [
+          {
+            "name": "CabinetID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific CabinetID for a record to retrieve from the database",
+            "allowEmptyValue": true
+          },
+          {
+            "name": "DataCenterID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific DataCenterID to filter results by",
+            "allowEmptyValue": true
+          },
+          {
+            "name": "CabRowID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific CabRowID to filter results by",
+            "allowEmptyValue": true
+          },
+          {
+            "name": "ZoneID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific ZoneID to filter results by",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Cabinet"
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/devicetemplate": {
+      "get": {
+        "summary": "Template information for devices.   Some of the properties are contextual and are not returned for all devices.",
+        "tags": [
+          "DeviceTemplate"
+        ],
+        "description": "If no parameters are specified, all record information that you are authorized to view is returned.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetDeviceTemplate",
+        "parameters": [
+          {
+            "name": "TemplateID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific TemplateID for a record to retrieve from the database",
+            "allowEmptyValue": true
+          },
+          {
+            "name": "ManufacturerID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific ManufacturerID to filter results from the database",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DeviceTemplate"
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/deviceport/:deviceid": {
+      "get": {
+        "summary": "Port information about a specific device",
+        "tags": [
+          "DevicePort"
+        ],
+        "description": "Connection information about a specific device.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetDevicePorts",
+        "parameters": [
+          {
+            "name": "DeviceID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific DeviceID for a record to retrieve from the database",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DevicePort"
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/people": {
+      "get": {
+        "summary": "Information about one or more people",
+        "tags": [
+          "People"
+        ],
+        "description": "If no parameters are specified, all record information that you are authorized to view is returned.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetPersonInfo",
+        "parameters": [
+          {
+            "name": "PersonID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific PersonID for a record to retrieve from the database",
+            "allowEmptyValue": true
+          },
+          {
+            "name": "UserID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific UserID for a record to retrieve from the database",
+            "allowEmptyValue": true
+          },
+          {
+            "name": "Email",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific EmailAddress for a record to retrieve from the database",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Person"
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/powerport/$deviceid": {
+      "get": {
+        "summary": "Power Port information for a specific device",
+        "tags": [
+          "PowerPort",
+          "Device"
+        ],
+        "description": "Returns connection information about the power ports on a specific device",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetPowerPorts",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PowerPort"
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/project": {
+      "get": {
+        "summary": "Metadata about all projects",
+        "tags": [
+          "Project"
+        ],
+        "description": "Returns the metadata about projects in the system, but not members of the projects.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetProjectList",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Project"
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/project/bycabinet/$cabinetid": {
+      "get": {
+        "summary": "Metadata about all projects associated with a specific cabinet",
+        "tags": [
+          "Project",
+          "Cabinet"
+        ],
+        "description": "Returns the metadata about projects in the system assigned to a specific cabinet.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetProjectsByCabinet",
+        "parameters": [
+          {
+            "name": "CabinetID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific CabinetID for a record to retrieve from the database",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Project"
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/project/bydevice/$deviceid": {
+      "get": {
+        "summary": "Metadata about all projects associated with a specific device",
+        "tags": [
+          "Project"
+        ],
+        "description": "Returns the metadata about projects in the system, but not members of the projects.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetProjectsByDevice",
+        "parameters": [
+          {
+            "name": "DeviceID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "A specific DeviceID for a record to retrieve from the database",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Project"
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied."
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Audit": {
+      "type": "object",
+      "properties": {
+        "UserID": {
+          "type": "string",
+          "format": "username"
+        },
+        "Class": {
+          "type": "string",
+          "format": "Type of action performed"
+        },
+        "ObjectID": {
+          "type": "number",
+          "format": "keyValue"
+        },
+        "ChildID": {
+          "type": "number",
+          "format": "keyValue"
+        },
+        "Action": {
+          "type": "string",
+          "enum": [
+            "CertifyAudit"
+          ]
+        },
+        "Property": {
+          "type": "string",
+          "format": "objectPropertyName"
+        },
+        "OldVal": {
+          "type": "string",
+          "format": "Dependent on objectProperty"
+        },
+        "NewVal": {
+          "type": "string",
+          "format": "Dependent on objectProperty"
+        },
+        "Time": {
+          "type": "string",
+          "format": "Timestamp"
+        }
+      }
+    },
+    "Cabinet": {
+      "type": "object",
+      "properties": {
+        "CabinetID": {
+          "type": "number",
+          "format": "keyValue"
+        },
+        "DataCenterID": {
+          "type": "number",
+          "format": "keyValue"
+        },
+        "Location": {
+          "type": "string",
+          "format": "Location designation"
+        },
+        "LocationSortable": {
+          "type": "string",
+          "format": "Alternate location designator used for sorting"
+        },
+        "AssignedTo": {
+          "type": "number",
+          "format": "keyValue of Department that owns cabinet"
+        },
+        "ShowCabinetLabel": {
+          "type": "boolean",
+          "format": "Show labels for devices in cabinet"
+        },
+        "ZoneID": {
+          "type": "number",
+          "format": "keyValue for Zone cabinet is assigned to (if any)"
+        },
+        "CabRowID": {
+          "type": "number",
+          "format": "keyValue for Cabinet Row"
+        },
+        "CabinetHeight": {
+          "type": "number",
+          "format": "Height of cabinet in Rack Units"
+        },
+        "Model": {
+          "type": "string",
+          "format": "Model information of cabinet"
+        },
+        "Keylock": {
+          "type": "string",
+          "format": "Key or lock information."
+        },
+        "MaxKW": {
+          "type": "number",
+          "format": "Maximum kW design for this location."
+        },
+        "MaxWeight": {
+          "type": "number",
+          "format": "Maximum weight (units per localization) for this location"
+        },
+        "InstallationDate": {
+          "type": "number",
+          "format": "Datestamp"
+        },
+        "MapX1": {
+          "type": "number",
+          "format": "Coordinates for location on the data center map."
+        },
+        "MapX2": {
+          "type": "number",
+          "format": "Coordinates for location on the data center map."
+        },
+        "MapY1": {
+          "type": "number",
+          "format": "Coordinates for location on the data center map."
+        },
+        "MapY2": {
+          "type": "number",
+          "format": "Coordinates for location on the data center map."
+        },
+        "FrontEdge": {
+          "type": "string",
+          "enum": [
+            "Top",
+            "Bottom",
+            "Left",
+            "Right"
+          ]
+        },
+        "Notes": {
+          "type": "string",
+          "format": "Freeform text notes for the cabinet"
+        },
+        "U1Position": {
+          "type": "string",
+          "enum": [
+            "Bottom",
+            "Top"
+          ]
+        }
+      }
+    },
+    "DataCenter": {
+      "type": "object",
+      "properties": {
+        "DataCenterID": {
+          "type": "number",
+          "format": "keyValue"
+        },
+        "Name": {
+          "type": "string",
+          "format": "Freeform text"
+        },
+        "SquareFootage": {
+          "type": "number",
+          "format": "Model is in English units, but if localized to Metric, will show meters"
+        },
+        "DeliveryAddress": {
+          "type": "string",
+          "format": "Freeform text"
+        },
+        "Administrator": {
+          "type": "string",
+          "format": "Freeform text"
+        },
+        "MaxkW": {
+          "type": "number",
+          "format": "Maximum kW load this data center is rated for"
+        },
+        "DrawingFilename": {
+          "type": "string",
+          "format": "Relative path to drawing filename"
+        },
+        "EntryLogging": {
+          "type": "boolean",
+          "format": "Deprecated"
+        },
+        "ContainerID": {
+          "type": "number",
+          "format": "keyValue of container parent (if any)"
+        },
+        "MapX": {
+          "type": "number",
+          "format": "Geometry of the drawing file in X coordinates"
+        },
+        "MapY": {
+          "type": "number",
+          "format": "Geometry of the drawing file in Y coordinates"
+        },
+        "U1Position": {
+          "type": "string",
+          "enum": [
+            "Bottom",
+            "Top"
+          ]
+        }
+      }
+    },
+    "Department": {
+      "type": "object",
+      "properties": {
+        "DeptID": {
+          "type": "number",
+          "format": "integer"
+        },
+        "Name": {
+          "type": "string",
+          "format": "alphanumeric"
+        },
+        "ExecSponsor": {
+          "type": "string",
+          "format": "alphanumeric"
+        },
+        "SDM": {
+          "type": "string",
+          "format": "ServiceDeliveryManager"
+        },
+        "Classification": {
+          "type": "string",
+          "format": "alphanumeric"
+        },
+        "DeptColor": {
+          "type": "number",
+          "format": "HexadecimalColor"
+        }
+      }
+    },
+    "Device": {
+      "type": "object",
+      "properties": {
+        "DeviceID": {
+          "type": "number",
+          "format": "integer"
+        }
+      }
+    },
+    "DeviceTemplate": {
+      "type": "object",
+      "properties": {
+        "TemplateID": {
+          "type": "integer",
+          "format": "keyValue for Template"
+        },
+        "ManufacturerID": {
+          "type": "integer",
+          "format": "keyValue for the Manufacturer"
+        },
+        "Model": {
+          "type": "string",
+          "format": "Freeform text"
+        },
+        "Height": {
+          "type": "integer",
+          "format": "Height in rack units"
+        },
+        "Weight": {
+          "type": "integer",
+          "format": "Weight, in localized units, of a device of this type"
+        },
+        "Wattage": {
+          "type": "integer",
+          "format": "Wattage to use in capacity calculations"
+        },
+        "DeviceType": {
+          "type": "string",
+          "enum": [
+            "Server",
+            "Appliance",
+            "Storage Array",
+            "Switch",
+            "Chassis",
+            "Patch Panel",
+            "Physical Infrastructure",
+            "CDU",
+            "Sensor"
+          ]
+        },
+        "PSCount": {
+          "type": "integer",
+          "format": "Number of power inputs"
+        },
+        "NumPorts": {
+          "type": "integer",
+          "format": "Number of data ports"
+        },
+        "Notes": {
+          "type": "string",
+          "format": "Freeform text"
+        },
+        "FrontPictureFile": {
+          "type": "string",
+          "format": "Relative path to the image file for the front"
+        },
+        "RearPictureFile": {
+          "type": "string",
+          "format": "Relative path to the image file for the rear"
+        },
+        "ChassisSlots": {
+          "type": "integer",
+          "format": "Number of front slots (if a chassis)"
+        },
+        "RearChassisSlots": {
+          "type": "integer",
+          "format": "Number of rear slots (if a chassis)"
+        },
+        "SNMPVersion": {
+          "type": "string",
+          "enum": [
+            "1",
+            "2c",
+            "3"
+          ]
+        },
+        "GlobalID": {
+          "type": "integer",
+          "format": "If pulled from online repo, the corresponding keyValue for repository record"
+        },
+        "Managed": {
+          "type": "boolean",
+          "format": "(CDU) If this is a managed device"
+        },
+        "ATS": {
+          "type": "boolean",
+          "format": "(CDU) If this device is an Auto-Transfer Switch"
+        },
+        "VersionOID": {
+          "type": "string",
+          "format": "(CDU) OID for version number\""
+        },
+        "OutletNameOID": {
+          "type": "string",
+          "format": "(CDU) OID for traversing outlet names"
+        },
+        "OutletDescOID": {
+          "type": "string",
+          "format": "(CDU) OID for traversing outlet descriptions"
+        },
+        "OutletCountOID": {
+          "type": "string",
+          "format": "(CDU) OID for number of power output outlets"
+        },
+        "OutletStatusOID": {
+          "type": "string",
+          "format": "(CDU) OID for traversing outlet status"
+        },
+        "OutletStatusOn": {
+          "type": "string",
+          "format": "(CDU) Value returned for an outlet that has been turned on"
+        },
+        "Multiplier": {
+          "type": "number",
+          "format": "(CDU) A multiplier to be applied to the result from a Wattage/Amperage query to get into whole units"
+        },
+        "OID1": {
+          "type": "string",
+          "format": "(CDU) OID for the first phase (or section) power usage"
+        },
+        "OID2": {
+          "type": "string",
+          "format": "(CDU) OID for the second phase (or section) power usage"
+        },
+        "OID3": {
+          "type": "string",
+          "format": "(CDU) OID for the third phase (or section) power usage"
+        },
+        "ATSStatusOID": {
+          "type": "string",
+          "format": "(CDU) OID to query for ATS Status"
+        },
+        "ATSDesiredResult": {
+          "type": "string",
+          "format": "(CDU) Result from a query of the ATS Status OID that indicates normal operation"
+        },
+        "ProcessingProfile": {
+          "type": "string",
+          "enum": [
+            "SingleOIDWatts",
+            "SingleOIDAmperes",
+            "Combine3OIDWatts",
+            "Combine3OIDAmperes",
+            "Convert3PhAmperes"
+          ]
+        },
+        "Voltage": {
+          "type": "integer",
+          "format": "(CDU) Input voltage"
+        },
+        "Amperage": {
+          "type": "integer",
+          "format": "(CDU) Input circuit amperage"
+        },
+        "NumOutlets": {
+          "type": "integer",
+          "format": "(CDU) Number of outlets for output"
+        }
+      }
+    },
+    "DevicePort": {
+      "type": "object",
+      "properties": {
+        "DeviceID": {
+          "type": "number",
+          "format": "keyValue of DeviceID"
+        },
+        "PortNumber": {
+          "type": "number",
+          "format": "Integer value of port number.  Negative numbers indicate rear side ports for patch panels."
+        },
+        "Label": {
+          "type": "string",
+          "format": "Human friendly label for the port"
+        },
+        "MediaID": {
+          "type": "number",
+          "format": "keyValue of MediaType"
+        },
+        "ColorID": {
+          "type": "number",
+          "format": "keyValue of ColorCode"
+        },
+        "ConnectedDeviceID": {
+          "type": "number",
+          "format": "keyValue of device at opposite end of connection"
+        },
+        "ConnectedPort": {
+          "type": "number",
+          "format": "Port number of associated device at opposite end of connection"
+        },
+        "Notes": {
+          "type": "string",
+          "format": "Freeform text"
+        }
+      }
+    },
+    "Person": {
+      "type": "object",
+      "properties": {
+        "PersonID": {
+          "type": "number",
+          "format": "integer"
+        },
+        "UserID": {
+          "type": "string",
+          "format": "alphanumeric"
+        },
+        "LastName": {
+          "type": "string",
+          "format": "alphanumeric"
+        },
+        "FirstName": {
+          "type": "string",
+          "format": "alphanumeric"
+        },
+        "Phone1": {
+          "type": "string",
+          "format": "PhoneNumber"
+        },
+        "Phone2": {
+          "type": "string",
+          "format": "PhoneNumber"
+        },
+        "Phone3": {
+          "type": "string",
+          "format": "PhoneNumber"
+        },
+        "Email": {
+          "type": "string",
+          "format": "EmailAddress"
+        },
+        "AdminOwnDevices": {
+          "type": "boolean",
+          "format": "User has ability to administer their own devices"
+        },
+        "ReadAccess": {
+          "type": "boolean",
+          "format": "User has global read rights"
+        },
+        "WriteAccess": {
+          "type": "boolean",
+          "format": "User has global write rights"
+        },
+        "DeleteAccess": {
+          "type": "boolean",
+          "format": "User has global delete access"
+        },
+        "ContactAdmin": {
+          "type": "boolean",
+          "format": "User is a Contact Administrator"
+        },
+        "RackRequest": {
+          "type": "boolean",
+          "format": "User has rights to enter Rack Requests"
+        },
+        "RackAdmin": {
+          "type": "boolean",
+          "format": "User has rights to complete rack requests"
+        },
+        "BulkOperations": {
+          "type": "boolean",
+          "format": "User has rights to perform Bulk Operations"
+        },
+        "SiteAdmin": {
+          "type": "boolean",
+          "format": "User is a site administrator"
+        },
+        "APIKey": {
+          "type": "string",
+          "format": "API Token"
+        },
+        "Disabled": {
+          "type": "boolean",
+          "format": "User has been disabled"
+        }
+      }
+    },
+    "Project": {
+      "type": "object",
+      "properties": {
+        "ProjectID": {
+          "type": "integer",
+          "format": "keyValue"
+        },
+        "ProjectName": {
+          "type": "string",
+          "format": "Freeform text"
+        },
+        "ProjectSponsor": {
+          "type": "string",
+          "format": "Freeform text"
+        },
+        "ProjectStartDate": {
+          "type": "string",
+          "format": "Datestamp"
+        },
+        "ProjectEndDate": {
+          "type": "string",
+          "format": "Datestamp"
+        },
+        "ProjectActualEndDate": {
+          "type": "string",
+          "format": "Datestamp"
+        }
+      }
+    },
+    "PowerPort": {
+      "type": "object",
+      "properties": {
+        "DeviceID": {
+          "type": "integer",
+          "format": "keyValue"
+        },
+        "PortNumber": {
+          "type": "integer",
+          "format": "integer"
+        },
+        "Label": {
+          "type": "string",
+          "format": "Human friendly label for the port"
+        },
+        "ConnectedDeviceID": {
+          "type": "integer",
+          "format": "keyValue DeviceID for the connected device"
+        },
+        "ConnectedPort": {
+          "type": "integer",
+          "format": "keyValue port number for the connected device"
+        },
+        "Notes": {
+          "type": "string",
+          "format": "Freeform text"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "APIKEY",
+      "in": "header"
+    }
+  }
+}
