@@ -1,18 +1,21 @@
 swagger: "2.0"
 info:
   title: "openDCIM"
-  description: "openDCIM is an open source data center inventory management application."
-  version: "1.0.0"
+  description: "openDCIM is an open source data center inventory management application.
+    API documentation shows the primary model for the data being returned.   However, in many GET
+    routes a union of multiple models are returned, which is why your results may vary.  For PUT
+    and POST routes, you should only push the primary model.   Additionally, CustomDeviceAtrributes
+    will be returned and can be posted, but are not in the documentation as they are custom by nature."
+  version: "20.01"
   contact:
-    email: "scott@opendcim.org"
     url: 'https://opendcim.org'
   license:
     name: GPLv3
 host: "opendcim.org"
 basePath: "/demo/api/v1"
 tags:
-- name: "DCIM"
-  description: "Everything about your Data Center Inventory"
+- name: "openDCIM"
+  description: "Everything about your Data Center Inventory."
   externalDocs:
     description: "Find out more"
     url: "http://wiki.opendcim.org"
@@ -21,7 +24,7 @@ paths:
     get:
       summary: Audit history for the requested device
       tags:
-      - "audit"
+      - "AuditLogs"
       description: ''
       produces:
       - "application/json"
@@ -47,14 +50,185 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/audit"
+              $ref: "#/definitions/Audit"
+      security:
+      - api_key: []
+  /cabinet:
+    get:
+      summary: Information about one or more cabinets
+      tags:
+      - "Cabinet"
+      description: 'If no parameters are specified, all record information that you are authorized to view is returned.'
+      produces:
+      - "application/json"
+      operationId: "GetCabinet"
+      parameters:
+        - name: CabinetID
+          in: query
+          required: false
+          type: string
+          description: "A specific CabinetID for a record to retrieve from the database"
+          allowEmptyValue: true
+        - name: DataCenterID
+          in: query
+          required: false
+          type: string
+          description: "A specific DataCenterID to filter results by"
+          allowEmptyValue: true
+        - name: CabRowID
+          in: query
+          required: false
+          type: string
+          description: "A specific CabRowID to filter results by"
+          allowEmptyValue: true
+        - name: ZoneID
+          in: query
+          required: false
+          type: string
+          description: "A specific ZoneID to filter results by"
+          allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Cabinet"
+      security:
+      - api_key: []
+  /datacenter:
+    get:
+      summary: Information about one or more data centers
+      tags:
+      - "DataCenter"
+      description: 'If no parameters are specified, all record information that you are authorized to view is returned.'
+      produces:
+      - "application/json"
+      operationId: "GetDataCenter"
+      parameters:
+        - name: DataCenterID
+          in: query
+          required: false
+          type: string
+          description: "A specific DataCenterID for a record to retrieve from the database"
+          allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/DataCenter"
+      security:
+      - api_key: []
+  /department:
+    get:
+      summary: Information about one or more departments
+      tags:
+      - "Department"
+      description: 'If no parameters are specified, all record information that you are authorized to view is returned.'
+      produces:
+      - "application/json"
+      operationId: "GetDepartmentInfo"
+      parameters:
+        - name: DepartmentID
+          in: query
+          required: false
+          type: string
+          description: "A specific DepartmentID for a record to retrieve from the database."
+          allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Department"
+      security:
+      - api_key: []
+  /device:
+    get:
+      summary: Information about one or more devices
+      tags:
+      - "Device"
+      description: 'If no parameters are specified, all record information that you are authorized to view is returned.'
+      produces:
+      - "application/json"
+      operationId: "GetDevice"
+      parameters:
+        - name: CabinetID
+          in: query
+          required: false
+          type: string
+          description: "A specific CabinetID for a record to retrieve from the database"
+          allowEmptyValue: true
+        - name: DataCenterID
+          in: query
+          required: false
+          type: string
+          description: "A specific DataCenterID to filter results by"
+          allowEmptyValue: true
+        - name: CabRowID
+          in: query
+          required: false
+          type: string
+          description: "A specific CabRowID to filter results by"
+          allowEmptyValue: true
+        - name: ZoneID
+          in: query
+          required: false
+          type: string
+          description: "A specific ZoneID to filter results by"
+          allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Cabinet"
+      security:
+      - api_key: []
+  /deviceport/:deviceid:
+    get:
+      summary: Port information about a specific device
+      tags:
+      - "DevicePort"
+      description: "Connection information about a specific device."
+      produces:
+      - "application/json"
+      operationId: "GetDevicePorts"
+      parameters:
+        - name: DeviceID
+          in: query
+          required: false
+          type: string
+          description: "A specific DeviceID for a record to retrieve from the database"
+          allowEmptyValue: false
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/DevicePort"
       security:
       - api_key: []
   /people:
     get:
       summary: Information about one or more people
       tags:
-      - "people"
+      - "People"
       description: 'If no parameters are specified, all record information that you are authorized to view is returned.'
       produces:
       - "application/json"
@@ -86,44 +260,209 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/person"
+              $ref: "#/definitions/Person"
       security:
       - api_key: []
 definitions:
-  audit:
+  Audit:
     type: "object"
     properties:
       UserID:
         type: "string"
-        format: "alphanumeric"
+        format: "username"
       Class:
         type: "string"
-        enum:
-        - "CabinetAudit"
-        - "DeviceAudit"
+        format: "Type of action performed"
       ObjectID:
         type: "number"
-        format: "int"
+        format: "keyValue"
       ChildID:
         type: "number"
-        format: "int"
+        format: "keyValue"
       Action:
         type: "string"
         enum:
         - "CertifyAudit"
       Property:
         type: "string"
-        format: "alphanumeric"
+        format: "objectPropertyName"
       OldVal:
         type: "string"
-        format: "Based on object property"
+        format: "Dependent on objectProperty"
       NewVal:
         type: "string"
-        format: "Based on object property"
+        format: "Dependent on objectProperty"
       Time:
         type: "string"
-        format: "timestamp"
-  person:
+        format: "Timestamp"
+  Cabinet:
+    type: "object"
+    properties:
+      CabinetID:
+        type: "number"
+        format: "keyValue"
+      DataCenterID:
+        type: "number"
+        format: "keyValue"
+      Location:
+        type: "string"
+        format: "Location designation"
+      LocationSortable:
+        type: "string"
+        format: "Alternate location designator used for sorting"
+      AssignedTo:
+        type: "number"
+        format: "keyValue of Department that owns cabinet"
+      ShowCabinetLabel:
+        type: "boolean"
+        format: "Show labels for devices in cabinet"
+      ZoneID:
+        type: "number"
+        format: "keyValue for Zone cabinet is assigned to (if any)"
+      CabRowID:
+        type: "number"
+        format: "keyValue for Cabinet Row"
+      CabinetHeight:
+        type: "number"
+        format: "Height of cabinet in Rack Units"
+      Model:
+        type: "string"
+        format: "Model information of cabinet"
+      Keylock:
+        type: "string"
+        format: "Key or lock information."
+      MaxKW:
+        type: "number"
+        format: "Maximum kW design for this location."
+      MaxWeight:
+        type: "number"
+        format: "Maximum weight (units per localization) for this location"
+      InstallationDate:
+        type: "number"
+        format: "Datestamp"
+      MapX1:
+        type: "number"
+        format: "Coordinates for location on the data center map."
+      MapX2:
+        type: "number"
+        format: "Coordinates for location on the data center map."
+      MapY1:
+        type: "number"
+        format: "Coordinates for location on the data center map."
+      MapY2:
+        type: "number"
+        format: "Coordinates for location on the data center map."
+      FrontEdge:
+        type: "string"
+        enum:
+        - "Top"
+        - "Bottom"
+        - "Left"
+        - "Right"
+      Notes:
+        type: "string"
+        format: "Freeform text notes for the cabinet"
+      U1Position:
+        type: "string"
+        enum:
+        - "Bottom"
+        - "Top"
+  DataCenter:
+    type: "object"
+    properties:
+      DataCenterID:
+        type: "number"
+        format: "keyValue"
+      Name:
+        type: "string"
+        format: "Freeform text"
+      SquareFootage:
+        type: "number"
+        format: "Model is in English units, but if localized to Metric, will show meters"
+      DeliveryAddress:
+        type: "string"
+        format: "Freeform text"
+      Administrator:
+        type: "string"
+        format: "Freeform text"
+      MaxkW:
+        type: "number"
+        format: "Maximum kW load this data center is rated for"
+      DrawingFilename:
+        type: "string"
+        format: "Relative path to drawing filename"
+      EntryLogging:
+        type: "boolean"
+        format: "Deprecated"
+      ContainerID:
+        type: "number"
+        format: "keyValue of container parent (if any)"
+      MapX:
+        type: "number"
+        format: "Geometry of the drawing file in X coordinates"
+      MapY:
+        type: "number"
+        format: "Geometry of the drawing file in Y coordinates"
+      U1Position:
+        type: "string"
+        enum:
+        - "Bottom"
+        - "Top"
+  Department:
+    type: "object"
+    properties:
+      DeptID:
+        type: "number"
+        format: "integer"
+      Name:
+        type: "string"
+        format: "alphanumeric"
+      ExecSponsor:
+        type: "string"
+        format: "alphanumeric"
+      SDM:
+        type: "string"
+        format: "ServiceDeliveryManager"
+      Classification:
+        type: "string"
+        format: "alphanumeric"
+      DeptColor:
+        type: "number"
+        format: "HexadecimalColor"
+  Device:
+    type: "object"
+    properties:
+      DeviceID:
+        type: "number"
+        format: "integer"
+  DevicePort:
+    type: "object"
+    properties:
+      DeviceID:
+        type: "number"
+        format: "keyValue of DeviceID"
+      PortNumber:
+        type: "number"
+        format: "Integer value of port number.  Negative numbers indicate rear side ports for patch panels."
+      Label:
+        type: "string"
+        format: "Human friendly label for the port"
+      MediaID:
+        type: "number"
+        format: "keyValue of MediaType"
+      ColorID:
+        type: "number"
+        format: "keyValue of ColorCode"
+      ConnectedDeviceID:
+        type: "number"
+        format: "keyValue of device at opposite end of connection"
+      ConnectedPort:
+        type: "number"
+        format: "Port number of associated device at opposite end of connection"
+      Notes:
+        type: "string"
+        format: "Freeform text"
+  Person:
     type: "object"
     properties:
       PersonID:
