@@ -1,0 +1,190 @@
+swagger: "2.0"
+info:
+  title: "openDCIM"
+  description: "openDCIM is an open source data center inventory management application."
+  version: "1.0.0"
+  contact:
+    email: "scott@opendcim.org"
+    url: 'https://opendcim.org'
+  license:
+    name: GPLv3
+host: "opendcim.org"
+basePath: "/demo/api/v1"
+tags:
+- name: "DCIM"
+  description: "Everything about your Data Center Inventory"
+  externalDocs:
+    description: "Find out more"
+    url: "http://wiki.opendcim.org"
+paths:
+  /audit:
+    get:
+      summary: Audit history for the requested device
+      tags:
+      - "audit"
+      description: ''
+      produces:
+      - "application/json"
+      operationId: "GetAuditInfo"
+      parameters:
+        - name: CabinetID
+          in: query
+          required: false
+          type: string
+          description: CabinetID of the cabinet you would like audit information from.
+          allowEmptyValue: true
+        - name: DeviceID
+          in: query
+          required: false
+          type: string
+          description: 'The DeviceID that you want the audit information for. '
+          allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/audit"
+      security:
+      - api_key: []
+  /people:
+    get:
+      summary: Information about one or more people
+      tags:
+      - "people"
+      description: 'If no parameters are specified, all record information that you are authorized to view is returned.'
+      produces:
+      - "application/json"
+      operationId: "GetPersonInfo"
+      parameters:
+        - name: PersonID
+          in: query
+          required: false
+          type: string
+          description: "A specific PersonID for a record to retrieve from the database"
+          allowEmptyValue: true
+        - name: UserID
+          in: query
+          required: false
+          type: string
+          description: "A specific UserID for a record to retrieve from the database"
+          allowEmptyValue: true
+        - name: Email
+          in: query
+          required: false
+          type: string
+          description: "A specific EmailAddress for a record to retrieve from the database"
+          allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/person"
+      security:
+      - api_key: []
+definitions:
+  audit:
+    type: "object"
+    properties:
+      UserID:
+        type: "string"
+        format: "alphanumeric"
+      Class:
+        type: "string"
+        enum:
+        - "CabinetAudit"
+        - "DeviceAudit"
+      ObjectID:
+        type: "number"
+        format: "int"
+      ChildID:
+        type: "number"
+        format: "int"
+      Action:
+        type: "string"
+        enum:
+        - "CertifyAudit"
+      Property:
+        type: "string"
+        format: "alphanumeric"
+      OldVal:
+        type: "string"
+        format: "Based on object property"
+      NewVal:
+        type: "string"
+        format: "Based on object property"
+      Time:
+        type: "string"
+        format: "timestamp"
+  person:
+    type: "object"
+    properties:
+      PersonID:
+        type: "number"
+        format: "integer"
+      UserID:
+        type: "string"
+        format: "alphanumeric"
+      LastName:
+        type: "string"
+        format: "alphanumeric"
+      FirstName:
+        type: "string"
+        format: "alphanumeric"
+      Phone1:
+        type: "string"
+        format: "PhoneNumber"
+      Phone2:
+        type: "string"
+        format: "PhoneNumber"
+      Phone3:
+        type: "string"
+        format: "PhoneNumber"
+      Email:
+        type: "string"
+        format: "EmailAddress"
+      AdminOwnDevices:
+        type: boolean
+        format: "User has ability to administer their own devices"
+      ReadAccess:
+        type: boolean
+        format: "User has global read rights"
+      WriteAccess:
+        type: boolean
+        format: "User has global write rights"
+      DeleteAccess:
+        type: boolean
+        format: "User has global delete access"
+      ContactAdmin:
+        type: boolean
+        format: "User is a Contact Administrator"
+      RackRequest:
+        type: boolean
+        format: "User has rights to enter Rack Requests"
+      RackAdmin:
+        type: boolean
+        format: "User has rights to complete rack requests"
+      BulkOperations:
+        type: boolean
+        format: "User has rights to perform Bulk Operations"
+      SiteAdmin:
+        type: boolean
+        format: "User is a site administrator"
+      APIKey:
+        type: string
+        format: "API Token"
+      Disabled:
+        type: boolean
+        format: "User has been disabled"
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "APIKEY"
+    in: "header"
