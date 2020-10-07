@@ -11,8 +11,8 @@
       "name": "GPLv3"
     }
   },
-  "host": "opendcim.org",
-  "basePath": "/demo/api/v1",
+  "host": "",
+  "basePath": "/api/v1",
   "tags": [
     {
       "name": "openDCIM",
@@ -1167,7 +1167,7 @@
   "securityDefinitions": {
     "api_key": {
       "type": "apiKey",
-      "name": "APIKEY",
+      "name": "APIKey",
       "in": "header"
     }
   }

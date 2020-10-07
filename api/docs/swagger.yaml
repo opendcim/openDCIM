@@ -11,8 +11,7 @@ info:
     url: 'https://opendcim.org'
   license:
     name: GPLv3
-host: "opendcim.org"
-basePath: "/demo/api/v1"
+basePath: "/api/v1"
 tags:
 - name: "openDCIM"
   description: "Everything about your Data Center Inventory."
@@ -53,6 +52,7 @@ paths:
               $ref: "#/definitions/Audit"
       security:
       - api_key: []
+      - user_id: []
   /cabinet:
     get:
       summary: Information about one or more cabinets
@@ -98,6 +98,7 @@ paths:
               $ref: "#/definitions/Cabinet"
       security:
       - api_key: []
+      - user_id: []
   /datacenter:
     get:
       summary: Information about one or more data centers
@@ -125,6 +126,7 @@ paths:
               $ref: "#/definitions/DataCenter"
       security:
       - api_key: []
+      - user_id: []
   /department:
     get:
       summary: Information about one or more departments
@@ -152,6 +154,7 @@ paths:
               $ref: "#/definitions/Department"
       security:
       - api_key: []
+      - user_id: []
   /device:
     get:
       summary: Information about one or more devices
@@ -197,6 +200,7 @@ paths:
               $ref: "#/definitions/Cabinet"
       security:
       - api_key: []
+      - user_id: []
   /devicetemplate:
     get:
       summary: Template information for devices.   Some of the properties are contextual and are not returned for all devices.
@@ -230,6 +234,7 @@ paths:
               $ref: "#/definitions/DeviceTemplate"
       security:
       - api_key: []
+      - user_id: []
   /deviceport/:deviceid:
     get:
       summary: Port information about a specific device
@@ -257,6 +262,7 @@ paths:
               $ref: "#/definitions/DevicePort"
       security:
       - api_key: []
+      - user_id: []
   /people:
     get:
       summary: Information about one or more people
@@ -296,6 +302,7 @@ paths:
               $ref: "#/definitions/Person"
       security:
       - api_key: []
+      - user_id: []
   /powerport/$deviceid:
     get:
       summary: Power Port information for a specific device
@@ -317,6 +324,7 @@ paths:
               $ref: "#/definitions/PowerPort"
       security:
       - api_key: []
+      - user_id: []
   /project:
     get:
       summary: Metadata about all projects
@@ -337,6 +345,7 @@ paths:
               $ref: "#/definitions/Project"
       security:
       - api_key: []
+      - user_id: []
   /project/bycabinet/$cabinetid:
     get:
       summary: Metadata about all projects associated with a specific cabinet
@@ -365,6 +374,7 @@ paths:
               $ref: "#/definitions/Project"
       security:
       - api_key: []
+      - user_id: []
   /project/bydevice/$deviceid:
     get:
       summary: Metadata about all projects associated with a specific device
@@ -392,6 +402,7 @@ paths:
               $ref: "#/definitions/Project"
       security:
       - api_key: []
+      - user_id: []
 definitions:
   Audit:
     type: "object"
@@ -818,5 +829,9 @@ definitions:
 securityDefinitions:
   api_key:
     type: "apiKey"
-    name: "APIKEY"
+    name: "APIKey"
+    in: "header"
+  user_id:
+    type: "apiKey"
+    name: "UserID"
     in: "header"
