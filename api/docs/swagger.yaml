@@ -53,6 +53,35 @@ paths:
       security:
       - api_key: []
       - user_id: []
+    put:
+      summary: Add a new Audit Log entry
+      tags:
+      - "AuditLogs"
+      description: ''
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      operationId: "PutAuditInfo"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Audit"
+          description: Data to be placed as an entry in the Audit AuditLog
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Audit"
+      security:
+      - api_key: []
+      - user_id: []  
   /cabinet:
     get:
       summary: Information about one or more cabinets
@@ -291,6 +320,40 @@ paths:
           type: string
           description: "A specific EmailAddress for a record to retrieve from the database"
           allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Person"
+      security:
+      - api_key: []
+      - user_id: []
+    put:
+      summary: Add a new person to the database
+      tags:
+      - "People"
+      description: ''
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      operationId: "CreatePerson"
+      parameters:
+        - in: "query"
+          name: "UserID"
+          required: true
+          type: string
+          description: "UserID of the record being added"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Person"
+          description: Data to be placed as an entry in the People table
       responses:
         "401":
           description: "Access denied."
