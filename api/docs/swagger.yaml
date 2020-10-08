@@ -128,6 +128,66 @@ paths:
       security:
       - api_key: []
       - user_id: []
+    put:
+      summary: Information about one or more cabinets
+      tags:
+      - "Cabinet"
+      description: "Data model for the cabinet to be added to the database."
+      produces:
+      - "application/json"
+      operationId: "CreateCabinet"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Cabinet"
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Cabinet"
+      security:
+      - api_key: []
+      - user_id: []
+  /cabinet/{CabinetID}:
+    post:
+      summary: Update the information for a specific cabinet
+      tags:
+      - "Cabinet"
+      description: 'Only the properties to be modified, other than the CabinetID, are required.'
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      operationId: "UpdateCabinet"
+      parameters:
+        - in: path
+          name: "CabinetID"
+          required: true
+          type: integer
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Cabinet"
+          description: "Properties to be modified for a specific Cabinet that exists in the database."
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Cabinet"
+      security:
+      - api_key: []
+      - user_id: []
   /datacenter:
     get:
       summary: Information about one or more data centers
@@ -194,29 +254,35 @@ paths:
       - "application/json"
       operationId: "GetDevice"
       parameters:
+        - name: DeviceID
+          in: query
+          required: false
+          type: string
+          description: "A specific DeviceID for a record to retrieve from the database"
+          allowEmptyValue: true
         - name: CabinetID
           in: query
           required: false
           type: string
-          description: "A specific CabinetID for a record to retrieve from the database"
+          description: "Filter results to those that match the given keyValue"
           allowEmptyValue: true
         - name: DataCenterID
           in: query
           required: false
           type: string
-          description: "A specific DataCenterID to filter results by"
+          description: "Filter results to those that match the given keyValue"
           allowEmptyValue: true
         - name: CabRowID
           in: query
           required: false
           type: string
-          description: "A specific CabRowID to filter results by"
+          description: "Filter results to those that match the given keyValue"
           allowEmptyValue: true
         - name: ZoneID
           in: query
           required: false
           type: string
-          description: "A specific ZoneID to filter results by"
+          description: "Filter results to those that match the given keyValue"
           allowEmptyValue: true
       responses:
         "401":
@@ -226,7 +292,69 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/Cabinet"
+              $ref: "#/definitions/Device"
+      security:
+      - api_key: []
+      - user_id: []
+  /device/{DeviceID}:
+    post:
+      summary: Update the information for a specific device
+      tags:
+      - "Device"
+      description: 'Only the properties to be modified, other than the DeviceID, are required.'
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      operationId: "UpdateDevice"
+      parameters:
+        - in: path
+          name: "DeviceID"
+          required: true
+          type: integer
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Device"
+          description: "Properties to be modified for a specific Device that exists in the database."
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Device"
+      security:
+      - api_key: []
+      - user_id: []
+  /device/{DeviceID}/getsensorreadings:
+    get:
+      summary: Sensor information for a specific device
+      tags:
+      - "Device"
+      - "SensorReading"
+      description: 'The last read sensor values for a specific device.'
+      produces:
+      - "application/json"
+      operationId: "GetSensorReadings"
+      parameters:
+        - name: DeviceID
+          in: path
+          required: true
+          type: integer
+          description: "A specific keyValue DeviceID for a record to retrieve from the database"
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/SensorReading"
       security:
       - api_key: []
       - user_id: []
@@ -264,7 +392,7 @@ paths:
       security:
       - api_key: []
       - user_id: []
-  /deviceport/:deviceid:
+  /deviceport/{DeviceID}:
     get:
       summary: Port information about a specific device
       tags:
@@ -275,7 +403,7 @@ paths:
       operationId: "GetDevicePorts"
       parameters:
         - name: DeviceID
-          in: query
+          in: path
           required: false
           type: string
           description: "A specific DeviceID for a record to retrieve from the database"
@@ -289,6 +417,55 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/DevicePort"
+      security:
+      - api_key: []
+      - user_id: []
+  /disposition:
+    get:
+      summary: Information about all disposal methods
+      tags:
+      - "Disposition"
+      description: "Mechanisms for grouping items that are disposed of in a specific way, such as resale, return to customer, etc"
+      produces:
+      - "application/json"
+      operationId: "GetDisposition"
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Disposition"
+      security:
+      - api_key: []
+      - user_id: []
+  /disposition/{DispositionID}:
+    get:
+      summary: Information about a specific disposal method and the devices attached to it
+      tags:
+      - "Disposition"
+      description: "Mechanisms for grouping items that are disposed of in a specific way, such as resale, return to customer, etc"
+      produces:
+      - "application/json"
+      operationId: "GetDisposition"
+      parameters:
+        - name: DispositionID
+          in: path
+          require: false
+          type: integer
+          description: "The keyValue for a specific disposition method to retrieve"
+          allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Disposition"
       security:
       - api_key: []
       - user_id: []
@@ -332,6 +509,7 @@ paths:
       security:
       - api_key: []
       - user_id: []
+  /people/{UserID}:
     put:
       summary: Add a new person to the database
       tags:
@@ -366,7 +544,7 @@ paths:
       security:
       - api_key: []
       - user_id: []
-  /powerport/$deviceid:
+  /powerport/{DeviceID}:
     get:
       summary: Power Port information for a specific device
       tags:
@@ -376,6 +554,12 @@ paths:
       produces:
       - "application/json"
       operationId: "GetPowerPorts"
+      parameters:
+        - in: path
+          name: "DeviceID"
+          required: true
+          type: string
+          description: "keyValue of the DeviceID to be queried"        
       responses:
         "401":
           description: "Access denied."
@@ -409,7 +593,7 @@ paths:
       security:
       - api_key: []
       - user_id: []
-  /project/bycabinet/$cabinetid:
+  /project/bycabinet/{CabinetID}:
     get:
       summary: Metadata about all projects associated with a specific cabinet
       tags:
@@ -421,7 +605,7 @@ paths:
       operationId: "GetProjectsByCabinet"
       parameters:
         - name: CabinetID
-          in: query
+          in: path
           required: false
           type: string
           description: "A specific CabinetID for a record to retrieve from the database"
@@ -438,7 +622,7 @@ paths:
       security:
       - api_key: []
       - user_id: []
-  /project/bydevice/$deviceid:
+  /project/bydevice/{DeviceID}:
     get:
       summary: Metadata about all projects associated with a specific device
       tags:
@@ -449,7 +633,7 @@ paths:
       operationId: "GetProjectsByDevice"
       parameters:
         - name: DeviceID
-          in: query
+          in: path
           required: false
           type: string
           description: "A specific DeviceID for a record to retrieve from the database"
@@ -638,6 +822,147 @@ definitions:
       DeviceID:
         type: "number"
         format: "integer"
+      Label:
+        type: "string"
+        format: "string"
+      SerialNo:
+        type: "string"
+        format: "string"
+      AssetTag:
+        type: "string"
+        format: "string"
+      PrimaryIP:
+        type: "string"
+        format: "string"
+      SNMPVersion:
+        type: "string"
+        enum:
+        - "1"
+        - "2c"
+        - "3"
+      v3SecurityLevel:
+        type: "string"
+        format: "string"
+      v3AuthProtocol:
+        type: "string"
+        format: "string"
+      v3Passphrase:
+        type: "string"
+        format: "string"
+      v3PrivProtocol:
+        type: "string"
+        format: "string"
+      SNMPCommunity:
+        type: "string"
+        format: "string"
+      SNMPFailureCount:
+        type: "integer"
+        format: "integer"
+      Hypervisor:
+        type: "string"
+        enum:
+        - "ESX"
+        - "ProxMox"
+        - "None"
+      APIUserName:
+        type: "string"
+        format: "string"
+      APIPassword:
+        type: "string"
+        format: "password"
+      APIPort:
+        type: "integer"
+        format: "integer"
+      ProxMoxRealm:
+        type: "string"
+        format: "string"
+      Owner:
+        type: "integer"
+        format: "keyValue for Department that owns the device"
+      EscalationTimeID:
+        type: "integer"
+        format: "keyValue"
+      EscalationID:
+        type: "integer"
+        format: "keyValue"
+      PrimaryContact:
+        type: "integer"
+        format: "keyValue"
+      Cabinet:
+        type: "integer"
+        format: "keyValue"
+      Position:
+        type: "integer"
+        format: "integer"
+      Height:
+        type: "integer"
+        format: "integer"
+      Ports:
+        type: "integer"
+        format: "integer"
+      FirstPortNum:
+        type: "integer"
+        format: "integer"
+      TemplateID:
+        type: "integer"
+        format: "keyValue"
+      NominalWatts:
+        type: "integer"
+        format: "integer"
+      PowerSupplyCount:
+        type: "integer"
+        format: "integer"
+      DeviceType:
+        type: "string"
+        enum:
+        - 'Server'
+        - 'Appliance'
+        - 'Storage Array'
+        - 'Switch'
+        - 'Chassis'
+        - 'Patch Panel'
+        - 'Physical Infrastructure'
+        - 'CDU'
+        - 'Sensor'
+      ChassisSlots:
+        type: "integer"
+        format: "integer"
+      RearChassisSlots:
+        type: "integer"
+        format: "integer"
+      ParentDevice:
+        type: "integer"
+        format: "keyValue"
+      MfgDate:
+        type: "string"
+        format: "string"
+      InstallDate:
+        type: "string"
+        format: "string"
+      WarrantyCo:
+        type: "string"
+        format: "string"
+      WarrantyExpire:
+        type: "string"
+        format: "string"
+      Notes:
+        type: "string"
+        format: "string"
+      Status:
+        type: "string"
+        format: "string"
+      HalfDepth:
+        type: "boolean"
+        format: "boolean"
+      BackSide:
+        type: "boolean"
+        format: "boolean"
+      AuditStamp:
+        type: "string"
+        format: "string"
+      Weight:
+        type: "integer"
+        format: "integer"          
   DeviceTemplate:
     type: "object"
     properties:
@@ -787,6 +1112,26 @@ definitions:
       Notes:
         type: "string"
         format: "Freeform text"
+  Disposition:
+    type: "object"
+    properties:
+      DispositionID:
+        type: "integer"
+        format: "integer"
+      Name:
+        type: "string"
+        format: "string"
+      Description:
+        type: "string"
+        format: "string"
+      ReferenceNumber:
+        type: "string"
+        format: "string"
+      Status:
+        type: "string"
+        enum:
+        - "Active"
+        - "Inactive"
   Person:
     type: "object"
     properties:
@@ -889,6 +1234,21 @@ definitions:
       Notes:
         type: "string"
         format: "Freeform text"
+  SensorReading:
+    type: "object"
+    properties:
+      DeviceID:
+        type: "integer"
+        format: "keyValue"
+      Temperature:
+        type: "number"
+        format: "Temperature in localized units"
+      Humidity:
+        type: "integer"
+        format: "Humidity"
+      LastRead:
+        type: "string"
+        format: "Timestamp of last reading"
 securityDefinitions:
   api_key:
     type: "apiKey"
