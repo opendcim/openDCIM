@@ -330,6 +330,28 @@ paths:
       security:
       - api_key: []
       - user_id: []
+  /device/{DeviceID}/store:
+    post:
+      summary: Move the specified device to the storage room
+      tags:
+      - "Device"
+      description: ''
+      produces:
+      - "application/json"
+      operationId: "MoveToStorage"
+      parameters:
+        - in: path
+          name: "DeviceID"
+          required: true
+          type: integer
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+      security:
+      - api_key: []
+      - user_id: []
   /device/{DeviceID}/getsensorreadings:
     get:
       summary: Sensor information for a specific device
@@ -380,6 +402,43 @@ paths:
           type: string
           description: "A specific ManufacturerID to filter results from the database"
           allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/DeviceTemplate"
+      security:
+      - api_key: []
+      - user_id: []
+  /devicetemplate/{TemplateID}:
+    post:
+      summary: Update template information for devices.
+      tags:
+      - "DeviceTemplate"
+      description: 'You only need to pass the parameters that are being updated.   Any missing parameters keep the existing values..'
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      operationId: "UpdateDeviceTemplate"
+      parameters:
+        - name: TemplateID
+          in: path
+          required: false
+          type: string
+          description: "A specific TemplateID for a record to retrieve from the database"
+          allowEmptyValue: true
+        - name: "body"
+          in: body
+          required: true
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/DeviceTemplate"
       responses:
         "401":
           description: "Access denied."
@@ -509,6 +568,41 @@ paths:
       security:
       - api_key: []
       - user_id: []
+  /people/{PersonID}:
+    post:
+      summary: Modify an existing person entry in the database
+      tags:
+      - "People"
+      description: ''
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      operationId: "UpdatePerson"
+      parameters:
+        - in: "path"
+          name: "UserID"
+          required: true
+          type: string
+          description: "PersonID of the record being modified"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Person"
+          description: Data to be updated for the specified entry in the People table
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Person"
+      security:
+      - api_key: []
+      - user_id: []
   /people/{UserID}:
     put:
       summary: Add a new person to the database
@@ -521,7 +615,7 @@ paths:
       - "application/json"
       operationId: "CreatePerson"
       parameters:
-        - in: "query"
+        - in: "path"
           name: "UserID"
           required: true
           type: string
@@ -544,6 +638,35 @@ paths:
       security:
       - api_key: []
       - user_id: []
+  /people/{PersonID}/transferdevicesto/{TargetPersonID}:
+    post:
+      summary: Transfer devices from one person to another
+      tags:
+      - "People"
+      - "Device"
+      description: ''
+      produces:
+      - "application/json"
+      operationId: "UpdatePerson"
+      parameters:
+        - in: "path"
+          name: "PersonID"
+          required: true
+          type: integer
+          description: "PersonID that devices are being transferred from"
+        - in: "path"
+          name: "TargetPersonID"
+          required: true
+          type: integer
+          description: PersonID to transfer the devices to
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+      security:
+      - api_key: []
+      - user_id: []    
   /powerport/{DeviceID}:
     get:
       summary: Power Port information for a specific device
@@ -569,6 +692,36 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/PowerPort"
+      security:
+      - api_key: []
+      - user_id: []
+    post:
+      summary: Update Power Port information for a specific device
+      tags:
+      - "PowerPort"
+      - "Device"
+      description: "Returns connection information about the power ports on a specific device"
+      produces:
+      - "application/json"
+      operationId: "UpdatePowerPort"
+      parameters:
+        - in: path
+          name: "DeviceID"
+          required: true
+          type: string
+          description: "keyValue of the DeviceID to be updated"
+        - in: body
+          name: "body"
+          required: true
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/PowerPort"
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
       security:
       - api_key: []
       - user_id: []

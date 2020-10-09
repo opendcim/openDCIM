@@ -124,6 +124,8 @@
 	// Moved the navigation menu to an ajax load item	
 ?>
 	</div>
+	<div><p>
+		<a href="api/docs/">API Documentation<br><img src="images/swagger-banner.png"></a></div>
 <script type="text/javascript">
 if (typeof jQuery == 'undefined') {
 	alert('jQuery is not loaded');
