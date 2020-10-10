@@ -74,8 +74,9 @@
 			\t<td><a href=\"devices.php?DeviceID=$child->DeviceID\" target=\"device\">$child->Label</a></td>
 			\t<td>$child->SerialNo</td>
 			\t<td>$child->AssetTag</td>
-			\t<td>$child->PrimaryIP</td>
-			\t<td><a href=\"search.php?key=dev&DeviceType=$child->DeviceType&search\" target=\"search\">$child->DeviceType</a></td>
+			\t<td>$child->PrimaryIP</td>" .
+			( $_POST['resolve'] == 'true' ? ($child->PrimaryIP != '' ? "\t<td>" . @gethostbyname($child->PrimaryIP) . "</td>" : "\t<td></td>" ) : '' )
+			. "\t<td><a href=\"search.php?key=dev&DeviceType=$child->DeviceType&search\" target=\"search\">$child->DeviceType</a></td>
 			\t<td>$cModel</td>
 			\t<td>$ctags</td>
 			\t<td>$cDepartment</td>
@@ -138,8 +139,9 @@
 			\t<th>".__("Name")."</th>
 			\t<th>".__("Serial Number")."</th>
 			\t<th>".__("Asset Tag")."</th>
-			\t<th>".__("Primary IP / Host Name")."</th>
-			\t<th>".__("Device Type")."</th>
+			\t<th>".__("Primary IP / Host Name")."</th>".
+			( $_POST['resolve'] == 'true' ? "\t<th>" . __("Resolved IP") . "</th>" : '' ) .
+			"\t<th>".__("Device Type")."</th>
 			\t<th>".__("Template")."</th>
 			\t<th>".__("Tags")."</th>
 			\t<th>".__("Owner")."</th>
@@ -205,8 +207,9 @@
 				\t<td><a href=\"devices.php?DeviceID=$dev->DeviceID\" target=\"device\">{$row["Label"]}</a></td>
 				\t<td>{$row["SerialNo"]}</td>
 				\t<td>{$row["AssetTag"]}</td>
-				\t<td>{$row["PrimaryIP"]}</td>
-				\t<td><a href=\"search.php?key=dev&DeviceType={$row["DeviceType"]}&search\" target=\"search\">{$row["DeviceType"]}</a></td>
+				\t<td>{$row["PrimaryIP"]}</td>" .
+				( $_POST['resolve'] == 'true' ? ($row["PrimaryIP"] != '' ? "\t<td>" .@gethostbyname($row["PrimaryIP"]) . "</td>" : "\t<td></td>") : '' )
+				. "\t<td><a href=\"search.php?key=dev&DeviceType={$row["DeviceType"]}&search\" target=\"search\">{$row["DeviceType"]}</a></td>
 				\t<td>$Model</td>
 				\t<td>$tags</td>
 				\t<td>$Department</td>
@@ -287,7 +290,13 @@
 		}
 		dt();
 		$('#datacenterid').change(function(){
-			$.post('', {datacenterid: $(this).val(), ajax: ''}, function(data){
+			$.post('', {datacenterid: $(this).val(), resolve: $("#resolve").is(":checked"), ajax: ''},  function(data){
+				$('#tablecontainer').html(data);
+				dt();
+			});
+		});
+		$('#resolve').click(function(){
+			$.post('', {datacenterid: $('#datacenterid').val(), resolve: $("#resolve").is(":checked"), ajax: ''},  function(data){
 				$('#tablecontainer').html(data);
 				dt();
 			});
@@ -307,6 +316,7 @@ echo '		<div class="main">
 				<option value="0">',__("All Data Centers"),'</option>';
 foreach($dcList as $dc){print "\t\t\t\t<option value=\"$dc->DataCenterID\">$dc->Name</option>\n";} ?>
 			</select>
+			<input id="resolve" type="checkbox">Show Resolved IPs (500 IPs aprox 20 seconds)
 			<br><br>
 			<div class="center">
 				<div id="tablecontainer">
