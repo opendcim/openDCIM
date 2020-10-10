@@ -2042,6 +2042,14 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
+				<div>
+					<div><label for="ResolveDeviceIp">',__("Resolve IP Address"),'</label></div>
+					<div><select id="ResolveDeviceIP" name="ResolveDeviceIp" defaultvalue="',$config->defaults["ResolveDeviceIp"],'" data="',$config->ParameterArray["ResolveDeviceIp"],'">
+							<option value="disabled">',__("Do not resolve Devices IP Address"),'</option>
+							<option value="enabled">',__("Resolve Device IP Address"),'</option>
+						</select>
+					</div>
+				</div>
 			</div> <!-- end table -->
 			<h3>',__("Cabinets"),'</h3>
 			<div class="table">

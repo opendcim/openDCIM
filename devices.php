@@ -1801,7 +1801,7 @@ echo '			</select>
 		<div>
 		  <div><label for="PrimaryIP">'.__("Primary IP / Host Name").'</label></div>
 		  <div><input type="text" name="PrimaryIP" id="PrimaryIP" size="20" value="'.$dev->PrimaryIP.'">
-				<input type="hidden" name="FirstPortNum" value="'.$dev->FirstPortNum.'"><label for="PrimaryIP2">'.@gethostbyname($dev->PrimaryIP).'</label></div>
+				<input type="hidden" name="FirstPortNum" value="'.$dev->FirstPortNum.'"><label for="PrimaryIP2">'.($config->ParameterArray['ResolveDeviceIp']=='enabled'?@gethostbyname($dev->PrimaryIP):'').'</label></div>
 		</div>
 		<div>
 		   <div><label for="MfgDate">'.__("Manufacture Date").'</label></div>
