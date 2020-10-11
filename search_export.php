@@ -54,11 +54,11 @@
 
 			$ca_cells = '';
 			foreach($ca_result as $ca_row){
-				if($ca_row["AttributeType"] == "date" && is_null($child->$ca_row["Label"]) == FALSE){
-					$ca_date = date("d M Y",strtotime($child->$ca_row["Label"]));
+				if($ca_row["AttributeType"] == "date" && is_null($child->{$ca_row["Label"]}) == FALSE){
+					$ca_date = date("d M Y",strtotime($child->{$ca_row["Label"]}));
 					$ca_cells .= "\t<td>{$ca_date}</td>";
 				}else{
-					$cadata=(@isset($child->$ca_row["Label"]) && !is_null($child->$ca_row["Label"]))?$child->$ca_row["Label"]:"";
+					$cadata=(@isset($child->{$ca_row["Label"]}) && !is_null($child->{$ca_row["Label"]}))?$child->{$ca_row["Label"]}:"";
 					$ca_cells .= "\t<td>$cadata</td>";
 				}
 			}
