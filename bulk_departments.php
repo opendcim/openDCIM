@@ -152,9 +152,6 @@ use Box\Spout\Common\Type;
     // Start off with the assumption that we have zero processing errors
     $errors = false;
 
-    $sheet = $objXL->getSheet(0);
-    $highestRow = $sheet->getHighestRow();
-
     // Also make sure we start with an empty string to display
     $content = "";
     $fields = array( "DepartmentName", "ExecutiveSponsor", "AccountManager", "DepartmentColor", "Classification" );
