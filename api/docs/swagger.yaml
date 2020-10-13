@@ -5,7 +5,10 @@ info:
     API documentation shows the primary model for the data being returned.   However, in many GET
     routes a union of multiple models are returned, which is why your results may vary.  For PUT
     and POST routes, you should only push the primary model.   Additionally, CustomDeviceAtrributes
-    will be returned and can be posted, but are not in the documentation as they are custom by nature."
+    will be returned and can be posted, but are not in the documentation as they are custom by nature.
+    Many routes that may seem to be missing are intentional, but we also acknowledge that we are filling
+    out the routes as the need for them arise.  Prime example - there is no POST (edit) route for AuditLog,
+    because of the very nature of what it is capturing."
   version: "20.01"
   contact:
     url: 'https://opendcim.org'
@@ -232,6 +235,38 @@ paths:
           type: string
           description: "A specific DepartmentID for a record to retrieve from the database."
           allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Department"
+      security:
+      - api_key: []
+      - user_id: []
+  /department/{DepartmentName}:
+    put:
+      summary: Create a new Department record in the database
+      tags:
+      - "Department"
+      description: "Department entity."
+      produces:
+      - "application/json"
+      operationId: "CreateDepartment"
+      parameters:
+        - in: path
+          name: "DepartmentName"
+          required: true
+          type: string
+          description: "DepartmentName must be URL encoded.   Other properties are sent within the body in JSON format."
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Department"
       responses:
         "401":
           description: "Access denied."
@@ -800,6 +835,37 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Project"
+      security:
+      - api_key: []
+      - user_id: []
+  /sensorreadings/{SensorID}:
+    post:
+      summary: Update Sensor Reading for a specific device
+      tags:
+      - "SensorReading"
+      - "Device"
+      description: "Updates a sensor with a new reading"
+      produces:
+      - "application/json"
+      operationId: "UpdateSensorReadings"
+      parameters:
+        - in: path
+          name: "SensorID"
+          required: true
+          type: string
+          description: "keyValue of the DeviceID to be updated"
+        - in: body
+          name: "body"
+          required: true
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/SensorReading"
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
       security:
       - api_key: []
       - user_id: []

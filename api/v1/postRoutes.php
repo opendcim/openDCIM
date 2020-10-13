@@ -568,7 +568,7 @@ $app->post( '/manufacturer/:manufacturerid', function($manufacturerid) use ($per
 //	Method:	POST
 //	Params:
 //		Required:	sensorid
-//		Optional:	Temperature, Humnidity, LastRead
+//		Optional:	Temperature, Humidity, LastRead
 //	Returns:	true/false on update operation
 
 $app->post( '/sensorreadings/:sensorid', function($sensorid) use ($person) {
