@@ -415,6 +415,40 @@ paths:
       security:
       - api_key: []
       - user_id: []
+  /device/{DeviceLabel}:
+    put:
+      summary: Create a new device
+      tags:
+      - "Device"
+      description: 'Create a new device based upon the properties provided.'
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      operationId: "CreateDevice"
+      parameters:
+        - in: path
+          name: "DeviceLabel"
+          required: true
+          type: string
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Device"
+          description: "Properties for the Device to be added to the database."
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Device"
+      security:
+      - api_key: []
+      - user_id: []
   /devicetemplate:
     get:
       summary: Template information for devices.   Some of the properties are contextual and are not returned for all devices.
