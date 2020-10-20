@@ -2736,7 +2736,7 @@ print "<!--				<div>".__("Panel")."</div> -->
 			}
 		});
 
-		$('.caption > button[name="audit"]').click(function(){
+		$('#buttonbar > button[name="audit"]').click(function(){
 			$('#auditconfirm').removeClass('hide').dialog({
 				modal: true,
 				width: 'auto',
