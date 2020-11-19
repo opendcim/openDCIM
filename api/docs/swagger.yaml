@@ -11,9 +11,9 @@ info:
     because of the very nature of what it is capturing."
   version: "20.01"
   contact:
-    url: 'https://opendcim.org'
+    url: "https://opendcim.org"
   license:
-    name: GPLv3
+    name: "GPLv3"
 basePath: "/api/v1"
 tags:
 - name: "openDCIM"
