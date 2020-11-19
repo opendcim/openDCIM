@@ -25,7 +25,7 @@
 				$custom_concat .= ", GROUP_CONCAT(IF(d.AttributeID={$ca_row["AttributeID"]},value,NULL)) AS Attribute{$ca_row["AttributeID"]} ";
 			} 
 
-			$sql="SELECT a.Name AS DataCenter, b.DeviceID, 'Storage Room' as Location, '' as Position,
+			$sql="SELECT a.Name AS DataCenter, a.DataCenterID, b.DeviceID, 'Storage Room' as Location, '' as Position,
 				b.Height, b.Label, b.DeviceType, b.AssetTag, b.SerialNo, b.InstallDate, b.WarrantyExpire, b.PrimaryIP, b.ParentDevice,
 				b.TemplateID, b.Owner, b.Cabinet, b.Position $custom_concat FROM fac_DataCenter a,
 				fac_Device b  LEFT JOIN fac_DeviceCustomValue d on
@@ -46,8 +46,7 @@
 
 		// Left these expanded in case we need to add or remove columns.  Otherwise I would have just collapsed entirely.
 		$body="<table id=\"export\" class=\"display\">\n\t<thead>\n\t\t<tr>\n
-			\t<th>".__("Data Center")."</th>
-			\t<th>".__("Location")."</th>
+			\t<th>".__("Storage Room")."</th>
 			\t<th>".__("Position")."</th>
 			\t<th>".__("Height")."</th>
 			\t<th>".__("Name")."</th>
@@ -99,8 +98,7 @@
 			$dev->DeviceID=$row["DeviceID"];
 			$tags=implode(",", $dev->GetTags());
 			$body.="\t\t<tr>
-			\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
-			\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
+			\t<td><a href=\"storageroom.php?dc={$row["DataCenterID"]}\" target=\"cabinet\">{$row["DataCenter"]} - {$row["Location"]}</a></td>
 			\t<td></td>
 			\t<td>{$row["Height"]}</td>
 			\t<td><a href=\"devices.php?DeviceID=$dev->DeviceID\" target=\"device\">{$row["Label"]}</a></td>
@@ -139,8 +137,7 @@
 					}
 
 					$body .= "\t\t<tr>
-					\t<td><a href=\"dc_stats.php?dc={$row["DataCenterID"]}\" target=\"datacenter\">{$row["DataCenter"]}</a></td>
-					\t<td><a href=\"cabnavigator.php?cabinetid={$row["CabinetID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
+					\t<td><a href=\"storageroom.php?dc={$row["DataCenterID"]}\" target=\"cabinet\">{$row["Location"]}</a></td>
 					\t<td>$child->Position</td>
 					\t<td>[-Child-]</td>
 					\t<td><a href=\"devices.php?DeviceID=$child->DeviceID\" target=\"device\">$child->Label</a></td>

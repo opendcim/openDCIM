@@ -77,6 +77,17 @@ class DeviceStatus {
 
 		$this->MakeSafe();
 
+		// Remove any whitespace from the beginning or end that the user may have
+		// intentionally or unintentionally added.
+		$this->Status=trim($this->Status);
+		
+		// See if this Status already exists.
+		$sql="SELECT 1 FROM fac_DeviceStatus WHERE Status=\"$this->Status\"";
+		if(is_array($this->query($sql)->fetch())){
+			// Do not allow a duplicate to be added.
+			return false;
+		}
+		
 		$sql="INSERT INTO fac_DeviceStatus SET Status=\"$this->Status\", 
 			ColorCode=\"$this->ColorCode\"";
 	
