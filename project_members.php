@@ -31,11 +31,11 @@
 	// Update if form was submitted and action is set
 	if(isset($_POST['action']) && $_POST['action']=="Submit"){
 		$grpMembers=$_POST['chosen'];
-		if ( sizeof( $grpMembers > 0 ) && isset( $_REQUEST['projectid'] )) {
+		if (( sizeof( $grpMembers ) > 0 ) && isset( $_REQUEST['projectid'] )) {
 			$ProjectID = $_REQUEST['projectid'];
 			ProjectMembership::clearMembership( $ProjectID );
 			foreach ( $grpMembers as $devID ) {
-				ProjectMembership::addMember( $ProjectID, $devID, 'Device' );
+				ProjectMembership::addMember( $ProjectID, $devID, $memberType );
 			}
 		}
 	}
@@ -98,6 +98,7 @@
 <?php
 echo '<form id="projectform" method="POST">
 <input type="hidden" name="projectid" id="projectid" value="',$proj->ProjectID,'">
+<input type="hidden" name="membertype" id="membertype" value="',$memberType,'">
 <h3>',__("Project to Administer"),': ',$proj->ProjectName,'</h3>
 <select name="datacenterid" id="datacenterid" width="200px"><option value="0">Choose a Data Center</option>';
 foreach ( $dcList as $dc ) {

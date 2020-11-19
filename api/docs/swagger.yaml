@@ -60,19 +60,23 @@ paths:
       summary: Add a new Audit Log entry
       tags:
       - "AuditLogs"
-      description: ''
-      consumes:
-      - "application/json"
+      - "Device"
+      - "Cabinet"
+      description: "Enter either a DeviceID or a CabinetID.   If both are supplied, CabinetID takes precedent."
       produces:
       - "application/json"
       operationId: "PutAuditInfo"
       parameters:
-        - in: "body"
-          name: "body"
-          required: true
-          schema:
-            $ref: "#/definitions/Audit"
-          description: Data to be placed as an entry in the Audit AuditLog
+        - in: query
+          name: "CabinetID"
+          type: integer
+          required: false
+          description: "KeyValue for the Cabinet to certify an audit event for."
+        - in: query
+          name: "DeviceID"
+          type: integer
+          required: false
+          description: "KeyValue for the Device to certify an audit event for."
       responses:
         "401":
           description: "Access denied."
