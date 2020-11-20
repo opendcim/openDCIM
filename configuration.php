@@ -573,7 +573,7 @@
 		});
 		$("#imageselection span.image").each(function(){
 			var preview=$('#imageselection #preview');
-            var dirpath=$('#imageselection #directoryselectionvalue');
+			var dirpath=$('#imageselection #directoryselectionvalue');
 			$(this).click(function(){
 				preview.html('<img src="'+dirpath.val()+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
 				preview.children('img').load(function(){

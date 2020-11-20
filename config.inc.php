@@ -18,7 +18,7 @@ class Config{
 				$this->defaults[$row['Parameter']]=$row['DefaultVal'];
 			}else{
 				// this allows us to support quotes in paths for whatever reason
-				if(preg_match('/.*path$/',$row['Parameter'])){
+				if(preg_match('/.*path$|PDFLogoFile/',$row['Parameter'])){
 					$this->ParameterArray[$row['Parameter']]=html_entity_decode($row['Value'],ENT_QUOTES);
 				}else{
 					$this->ParameterArray[$row['Parameter']]=$row['Value'];
