@@ -125,7 +125,8 @@ div.cp { position: relative;}
 div#directoryselection { display: none;}
 #directoryselection #filelist { position: absolute; top: 30px; left: 1em; height: 380px; width: 245px; overflow-y: scroll; overflow-x: hidden; white-space: nowrap;}
 #directoryselection #filelist a { line-height: 1.5em; }
-#directoryselection #filelist a::before {
+#directoryselection #filelist a::before,
+#imageselection #filelist a.dir::before {
 	display: inline-block;
 	background-image: url(../images/folder.gif);
 	content: '';
@@ -139,8 +140,9 @@ div#directoryselection { display: none;}
 
 div#imageselection { display: none;}
 #imageselection span { display: block; padding: 0.25em 0 0.5em 0.5em; cursor: pointer; text-decoration: underline; border: 1px solid white;}
-#imageselection #preview { position: absolute; top: 0; right: 0; height: 340px; width: 340px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}
-#imageselection #filelist { position: absolute; top: 0; left: 1em; height: 380px; width: 245px; overflow-y: scroll; overflow-x: hidden; white-space: nowrap;}
+#imageselection a.dir span { display: inherit; }
+#imageselection #preview { position: absolute; top: 30px; right: 0; height: 340px; width: 340px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}
+#imageselection #filelist { position: absolute; top: 30px; left: 1em; height: 380px; width: 245px; overflow-y: scroll; overflow-x: hidden; white-space: nowrap;}
 
 #configtabs .ui-menu-item ul { max-height: 200px; overflow: auto; }
 #tzmenu {display: none;}

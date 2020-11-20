@@ -113,17 +113,43 @@
 		}
 	}
 
-	function BuildFileList($returnjson=false){
-		$imageselect='<div id="preview"></div><div id="filelist">';
+	function BuildFileList($returnjson=false,$path="."){
+		$path=trim($path);
+		# Make sure we don't have any path shenanigans going on
+		$path=str_replace(array("..","./"),"",$path);
+		# we don't need trailing slashes, and leading slashes are going to be invalid paths
+		$path=trim($path,"/");
+		# if path is empty revert to the current directory
+		$path=($path)?$path:'.';
+		$here=@end(explode(DIRECTORY_SEPARATOR,getcwd()));
+
+		$breadcrumb="<a href=\"?fl=\">$here</a>/";
+		$breadcrumbpath="";
+		if($path!='.'){
+			# Remove a file name from the end of a string if present
+			if(!is_dir($path)){
+				$dirparts=explode("/",$path);
+				array_pop($dirparts);
+				$path=implode("/",$dirparts);
+			}
+			foreach(explode("/",$path) as $i => $d) {
+				$breadcrumb.="<a href=\"?fl=$breadcrumbpath$d\">$d</a>/";
+				$breadcrumbpath.="$d/";
+			}
+		}
+		$imageselect=__("Current selection").': '.$breadcrumb.'<br><input type="hidden" id="directoryselectionvalue" value="'.$breadcrumbpath.'"><div id="preview"></div><div id="filelist">';
 
 		$filesonly=array();
-		$path='./images';
 		$dir=scandir($path);
 		foreach($dir as $i => $f){
+			if(is_dir($path.DIRECTORY_SEPARATOR.$f) && $f!="." && $f!=".." && !preg_match('/^\./', $f)){
+				$imageselect.="<a class=\"dir\" href=\"?fl=$path/$f\"><span data=\"$breadcrumbpath$f\">$f</span></a><br>\n";
+				$filesonly[]=$f;
+			}
 			if(is_file($path.DIRECTORY_SEPARATOR.$f) && round(filesize($path.DIRECTORY_SEPARATOR.$f) / 1024, 2)>=4 && $f!="serverrack.png" && $f!="gradient.png"){
 				$mimeType=mime_content_type($path.DIRECTORY_SEPARATOR.$f);
 				if(preg_match('/^image/i', $mimeType)){
-					$imageselect.="<span>$f</span>\n";
+					$imageselect.="<span class=\"image\">$f</span>\n";
 					$filesonly[]=$f;
 				}
 			}
@@ -143,7 +169,7 @@
 		exit;
 	}
 	if(isset($_GET['fl'])){
-		echo BuildFileList(isset($_GET['json']));
+		echo BuildFileList(isset($_GET['json']),$_GET['fl']);
 		exit;
 	}
 	if(isset($_POST['fe'])){ // checking that a file exists
@@ -535,6 +561,47 @@
 			});
 		});
 	}
+	function bindimageselection() {
+		$("#imageselection a").each(function(){
+			$(this).click(function(e){
+				e.preventDefault();
+				$.get(this.href).done(function(data){
+					$("#imageselection").html(data);
+					bindimageselection();
+				});
+			});
+		});
+		$("#imageselection span.image").each(function(){
+			var preview=$('#imageselection #preview');
+            var dirpath=$('#imageselection #directoryselectionvalue');
+			$(this).click(function(){
+				preview.html('<img src="'+dirpath.val()+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
+				preview.children('img').load(function(){
+					var topmargin=0;
+					var leftmargin=0;
+					if($(this).height()<$(this).width()){
+						$(this).width(preview.innerHeight());
+						$(this).css({'max-width': preview.innerWidth()+'px'});
+						topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
+					}else{
+						$(this).height(preview.innerHeight());
+						$(this).css({'max-height': preview.innerWidth()+'px'});
+						leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
+					}
+					$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
+				});
+				$("#imageselection span.image").each(function(){
+					$(this).removeAttr('style');
+				});
+				$(this).css('border','1px dotted black')
+				$('#header').css('background-image', 'url("'+dirpath.val()+$(this).text()+'")');
+			});
+			if($('#PDFLogoFile').val()==$(this).text()){
+				$(this).click();
+			}
+		});
+	}
+
 
 	// fix this to trigger after the drawing path has been updated
 	function rebuildcache(){
@@ -687,7 +754,7 @@
 		$('#PDFLogoFile').click(function(){
 			var input=this;
 			var originalvalue=this.value;
-			$.get('',{fl: '1'}).done(function(data){
+			$.get('',{fl: this.value}).done(function(data){
 				$("#imageselection").html(data);
 				var upload=$('<input>').prop({type: 'file', name: 'dev_file_upload', id: 'dev_file_upload'}).data('dir','images');
 				$("#imageselection").dialog({
@@ -698,7 +765,7 @@
 					buttons: {
 	<?php echo '					',__("Select"),': function() {'; ?>
 							if($('#imageselection #preview').attr('image')!=""){
-								$('#PDFLogoFile').val($('#imageselection #preview').attr('image'));
+								$('#PDFLogoFile').val($('#imageselection #preview > img').attr('src'));
 							}
 							$(this).dialog("destroy");
 						}
@@ -706,40 +773,13 @@
 					close: function(){
 							// they clicked the x, set the value back if something was uploaded
 							input.value=originalvalue;
-							$('#header').css('background-image', 'url("images/'+input.value+'")');
+							$('#header').css('background-image', 'url("'+input.value+'")');
 							$(this).dialog("destroy");
 						}
 				}).data('input',input);;
+				bindimageselection();
 				$("#imageselection").next('div').prepend(upload);
 				uploadifive();
-				$("#imageselection span").each(function(){
-					var preview=$('#imageselection #preview');
-					$(this).click(function(){
-						preview.html('<img src="images/'+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
-						preview.children('img').load(function(){
-							var topmargin=0;
-							var leftmargin=0;
-							if($(this).height()<$(this).width()){
-								$(this).width(preview.innerHeight());
-								$(this).css({'max-width': preview.innerWidth()+'px'});
-								topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
-							}else{
-								$(this).height(preview.innerHeight());
-								$(this).css({'max-height': preview.innerWidth()+'px'});
-								leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
-							}
-							$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
-						});
-						$("#imageselection span").each(function(){
-							$(this).removeAttr('style');
-						});
-						$(this).css('border','1px dotted black')
-						$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
-					});
-					if($('#PDFLogoFile').val()==$(this).text()){
-						$(this).click();
-					}
-				});
 			});
 		});
 
@@ -1695,7 +1735,7 @@
 			'formData' : {
 					'timestamp' : '<?php echo $timestamp;?>',
 					'token'     : '<?php echo $salt;?>',
-					'dir'		: 'images'
+					'dir'		: $("#imageselection #directoryselectionvalue").val(),
 				},
 			'buttonText'		: 'Upload new image',
 			'width'				: '150',
