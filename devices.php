@@ -2397,7 +2397,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 		print "\t</div></div></div></div>\n";
 
 		// The input box and button
-		if (!$write) { $hideaddnotes="style=\"display: none;\"";}
+		$hideaddnotes=(!$write)?"style=\"display: none;\"":"";
 		print "\t\t\t<div><div><button type=\"button\" $hideaddnotes>Add note</button><div><input /></div></div></div>\n";
 
 
