@@ -1697,8 +1697,8 @@
 	function uploadifive() {
 		$('#dev_file_upload').uploadifive({
 			'formData' : {
-					'timestamp' : '<?php echo $timestamp;?>',
-					'token'     : '<?php echo $salt;?>',
+				'timestamp' : '<?php echo $timestamp;?>',
+				'token'     : '<?php echo $salt;?>',
 			},
 			'buttonText'		: 'Upload new image',
 			'width'				: '150',
