@@ -28,6 +28,16 @@ if($uploadDir=='drawings'){
 	$uploadDir=$config->ParameterArray['picturepath'];
 }
 
+// allow for any path under assets to be writeable
+if($uploadDir==''){
+	// don't allow any paths that might be trying to escape the current directory and
+	// start with assets/
+	if (!strstr($_POST['dir'], '..') && strpos($_POST['dir'], 'assets/') === 0) {
+		$uploadDir=$_POST['dir'];
+	}
+}
+
+
 $status['status']=0;
 $status['msg']='';
 

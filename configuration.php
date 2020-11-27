@@ -1688,46 +1688,10 @@
 	})();
 
 	// File upload
-	function reload() {
-		$.get('configuration.php?fl&json').done(function(data){
-			var filelist=$('#filelist');
-			filelist.html('');
-			for(var f in data){
-				filelist.append($('<span>').text(data[f]));
-			}
-			bindevents();
-		});
-	}
-	function bindevents() {
-		$("#imageselection span").each(function(){
-			var preview=$('#imageselection #preview');
-			$(this).click(function(){
-				preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
-				preview.html('<img src="images/'+$(this).text()+'" alt="preview">').attr('image',$(this).text());
-				preview.children('img').load(function(){
-					var topmargin=0;
-					var leftmargin=0;
-					if($(this).height()<$(this).width()){
-						$(this).width(preview.innerHeight());
-						$(this).css({'max-width': preview.innerWidth()+'px'});
-						topmargin=Math.floor((preview.innerHeight()-$(this).height())/2);
-					}else{
-						$(this).height(preview.innerHeight());
-						$(this).css({'max-height': preview.innerWidth()+'px'});
-						leftmargin=Math.floor((preview.innerWidth()-$(this).width())/2);
-					}
-					$(this).css({'margin-top': topmargin+'px', 'margin-left': leftmargin+'px'});
-				});
-				$("#imageselection span").each(function(){
-					$(this).removeAttr('style');
-				});
-				$(this).css({'border':'1px dotted black','background-color':'#eeeeee'});
-				$('#header').css('background-image', 'url("images/'+$(this).text()+'")');
-			});
-			if($($("#imageselection").data('input')).val()==$(this).text()){
-				$(this).click();
-				this.parentNode.scrollTop=(this.offsetTop - (this.parentNode.clientHeight / 2) + (this.scrollHeight / 2) );
-			}
+	function reload(dir='.') {
+		$.get('configuration.php?fl='+dir).done(function(data){
+			$("#imageselection").html(data);
+			bindimageselection();
 		});
 	}
 	function uploadifive() {
@@ -1735,13 +1699,16 @@
 			'formData' : {
 					'timestamp' : '<?php echo $timestamp;?>',
 					'token'     : '<?php echo $salt;?>',
-					'dir'		: $("#imageselection #directoryselectionvalue").val(),
-				},
+			},
 			'buttonText'		: 'Upload new image',
 			'width'				: '150',
 			'removeCompleted' 	: true,
 			'checkScript'		: 'scripts/check-exists.php',
 			'uploadScript'		: 'scripts/uploadifive.php',
+			'onUpload'	        : function(file, data) {
+				var formData = this.data('uploadifive').settings.formData;
+				formData['dir'] = $("#imageselection #directoryselectionvalue").val();
+			},
 			'onUploadComplete'	: function(file, data) {
 				data=$.parseJSON(data);
 				if(data.status=='1'){
@@ -1755,9 +1722,10 @@
 					toast.append(error);
 					$('#uploadifive-'+this[0].id+'-queue').append(toast);
 				}else{
+					var formData = this.data('uploadifive').settings.formData;
 					$($("#imageselection").data('input')).val(file.name.replace(/\s/g,'_'));
 					// fuck yeah, reload the file list
-					reload($(this).data('dir'));
+					reload(formData.dir);
 				}
 			}
 		});
