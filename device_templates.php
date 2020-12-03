@@ -988,23 +988,23 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 			<div><input type="text" name="VersionOID" id="VersionOID" size=40></div>
 		</div>
 		<div>
-			<div><label for="OutletNameOID">',__("Power Outlet Name")." ".__("OID"),'</label></div>
+			<div><label for="OutletNameOID">',__("Outlet Factory Name")." ".__("OID"),'</label></div>
 			<div><input type="text" name="OutletNameOID" id="OutletNameOID" size=40></div>
 		</div>
 		<div>
-			<div><label for="OutletDescOID">',__("Power Connections")." ".__("OID"),'</label></div>
+			<div><label for="OutletDescOID">',__("Outlet User Description")." ".__("OID"),'</label></div>
 			<div><input type="text" name="OutletDescOID" id="OutletDescOID" size=40></div>
 		</div>
 		<div>
-			<div><label for="OutletCountOID">',__("Power Connection Count")." ".__("OID"),'</label></div>
+			<div><label for="OutletCountOID">',__("Outlet Count")." ".__("OID"),'</label></div>
 			<div><input type="text" name="OutletCountOID" id="OutletCountOID" size=40></div>
 		</div>
 		<div>
-			<div><label for="OutletStatusOID">',__("Outlet State")." ".__("OID"),'</label></div>
+			<div><label for="OutletStatusOID">',__("Outlet State (On/Off)")." ".__("OID"),'</label></div>
 			<div><input type="text" name="OutletStatusOID" id="OutletStatusOID" size=40></div>
 		</div>
 		<div>
-			<div><label for="OutletStatusOn">',__("Outlet Status On State"),'</label></div>
+			<div><label for="OutletStatusOn">',__("Outlet State (On)"),'</label></div>
 			<div><input type="text" name="OutletStatusOn" id="OutletStatusOn" size=40></div>
 		</div>
 		<div>
