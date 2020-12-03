@@ -143,23 +143,23 @@ echo '</select>
 	<div><input type="text" name="versionoid" id="versionoid" value="',$template->VersionOID,'" size=40></div>
 </div>
 <div>
-	<div><label for="outletnameoid">',__("Power Outlet Name")." ".__("OID"),'</label></div>
+	<div><label for="outletnameoid">',__("Outlet Factory Name")." ".__("OID"),'</label></div>
 	<div><input type="text" name="outletnameoid" id="outletnameoid" value="',$template->OutletNameOID,'" size=40></div>
 </div>
 <div>
-	<div><label for="outletdescoid">',__("Power Connections")." ".__("OID"),'</label></div>
+	<div><label for="outletdescoid">',__("Outlet User Description")." ".__("OID"),'</label></div>
 	<div><input type="text" name="outletdescoid" id="outletdescoid" value="',$template->OutletDescOID,'" size=40></div>
 </div>
 <div>
-	<div><label for="outletcountoid">',__("Power Connections Count")." ".__("OID"),'</label></div>
+	<div><label for="outletcountoid">',__("Outlet Count")." ".__("OID"),'</label></div>
 	<div><input type="text" name="outletcountoid" id="outletcountoid" value="',$template->OutletCountOID,'" size=40></div>
 </div>
 <div>
-	<div><label for="outletstatusoid">',__("Outlet Status")." ".__("OID"),'</label></div>
+	<div><label for="outletstatusoid">',__("Outlet State (On/Off)")." ".__("OID"),'</label></div>
 	<div><input type="text" name="outletstatusoid" id="outletstatusoid" value="',$template->OutletStatusOID,'" size=40></div>
 </div>
 <div>
-	<div><label for="outletstatuson">',__("Outlet Status On State"),'</label></div>
+	<div><label for="outletstatuson">',__("Outlet State (On)"),'</label></div>
 	<div><input type="text" name="outletstatuson" id="outletstatuson" value="',$template->OutletStatusOn,'" size=40></div>
 </div>
 <div>
