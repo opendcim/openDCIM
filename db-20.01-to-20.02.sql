@@ -8,4 +8,4 @@ UPDATE fac_Config SET DefaultVal = 'Location' WHERE fac_Config.Parameter = 'Assi
 -- Bump up the database version (uncomment below once released)
 --
 
--- UPDATE fac_Config set Value="20.02" WHERE Parameter="Version";
+UPDATE fac_Config set Value="20.02" WHERE Parameter="Version";
