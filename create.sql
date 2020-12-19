@@ -796,7 +796,7 @@ CREATE TABLE fac_Config (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO fac_Config VALUES
-	('Version','20.01','','',''),
+	('Version','20.02','','',''),
 	('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),
 	('ClassList','ITS, Internal, Customer','List','string','ITS, Internal, Customer'),
 	('SpaceRed','80','percentage','float','80'),
@@ -933,7 +933,7 @@ INSERT INTO fac_Config VALUES
   ('ReservationExpiration', '0', 'days', 'integer', '0'),
   ('PowerAlertsEmail', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
   ('SensorAlertsEmail', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
-  ('AssignCabinetLabels','OwnerName','Name','string','OwnerName')
+  ('AssignCabinetLabels','Location','Name','string','Location')
 ;
 
 --
