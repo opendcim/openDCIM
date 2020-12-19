@@ -299,17 +299,23 @@ paths:
           type: string
           description: "A specific DeviceID for a record to retrieve from the database"
           allowEmptyValue: true
-        - name: CabinetID
+        - name: Cabinet
           in: query
           required: false
           type: string
-          description: "Filter results to those that match the given keyValue"
+          description: "Filter results to those that match the given keyValue.  A value of -1 retrieves items in the virtual StorageRoom."
+          allowEmptyValue: true
+        - name: Position
+          in: query
+          required: false
+          type: string
+          description: "Search for the device in a specific position.   For virtual StorageRoom items, pass the DataCenterID in this value."
           allowEmptyValue: true
         - name: DataCenterID
           in: query
           required: false
           type: string
-          description: "Filter results to those that match the given keyValue"
+          description: "Filter results to those that match the given keyValue (does not work for StorageRoom - see note for Position)."
           allowEmptyValue: true
         - name: CabRowID
           in: query

@@ -118,6 +118,6 @@ Contributions are always welcome, please follow these steps to submit your chang
 
 Translation - i18n
 ---
-We do not accept any po files directly.  Please use the very simple, user friendly web interface at getlocalization.
+We do not accept any po files directly.  Please use the very simple, user friendly web interface at POEditor.
 
-https://www.getlocalization.com/opendcim/
+https://poeditor.com/join/project?hash=zBX5TaqBhv

@@ -6,6 +6,15 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 20.02
+----------------
+* A herculean effort was put into creating openAPI compatible documentation for openDCIM.   It is complete enough at this
+  point that all future API route additions will only be accepted if the documentation is also updated.
+* The Swagger API client is built into the application for live, usable documentation.
+* Several bug fixes
+* Script added that can be called from cron for checking your SAML IdP for metadata updates.   It can also be called manually when the
+  IdP signing certificate is rotated out.  File is refresh_idp_metadata.php
+
 Changes in 20.01
 ----------------
 * Complete overhaul of the SAML Integration.   Tested against KeyCloak and Ping Federate.  Should be pretty much standard.

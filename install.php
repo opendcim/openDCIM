@@ -1163,6 +1163,13 @@ function upgrade(){
 
 		$config->rebuild();
 	}
+
+	if($version=="20.01"){
+		error_log("Applying database update from 20.01 to 20.02");
+		$results[]=applyupdate("db-20.01-to-20.02.sql");
+
+		$config->rebuild();
+	}
 }
 
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
