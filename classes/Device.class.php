@@ -822,7 +822,7 @@ class Device {
                                         $pdu->$prop=$this->$prop;
                                 }
                         }
-			$pdu->CreatePDU($dev->DeviceID);
+			$pdu->CreatePDU($this->DeviceID);
 		// Device was changed from CDU to something else, clean up the extra shit
 		}elseif($tmpDev->DeviceType=="CDU" && $tmpDev->DeviceType!=$this->DeviceType){
 			$pdu=new PowerDistribution();
