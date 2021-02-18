@@ -2670,7 +2670,7 @@ print "<!--				<div>".__("Panel")."</div> -->
 					$(popup.document.body).html(insert).after(devinfo); // put into the popup
 					popup.print(); //print
 				}
-			}).appendTo('#pandn .caption');
+			}).appendTo('#buttonbar');
 		}
 
 		// Add a spacer for use when/if port removal options are triggered
