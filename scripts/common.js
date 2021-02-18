@@ -1826,7 +1826,7 @@ function LameLogDisplay(){
 		});
 	});
 	// the tabs are to match the existing page layout
-	$('.caption').last().append("\t\t").append(test);
+	$('#buttonbar').last().append("\t\t").append(test);
 }
 
 // ENG - Logging functions
