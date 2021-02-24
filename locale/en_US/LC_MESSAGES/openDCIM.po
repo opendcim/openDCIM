@@ -1245,12 +1245,10 @@ msgstr ""
 #: openDCIM/configuration.php:1959
 msgid "Rack Requests Actions"
 msgstr ""
-"#********** START - Add Action field to the Rack Request From page ********"
 
 #: openDCIM/configuration.php:1967
 msgid "Mail Subject"
 msgstr ""
-"#********** END - Add Action field to the Rack Request From page **********"
 
 #: openDCIM/configuration.php:1971
 msgid "Warning (Hours)"
