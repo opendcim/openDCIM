@@ -3703,7 +3703,7 @@ msgstr "Pfad von"
 
 #: openDCIM/paths.php:480
 msgid "Delete front connections in DataBase"
-msgstr "Frontanschlüsse in Batenbank löschen"
+msgstr "Frontanschlüsse in Datenbank löschen"
 
 #: openDCIM/paths.php:594
 msgid "Search by path identifier"
