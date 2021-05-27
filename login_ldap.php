@@ -140,75 +140,84 @@
 					$userSearch=str_replace("%userid%",$ldapUser,html_entity_decode($config->ParameterArray['LDAPUserSearch']));
 					debug_error_log('User search filter: '.$userSearch);
 					$ldapSearch=ldap_search($ldapConn,$config->ParameterArray['LDAPBaseDN'],$userSearch);
-					$ldapResults=ldap_get_entries($ldapConn,$ldapSearch);
 
-					// Because we have audit logs to maintain, we need to make a local copy of the User's record
-					// to keep in the openDCIM database just in case the user gets removed from LDAP.  This also
-					// makes it easier to check access rights by replicating the user's rights from LDAP into the
-					// local db for the session.  Revoke all rights every login and pull a fresh set from LDAP.
-					$person->UserID=$ldapUser;
-					if ( ! $person->GetPersonByUserID() )
-						$person->CreatePerson();
-
-					$person->revokeAll();
-
-					// GetPersonByUserID just populated our person object, update it with the 
-					// info we just pulled from ldap, if they are a valid user we'll update the
-					// db version of their name below, suppress any errors for missing attributes
-					@$person->FirstName=$ldapResults[0][$config->ParameterArray['AttrFirstName']][0];
-					@$person->LastName =$ldapResults[0][$config->ParameterArray['AttrLastName']][0];
-					@$person->Email    =$ldapResults[0][$config->ParameterArray['AttrEmail']][0];
-					@$person->Phone1   =$ldapResults[0][$config->ParameterArray['AttrPhone1']][0];
-					@$person->Phone2   =$ldapResults[0][$config->ParameterArray['AttrPhone2']][0];
-					@$person->Phone3   =$ldapResults[0][$config->ParameterArray['AttrPhone3']][0];
-
-					if($config->ParameterArray['LDAPSiteAccess']=="" || isUserInLDAPGroup($config, $ldapConn, $config->ParameterArray['LDAPSiteAccess'], $ldapUser)){
-						// No specific group membership required to access openDCIM or they have a match to the group required
-						$_SESSION['userid']=$ldapUser;
-						$_SESSION['LoginTime']=time();
-						session_commit();
-
-						$accessTypes = [
-							'ReadAccess',
-							'WriteAccess',
-							'DeleteAccess',
-							'AdminOwnDevices',
-							'RackRequest',
-							'RackAdmin',
-							'ContactAdmin',
-							'BulkOperations',
-							'SiteAdmin'
-						];
-						foreach($accessTypes as $accessType){
-							$groupDN = $config->ParameterArray["LDAP$accessType"];
-							if (isUserInLDAPGroup($config, $ldapConn, $groupDN, $ldapUser)) {
-								$person->$accessType = true;
-								debug_error_log("$ldapUser has $accessType by membership in $groupDN");
-							}
-						}
-
-						$person->UpdatePerson();
-
-						unset($accessType);
+					// Check the result of the ldapSearch to make sure we have a valid object.  ldapBind is registering
+					// a valid connection despite not authenticating when an invalid user is attempted with a blank password.
+					// This checks the results of our search to make sure they returned a valid object and if not stops the 
+					// authentication process.
+					if(gettype($ldapSearch) != "resource"){
+						debug_error_log( __("LDAP search error, did not return a valid resource.") . $ldapUser );
 					}else{
-						debug_error_log(__("LDAP authentication successful, but access denied based on lacking group membership.  Username: $ldapUser"));
-					}
-
-					if(isset($_SESSION['userid'])){
-						if($person->PersonID>0){
-							$person->UpdatePerson();
-						}else{
+						$ldapResults=ldap_get_entries($ldapConn,$ldapSearch);
+	
+						// Because we have audit logs to maintain, we need to make a local copy of the User's record
+						// to keep in the openDCIM database just in case the user gets removed from LDAP.  This also
+						// makes it easier to check access rights by replicating the user's rights from LDAP into the
+						// local db for the session.  Revoke all rights every login and pull a fresh set from LDAP.
+						$person->UserID=$ldapUser;
+						if ( ! $person->GetPersonByUserID() )
 							$person->CreatePerson();
-						}
-						if(isset($_COOKIE['targeturl'])){
-							header('Location: ' . html_entity_decode($_COOKIE['targeturl']));
+	
+						$person->revokeAll();
+	
+						// GetPersonByUserID just populated our person object, update it with the 
+						// info we just pulled from ldap, if they are a valid user we'll update the
+						// db version of their name below, suppress any errors for missing attributes
+						@$person->FirstName=$ldapResults[0][$config->ParameterArray['AttrFirstName']][0];
+						@$person->LastName =$ldapResults[0][$config->ParameterArray['AttrLastName']][0];
+						@$person->Email    =$ldapResults[0][$config->ParameterArray['AttrEmail']][0];
+						@$person->Phone1   =$ldapResults[0][$config->ParameterArray['AttrPhone1']][0];
+						@$person->Phone2   =$ldapResults[0][$config->ParameterArray['AttrPhone2']][0];
+						@$person->Phone3   =$ldapResults[0][$config->ParameterArray['AttrPhone3']][0];
+	
+						if($config->ParameterArray['LDAPSiteAccess']=="" || isUserInLDAPGroup($config, $ldapConn, $config->ParameterArray['LDAPSiteAccess'], $ldapUser)){
+							// No specific group membership required to access openDCIM or they have a match to the group required
+							$_SESSION['userid']=$ldapUser;
+							$_SESSION['LoginTime']=time();
+							session_commit();
+	
+							$accessTypes = [
+								'ReadAccess',
+								'WriteAccess',
+								'DeleteAccess',
+								'AdminOwnDevices',
+								'RackRequest',
+								'RackAdmin',
+								'ContactAdmin',
+								'BulkOperations',
+								'SiteAdmin'
+							];
+							foreach($accessTypes as $accessType){
+								$groupDN = $config->ParameterArray["LDAP$accessType"];
+								if (isUserInLDAPGroup($config, $ldapConn, $groupDN, $ldapUser)) {
+									$person->$accessType = true;
+									debug_error_log("$ldapUser has $accessType by membership in $groupDN");
+								}
+							}
+	
+							$person->UpdatePerson();
+	
+							unset($accessType);
 						}else{
-							header('Location: ' . redirect('index.php'));
+							debug_error_log(__("LDAP authentication successful, but access denied based on lacking group membership.  Username: $ldapUser"));
 						}
-						exit;
-					}else{
-						$content.="<h3>Login failed.  Incorrect username, password, or rights.</h3>";
-						debug_error_log(__("LDAP Authentication failed for username: $ldapUser"));
+	
+						if(isset($_SESSION['userid'])){
+							if($person->PersonID>0){
+								$person->UpdatePerson();
+							}else{
+								$person->CreatePerson();
+							}
+							if(isset($_COOKIE['targeturl'])){
+								header('Location: ' . html_entity_decode($_COOKIE['targeturl']));
+							}else{
+								header('Location: ' . redirect('index.php'));
+							}
+							exit;
+						}else{
+							$content.="<h3>Login failed.  Incorrect username, password, or rights.</h3>";
+							debug_error_log(__("LDAP Authentication failed for username: $ldapUser"));
+						}
 					}
 				}
 			}
