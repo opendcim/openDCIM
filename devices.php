@@ -2151,7 +2151,9 @@ echo '
 
 		echo '
 				</select>
-			</div>
+			</div>'
+		print "<div><a href=\"power_panel.php?PanelID=$pdu->PanelID\">[ ".__("Goto Panel")." ]</a></div>\n";
+		echo '
 		</div>
 		<div>
 			<div><label for="voltage">',__("Voltages:"),'</label></div>
