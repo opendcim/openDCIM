@@ -2152,7 +2152,9 @@ echo '
 		echo '
 				</select>
 			</div>'
-		print "<div><a href=\"power_panel.php?PanelID=$pdu->PanelID\">[ ".__("Goto Panel")." ]</a></div>\n";
+		if($pdu->PanelID >0){
+			print "<div><a href=\"power_panel.php?PanelID=$pdu->PanelID\">[ ".__("Goto Panel")." ]</a></div>\n";
+		}	
 		echo '
 		</div>
 		<div>
