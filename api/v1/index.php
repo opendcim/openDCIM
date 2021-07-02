@@ -134,7 +134,10 @@ $app->add(function($request, $response, $next) use($person) {
 $app->hook( 'slim.before.dispatch', function() use($person) {
 	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" || AUTHENTICATION == "Saml" ) {
 		// Getting request headers
-		$headers = apache_request_headers();
+		$tmpHeaders = apache_request_headers();
+		// Force headers to all lowercase because we've seen inconsistencies between environments
+		// It also removes the edge cases where people aren't sending in the 'correct' case per documentation
+		$headers = array_change_key_case( $tmpHeaders, CASE_LOWER );
 		$response = array();
 		$app = \Slim\Slim::getInstance();
 
@@ -145,13 +148,13 @@ $app->hook( 'slim.before.dispatch', function() use($person) {
 
 			$person->UserID = $_SESSION['userid'];
 			$person->GetPersonByUserID();
-		} elseif ( isset( $headers['UserID']) && isset( $headers['APIKey'])) {
+		} elseif ( isset( $headers['userid']) && isset( $headers['apikey'])) {
 			// Load up the $person variable
-			$person->UserID = $headers['UserID'];
+			$person->UserID = $headers['userid'];
 			$person->GetPersonByUserID();
 
 			// Now verify that their key matches
-			if ( $person->APIKey == $headers['APIKey'] ) {
+			if ( $person->APIKey == $headers['apikey'] ) {
 				$valid = true;
 			}
 		}
