@@ -773,6 +773,16 @@
 			// Finished updating devices or creating them.  Refresh the object with data from the DB
 			$dev->GetDevice();
 
+			// Audits are either at the individual device or the full cabinet level, so grab the latest date
+			$cabAudit = new CabinetAudit();
+			$cabAudit->CabinetID = $dev->Cabinet;
+			$cabAudit->GetLastAudit();
+			if ( strtotime($dev->AuditStamp) > strtotime($cabAudit->AuditStamp) ) {
+				$lastAudit = $dev->AuditStamp;
+			} else {
+				$lastAudit = $cabAudit->AuditStamp;
+			}
+
 			// Get any tags associated with this device
 			$tags=$dev->GetTags();
 			if(count($tags)>0){
@@ -1822,7 +1832,7 @@ echo '			</select>
 		</div>
 		<div>
 		   <div>'.__("Last Audit Completed").'</div>
-		   <div><span id="auditdate">'.((strtotime($dev->AuditStamp)>0)?date('r',strtotime($dev->AuditStamp)):__("Audit not yet completed")).'</span></div>
+		   <div><span id="auditdate">'.((strtotime($lastAudit)>0)?date('r',strtotime($lastAudit)):__("Audit not yet completed")).'</span></div>
 		</div>
 		<div>
 		   <div><label for="Owner">'.__("Departmental Owner").'</label></div>
