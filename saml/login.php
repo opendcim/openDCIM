@@ -8,6 +8,21 @@ require_once('../db.inc.php');
 define("TOOLKIT_PATH", '../vendor/onelogin/php-saml/');
 require_once(TOOLKIT_PATH . '_toolkit_loader.php');
 
+$requiredAttrs = array("SAMLBaseURL", "SAMLspentityId", "SAMLspx509cert", "SAMLidpentityId", "SAMLidpssoURL", "SAMLidpx509cert" );
+$minConfig = true;
+foreach( $requiredAttrs as $attr ) {
+	if ( $config->ParameterArray[$attr] == "" )
+		$minConfig = false;
+}
+
+if ( ! $minConfig ) {
+?>
+<body>
+	<h1>The administrator has set the authentication to Saml but the minimum required fields are not configured.</h1>
+</body>
+<?php
+	die();
+}
 require_once('settings.php');
 require_once '../vendor/autoload.php';
 
