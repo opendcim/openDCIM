@@ -147,8 +147,20 @@
 			}else{
 				$tests['Remote User']['message']='<a href="http://httpd.apache.org/docs/2.2/howto/auth.html">http://httpd.apache.org/docs/2.2/howto/auth.html</a>';
 			}
-		}else{
-			$tests['Remote User']['message']='Only Apache authentication is supported for the initial install. Please use the provided .htaccess to authenticate as admin OR supply your own apache password file';
+		// If $config is an object, this is an already running installation rather than a new one
+		}elseif (is_object( $config ) && AUTHENTICATION=="Saml" ) {
+				if ( function_exists("openssl_csr_new") ) {
+					$tests["openSSL"]["state"]="good";
+					$tests["openSSL"]["message"]="";
+				} else {
+					$tests["openSSL"]["state"]="fail";
+					$tests["openSSL"]["message"]="openSSL is required in order to process Saml based authentication.";
+				}
+		} elseif(is_object( $config ) && AUTHENTICATION=="LDAP") {
+			$tests["Remote User"]["state"]="good";
+			$tests["Remote User"]["message"]="";
+		}else {
+			$tests['Remote User']['message']='Only Apache or LDAP authentication (using the Debug password) is supported for the initial install. Please use the provided .htaccess to authenticate as admin OR supply your own apache password file';
 		}
 		// Try to not duplicate everything
 		if(!isset($tests['Remote User']['state'])){
@@ -163,7 +175,14 @@
 
 	// Do a quick check for file rights.
 	$all_paths_writable=true;
-	$wantedpaths=array('drawings', 'pictures','vendor'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'ttfontdata');
+	$wantedpaths=array('vendor'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'ttfontdata');
+	if ( is_object( $config )) {
+		$wantedpaths[] = $config->ParameterArray["drawingpath"];
+		$wantedpaths[] = $config->ParameterArray["picturepath"];
+	} else {
+		$wantedpaths[] = "assets/pictures";
+		$wantedpaths[] = "assets/drawings";
+	}
 
 	foreach($wantedpaths as $i => $file){
 		$all_paths_writable=(is_writable('.'.DIRECTORY_SEPARATOR.$file) && $all_paths_writable)?true:false;

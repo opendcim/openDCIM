@@ -1,7 +1,6 @@
 <?php
 
 require_once( "version.php" );
-require_once( "preflight.php" );
 
 // Make sure that a db.inc.php has been created
 	if(!file_exists("db.inc.php")){
@@ -10,6 +9,11 @@ require_once( "preflight.php" );
 	}else{
 		require_once("db.inc.php");
 	}
+
+require_once( "config.inc.php" );
+$config=new Config();
+
+require_once( "preflight.php" );
 
 // Functions for upgrade / installing db objects
 	$successlog="";
