@@ -85,6 +85,17 @@
 				$cab->SetTags($tagarray);
 			}
 		}
+
+		if ( isset( $_POST["assignDevOwnership"]) && $_POST["assignDevOwnership"] == "Yes" ) {
+			// Assign every device in the cabinet to this owner
+			$dev = new Device();
+			$dev->Cabinet = $cab->CabinetID;
+			$devList = $dev->ViewDevicesByCabinet( true );
+			foreach( $devList as $d ) { 
+				$d->Owner = $cab->AssignedTo;
+				$d->UpdateDevice();
+			}
+		}
 	}elseif($cab->CabinetID >0){
 		$cab->GetCabinet();
 	}else{
@@ -271,6 +282,8 @@ echo '		</select>
 	}
 
 echo '  </select>
+  <input type="checkbox" id="assignDevOwnership" name="assignDevOwnership" value="Yes">
+  <label for="assignDevOwnership">Assign all devices in cabinet to this owner.</label>
   </div>
 </div>
 <div>
