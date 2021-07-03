@@ -171,7 +171,10 @@
   <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <link rel="stylesheet" href="css/jquery.dataTables.min.css" type="text/css">
-  <style type="text/css"></style>
+  <style type="text/css">
+    div.dt-buttons { float: left; }
+    #export_filter { float: left; margin-left: 25px; }
+  </style>
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
