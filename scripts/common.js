@@ -1652,6 +1652,11 @@ function initdrag(){
 }
 
 function InsertDevice(obj){
+	// Display any Height>0 && Position==0 devices as if they were ZeroU
+	if ( obj.Position==0 && obj.Height>0 ) {
+		obj.Height=0;
+	}
+	
 	if(obj.Position!=0 && obj.Height!=0){
 		$('#cabinet'+obj.Cabinet+' .loadingplaceholder').remove();
 		function getPic(insertobj,rear){
