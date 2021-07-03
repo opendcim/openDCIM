@@ -796,7 +796,7 @@ CREATE TABLE fac_Config (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO fac_Config VALUES
-	('Version','20.02','','',''),
+	('Version','21.01','','',''),
 	('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),
 	('ClassList','ITS, Internal, Customer','List','string','ITS, Internal, Customer'),
 	('SpaceRed','80','percentage','float','80'),
