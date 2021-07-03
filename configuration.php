@@ -1759,6 +1759,7 @@ echo '<div class="main">
 			<li><a href="#ldap">',__("LDAP"),'</a></li>
 			<li><a href="#saml">',__("SAML"),'</a></li>
 			<li><a href="#preflight">',__("Pre-Flight Check"),'</a></li>
+			<li><a href="#credits">',__("Credits"),'</a></li>
 		</ul>
 		<div id="general">
 			<div class="table">
@@ -2649,6 +2650,26 @@ echo '<div class="main">
 		<div id="preflight">
 			<iframe src="preflight.inc.php"></iframe>
 		</div><!-- end preflight tab -->
+		<div id="credits">
+			<h2>openDCIM License</h2>
+			<p>openDCIM is licensed under the GPL v3 license, which may be found <a href="http://www.gnu.org/licenses/gpl-3.0.html">at this location.</a></p>
+			<h2>Source Code</h2>
+			<p>The source code for openDCIM is maintained in GitHub at <a href="https://github.com/opendcim/openDCIM">https://github.com/opendcim/openDCIM</a>.   All issue tracking and bug reporting is done through GitHub, but before reporting an issue, one should research both the open and closed issues to see if that bug has already been resolved.</p>
+			<h2>Online Chat</h2>
+			<p>The developers maintain a chat room on the <a href="https://libera.chat">Libera</a> IRC chat network, in the channel #opendcim.</p>
+			<h2>Mailing List</h2>
+			<p>A mailing list is maintained for asking usage questions, announcements of new versions, and feature requests.   Please sign up at <a href="http://list.opendcim.org/mailman/listinfo/discussion">our MailMan list.</a></p>
+			<h2>Developers</h2>
+			<div>
+			<p>While Open Source Software is the work of many contributors, the primary developers for openDCIM are Scott Milliken and Wilbur Longwisch.</p>
+			The <strong>openDCIM Foundation, LLC</strong> is a corporation formed to manage the project and cover any expenses related to hosting and publicizing openDCIM.  If you find openDCIM to be useful, please consider a donation, of any amount.  Thank you.
+			</div>
+			<div style="width: 140px;">
+				<a href="https://www.paypal.com/donate?hosted_button_id=BVXBDKES3PV32">
+				<img width="100px" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0">
+				</a>
+			</div>
+		</div>
 	</div>';
 
 ?>
