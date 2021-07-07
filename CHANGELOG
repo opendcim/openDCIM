@@ -6,6 +6,15 @@ GitHub, at http://github.com/samilliken/openDCIM/issues, where you can also down
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 21.01
+----------------
+* Mostly focused on bug fixes
+* Provided better error messaging when Saml not configured correctly
+* Fixed the rightscheck.php to correctly use user supplied configuration for assets directories
+* Checkbox added to allow bulk ownership change when rack ownership changes
+* Fixed an issue that caused the API Key to not work for certain Saml installations behind a reverse proxy
+* Devices not assigned a position (or to position 0) by accident now display with the ZeroU devices in a cabinet
+
 Changes in 20.02
 ----------------
 * A herculean effort was put into creating openAPI compatible documentation for openDCIM.   It is complete enough at this
