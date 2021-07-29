@@ -1,6 +1,8 @@
 <?php
 	require_once( "db.inc.php" );
 	require_once( "facilities.inc.php" );
+	
+	include('phpqrcode/qrlib.php');	
 
 	$subheader=__("Data Center Cabinet Inventory");
 
@@ -108,6 +110,14 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	// Only a site administrator can create or delete a cabinet
 	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $person->SiteAdmin ) {
+		//Delete QRCode		
+		$paramCabD = $cab->CabinetID;		
+		$tempDirCabD = './assets/pictures/';
+    		$fileNameCabD = 'QRCodeCab_'.$paramCabD.'.png';
+    
+ 		$pngAbsoluteFilePathCabD = $tempDirCabD.$fileNameCabD;
+		unlink($pngAbsoluteFilePathCabD);
+
 		$cab->DeleteCabinet();
 		header('Content-Type: application/json');
 		echo json_encode(array('url' => redirect("dc_stats.php?dc=$cab->DataCenterID")));
@@ -244,9 +254,18 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$legend.="\t\t<div class=\"legenditem hide\"><span class=\"hlight owner\">(O)</span> - ".__("Owner Unassigned")."</div>\n";
 	$legend.="\t\t<div class=\"legenditem hide\"><span class=\"hlight template\">(T)</span> - ".__("Template Unassigned")."</div>\n";
 
+//Chemin de l'image
+$paramCab = $cab->CabinetID;		
+$tempDirCab = './assets/pictures/';
+$fileNameCab = 'QRCodeCab_'.$paramCab.'.png';
+    
+$pngAbsoluteFilePathCab = $tempDirCab.$fileNameCab;
+	
 $body.='<div id="infopanel">
 	<fieldset id="legend">
-		<legend>'.__("Markup Key")."</legend>\n"
+		<legend>'.__("Markup Key")."</legend>\n
+		<div>Cabinet ID : ".$cab->CabinetID."</div>
+		<div><img src='".$pngAbsoluteFilePathCab."'/></div>\n"
 .$legend.'
 	</fieldset>
 	<fieldset id="metrics">
@@ -404,7 +423,6 @@ $body.='<div id="infopanel">
 			'.$cab->Notes.'
 		</div>
 	</fieldset>
-
 </div> <!-- END div#infopanel -->';
 
 	// If $head isn't empty then we must have added some style information so close the tag up.
@@ -441,7 +459,6 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 	window.weight=',$totalWeight,';
 	var form=$("<form>").attr({ method: "post", action: "cabnavigator.php" });
 	$("<input>").attr({ type: "hidden", name: "cabinetid", value: "',$cab->CabinetID,'"}).appendTo(form);
-
 	(function ($) {
 		$.fn.extend({
 			cookieList: function (cookieName, expireTime) {
@@ -491,7 +508,6 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 		if($("#cabnotes div").text().trim()==""){$("#cabnotes").hide();}
 		if($("#sensors div").text().trim()==""){$("#sensors").hide();}
 		if($("fieldset[name=pdu] div").text().trim()==""){$("fieldset[name=pdu]").hide();}
-
 		$("#verifyaudit").click(function(e){
 			e.preventDefault();
 			$("#auditmodal").dialog({
@@ -513,7 +529,6 @@ echo $head,'  <script type="text/javascript" src="scripts/jquery.min.js"></scrip
 				}
 			});
 		});
-
 		$("#verifydelete").click(function(e){
 			e.preventDefault();
 			$("#deletemodal").dialog({
@@ -813,5 +828,5 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 }
 ?>
 </script>
-</body>
 </html>
+</body>

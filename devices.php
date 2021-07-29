@@ -1,6 +1,7 @@
 <?php
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
+	include('phpqrcode/qrlib.php');	
 
 	$subheader=__("Data Center Device Detail");
 
@@ -689,6 +690,23 @@
 				$write=($dev->Rights=="Write")?true:$write;
 
 				if($dev->Rights=="Write" && $dev->DeviceID >0){
+					//QRCode path + code 
+					$param = $dev->DeviceID;
+					$txtQR = 'Device ID: ';
+
+					ob_start("callback"); 
+
+					$codeText = $txtQR.$param;
+					
+					$debugLog = ob_get_contents();
+					ob_end_clean();
+
+					
+					// Chemin pour save le png
+					$tempDir = './assets/pictures/';
+    					$fileName = 'QRCode_'.$param.'.png';
+    
+ 					$pngAbsoluteFilePath = $tempDir.$fileName;					
 					switch($_POST['action']){
 						case 'Update':
 							// User has changed the device type from chassis to something else and has said yes
@@ -706,9 +724,14 @@
 							}else{
 								$dev->UpdateDevice();
 							}
+							if (!file_exists($pngAbsoluteFilePath)) {
+      								QRcode::png($codeText, $pngAbsoluteFilePath);
+      								//header('Location: '.redirect("devices.php?DeviceID=$dev->DeviceID"));
+    							}
 							break;
 						case 'Delete':
 							$dev->DeleteDevice();
+							unlink($pngAbsoluteFilePath);
 							//the $dev object should still exist even though we've deleted the db entry now
 							if($dev->ParentDevice >0){
 								header('Location: '.redirect("devices.php?DeviceID=$dev->ParentDevice"));
@@ -760,6 +783,30 @@
 					$dev->SetTags($tagarray);
 
 					// We've, hopefully, successfully created a new device. Force them to the new device page.
+					//Create QR Code with DeviceID						
+					$param = $dev->DeviceID;
+					$txtQR = 'Device ID: ';
+
+					ob_start("callback"); 
+
+					$codeText = $txtQR.$param;
+					
+					$debugLog = ob_get_contents();
+					ob_end_clean();
+
+					
+					// Chemin pour save le png
+					$tempDir = './assets/pictures/';
+    					$fileName = 'QRCode_'.$param.'.png';
+    
+ 					$pngAbsoluteFilePath = $tempDir.$fileName;
+					if($_POST['action'] == 'Create'){
+						//Création du QR code
+    						if (!file_exists($pngAbsoluteFilePath)) {
+      						QRcode::png($codeText, $pngAbsoluteFilePath);
+      						//header('Location: '.redirect("devices.php?DeviceID=$dev->DeviceID"));
+    						}
+					}
 					header('Location: '.redirect("devices.php?DeviceID=$dev->DeviceID"));
 					exit;
 				}
@@ -787,7 +834,7 @@
 			} else {
 				$lastAudit = "Never";
 			}
-
+																								
 			// Get any tags associated with this device
 			$tags=$dev->GetTags();
 			if(count($tags)>0){
@@ -851,6 +898,8 @@
 
 		// sets install date to today when a new device is being created
 		$dev->InstallDate=date("Y-m-d");
+
+		
 	}
 
 	// We don't want someone accidentally adding a chassis device inside of a chassis slot.
@@ -999,7 +1048,10 @@
 				}
 				echo '</select></div>';
 			} else {
-				echo '<div><input type="text"',$validation,' name="',$inputname,'" id="',$inputname,'" value="',$customdata["value"],'">';
+				echo '<div><input type="text"',$validation,' name="',$inputname,'" id="',$inputname,'" value="',$customdata["value"],'">
+						<p>Mettre le nom de l\'image qui se situe dans le repertoire /asset/picture/</p>';
+				echo '<img id="devicefront" src="assets/pictures/'.$customdata["value"].'" alt="front of device" height="100" width="100">';
+
 				if ($cvtype=="url") {
 					echo '<button type="button" onclick=window.open("',$customdata["value"],'","_blank"); value="open">',__("Open"),'</button>';
 				}
@@ -1263,6 +1315,7 @@ $(document).ready(function() {
 		$('#pdutest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
 	});
 
+
 	// Add in refresh functions for virtual machines
 	var VMtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
 	var VMbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
@@ -1504,7 +1557,7 @@ $(document).ready(function() {
 			});
 		}
 	}
-
+	
 	$('#cdufirstport button[name=cdufirstport]').click(function(){
 		getfirstport('CDU', $('#DeviceID').val());
 	});
@@ -1797,7 +1850,6 @@ echo '<div class="center"><div>
 					}
 echo '			</select>
 			</div>
-
 		</div>
 		<div>
 		   <div><label for="Label">'.__("Label").'</label></div>
@@ -1808,6 +1860,7 @@ echo '			</select>
 		   <div><input type="text" name="SerialNo" id="SerialNo" size="40" value="'.$dev->SerialNo.'">
 		   <button class="hide" type="button" onclick="getScan(\'SerialNo\')">',__("Scan Barcode"),'</button></div>
 		</div>
+			
 		<div>
 		   <div><label for="AssetTag">'.__("Asset Tag").'</label></div>
 		   <div><input type="text" name="AssetTag" id="AssetTag" size="20" value="'.$dev->AssetTag.'">
@@ -1837,7 +1890,7 @@ echo '			</select>
 		</div>
 		<div>
 		   <div>'.__("Last Audit Completed").'</div>
-		   <div><span id="auditdate">Cabinet: '.$lastCAudit.'<br>Device: '.$lastAudit.'</span></div>
+		   		   <div><span id="auditdate">Cabinet: '.$lastCAudit.'<br>Device: '.$lastAudit.'</span></div>
 		</div>
 		<div>
 		   <div><label for="Owner">'.__("Departmental Owner").'</label></div>
@@ -1915,7 +1968,20 @@ echo '		   </div>
 <fieldset id="customattrs">
 <legend>',__("Custom Attributes"),'</legend>';
 buildCustomAttributes($templ,$dev);
+
+// Chemin pour trouver la png
+$tempDir2 = './assets/pictures/';
+$fileName2 = 'QRCode_'.$dev->DeviceID.'.png';
+    
+$pngAbsoluteFilePath2 = $tempDir2.$fileName2;
+
 echo '
+</fieldset>
+<fieldset id="customattrs">
+<legend>',__("QR Code"),'</legend>
+	<div class="table">
+		<div><img src="'.$pngAbsoluteFilePath2.'"/></div>
+	</div>
 </fieldset>
 	<div class="table">
 		<div>

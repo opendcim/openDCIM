@@ -1,5 +1,14 @@
 <div id="sidebar">
 <br>
+
+<form action="searchID.php" method="post">
+	<select name="chooseType" id="chooseType">
+		<option value="device">Device</option>
+		<option value="cab">Cabinet</option>
+	</select>
+	<input class="search" id="searchadv" name="searchID"><button class="iebug" type="submit"><img src="css/searchbutton.png" alt="search1"></button>
+</form>
+
 <form action="search.php" method="post">
 <input type="hidden" name="key" value="label">
 <?php

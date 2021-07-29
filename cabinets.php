@@ -1,6 +1,8 @@
 <?php
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
+	
+	include('phpqrcode/qrlib.php');	
 
 	$subheader=__("Data Center Cabinet Inventory");
 
@@ -24,6 +26,15 @@
 	// If you're deleting the cabinet, no need to pull in the rest of the information, so get it out of the way
 	// Only a site administrator can create or delete a cabinet
 	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $person->SiteAdmin ) {
+		//Delete QRCode	
+		$paramCabD = $cab->CabinetID;
+	
+		$tempDirCabD = './assets/pictures/';
+    		$fileNameCabD = 'QRCodeCab_'.$paramCabD.'.png';
+    
+ 		$pngAbsoluteFilePathCabD = $tempDirCabD.$fileNameCabD;
+		unlink($pngAbsoluteFilePathCabD);
+
 		$cab->DeleteCabinet();
 		$status['code']=200;
 		$status['msg']=redirect("dc_stats.php?dc=$cab->DataCenterID");
@@ -79,13 +90,36 @@
 				$cab->UpdateCabinet();
 			}elseif($_POST['action']=='Create'){
 				$cab->CreateCabinet();
+
+				//Create QR Code with DeviceID						
+				$paramCab = $cab->CabinetID;
+				$txtCabQR = 'Cabinet ID: ';
+
+				ob_start("callback"); 
+
+				$codeTextCab = $txtCabQR.$paramCab;
+					
+				$debugLogCab = ob_get_contents();
+				ob_end_clean();
+
+				// Chemin pour save le png
+				$tempDirCab = './assets/pictures/';
+    				$fileNameCab = 'QRCodeCab_'.$paramCab.'.png';
+    
+ 				$pngAbsoluteFilePathCab = $tempDirCab.$fileNameCab;
+
+				//Création du QR code
+    				if (!file_exists($pngAbsoluteFilePathCab)) {
+      					QRcode::png($codeTextCab, $pngAbsoluteFilePathCab);
+					
+    				}
 			}
 
 			if($cab->CabinetID > 0) {
 				$cab->SetTags($tagarray);
 			}
 		}
-
+		
 		if ( isset( $_POST["assignDevOwnership"]) && $_POST["assignDevOwnership"] == "Yes" ) {
 			// Assign every device in the cabinet to this owner
 			$dev = new Device();
@@ -282,7 +316,7 @@ echo '		</select>
 	}
 
 echo '  </select>
-  <input type="checkbox" id="assignDevOwnership" name="assignDevOwnership" value="Yes">
+<input type="checkbox" id="assignDevOwnership" name="assignDevOwnership" value="Yes">
   <label for="assignDevOwnership">Assign all devices in cabinet to this owner.</label>
   </div>
 </div>
