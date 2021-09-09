@@ -597,7 +597,7 @@ echo '<div class="main">
 <br>
 <div>
    <div><label for="pathid">',__("Identifier"),'</label></div>
-   <div><input type="text" name="pathid" id="pathid" size="20" value="',(isset($_POST['pathid'])?$_POST['pathid']:""),'"></div>
+   <div><input type="text" name="pathid" id="pathid" size="20" value="',(isset($_POST['pathid'])?sanitize($_POST['pathid']):""),'"></div>
 </div>
 <br>
 <div class="caption"><button type="submit" name="action" value="PathIdSearch">',__("Search"),'</button></div>
