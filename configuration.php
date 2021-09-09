@@ -90,8 +90,10 @@
 		$breadcrumbpath="";
 		if($path!='.'){
 			foreach(explode("/",$path) as $i => $d) {
-				$breadcrumb.="<a href=\"?dl=$breadcrumbpath$d\">$d</a>/";
-				$breadcrumbpath.="$d/";
+				if(is_readable($breadcrumbpath.$d."/")){
+					$breadcrumb.="<a href=\"?dl=$breadcrumbpath$d\">$d</a>/";
+					$breadcrumbpath.="$d/";
+				}
 			}
 		}
 		$imageselect=__("Current selection").': '.$breadcrumb.'<br><input type="hidden" id="directoryselectionvalue" value="'.$breadcrumbpath.'"><div id="filelist">';
