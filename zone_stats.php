@@ -312,7 +312,7 @@ echo '
 	</li>
 	<li><a href="#row">',__("Row"),'</a>
 		<ul data-context="row">
-			<li><a href="#Test">',__("Top"),'</a></li>
+			<li><a href="#Top">',__("Top"),'</a></li>
 			<li><a href="#Right">',__("Right"),'</a></li>
 			<li><a href="#Bottom">',__("Bottom"),'</a></li>
 			<li><a href="#Left">',__("Left"),'</a></li>
