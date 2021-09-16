@@ -7,12 +7,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: POEditor.com\n"
+"X-Generator: Poedit 3.0\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Oleksiy O. Loktev <spezialist@email.ua>\n"
+"Language-Team: openDCIM <discussion@list.opendcim.org>\n"
 
 #: openDCIM/bulk_cabinet.php:16
-#, fuzzy
 msgid "Bulk Cabinet Importer"
-msgstr "Груповий імпорт пристроїв"
+msgstr "Груповий імпорт шаф"
 
 #: openDCIM/bulk_cabinet.php:80 openDCIM/bulk_container.php:80
 #: openDCIM/bulk_importer.php:80 openDCIM/bulk_moves.php:60
@@ -66,40 +68,37 @@ msgid "Select file to upload:"
 msgstr "Завантажити файл:"
 
 #: openDCIM/bulk_container.php:16
-#, fuzzy
 msgid "Bulk Container/Datacenter Importer"
-msgstr "Груповий імпорт електроживлення"
+msgstr "Груповий імпорт Контейнерів/ЦОДів"
 
 #: openDCIM/bulk_departments.php:16
-#, fuzzy
 msgid "Bulk Department Importer"
-msgstr "Груповий імпорт пристроїв"
+msgstr "Груповий імпорт відділів"
 
 #: openDCIM/bulk_departments.php:80
-#, fuzzy
 msgid ""
 "Pick the appropriate column header (line 1) for each field name listed "
 "below.  Any records matching an existing Department Name will be rejected."
 msgstr ""
 "Оберіть відповідний заголовок стовпця (рядок 1) для кожного, вказаного "
-"нижче, поля таблиці."
+"нижче, поля таблиці.  Усі записи, що відповідають існуючому Department Name, "
+"будуть відхилені."
 
 #: openDCIM/bulk_departments.php:193
 msgid "Department name already exists in database: "
-msgstr ""
+msgstr "Назва відділу вже існує в базі даних: "
 
 #: openDCIM/bulk_departments.php:203
 msgid "Invalid hex color code entered:"
-msgstr ""
+msgstr "Введено недопустимий hex-код кольору для легенди:"
 
 #: openDCIM/bulk_departments.php:208
 msgid "Classification is not a valid entry in your site configuration:"
-msgstr ""
+msgstr "Класифікація відділу помилкова або відсутня у вашій конфігурації:"
 
 #: openDCIM/bulk_departments.php:218
-#, fuzzy
 msgid "Created new Department:"
-msgstr "новий..."
+msgstr "Створено новий відділ:"
 
 #: openDCIM/bulk_importer.php:16
 msgid "Bulk Device Importer"
@@ -209,6 +208,10 @@ msgid ""
 "one type may be specified per file.   ie - If you choose DatabaseKey, then "
 "DeviceID, Cabinet, and DataCenterID fields must utilize the applicable ID."
 msgstr ""
+"Ключове поле, що використовується для розпізнавання пристроїв в openDCIM.  "
+"Для файла може бути вказано тільки одне ключове поле.   Тобто - якщо ви "
+"вибрали DatabaseKey, то поля DeviceID, Cabinet та DataCenterID мають "
+"використовувати відповідний ID."
 
 #: openDCIM/bulk_moves.php:100 openDCIM/bulk_network.php:100
 #: openDCIM/bulk_power.php:100
@@ -236,7 +239,7 @@ msgid ""
 "The type of key field that is being used to match devices in openDCIM.  Only "
 "one type may be specified per file."
 msgstr ""
-"Ключове поле, що використовується для розпізнавання пристроїв в openDCIM. "
+"Ключове поле, що використовується для розпізнавання пристроїв в openDCIM.  "
 "Для файла може бути вказано тільки одне ключове поле."
 
 #: openDCIM/bulk_power.php:12
@@ -244,62 +247,57 @@ msgid "Bulk Power Importer"
 msgstr "Груповий імпорт електроживлення"
 
 #: openDCIM/bulk_templates.php:12
-#, fuzzy
 msgid "Bulk Device Template Importer"
-msgstr "Груповий імпорт пристроїв"
+msgstr "Груповий імпорт шаблонів пристроїв"
 
 #: openDCIM/bulk_templates.php:60
 msgid ""
 "This template importer is to get the bare minimum information entered.   For "
 "a more robust template sharing system, use the online repository."
 msgstr ""
+"Цей імпортер шаблонів дозволяє заповнити мінімально необхідний об'єм "
+"інформації.   Для отримання повного об'єму інформації по шаблону краще "
+"використовувати хмарне сховище в інтернеті."
 
 #: openDCIM/bulk_templates.php:164
-#, fuzzy
 msgid "Created Template:"
-msgstr "Оновити шаблон"
+msgstr "Створено шаблон:"
 
 #: openDCIM/bulk_templates.php:195
-#, fuzzy
 msgid "Error:  Unable to add template for"
-msgstr "Помилка оновлення портів шаблона"
+msgstr "Помилка:  неможливо додати шаблон для"
 
 #: openDCIM/bulk_templates.php:199
-#, fuzzy
 msgid "Error:  Invalid DeviceType specified"
-msgstr "Початковий пристрій комутації не вказано"
+msgstr "Помилка:  вказано недопустимий DeviceType"
 
 #: openDCIM/bulk_templates.php:203
-#, fuzzy
 msgid "Error:  Manufacturer name "
-msgstr "Виготовлено"
+msgstr "Помилка:  недопустима назва виробника"
 
 #: openDCIM/bulk_templates.php:203
-#, fuzzy
 msgid "not in database."
-msgstr "Користувач відсутній в БД."
+msgstr "немає в базі даних."
 
 #: openDCIM/bulk_users.php:12
-#, fuzzy
 msgid "Bulk User Authorization Importer"
-msgstr "Груповий імпорт комутації"
+msgstr "Груповий імпорт облікових записів"
 
 #: openDCIM/bulk_users.php:60
-#, fuzzy
 msgid ""
 "Pick the appropriate column header (line 1) for each field name listed "
 "below.  Any UserID already in the system will be updated."
 msgstr ""
 "Оберіть відповідний заголовок стовпця (рядок 1) для кожного, вказаного "
-"нижче, поля таблиці."
+"нижче, поля таблиці.  Всі UserID, які вже є у системі, буде оновлено."
 
 #: openDCIM/bulk_users.php:170
 msgid "Created new person account:"
-msgstr ""
+msgstr "Створено новий обліковий запис:"
 
 #: openDCIM/bulk_users.php:174
 msgid "Updated existing person account:"
-msgstr ""
+msgstr "Оновлено існуючий обліковий запис:"
 
 #: openDCIM/cabaudit.php:49 openDCIM/report_aging.php:91
 #: openDCIM/report_asset.php:25 openDCIM/report_audit_frequency.php:29
@@ -350,7 +348,7 @@ msgstr "Сторінка"
 #: openDCIM/report_diverse_power_exceptions.php:167
 #: openDCIM/report_power_utilization.php:167
 msgid "Cabinet Location"
-msgstr "Шафа"
+msgstr "Розташування шафи"
 
 #: openDCIM/cabaudit.php:404 openDCIM/cabaudit.php:510
 #: openDCIM/configuration.php:2397 openDCIM/devices.php:1788
@@ -744,12 +742,12 @@ msgstr "Засоби обслуговування шафи"
 #: openDCIM/cabnavigator.php:655
 #, php-format
 msgid "Return to Zone %s"
-msgstr ""
+msgstr "Назад до %s"
 
 #: openDCIM/cabnavigator.php:661
 #, php-format
 msgid "Return to Row %s"
-msgstr ""
+msgstr "Назад до %s"
 
 #: openDCIM/cabnavigator.php:665
 #, php-format
@@ -847,14 +845,14 @@ msgstr "OID версії мікрокода"
 
 #: openDCIM/cdu_templates.php:146 openDCIM/device_templates.php:991
 msgid "Power Outlet Name"
-msgstr ""
+msgstr "Маркування розеток електроживлення"
 
 #: openDCIM/cdu_templates.php:146 openDCIM/cdu_templates.php:150
 #: openDCIM/cdu_templates.php:154 openDCIM/cdu_templates.php:158
 #: openDCIM/device_templates.php:991 openDCIM/device_templates.php:995
 #: openDCIM/device_templates.php:999 openDCIM/device_templates.php:1003
 msgid "OID"
-msgstr ""
+msgstr "OID"
 
 #: openDCIM/cdu_templates.php:150 openDCIM/devices.php:1991
 #: openDCIM/devices.php:2412 openDCIM/device_templates.php:995
@@ -863,15 +861,15 @@ msgstr "Таблиця електроживлення"
 
 #: openDCIM/cdu_templates.php:154
 msgid "Power Connections Count"
-msgstr ""
+msgstr "Кількість розеток електроживлення"
 
 #: openDCIM/cdu_templates.php:158
 msgid "Outlet Status"
-msgstr ""
+msgstr "Стан розетки"
 
 #: openDCIM/cdu_templates.php:162 openDCIM/device_templates.php:1007
 msgid "Outlet Status On State"
-msgstr ""
+msgstr "Очікуване значення для увімкненої розетки"
 
 #: openDCIM/cdu_templates.php:166 openDCIM/device_templates.php:1011
 msgid "Multiplier"
@@ -919,7 +917,7 @@ msgstr "Налаштовки openDCIM"
 
 #: openDCIM/configuration.php:97 openDCIM/configuration.php:140
 msgid "Current selection"
-msgstr ""
+msgstr "Поточний вибір"
 
 #: openDCIM/configuration.php:766 openDCIM/configuration.php:804
 #: openDCIM/container.php:113 openDCIM/datacenter.php:124
@@ -952,7 +950,7 @@ msgstr "Скасувати"
 
 #: openDCIM/configuration.php:906
 msgid "Media Type Delete Override"
-msgstr "Заборона видалення типу інтерфейса"
+msgstr "Заборона видалення типу кабеля"
 
 #: openDCIM/configuration.php:906
 msgid ""
@@ -1019,7 +1017,7 @@ msgstr ""
 
 #: openDCIM/configuration.php:1661
 msgid "Verify directory rights"
-msgstr ""
+msgstr "Перевірте права каталогів"
 
 #: openDCIM/configuration.php:1750
 msgid "General"
@@ -1057,7 +1055,7 @@ msgstr "Користувальницькі атрибути пристроїв"
 
 #: openDCIM/configuration.php:1758
 msgid "Attribute Mapping"
-msgstr ""
+msgstr "Зіставлення атрибутів"
 
 #: openDCIM/configuration.php:1759
 msgid "LDAP"
@@ -1065,7 +1063,7 @@ msgstr "LDAP"
 
 #: openDCIM/configuration.php:1760
 msgid "SAML"
-msgstr ""
+msgstr "SAML"
 
 #: openDCIM/configuration.php:1761
 msgid "Pre-Flight Check"
@@ -1085,19 +1083,19 @@ msgstr "Лінійна напруга (В)"
 
 #: openDCIM/configuration.php:1778
 msgid "Site Specific Paths"
-msgstr ""
+msgstr "Налаштовка шляхів до тек"
 
 #: openDCIM/configuration.php:1784
 msgid "Relative path for Drawings"
-msgstr ""
+msgstr "Відносний шлях до теки з кресленнями"
 
 #: openDCIM/configuration.php:1788
 msgid "Relative path for Pictures"
-msgstr ""
+msgstr "Відносний шлях до теки із зображеннями"
 
 #: openDCIM/configuration.php:1793
 msgid "Relative path for Local/Custom Reports"
-msgstr ""
+msgstr "Відносний шлях до теки зі звітами"
 
 #: openDCIM/configuration.php:1798
 msgid "Time and Measurements"
@@ -1109,7 +1107,7 @@ msgstr "Часовий пояс"
 
 #: openDCIM/configuration.php:1805
 msgid "Log Retention (Days)"
-msgstr ""
+msgstr "Зберігати журнал (днів)"
 
 #: openDCIM/configuration.php:1809 openDCIM/devices.php:1807
 #: openDCIM/rackrequest.php:417
@@ -1253,23 +1251,23 @@ msgstr "Низька вологість (попередження)"
 
 #: openDCIM/configuration.php:1907
 msgid "RCI (Rack Cooling Index) High"
-msgstr "Максимальне значення для RCI(HI)"
+msgstr "Верхнє значення RCI (Rack Cooling Index)"
 
 #: openDCIM/configuration.php:1910
 msgid "RCI (Rack Cooling Index) Low"
-msgstr "Максимальне значення для RCI(LO)"
+msgstr "Нижнє значення RCI (Rack Cooling Index)"
 
 #: openDCIM/configuration.php:1914
 msgid "Expirations"
-msgstr ""
+msgstr "Терміни дії"
 
 #: openDCIM/configuration.php:1917
 msgid "Unseen Virtual Machines (Days)"
-msgstr ""
+msgstr "Видаляти неіснуючі віртуальні машини через (днів)"
 
 #: openDCIM/configuration.php:1920
 msgid "Uninstalled Reservations (Days)"
-msgstr ""
+msgstr "Видаляти зарезервоване, але не встановлене обладнання через (днів)"
 
 #: openDCIM/configuration.php:1929
 msgid "Work Order Builder"
@@ -1288,9 +1286,8 @@ msgid "Rack Requests"
 msgstr "Заявки на розміщення"
 
 #: openDCIM/configuration.php:1959
-#, fuzzy
 msgid "Rack Requests Actions"
-msgstr "Заявки на розміщення"
+msgstr "Дії по заявкам на розміщення"
 
 #: openDCIM/configuration.php:1967
 msgid "Mail Subject"
@@ -1306,12 +1303,14 @@ msgstr "Критичний стан по заявці за (годин)"
 
 #: openDCIM/configuration.php:1979
 msgid "Online Repository"
-msgstr "Доступ до єдиного сховища в інтернеті"
+msgstr "Доступ до хмарного сховища в інтернеті"
 
 #: openDCIM/configuration.php:1980
 msgid ""
 "UserID and Key are not needed to pull from the repository, only to send."
 msgstr ""
+"UserID та Key не потрібні для звантаження шаблонів зі сховища, а лише для "
+"надсилання."
 
 #: openDCIM/configuration.php:1983
 msgid "API UserID"
@@ -1343,7 +1342,7 @@ msgstr "Вільний U-простір"
 
 #: openDCIM/configuration.php:2026
 msgid "Default U1 Position"
-msgstr "Нумерація в шафі"
+msgstr "Нумерація в шафі починається:"
 
 #: openDCIM/configuration.php:2033 openDCIM/departments.php:231
 msgid "Devices"
@@ -1396,19 +1395,19 @@ msgstr "Відображати маркування шаф"
 
 #: openDCIM/configuration.php:2073
 msgid "Which Cabinet Label?"
-msgstr ""
+msgstr "У якості маркування використовувати"
 
 #: openDCIM/configuration.php:2077
 msgid "Owner Name"
-msgstr ""
+msgstr "Власник"
 
 #: openDCIM/configuration.php:2078
 msgid "Key Lock Information"
-msgstr ""
+msgstr "Інформація про ключ/замок"
 
 #: openDCIM/configuration.php:2079
 msgid "Model No"
-msgstr ""
+msgstr "Модель"
 
 #: openDCIM/configuration.php:2085
 msgid "Site"
@@ -1460,23 +1459,26 @@ msgstr "Відправник"
 
 #: openDCIM/configuration.php:2145
 msgid "Facility Manager"
-msgstr "Менеджер"
+msgstr "Менеджер по обладнанню"
 
 #: openDCIM/configuration.php:2149
 msgid "Facility Manager Email"
-msgstr "Пошта менеджера"
+msgstr "Пошта менеджера по обладнанню"
 
 #: openDCIM/configuration.php:2154
 msgid "Test Settings"
-msgstr ""
+msgstr "Перевірити налаштовки"
 
 #: openDCIM/configuration.php:2161
 msgid "Email Alerts on Power Poll"
 msgstr ""
+"Надсилати повідомлення по датчикам потужності БРЖ та АВР з відхиленнями від "
+"норми"
 
 #: openDCIM/configuration.php:2169
 msgid "Email Alerts on Sensor Poll"
 msgstr ""
+"Надсилати повідомлення по кліматичним датчикам з відхиленнями від норми"
 
 #: openDCIM/configuration.php:2184 openDCIM/report_cost.php:397
 #: openDCIM/report_cost.php:400
@@ -1497,7 +1499,7 @@ msgstr "Шрифт"
 
 #: openDCIM/configuration.php:2200
 msgid "New Installs Period"
-msgstr "Формувати листи по інсталяціям за період (днів)"
+msgstr "Звітувати по новим інсталяціям за період (днів)"
 
 #: openDCIM/configuration.php:2204
 msgid "Base URL for install"
@@ -1658,17 +1660,16 @@ msgid "Default Value"
 msgstr "Значення за промовчанням"
 
 #: openDCIM/configuration.php:2413 openDCIM/search_export.php:149
-#, fuzzy
 msgid "Device Status"
-msgstr "Список обладнання"
+msgstr "Статус"
 
 #: openDCIM/configuration.php:2428
 msgid "LDAP or SAML Attribute Mapping"
-msgstr ""
+msgstr "Зіставлення атрибутів LDAP або SAML"
 
 #: openDCIM/configuration.php:2431
 msgid "FirstName"
-msgstr ""
+msgstr "Ім'я"
 
 #: openDCIM/configuration.php:2435 openDCIM/usermgr.php:246
 msgid "Last Name"
@@ -1694,11 +1695,11 @@ msgstr "Тел. домашній"
 
 #: openDCIM/configuration.php:2455
 msgid "Group Mapping"
-msgstr ""
+msgstr "Зіставлення груп"
 
 #: openDCIM/configuration.php:2458
 msgid "SAML Attribute containing Groups"
-msgstr ""
+msgstr "SAML Attribute containing Groups"
 
 #: openDCIM/configuration.php:2462 openDCIM/install.php:1714
 msgid "Site Access"
@@ -1758,7 +1759,7 @@ msgstr "Base Search"
 
 #: openDCIM/configuration.php:2516
 msgid "Leave blank for Active Directory"
-msgstr ""
+msgstr "Не заповнювати для Active Directory"
 
 #: openDCIM/configuration.php:2519 openDCIM/install.php:1703
 msgid "Bind DN"
@@ -1774,112 +1775,107 @@ msgstr "Тайм-аут сесії LDAP (секунд)"
 
 #: openDCIM/configuration.php:2531
 msgid "LDAP Debugging"
-msgstr ""
+msgstr "LDAP Debugging"
 
 #: openDCIM/configuration.php:2539
 msgid "Emergency Bypass Password"
-msgstr ""
+msgstr "Пароль аварійного відновлення доступу"
 
 #: openDCIM/configuration.php:2545
-#, fuzzy
 msgid "SAML Authentication Configuration"
-msgstr "Налаштовки автентифікації та авторизації в LDAP"
+msgstr "Налаштовки автентифікації в SAML"
 
 #: openDCIM/configuration.php:2548
-#, fuzzy
 msgid "Base URL"
-msgstr "Base DN"
+msgstr "Base URL"
 
 #: openDCIM/configuration.php:2552
 msgid "Show Success Page"
-msgstr ""
+msgstr "Показувати Success Page"
 
 #: openDCIM/configuration.php:2560
 msgid "SAML SP Information and Certificate Generation"
-msgstr ""
+msgstr "Налаштовки сервіс-провайдера SAML та генерація сертифіката"
 
 #: openDCIM/configuration.php:2564
 msgid "Entity ID"
-msgstr ""
+msgstr "Назва суб'єкта"
 
 #: openDCIM/configuration.php:2568
 msgid "Country (2 Character)"
-msgstr ""
+msgstr "Країна (2 символи)"
 
 #: openDCIM/configuration.php:2572
 msgid "State or Province"
-msgstr ""
+msgstr "Область або край"
 
 #: openDCIM/configuration.php:2576
 msgid "Organization"
-msgstr ""
+msgstr "Організація"
 
 #: openDCIM/configuration.php:2589
 msgid "Certificate Expiration"
-msgstr ""
+msgstr "Термін дії сертифіката"
 
 #: openDCIM/configuration.php:2593
 msgid "SP Private Key"
-msgstr ""
+msgstr "SP Private Key"
 
 #: openDCIM/configuration.php:2597
 msgid "SP x509 Certificate"
-msgstr ""
+msgstr "SP x509 Certificate"
 
 #: openDCIM/configuration.php:2602
 msgid "Generate/Renew Certificate"
-msgstr ""
+msgstr "Згенерувати/оновити сертифікат"
 
 #: openDCIM/configuration.php:2607
-#, fuzzy
 msgid "SAML Identity Provider Configuration"
-msgstr "Налаштовки openDCIM"
+msgstr "Налаштовки провайдера ідентифікації в SAML"
 
 #: openDCIM/configuration.php:2611
 msgid "IdP entityId"
-msgstr ""
+msgstr "IdP entityId"
 
 #: openDCIM/configuration.php:2615
 msgid "IdP Metadata URL"
-msgstr ""
+msgstr "IdP Metadata URL"
 
 #: openDCIM/configuration.php:2619
 msgid "SSO URL"
-msgstr ""
+msgstr "SSO URL"
 
 #: openDCIM/configuration.php:2623
 msgid "SLS URL"
-msgstr ""
+msgstr "SLS URL"
 
 #: openDCIM/configuration.php:2627
 msgid "IdP x509 Certificate"
-msgstr ""
+msgstr "IdP x509 Certificate"
 
 #: openDCIM/configuration.php:2632
 msgid "Refresh IdP Metadata"
-msgstr ""
+msgstr "Оновити IdP Metadata"
 
 #: openDCIM/configuration.php:2637
-#, fuzzy
 msgid "SAML Account Configuration"
-msgstr "Конфігурація SNMP"
+msgstr "Налаштовки облікового запису SAML"
 
 #: openDCIM/configuration.php:2640
 msgid "Remove Account Prefix"
-msgstr ""
+msgstr "Видалити префікс облікового запису"
 
 #: openDCIM/configuration.php:2644
 msgid "Remove Account Suffix"
-msgstr ""
+msgstr "Видалити суфікс облікового запису"
 
 #: openDCIM/configuration.php:2666
-#, fuzzy
 msgid "Reserved"
-msgstr "Зарезервовані пристрої"
+msgstr "Зарезервовано"
 
 #: openDCIM/configuration.php:2666
 msgid "Disposed"
-msgstr ""
+msgstr "Утилізовано"
 
 #: openDCIM/conflicts.php:575
 msgid "Power Strip"
@@ -1933,7 +1929,7 @@ msgstr "Кінцевий порт"
 
 #: openDCIM/connections_spreadsheet.php:24
 msgid "MediaType"
-msgstr "Інтерфейс"
+msgstr "Кабель"
 
 #: openDCIM/connections_spreadsheet.php:28 openDCIM/devices.php:2460
 #: openDCIM/devices.php:2514 openDCIM/pathmaker.php:199
@@ -1987,6 +1983,8 @@ msgid ""
 "This container will be deleted and there is no undo. Their direct "
 "descendants will be moved to \\'home\\'."
 msgstr ""
+"Цей контейнер буде видалено, і його неможливо буде відновити. Його прямі "
+"нащадки будуть переміщені до \\'home\\'."
 
 #: openDCIM/container.php:229 openDCIM/datacenter.php:277
 #: openDCIM/report_network_map.php:622
@@ -2050,7 +2048,7 @@ msgstr "Інфраструктура"
 #: openDCIM/container_stats.php:62 openDCIM/dc_dashboard.php:96
 #: openDCIM/dc_stats.php:198 openDCIM/zone_stats.php:209
 msgid "Occupied"
-msgstr "Зайнято"
+msgstr "IT-обладнання"
 
 #: openDCIM/container_stats.php:63 openDCIM/dc_dashboard.php:97
 #: openDCIM/dc_stats.php:199 openDCIM/zone_stats.php:210
@@ -2089,7 +2087,7 @@ msgstr "Виміряна активна потужність"
 
 #: openDCIM/container_stats.php:95 openDCIM/dc_stats.php:237
 msgid "Design Maximum"
-msgstr ""
+msgstr "Проектна потужність"
 
 #: openDCIM/container_stats.php:99
 msgid "BTU Computation from Watts"
@@ -2116,19 +2114,19 @@ msgstr "Всього шаф"
 
 #: openDCIM/custom_search.php:7
 msgid "Data Center Operations Custom Search"
-msgstr ""
+msgstr "Користувальницький пошук"
 
 #: openDCIM/custom_search.php:189
 msgid "Search Field"
-msgstr ""
+msgstr "Поле пошуку"
 
 #: openDCIM/custom_search.php:190
 msgid "Contains"
-msgstr ""
+msgstr "Містить"
 
 #: openDCIM/custom_search.php:195
 msgid "Select search field"
-msgstr ""
+msgstr "Оберіть поле пошуку"
 
 #: openDCIM/custom_search.php:209 openDCIM/paths.php:603 openDCIM/paths.php:619
 msgid "Search"
@@ -2250,11 +2248,11 @@ msgstr "%"
 
 #: openDCIM/dc_stats.php:269 openDCIM/zone_stats.php:266
 msgid "RCI Low Percentage (Overcooling)"
-msgstr "Значення RCI(LO) (якщо <100% -- є переохолодження)"
+msgstr "Відсоток нижнього значення RCI (переохолодження)"
 
 #: openDCIM/dc_stats.php:276 openDCIM/zone_stats.php:273
 msgid "RCI High Percentage (Cabinets Satisfied)"
-msgstr "Значення RCI(HI) (якщо <100% -- є перегрів)"
+msgstr "Відсоток верхнього значення RCI (оптимальне охолодження)"
 
 #: openDCIM/dc_stats.php:292 openDCIM/zone_stats.php:288
 #: openDCIM/scripts/ajax_tooltip.php:156
@@ -2338,7 +2336,7 @@ msgstr "Керівник"
 
 #: openDCIM/departments.php:192
 msgid "Account Manager"
-msgstr "Виконавець"
+msgstr "Адміністратор облікових записів"
 
 #: openDCIM/departments.php:196
 msgid "Department Color"
@@ -2692,7 +2690,7 @@ msgstr "Тип"
 
 #: openDCIM/devices.php:2025
 msgid "Sensor Readings"
-msgstr ""
+msgstr "Покази датчика"
 
 #: openDCIM/devices.php:2032
 msgid "Device Images"
@@ -2818,8 +2816,8 @@ msgid ""
 "device."
 msgstr ""
 "Ці кнопки дозволяють встановити умовно перший порт комутатора, перечитати "
-"стан його портів, а також завантажити умовні назви портів та примітки до "
-"них, якщо останні були прописані."
+"стан його портів, а також звантажити умовні назви портів та примітки до них, "
+"якщо останні були прописані."
 
 #: openDCIM/devices.php:2257
 msgid "Set First Port"
@@ -2839,7 +2837,7 @@ msgstr "Оновити примітки до портів"
 
 #: openDCIM/devices.php:2260
 msgid "CDU SNMP"
-msgstr ""
+msgstr "Опитати шафний БРЖ або АВР по SNMP"
 
 #: openDCIM/devices.php:2261
 msgid ""
@@ -2847,10 +2845,13 @@ msgid ""
 "status of the oultets again, or attempt to load the Outlet Name Labels from "
 "the CDU device."
 msgstr ""
+"Ці кнопки дозволяють встановити умовно першу електророзетку БРЖ або АВР, "
+"перечитати стан його електророзеток, а також звантажити умовні назви "
+"електророзеток та примітки до них, якщо останні були прописані."
 
 #: openDCIM/devices.php:2261
 msgid "Set First Outlet"
-msgstr ""
+msgstr "Вказати першу розетку"
 
 #: openDCIM/devices.php:2270
 msgid "Chassis Contents"
@@ -2989,7 +2990,7 @@ msgstr "Помилка оновлення електроживлення шаб�
 
 #: openDCIM/device_templates.php:173 openDCIM/device_templates.php:188
 msgid "Error updating device template custom values"
-msgstr "Помилка оновлення портів шаблона"
+msgstr "Помилка оновлення користувацьких значень шаблону пристрою"
 
 #: openDCIM/device_templates.php:206 openDCIM/device_templates.php:233
 msgid "Error updating cdu attributes"
@@ -3111,11 +3112,11 @@ msgstr "Оновити пристрої"
 
 #: openDCIM/device_templates.php:999
 msgid "Power Connection Count"
-msgstr ""
+msgstr "Кількість розеток електроживлення"
 
 #: openDCIM/device_templates.php:1003
 msgid "Outlet State"
-msgstr ""
+msgstr "Стан розетки"
 
 #: openDCIM/device_templates.php:1023
 msgid "OID for Phase1"
@@ -3162,27 +3163,24 @@ msgid "Import log"
 msgstr "Журнал імпорту"
 
 #: openDCIM/disposition.php:5
-#, fuzzy
 msgid "Disposal Method Management"
-msgstr "Шаблони"
+msgstr "Керування методами утилізації"
 
 #: openDCIM/disposition.php:25
-#, fuzzy
 msgid "Created"
-msgstr "Додати"
+msgstr "Додано"
 
 #: openDCIM/disposition.php:75 openDCIM/report_surplus.php:236
 msgid "Disposal Mechanism"
-msgstr ""
+msgstr "Метод утилізації"
 
 #: openDCIM/disposition.php:78
-#, fuzzy
 msgid "Disposition ID"
-msgstr "Юніт(и)"
+msgstr "ID утилізації"
 
 #: openDCIM/disposition.php:80
 msgid "New Disposal Method"
-msgstr ""
+msgstr "Новий метод утилізації"
 
 #: openDCIM/disposition.php:94 openDCIM/report_surplus.php:136
 #: openDCIM/timeperiods.php:80 openDCIM/zone.php:134
@@ -3191,11 +3189,11 @@ msgstr "Ім'я"
 
 #: openDCIM/disposition.php:98
 msgid "Reference Number (Contract)"
-msgstr ""
+msgstr "Номер договору (контракту)"
 
 #: openDCIM/disposition.php:112
 msgid "You must always have at least one Active disposal method."
-msgstr ""
+msgstr "Ви завжди повинні мати принаймні один активний метод утилізації."
 
 #: openDCIM/escalations.php:5
 msgid "Data Center Escalation Rules"
@@ -3223,7 +3221,7 @@ msgstr "Зображення пристроїв"
 
 #: openDCIM/image_management.php:65
 msgid "Rebuild Image Cache"
-msgstr ""
+msgstr "Перебудувати кеш зображень"
 
 #: openDCIM/image_management.php:124
 msgid "Infrastructure Drawings"
@@ -3254,7 +3252,7 @@ msgstr "Час створення"
 
 #: openDCIM/index.php:45 openDCIM/rackrequest.php:354
 msgid "Requestor"
-msgstr "Власник"
+msgstr "Замовник"
 
 #: openDCIM/index.php:45
 msgid "System Name"
@@ -3317,6 +3315,8 @@ msgid ""
 "Unable to bind to specified LDAP server with specified username/password.  "
 "Username:"
 msgstr ""
+"Відсутній зв'язок із зазначеним LDAP сервером із вказаними користувачем/"
+"паролем.  Username:"
 
 #: openDCIM/login_ldap.php:254
 msgid "Username:"
@@ -3339,16 +3339,18 @@ msgid "Front Edge"
 msgstr "Умовний напрям повітряного потоку"
 
 #: openDCIM/mapmaker.php:205
-#, fuzzy
 msgid "Click and drag on the image to select an area for "
 msgstr ""
-"Клацніть та потягніть мишкою на зображенні аби вказати умовні межі даної шафи"
+"Клацніть та потягніть мишкою на зображенні аби вказати умовні межі даної "
+"шафи "
 
 #: openDCIM/mapmaker.php:211
 msgid ""
 "You must configure an image for this data center before attempting to place "
 "a cabinet on its map."
 msgstr ""
+"Ви повинні налаштувати креслення для цього центру обробки даних, перш ніж "
+"намагатися розмістити шафу на мапі."
 
 #: openDCIM/mapmaker.php:212
 #, php-format
@@ -3419,7 +3421,7 @@ msgstr "Шаблони пристроїв"
 #: openDCIM/misc.inc.php:1005 openDCIM/misc.inc.php:1006
 #: openDCIM/misc.inc.php:1007 openDCIM/misc.inc.php:1008
 msgid "Infrastructure Management"
-msgstr "Інфраструктура"
+msgstr "Керування інфраструктурою"
 
 #: openDCIM/misc.inc.php:984
 msgid "Edit Cabinets"
@@ -3439,21 +3441,19 @@ msgstr "Груповий імпорт"
 
 #: openDCIM/misc.inc.php:988
 msgid "Import Container/Datacenter/Zone/Row"
-msgstr ""
+msgstr "Груповий імпорт контейнерів/ЦОДів/зон/рядів"
 
 #: openDCIM/misc.inc.php:989
-#, fuzzy
 msgid "Import User Accounts"
-msgstr "Груповий імпорт електроживлення"
+msgstr "Груповий імпорт облікових записів"
 
 #: openDCIM/misc.inc.php:990
 msgid "Import Departments/Customers"
-msgstr ""
+msgstr "Груповий імпорт відділів/користувачів"
 
 #: openDCIM/misc.inc.php:991
-#, fuzzy
 msgid "Import Device Templates"
-msgstr "Шаблони пристроїв"
+msgstr "Груповий імпорт шаблонів пристроїв"
 
 #: openDCIM/misc.inc.php:992
 msgid "Import New Cabinets"
@@ -3481,13 +3481,12 @@ msgstr "Виробники"
 
 #: openDCIM/misc.inc.php:1000
 msgid "Repository Sync"
-msgstr "Доступ до єдиного сховища в інтернеті"
+msgstr "Доступ до хмарного сховища в інтернеті"
 
 #: openDCIM/misc.inc.php:1001 openDCIM/misc.inc.php:1002
 #: openDCIM/misc.inc.php:1003
-#, fuzzy
 msgid "Materiel Management"
-msgstr "Електроживлення"
+msgstr "Матеріали та запчастини"
 
 #: openDCIM/misc.inc.php:1001
 msgid "Manage Supply Bins"
@@ -3499,7 +3498,7 @@ msgstr "Номенклатура"
 
 #: openDCIM/misc.inc.php:1003
 msgid "Manage Disposal Methods"
-msgstr ""
+msgstr "Керування методами утилізації"
 
 #: openDCIM/misc.inc.php:1004
 msgid "Edit Data Centers"
@@ -3547,7 +3546,7 @@ msgstr "Налаштовки"
 
 #: openDCIM/misc.inc.php:1019 openDCIM/misc.inc.php:1023
 msgid "Logout"
-msgstr "Logout"
+msgstr "Вийти"
 
 #: openDCIM/misc.inc.php:1122 openDCIM/report_cabinets.php:182
 msgid "Side"
@@ -3769,9 +3768,8 @@ msgid "CDU/Meter Template"
 msgstr "Шаблон"
 
 #: openDCIM/power_panel.php:330
-#, fuzzy
 msgid "Data Center (for Mapping)"
-msgstr "Зона"
+msgstr "ЦОД/площадка"
 
 #: openDCIM/power_panel.php:367
 msgid "Panel Schedule"
@@ -3806,7 +3804,7 @@ msgstr ""
 
 #: openDCIM/power_panel.php:430
 msgid "Return to Parent Panel"
-msgstr ""
+msgstr "Назад до модульного БРЖ"
 
 #: openDCIM/power_panel.php:434 openDCIM/rowview.php:180
 #: openDCIM/zone_stats.php:340
@@ -3873,9 +3871,8 @@ msgid "Assign Devices"
 msgstr "Додати пристрої"
 
 #: openDCIM/project_mgr.php:174
-#, fuzzy
 msgid "Assign Cabinets"
-msgstr "Вибрати людей з адресної книжки"
+msgstr "Додати шафи"
 
 #: openDCIM/project_mgr.php:188
 msgid "Project delete confirmation"
@@ -3957,7 +3954,7 @@ msgstr "Для перегляду Вашого пристрою на місці 
 
 #: openDCIM/rackrequest.php:188
 msgid "You do not have permission to delete this request"
-msgstr "Ви намаєте дозволу на видалення даної заявки"
+msgstr "Ви не маєте дозволу на видалення даної заявки"
 
 #: openDCIM/rackrequest.php:235
 msgid "You must specify the VLAN information for the ethernet connections"
@@ -3977,17 +3974,16 @@ msgid "Action"
 msgstr "Подія"
 
 #: openDCIM/rackrequest.php:377
-#, fuzzy
 msgid "New"
-msgstr "Зараз"
+msgstr "Новий"
 
 #: openDCIM/rackrequest.php:379
 msgid "Change"
-msgstr ""
+msgstr "Змінити"
 
 #: openDCIM/rackrequest.php:380
 msgid "Retire"
-msgstr ""
+msgstr "Списати"
 
 #: openDCIM/rackrequest.php:400
 msgid "Label Color"
@@ -4006,9 +4002,8 @@ msgid "Red"
 msgstr "червоний"
 
 #: openDCIM/rackrequest.php:425
-#, fuzzy
 msgid "Hypervisor?"
-msgstr "Гіпервізор"
+msgstr "Гіпервізор?"
 
 #: openDCIM/rackrequest.php:454
 msgid "Select a template"
@@ -4096,11 +4091,11 @@ msgstr "Примітки до статистики ЦОДа"
 
 #: openDCIM/report_asset_Excel.php:165
 msgid "Logo Name"
-msgstr "Logo Name"
+msgstr "Ім'я логотипу"
 
 #: openDCIM/report_asset_Excel.php:166
 msgid "Logo Description"
-msgstr "Logo Description"
+msgstr "Опис логотипу"
 
 #: openDCIM/report_asset_Excel.php:174
 msgid ""
@@ -4368,7 +4363,7 @@ msgstr "Журнал аудиту по шафам"
 
 #: openDCIM/report_audit_frequency.php:239 openDCIM/report_audit.php:414
 msgid "Activity by Location"
-msgstr "Зведення по шафам"
+msgstr "Активність за розміщенням"
 
 #: openDCIM/report_audit_frequency.php:242
 msgid "Times Audited"
@@ -4429,7 +4424,7 @@ msgstr "Кількість"
 
 #: openDCIM/report_audit.php:318
 msgid "Activity by Date"
-msgstr "Зведення по датам"
+msgstr "Активність за датою"
 
 #: openDCIM/report_audit.php:321 openDCIM/report_audit.php:417
 msgid "Comments"
@@ -4584,7 +4579,7 @@ msgstr "Адресна книжка по відділам"
 #: openDCIM/report_diverse_power_exceptions.php:34
 #: openDCIM/report_power_utilization.php:34
 msgid "Devices Without Diverse (Tier III) Power"
-msgstr "Друк обладнання з електроживленням по шафам"
+msgstr "Друк обладнання без роздільного живлення по шафам (Tier III)"
 
 #: openDCIM/report_diverse_power_exceptions.php:167
 #: openDCIM/report_power_utilization.php:167
@@ -4592,9 +4587,8 @@ msgid "Dependency"
 msgstr "Джерело електроживлення"
 
 #: openDCIM/report-em_disabled_snmp.php:20
-#, fuzzy
 msgid "Data Center Disabled SNMP Devices Report"
-msgstr "Звіт по зарезервованому U-простору"
+msgstr "Звіт по обладнанню з помилками або вимкненим SNMP"
 
 #: openDCIM/report-em_disabled_snmp.php:33
 #: openDCIM/report-em_new_installs.php:36
@@ -4603,7 +4597,7 @@ msgstr "Звіт по зарезервованому U-простору"
 #: openDCIM/classes/Device.class.php:2491
 #: openDCIM/classes/PowerDistribution.class.php:515
 msgid "Facility Manager email address"
-msgstr "Поштова адреса менеджера"
+msgstr "Поштова адреса менеджера по обладнанню"
 
 #: openDCIM/report-em_new_installs.php:23
 msgid "Recent Data Center Installations Report"
@@ -4628,7 +4622,7 @@ msgstr "Заплановані інсталяції по відділу"
 
 #: openDCIM/report-em_reservations.php:90
 msgid "Expired and Removed"
-msgstr ""
+msgstr "Прострочено та видалено"
 
 #: openDCIM/report-em_reservations.php:111
 msgid "Total U Reserved for Department"
@@ -4683,9 +4677,8 @@ msgid "New Value"
 msgstr "Нове значення"
 
 #: openDCIM/report_logging.php:105
-#, fuzzy
 msgid "Activity Log"
-msgstr "Журнал подій"
+msgstr "Журнал активності"
 
 #: openDCIM/report_network_map.php:5
 msgid "Network Map Viewer"
@@ -4799,7 +4792,7 @@ msgstr "Ім'я"
 
 #: openDCIM/report_project_outage_simulator.php:520
 msgid "Child"
-msgstr "ChildID"
+msgstr "Дочірній пристрій"
 
 #: openDCIM/report_project_outage_simulator.php:559
 msgid "Compromised"
@@ -4822,59 +4815,53 @@ msgid "Excluded Tags"
 msgstr "За виключенням пристроїв з мітками"
 
 #: openDCIM/report_projects.php:20
-#, fuzzy
 msgid "All Projects/Services"
-msgstr "Всі проекти"
+msgstr "Усі проекти/послуги"
 
 #: openDCIM/report_projects.php:25
 msgid "Specified Project/Service"
-msgstr ""
+msgstr "Вказаний проект/послуга"
 
 #: openDCIM/report_projects.php:106
 msgid "Report of all cabinets and devices associated with Projects/Services."
-msgstr ""
+msgstr "Звіт про всі шафи та пристрої, пов’язані з проектами/послугами."
 
 #: openDCIM/report_projects.php:107
 msgid "Criteria for Report:"
-msgstr ""
+msgstr "Критерії звіту:"
 
 #: openDCIM/report_projects.php:132 openDCIM/report_projects.php:240
 msgid "Project Name:"
 msgstr "Назва проекту"
 
 #: openDCIM/report_projects.php:134
-#, fuzzy
 msgid "Project Sponsor:"
-msgstr "Виконавець проекту"
+msgstr "Виконавець проекту:"
 
 #: openDCIM/report_projects.php:136
-#, fuzzy
 msgid "Start Date:"
-msgstr "Дата початку"
+msgstr "Дата початку:"
 
 #: openDCIM/report_projects.php:138
-#, fuzzy
 msgid "Expiration Date:"
-msgstr "Планова дата завершення"
+msgstr "Планова дата завершення:"
 
 #: openDCIM/report_projects.php:140
 msgid "Actual End:"
-msgstr ""
+msgstr "Фактичний кінець:"
 
 #: openDCIM/report_projects.php:146
-#, fuzzy
 msgid "Total Assigned Cabinets:"
-msgstr "Всього шаф"
+msgstr "Всього доданих шаф:"
 
 #: openDCIM/report_projects.php:185 openDCIM/search_export_storage_room.php:49
 #: openDCIM/classes/DataCenter.class.php:653
-#, fuzzy
 msgid "Storage Room"
-msgstr "Склад: %s"
+msgstr "Склад"
 
 #: openDCIM/report_projects.php:191
 msgid "Unspecified"
-msgstr ""
+msgstr "Не визначено"
 
 #: openDCIM/report_projects.php:242
 msgid "Select Project"
@@ -4882,13 +4869,15 @@ msgstr "обрати..."
 
 #: openDCIM/report_projects.php:243
 msgid "All Projects"
-msgstr "Всі проекти"
+msgstr "Усі проекти"
 
 #: openDCIM/report_projects.php:249
 msgid ""
 "Choose a specific project to report on, or all projects.  Output will be "
 "sent in Excel 2007 format."
 msgstr ""
+"Виберіть конкретний проект для звіту або всі проекти.  Результати будуть "
+"збережені у форматі Excel 2007."
 
 #: openDCIM/reports.php:5
 msgid "Inventory Reports"
@@ -4911,9 +4900,8 @@ msgid "Search/Export by Data Center"
 msgstr "Друк зведення по ЦОДам/площадкам"
 
 #: openDCIM/reports.php:44
-#, fuzzy
 msgid "Storage Room Search/Export by Data Center"
-msgstr "Друк зведення по ЦОДам/площадкам"
+msgstr "Друк та експорт обладнання на складах по ЦОДам"
 
 #: openDCIM/reports.php:45
 msgid "Export Data Center for CFD (XML)"
@@ -4948,9 +4936,8 @@ msgid "Network Map"
 msgstr "Мапа комутації"
 
 #: openDCIM/reports.php:55
-#, fuzzy
 msgid "Vendor/Model Report"
-msgstr "Звітність"
+msgstr "Друк обладнання по виробникам/моделям."
 
 #: openDCIM/reports.php:61
 msgid "Operational Reports"
@@ -5002,7 +4989,7 @@ msgstr "Журнал подій"
 
 #: openDCIM/reports.php:87
 msgid "Local Reports"
-msgstr ""
+msgstr "Звіти збережені локально на сервері openDCIM"
 
 #: openDCIM/report_supply_status.php:20
 msgid "Supply Status Report"
@@ -5031,44 +5018,45 @@ msgstr "Видано"
 
 #: openDCIM/report_surplus.php:18
 msgid "All Mechanisms"
-msgstr ""
+msgstr "Усі механізми (не IT-обладнання)"
 
 #: openDCIM/report_surplus.php:29
 msgid "Beginning of epoch"
-msgstr ""
+msgstr "Початок епохи"
 
 #: openDCIM/report_surplus.php:108
 msgid ""
 "This report contains information about items that have been disposed/removed "
 "from the data center."
 msgstr ""
+"Цей звіт містить інформацію про обладнання, яке було утилізоване/вилучене з "
+"центру обробки даних."
 
 #: openDCIM/report_surplus.php:109
 msgid "Each item is disosed through a specific mechanism or contract vehicle."
 msgstr ""
+"Кожен об'єкт утилізується за допомогою певного методу або контрактного "
+"замовника."
 
 #: openDCIM/report_surplus.php:110
-#, fuzzy
 msgid "Criteria for this report:"
-msgstr "Порт підключено до самого себе"
+msgstr "Критерії для цього звіту:"
 
 #: openDCIM/report_surplus.php:111
 msgid "Date Range:"
-msgstr ""
+msgstr "Проміжок часу:"
 
 #: openDCIM/report_surplus.php:133
 msgid "Disposition Mechanism"
-msgstr ""
+msgstr "Метод утилізації"
 
 #: openDCIM/report_surplus.php:140
-#, fuzzy
 msgid "Reference Number"
-msgstr "Серійний №"
+msgstr "Номер договору"
 
 #: openDCIM/report_surplus.php:232
-#, fuzzy
 msgid "Device Disposition Report"
-msgstr "Друк обладнання з електроживленням по шафам"
+msgstr "Звіт про утилізацію пристроїв"
 
 #: openDCIM/report_tags.php:11
 msgid "Inventory Reporting By Tag"
@@ -5093,31 +5081,31 @@ msgstr "Всі мітки"
 #: openDCIM/report_vendor_model.php:48
 msgid "Please select the values to limit the report scope as indicated below."
 msgstr ""
+"Будь-ласка, виберіть значення, щоб обмежити обсяг звіту, як зазначено нижче."
 
 #: openDCIM/report_vendor_model.php:158
 msgid "This is the Vendor(Manufacturer)/Model report from openDCIM."
-msgstr ""
+msgstr "Звіт openDCIM по виробникам/моделям обладнання."
 
 #: openDCIM/report_vendor_model.php:159
 msgid ""
 "Each manufacturer is listed in a separate worksheet, with devices listed "
 "lexicographically by Label."
 msgstr ""
+"Кожен виробник зазначений на окремому аркуші з пристроями, відсортованими за "
+"алфавітом за їхньою назвою."
 
 #: openDCIM/report_vendor_model.php:160
-#, fuzzy
 msgid "The criteria given for this report is:"
-msgstr "Порт підключено до самого себе"
+msgstr "Критерії, задані для цього звіту, наступні:"
 
 #: openDCIM/report_vendor_model.php:161
-#, fuzzy
 msgid "Manufacturer:"
-msgstr "Виробник"
+msgstr "Виробник:"
 
 #: openDCIM/report_vendor_model.php:162
-#, fuzzy
 msgid "Device Type:"
-msgstr "Тип"
+msgstr "Тип:"
 
 #: openDCIM/report_vm_by_department.php:161
 msgid "Total Number of VMs"
@@ -5174,7 +5162,7 @@ msgstr "Вигляд ззаду"
 
 #: openDCIM/rowview.php:177
 msgid "Return to Zone"
-msgstr ""
+msgstr "Назад до зони"
 
 #: openDCIM/search_export.php:5
 msgid "Data Center View/Export"
@@ -5182,20 +5170,19 @@ msgstr "Друк зведення по ЦОДам/площадкам"
 
 #: openDCIM/search_export.php:153
 msgid "Last Modification Time"
-msgstr ""
+msgstr "Час останньої модифікації"
 
 #: openDCIM/search_export.php:154
 msgid "Last Modified By"
-msgstr ""
+msgstr "Остання зміна"
 
 #: openDCIM/search_export.php:304 openDCIM/search_export_storage_room.php:231
 msgid "Data Center:"
 msgstr "ЦОД:"
 
 #: openDCIM/search_export_storage_room.php:5
-#, fuzzy
 msgid "Storage Room View/Export"
-msgstr "Перегляд/експорт журналу подій"
+msgstr "Друк та експорт обладнання на складах по ЦОДам"
 
 #: openDCIM/search.php:27
 msgid "Search Results"
@@ -5277,7 +5264,7 @@ msgstr "Розширений"
 
 #: openDCIM/sidebar.inc.php:11
 msgid "Custom Search"
-msgstr ""
+msgstr "Користувацький пошук"
 
 #: openDCIM/sidebar.inc.php:15
 msgid "Advanced Search:"
@@ -5314,7 +5301,7 @@ msgstr "Серійний №"
 
 #: openDCIM/storageroom.php:89
 msgid "Dispose of selected devices to:"
-msgstr ""
+msgstr "Утилізувати обрані пристрої шляхом:"
 
 #: openDCIM/supplies.php:5 openDCIM/supplycheckout.php:5
 msgid "Data Center Stockroom Supplies"
@@ -5322,7 +5309,7 @@ msgstr "Номенклатура запчастин"
 
 #: openDCIM/supplies.php:51
 msgid "Bin ID"
-msgstr "Коробка"
+msgstr "ID коробки"
 
 #: openDCIM/supplies.php:91
 msgid "New Supplies"
@@ -5334,7 +5321,7 @@ msgstr "Коробки із запчастинами"
 
 #: openDCIM/supplybin.php:147
 msgid "Bin Location"
-msgstr "Коробка"
+msgstr "Розташування коробки"
 
 #: openDCIM/supplybin.php:149
 msgid "New Bin"
@@ -5370,11 +5357,11 @@ msgstr "Адресна книжка"
 
 #: openDCIM/usermgr.php:56
 msgid "Existing UserID account displayed."
-msgstr ""
+msgstr "Відобразиться наявний обліковий запис UserID."
 
 #: openDCIM/usermgr.php:58
 msgid "Something is broken.   Unable to create Person account."
-msgstr ""
+msgstr "Щось пішло не так :-/.  Не вдається створити обліковий запис."
 
 #: openDCIM/usermgr.php:230
 msgid "User"
@@ -5390,7 +5377,7 @@ msgstr "Даний користувач є основною контактною
 
 #: openDCIM/usermgr.php:250
 msgid "First Name"
-msgstr "Ім'я "
+msgstr "Ім'я"
 
 #: openDCIM/usermgr.php:254
 msgid "Phone 1"
@@ -5546,7 +5533,7 @@ msgstr ""
 
 #: openDCIM/workorder.php:5
 msgid "Data Center Operations Work Order Builder"
-msgstr "Формування наряда на роботу"
+msgstr "Формування наряду на роботу"
 
 #: openDCIM/workorder.php:59
 msgid "openDCIM-workorder-"
@@ -5627,7 +5614,7 @@ msgstr "наближено"
 
 #: openDCIM/zone_stats.php:336
 msgid "Return to Row"
-msgstr ""
+msgstr "Назад до ряда"
 
 #: openDCIM/api/v1/deleteRoutes.php:32 openDCIM/api/v1/deleteRoutes.php:122
 #: openDCIM/api/v1/deleteRoutes.php:186 openDCIM/api/v1/deleteRoutes.php:214
@@ -5654,7 +5641,7 @@ msgstr "В доступі відмовлено"
 
 #: openDCIM/api/v1/deleteRoutes.php:40
 msgid "Failed to delete cabinet with CabinetID"
-msgstr ""
+msgstr "Неможливо видалити шафу з CabinetID"
 
 #: openDCIM/api/v1/deleteRoutes.php:130 openDCIM/api/v1/index2.php:1756
 msgid "Failed to delete color with ColorID"
@@ -5676,37 +5663,38 @@ msgstr "Не автентифіковано"
 
 #: openDCIM/api/v1/deleteRoutes.php:164 openDCIM/api/v1/index2.php:1788
 msgid "An unknown error has occured"
-msgstr "Виникла невідома помилка"
+msgstr "Сталася невідома помилка"
 
 #: openDCIM/api/v1/deleteRoutes.php:193
 msgid ""
 "Error removing status, check to make sure it isn't in use on any devices."
 msgstr ""
+"Помилка видалення статусу. Перевірте, чи він не використовується в жодному "
+"пристрої."
 
 #: openDCIM/api/v1/deleteRoutes.php:197
-#, fuzzy
 msgid "Status removed successfully."
-msgstr "Всі рядки успішно імпортовано."
+msgstr "Статус успішно видалено."
 
 #: openDCIM/api/v1/deleteRoutes.php:222
 msgid "Error removing sensor readings for SensorID "
-msgstr ""
+msgstr "Помилка видалення показань датчика з SensorID "
 
 #: openDCIM/api/v1/deleteRoutes.php:248
 msgid "Error removing pdu stats for PDUID "
-msgstr ""
+msgstr "Помилка видалення статистики БРЖ або АВР з PDUID "
 
 #: openDCIM/api/v1/deleteRoutes.php:274
 msgid "Error removing VM from VMInventory."
-msgstr ""
+msgstr "Помилка видалення ВМ з VMInventory."
 
 #: openDCIM/api/v1/deleteRoutes.php:298
 msgid "Invalid parameter (days)"
-msgstr ""
+msgstr "Недопустимий параметр (days)"
 
 #: openDCIM/api/v1/deleteRoutes.php:326
 msgid "Error removing Powerpanel with PanelID "
-msgstr ""
+msgstr "Помилка видалення модульного БРЖ з PanelID "
 
 #: openDCIM/api/v1/getRoutes.php:295 openDCIM/api/v1/getRoutes.php:474
 #: openDCIM/api/v1/index2.php:464
@@ -5730,9 +5718,8 @@ msgid "Device is not a sensor or is missing a template"
 msgstr "Пристрій не є датчиком або відсутній відповідний шаблон"
 
 #: openDCIM/api/v1/getRoutes.php:689
-#, fuzzy
 msgid "No status found with StatusID"
-msgstr "Не знайдено жодного шаблону з TemplateID: "
+msgstr "Не знайдено статусу з StatusID"
 
 #: openDCIM/api/v1/getRoutes.php:856 openDCIM/api/v1/index2.php:690
 msgid "No color code found with ColorID"
@@ -5757,19 +5744,19 @@ msgstr "Не знайдено слотів для TemplateID: "
 
 #: openDCIM/api/v1/getRoutes.php:1181
 msgid "No sensor readings found with SensorID "
-msgstr ""
+msgstr "Не знайдено показань датчика з SensorID "
 
 #: openDCIM/api/v1/getRoutes.php:1231
 msgid "No PDU Stats found with PDUID "
-msgstr ""
+msgstr "Статистики не знайдено по БРЖ або АВР з PDUID "
 
 #: openDCIM/api/v1/getRoutes.php:1281
 msgid "No VM information found with VMIndex "
-msgstr ""
+msgstr "Не знайдено інформації по ВМ з VMIndex "
 
 #: openDCIM/api/v1/getRoutes.php:1331
 msgid "No Powerpanel information found for PanelID "
-msgstr ""
+msgstr "Не знайдено інформації по модульному БРЖ з PanelID "
 
 #: openDCIM/api/v1/index2.php:963
 msgid "Insufficient privilege level"
@@ -5844,11 +5831,11 @@ msgstr "Таблицю People успішно створено."
 
 #: openDCIM/api/v1/index2.php:1390 openDCIM/api/v1/putRoutes.php:209
 msgid "Error creating new color."
-msgstr "Помилка додавання нового типу кабеля."
+msgstr "Помилка створення нового типу кабеля."
 
 #: openDCIM/api/v1/index2.php:1394 openDCIM/api/v1/putRoutes.php:213
 msgid "New color created successfully."
-msgstr "Новий тип кабеля успішно додано."
+msgstr "Новий тип інтерфейсу успішно додано."
 
 #: openDCIM/api/v1/index2.php:1434 openDCIM/api/v1/index2.php:1479
 #: openDCIM/api/v1/putRoutes.php:316 openDCIM/api/v1/putRoutes.php:361
@@ -5879,7 +5866,7 @@ msgstr "UserID="
 #: openDCIM/api/v1/postRoutes.php:62
 #, php-format
 msgid "People resource for UserID=%s updated successfully."
-msgstr "Інформація по користувачу з UserID=%s успішно оновлено."
+msgstr "Таблицю People для UserID=%s успішно оновлено."
 
 #: openDCIM/api/v1/postRoutes.php:120
 msgid "devices updated"
@@ -5887,15 +5874,15 @@ msgstr "Пристрої оновлено"
 
 #: openDCIM/api/v1/postRoutes.php:187
 msgid "The specified CabinetID does not exist."
-msgstr ""
+msgstr "Вказаний CabinetID не існує."
 
 #: openDCIM/api/v1/postRoutes.php:200
 msgid "Error updating cabinet."
-msgstr ""
+msgstr "Помилка оновлення шафи."
 
 #: openDCIM/api/v1/postRoutes.php:205
 msgid "Cabinet updated successfully."
-msgstr ""
+msgstr "Шафу успішно оновлено."
 
 #: openDCIM/api/v1/postRoutes.php:245
 msgid "Error updating color code."
@@ -5906,93 +5893,91 @@ msgid "Invalid operation"
 msgstr "Недопустима дія"
 
 #: openDCIM/api/v1/postRoutes.php:514 openDCIM/api/v1/putRoutes.php:404
-#, fuzzy
 msgid "Error creating new status."
-msgstr "Помилка додавання нового типу кабеля."
+msgstr "Помилка створення нового стану."
 
 #: openDCIM/api/v1/postRoutes.php:518
-#, fuzzy
 msgid "Status updated successfully."
-msgstr "Всі рядки успішно імпортовано."
+msgstr "Статус успішно оновлено."
 
 #: openDCIM/api/v1/postRoutes.php:592
 msgid "Sensor readings update failed"
-msgstr ""
+msgstr "Не вдалося оновити покази датчика"
 
 #: openDCIM/api/v1/postRoutes.php:628
 msgid "PDU stats update failed"
-msgstr ""
+msgstr "Не вдалося оновити статистику БРЖ або АВР"
 
 #: openDCIM/api/v1/postRoutes.php:659
 msgid "No VM found with VMIndex "
-msgstr ""
+msgstr "Не знайдено ВМ з VMIndex "
 
 #: openDCIM/api/v1/postRoutes.php:669
 msgid "VM update failed"
-msgstr ""
+msgstr "Не вдалося оновити віртуальну машину"
 
 #: openDCIM/api/v1/postRoutes.php:701
 msgid "No Powerpanel found with PanelID "
-msgstr ""
+msgstr "Не знайдено модульний БРЖ з PanelID "
 
 #: openDCIM/api/v1/postRoutes.php:711
 msgid "Powerpanel update failed"
-msgstr ""
+msgstr "Не вдалося оновити модульний БРЖ"
 
 #: openDCIM/api/v1/putRoutes.php:49 openDCIM/api/v1/putRoutes.php:63
 msgid "Audit record added successfully."
-msgstr ""
+msgstr "Запис аудиту успішно додано."
 
 #: openDCIM/api/v1/putRoutes.php:53
 msgid "Specified CabinetID not found."
-msgstr ""
+msgstr "Вказаний CabinetID не знайдено."
 
 #: openDCIM/api/v1/putRoutes.php:67
 msgid "Specified DeviceID not found."
-msgstr ""
+msgstr "Вказаний DeviceID не знайдено."
 
 #: openDCIM/api/v1/putRoutes.php:73
 msgid "Invalid input parameters."
-msgstr ""
+msgstr "Недопустимі вхідні параметри."
 
 #: openDCIM/api/v1/putRoutes.php:163
 msgid ""
 "Minimum required fields are not set:  DataCenterID, Location, and "
 "CabinetHeight"
 msgstr ""
+"Не заповнені обов'язкові поля:  DataCenterID, Location та CabinetHeight"
 
 #: openDCIM/api/v1/putRoutes.php:169
 msgid "Error creating cabinet."
-msgstr ""
+msgstr "Помилка створення шафи."
 
 #: openDCIM/api/v1/putRoutes.php:173
 msgid "New cabinet created successfully."
-msgstr ""
+msgstr "Нова шафа створена успішно."
 
 #: openDCIM/api/v1/putRoutes.php:248
 msgid "Error creating new department."
-msgstr ""
+msgstr "Помилка створення нового відділу."
 
 #: openDCIM/api/v1/putRoutes.php:252
 msgid "New department created successfully."
-msgstr ""
+msgstr "Новий відділ створено успішно."
 
 #: openDCIM/api/v1/putRoutes.php:408
-#, fuzzy
 msgid "New status created successfully."
-msgstr "Новий тип кабеля успішно додано."
+msgstr "Новий стан створено успішно."
 
 #: openDCIM/api/v1/putRoutes.php:650
 msgid "No Device found with DeviceID "
-msgstr ""
+msgstr "Не знайдено жодного пристрою з DeviceID "
 
 #: openDCIM/api/v1/putRoutes.php:660
 msgid "VM creation failed"
-msgstr ""
+msgstr "Не вдалося створити віртуальну машину"
 
 #: openDCIM/api/v1/putRoutes.php:698
 msgid "Powerpanel creation failed"
-msgstr ""
+msgstr "Не вдалося створити модульний БРЖ"
 
 #: openDCIM/scripts/ajax_tooltip.php:146 openDCIM/scripts/ajax_tooltip.php:147
 #: openDCIM/scripts/ajax_tooltip.php:148 openDCIM/scripts/ajax_tooltip.php:149
@@ -6005,23 +5990,23 @@ msgstr "немає даних"
 
 #: openDCIM/scripts/ajax_tooltip.php:157
 msgid "Measured Power Combined"
-msgstr "Виміряна сумарна активна потужність"
+msgstr "Виміряна активна потужність"
 
 #: openDCIM/scripts/ajax_tooltip.php:196
 msgid "Inlet Temperature"
-msgstr ""
+msgstr "Температура охолодження"
 
 #: openDCIM/scripts/ajax_tooltip.php:197
 msgid "Output Temperature"
-msgstr ""
+msgstr "Температура вихідна"
 
 #: openDCIM/scripts/ajax_tooltip.php:198
 msgid "Inlet Humidity"
-msgstr ""
+msgstr "Вологість охолодження"
 
 #: openDCIM/scripts/ajax_tooltip.php:199
 msgid "Output Humidity"
-msgstr ""
+msgstr "Вологість вихідна"
 
 #: openDCIM/scripts/ajax_tooltip.php:201
 msgid "Quit that! You don't have rights to view this."
@@ -6037,32 +6022,32 @@ msgstr "Спливаючі підказки ввімкнені, але жодн�
 
 #: openDCIM/scripts/testemail.php:22
 msgid "openDCIM Test Message"
-msgstr ""
+msgstr "openDCIM Test Message"
 
 #: openDCIM/scripts/testemail.php:45
 msgid "MailTo"
-msgstr ""
+msgstr "Отримувач"
 
 #: openDCIM/scripts/testemail.php:57
 msgid "Data Center SMTP Test"
-msgstr ""
+msgstr "Тестове повідомлення від openDCIM"
 
 #: openDCIM/scripts/testemail.php:59
 msgid ""
 "<p>This is a test email sent by an administrator from the openDCIM system at"
-msgstr ""
+msgstr "<p>Це тестовий лист, надісланий адміністратором openDCIM за адресою"
 
 #: openDCIM/scripts/testemail.php:71
 msgid "Script called without sufficient parameters."
-msgstr ""
+msgstr "Скрипт виконується без необхідних параметрів."
 
 #: openDCIM/scripts/testemail.php:75
 msgid "An error has occurred:"
-msgstr ""
+msgstr "Сталася помилка:"
 
 #: openDCIM/scripts/testemail.php:77
 msgid "SMTP Server Connection Test Successful"
-msgstr ""
+msgstr "Перевірка підключення до сервера SMTP успішна"
 
 #: openDCIM/scripts/uploadifive.php:47
 #, php-format
@@ -6103,7 +6088,7 @@ msgstr "Файл неможливо записати на диск"
 
 #: openDCIM/scripts/uploadifive.php:110
 msgid "File upload stopped by extension"
-msgstr "Завантаження файлу зупинено внаслідок не дозволеного розширення"
+msgstr "Завантаження файлу зупинено внаслідок недозволеного розширення"
 
 #: openDCIM/scripts/uploadifive.php:120
 msgid "Invalid file type."
@@ -6119,83 +6104,79 @@ msgstr "Для завантаження зображень необхідно м
 
 #: openDCIM/scripts/uploadifive.php:129
 msgid "Token mismatch"
-msgstr "Не співпадає маркер"
+msgstr "Не співпадає токен"
 
 #: openDCIM/scripts/uploadifive.php:130
 msgid "God help us something has gone horribly wrong"
 msgstr "От халепа! Знову щось пішло не так :-/."
 
 #: openDCIM/classes/DataCenter.class.php:515
-#, fuzzy
 msgid "Composite View of Cabinets"
-msgstr "Груповий імпорт нових шаф"
+msgstr "Комбінований вид шаф"
 
 #: openDCIM/classes/DataCenter.class.php:516
-#, fuzzy
 msgid "Occupied Space"
-msgstr "Зайнято"
+msgstr "Зайнятий простір"
 
 #: openDCIM/classes/DataCenter.class.php:517
-#, fuzzy
 msgid "Calculated Weight"
-msgstr "Обчислена активна потужність"
+msgstr "Обчислена вага"
 
 #: openDCIM/classes/DataCenter.class.php:518
-#, fuzzy
 msgid "Calculated Power Usage"
-msgstr "Обчислена активна потужність"
+msgstr "Обчислена споживана потужність"
 
 #: openDCIM/classes/DataCenter.class.php:519
 #: openDCIM/classes/DataCenter.class.php:520
 #: openDCIM/classes/DataCenter.class.php:521
-#, fuzzy
 msgid "Measured on"
-msgstr "Виміряна активна потужність"
+msgstr "Станом на"
 
 #: openDCIM/classes/DataCenter.class.php:617
 msgid "Row "
-msgstr ""
+msgstr "Ряд "
 
 #: openDCIM/classes/Device.class.php:2449
 #: openDCIM/classes/Device.class.php:2455
 #: openDCIM/classes/PowerDistribution.class.php:469
 msgid "Critical"
-msgstr ""
+msgstr "Критичний"
 
 #: openDCIM/classes/Device.class.php:2451
 #: openDCIM/classes/Device.class.php:2457
 #: openDCIM/classes/PowerDistribution.class.php:471
 msgid "Warning"
-msgstr ""
+msgstr "Попередження"
 
 #: openDCIM/classes/Device.class.php:2478
 msgid "Data Center Sensor Alerts Report"
-msgstr ""
+msgstr "Data Center Sensor Alerts Report"
 
 #: openDCIM/classes/Device.class.php:2507
 msgid "Data Center Sensor Alerts"
-msgstr ""
+msgstr "Звіт по кліматичним датчикам з відхиленнями від норми"
 
 #: openDCIM/classes/Device.class.php:2509
 #: openDCIM/classes/PowerDistribution.class.php:533
 msgid "Value"
-msgstr ""
+msgstr "Значення"
 
 #: openDCIM/classes/Device.class.php:2509
 #: openDCIM/classes/PowerDistribution.class.php:533
 msgid "Alert Level"
-msgstr ""
+msgstr "Рівень сповіщення"
 
 #: openDCIM/classes/DeviceTemplate.class.php:557
-#, fuzzy
 msgid "Import Error"
-msgstr "Журнал імпорту"
+msgstr "Помилки імпорту"
 
 #: openDCIM/classes/DeviceTemplate.class.php:558
 msgid ""
 "An error has occurred creating the template.<br>Possibly there is already a "
 "template of the same manufacturer and model"
 msgstr ""
+"Під час створення шаблону сталася помилка.<br>Можливо, вже є шаблон того ж "
+"виробника та моделі"
 
 #: openDCIM/classes/DeviceTemplate.class.php:575
 #: openDCIM/classes/DeviceTemplate.class.php:579
@@ -6205,59 +6186,62 @@ msgstr ""
 #: openDCIM/classes/DeviceTemplate.class.php:636
 #: openDCIM/classes/DeviceTemplate.class.php:649
 #: openDCIM/classes/DeviceTemplate.class.php:653
-#, fuzzy
 msgid "Import Warning"
-msgstr "Активна потужність (попередження)"
+msgstr "Попередження імпорту"
 
 #: openDCIM/classes/DeviceTemplate.class.php:576
-#, fuzzy, php-format
+#, php-format
 msgid "An error has occurred creating the slot %s"
-msgstr "Під час створення шаблону сталася помилка"
+msgstr "Сталася помилка під час створення слота %s"
 
 #: openDCIM/classes/DeviceTemplate.class.php:580
 #, php-format
 msgid "Ignored slot %s"
-msgstr ""
+msgstr "Проігнорований слот %s"
 
 #: openDCIM/classes/DeviceTemplate.class.php:604
-#, fuzzy, php-format
+#, php-format
 msgid "An error has occurred creating the color code %s"
-msgstr "Під час створення шаблону сталася помилка"
+msgstr "Сталася помилка під час створення інтерфейса %s"
 
 #: openDCIM/classes/DeviceTemplate.class.php:622
-#, fuzzy, php-format
+#, php-format
 msgid "An error has occurred creating the media type %s"
-msgstr "Під час створення шаблону сталася помилка"
+msgstr "Сталася помилка під час створення типу кабеля %s"
 
 #: openDCIM/classes/DeviceTemplate.class.php:633
 #: openDCIM/classes/DeviceTemplate.class.php:650
-#, fuzzy, php-format
+#, php-format
 msgid "An error has occurred creating the port %s"
-msgstr "Під час створення шаблону сталася помилка"
+msgstr "Сталася помилка під час створення порта %s"
 
 #: openDCIM/classes/DeviceTemplate.class.php:637
 #: openDCIM/classes/DeviceTemplate.class.php:654
-#, fuzzy, php-format
+#, php-format
 msgid "Ignored port %s"
-msgstr "Звітність"
+msgstr "Проігнорований порт %s"
 
 #: openDCIM/classes/PowerDistribution.class.php:502
 msgid "Data Center Power Alerts Report"
-msgstr ""
+msgstr "Data Center Power Alerts Report"
 
 #: openDCIM/classes/PowerDistribution.class.php:531
 msgid "Data Center Power Alerts"
-msgstr ""
+msgstr "Звіт по датчикам потужності БРЖ та АВР з відхиленнями від норми"
 
 #: openDCIM/classes/SwitchInfo.class.php:103
 msgid ""
 "I don't know what type of device this is but it did not return any ports "
 "whatsoever.  Do not try to report this as an error."
 msgstr ""
+"Я не знаю, що це за пристрій, але він не повернув жодних портів.  Не "
+"намагайтеся повідомляти про це як про помилку."
 
 #: openDCIM/classes/SwitchInfo.class.php:105
 msgid "First port detection failed, please report to openDCIM developers"
 msgstr ""
+"Неможливо визначити перший порт, будь-ласка повідомте про це розробникам "
+"openDCIM"
 
 #~ msgid "Expiration Time (Days)"
 #~ msgstr "Термін дії (днів)"
