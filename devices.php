@@ -1778,7 +1778,7 @@ echo($copy)?"<h3>$copyerr</h3>":'';
 echo '<div class="center"><div>
 <h3></h3><h3 id="messages"></h3>
 <div id="Positionselector"></div>
-<form name="deviceform" id="deviceform" method="POST">
+<form name="deviceform" id="deviceform" method="POST" autocomplete="off">
 <div class="left">
 <fieldset>
 	<legend>'.__("Asset Tracking").'</legend>
