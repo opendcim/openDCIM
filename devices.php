@@ -2058,11 +2058,11 @@ echo '
 	<div class="table">
 		<div>
 		  <div><label for="APIUsername">'.__("API Username").'</label></div>
-		  <div><input type="text" name="APIUsername" id="APIUsername" value="'.$dev->APIUsername.'"></div>
+		  <div><input autocomplete="off" type="text" name="APIUsername" id="APIUsername" value="'.$dev->APIUsername.'"></div>
 		</div>
 		<div>
 		  <div><label for="APIPassword">'.__("API Password").'</label></div>
-		  <div><input type="password" name="APIPassword" id="APIPassword" value="'.$dev->APIPassword.'"></div>
+		  <div><input autocomplete="off" type="password" name="APIPassword" id="APIPassword" value="'.$dev->APIPassword.'"></div>
 		</div>
 		<div>
 		  <div><label for="APIPort">'.__("API Port").'</label></div>
@@ -2122,7 +2122,7 @@ echo '
 		</div>
 		<div>
 		  <div><label for="v3AuthPassphrase">'.__("SNMPv3 Passphrase").'</label></div>
-		  <div><input type="password" name="v3AuthPassphrase" id="v3AuthPassphrase" value="'.$dev->v3AuthPassphrase.'"></div>
+		  <div><input autocomplete="off" type="password" name="v3AuthPassphrase" id="v3AuthPassphrase" value="'.$dev->v3AuthPassphrase.'"></div>
 		</div>
 		<div>
 		  <div><label for="v3PrivProtocol">'.__("SNMPv3 PrivProtocol").'</label></div>
@@ -2139,7 +2139,7 @@ echo '
 		</div>
 		<div>
 		  <div><label for="v3PrivPassphrase">'.__("SNMPv3 PrivPassphrase").'</label></div>
-		  <div><input type="password" name="v3PrivPassphrase" id="v3PrivPassphrase" value="'.$dev->v3PrivPassphrase.'"></div>
+		  <div><input autocomplete="off" type="password" name="v3PrivPassphrase" id="v3PrivPassphrase" value="'.$dev->v3PrivPassphrase.'"></div>
 		</div>
 		<div>
 		  <div><label for="SNMPFailureCount">'.__("Consecutive SNMP Failures").'*</label></div>
