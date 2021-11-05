@@ -116,7 +116,7 @@
 	}
 
 	function BuildFileList($returnjson=false,$path="."){
-		$path=trim($path);
+		$path=sanitize(trim($path));
 		# Make sure we don't have any path shenanigans going on
 		$path=str_replace(array("..","./"),"",$path);
 		# we don't need trailing slashes, and leading slashes are going to be invalid paths
