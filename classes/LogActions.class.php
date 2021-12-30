@@ -67,8 +67,13 @@ class LogActions {
 		$log->ChildID=$dbRow["ChildID"];
 		$log->Property=$dbRow["Property"];
 		$log->Action=$dbRow["Action"];
-		$log->OldVal=$dbRow["OldVal"];
-		$log->NewVal=$dbRow["NewVal"];
+		if (strpos($log->Property, "assword") || strpos($log->Property, "ommunity")) {
+			$log->OldVal=str_repeat("*", strlen($dbRow["OldVal"]));
+			$log->NewVal=str_repeat("*", strlen($dbRow["NewVal"]));
+		}else{
+			$log->OldVal=$dbRow["OldVal"];
+			$log->NewVal=$dbRow["NewVal"];
+		}
 		$log->Time=$dbRow["Time"];
 
 		return $log;
