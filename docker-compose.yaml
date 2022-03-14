@@ -3,11 +3,10 @@ services:
   opendcim-app:
     container_name: opendcim-app
     build:
-      context: docker-build
-      dockerfile: opendcim.Dockerfile
+      context: .
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./:/var/www/html/
+    #  - ./:/var/www/html/
     ports:
       - "80:80"
       - "443:443"
