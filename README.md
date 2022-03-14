@@ -30,6 +30,15 @@ openDCIM
 ## Github issues are not for asking questions - use the mailing list for that.
 [Official Website](http://www.opendcim.org/participation.html)
 
+Docker-Compose Deployment
+------------
+1. Copy db.inc.php-docker to db.inc.php
+2. Docker-compose pull
+3. Docker-compose build
+4. Docker-compose up -d
+
+This will bring up openDCIM (Apache2), MySQL server, and Portainer (for easier container management in development - recommend not deploying Portainer publicly).
+
 Installation
 ------------
 Supposing you are using apache, php and apache-php-module firstly clone openDCIM in a directory which is accessible by apache user (e.g. /srv/http/) and then configure apache to load required modules and have access to project directory (you can define virtual host too).
