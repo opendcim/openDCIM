@@ -45,3 +45,15 @@ RUN docker-php-ext-install pdo_mysql
 
 RUN a2enmod rewrite && a2enmod headers
 
+USER www-data
+
+COPY docker-build/files/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY ./ /var/www/html
+
+USER root
+
+RUN htpasswd -b -c /var/www/html/.htpasswd opendcim opendcim
+
+RUN rm -fr /var/www/html/docker-build/
+RUN rm -f /var/www/html/Dockerfile
+RUN chown -fR www-data:www-data /var/www/html/
