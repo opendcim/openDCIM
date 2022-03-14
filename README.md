@@ -39,6 +39,9 @@ Docker-Compose Deployment
 
 This will bring up openDCIM (Apache2), MySQL server, and Portainer (for easier container management in development - recommend not deploying Portainer publicly).
 
+User authentication has already been implemented with htpasswd.
+Default username / password is (opendcim/opendcim) - Make sure to change this using htpasswd
+
 Installation
 ------------
 Supposing you are using apache, php and apache-php-module firstly clone openDCIM in a directory which is accessible by apache user (e.g. /srv/http/) and then configure apache to load required modules and have access to project directory (you can define virtual host too).
