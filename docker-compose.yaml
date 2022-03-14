@@ -20,8 +20,6 @@ services:
       MYSQL_USER: "dcim"
       MYSQL_PASSWORD: "dcim"
       MYSQL_ROOT_PASSWORD: "password"
-    ports:
-      - "3306:3306"
     volumes:
       - opendcim-db:/var/lib/mysql
   portainer:
