@@ -98,7 +98,7 @@
     }
 
     $content .= "<div><div><span title=\"" . __("The type of key field that is being used to match devices in openDCIM.  Only one type may be specified per file.") . "\">" . __("KeyField") . "</span></div><div><select name='KeyField'>";
-    foreach( array( "Label", "Hostname", "AssetTag", "SerialNo" ) as $option ) {
+    foreach( array( "Label", "Hostname", "AssetTag", "SerialNo", "DeviceID" ) as $option ) {
       $content .= "<option val=\"$option\">$option</option>";
     }
 
@@ -171,6 +171,9 @@
           break;
         case "SerialNo":
           $idField = "SerialNo";
+          break;
+        case "DeviceID":
+          $idField = "DeviceID";
           break;
       }
 
