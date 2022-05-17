@@ -30,6 +30,7 @@ $saml_settings = array(
 		'x509cert' => $config->ParameterArray["SAMLidpx509cert"],
 	),
 	'security' => array(
+		'requestedAuthnContext' => false,
 		'authNRequestsSigned' => true,
 		'logoutRequestSigned' => true,
 		'logoutResponseSigned' => true,
