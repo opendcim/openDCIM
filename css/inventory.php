@@ -1393,13 +1393,30 @@ div.page.installer .main{max-width: 850px;}
 /* Menu */
 ul.nav li {padding: .5em;}
 .nav a:visited {color: #000000;}
-#sidebar .nav li a { border: 1px solid lightGray; margin: 0;}
+#sidebar .nav li a { display: block; margin: 0;}
 #sidebar .nav .ui-state-focus {
 	background: white;
 	border-color: black;
 	border-width: 1px;
 	border-style: solid;
 	margin: 0;
+}
+
+.ui-state-active,
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active {
+	border: 1px solid #aaaaaa !important;
+	background: url(images/ui-bg_glass_65_ffffff_1x400.png) 50% 50% repeat-x !important;
+	font-weight: normal !important;
+	color: rgb(51, 51, 51) !important;
+}
+.ui-state-active a,
+.ui-state-active a:link,
+.ui-state-active a:visited {
+	color: #212121 !important;
+}
+.ui-state-active .ui-icon, .ui-button:active .ui-icon {
+  background-image: url("images/ui-icons_222222_256x240.png") !important;
 }
 
 /* Search Export */
