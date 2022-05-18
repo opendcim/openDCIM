@@ -1393,7 +1393,7 @@ div.page.installer .main{max-width: 850px;}
 /* Menu */
 ul.nav li {padding: .5em;}
 .nav a:visited {color: #000000;}
-#sidebar .nav li a { display: block; margin: 0;}
+#sidebar .nav li a { display: block;}
 #sidebar .nav .ui-state-focus {
 	background: white;
 	border-color: black;
