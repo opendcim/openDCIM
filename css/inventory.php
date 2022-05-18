@@ -1418,6 +1418,9 @@ ul.nav li {padding: .5em;}
 .ui-state-active .ui-icon, .ui-button:active .ui-icon {
   background-image: url("images/ui-icons_222222_256x240.png") !important;
 }
+.active.ui-state-focus, .active.ui-state-active {
+  margin: 0px !important;
+}
 
 /* Search Export */
 div.center div table#export { margin: auto; max-width: none; }
