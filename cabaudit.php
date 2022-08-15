@@ -37,7 +37,7 @@ class PDF extends FPDF {
   var $pdfconfig;
 
   
-	function PDF(){
+	function __construct(){
 		parent::FPDF('L');
 	}
   
