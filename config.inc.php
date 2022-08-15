@@ -4,7 +4,7 @@ class Config{
 	var $ParameterArray;
 	var $defaults;
 	
-	function Config(){
+	function __construct(){
 		global $dbh;
 		
 		//Get parameter value pairs from fac_Config
