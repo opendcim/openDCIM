@@ -13,7 +13,7 @@
 	<package>net.manuellemos.oauth</package>
 
 	<version>@(#) $Id: oauth_client.php,v 1.120 2014/11/07 08:26:17 mlemos Exp $</version>
-	<copyright>Copyright © (C) Manuel Lemos 2012</copyright>
+	<copyright>Copyright Â© (C) Manuel Lemos 2012</copyright>
 	<title>OAuth client</title>
 	<author>Manuel Lemos</author>
 	<authoraddress>mlemos-at-acm.org</authoraddress>
@@ -987,7 +987,7 @@ class oauth_client_class
 			return $this->SetError('Session variables are not accessible in this PHP environment');
 		if(session_id() === ''
 		&& !session_start())
-			return($this->SetPHPError('it was not possible to start the PHP session', $php_errormsg));
+			return($this->SetPHPError('it was not possible to start the PHP session', error_get_last()));
 		if(IsSet($_SESSION['OAUTH_STATE']))
 			$state = $_SESSION['OAUTH_STATE'];
 		else
@@ -1121,7 +1121,7 @@ class oauth_client_class
 			return $this->SetError('Session variables are not accessible in this PHP environment');
 		if(session_id() === ''
 		&& !session_start())
-			return($this->SetPHPError('it was not possible to start the PHP session', $php_errormsg));
+			return($this->SetPHPError('it was not possible to start the PHP session', error_get_last()));
 		if(!$this->GetAccessTokenURL($access_token_url))
 			return false;
 		$_SESSION['OAUTH_ACCESS_TOKEN'][$access_token_url] = $access_token;
@@ -1175,7 +1175,7 @@ class oauth_client_class
 			return $this->SetError('Session variables are not accessible in this PHP environment');
 		if(session_id() === ''
 		&& !session_start())
-			return($this->SetPHPError('it was not possible to start the PHP session', $php_errormsg));
+			return($this->SetPHPError('it was not possible to start the PHP session', error_get_last()));
 		if(!$this->GetAccessTokenURL($access_token_url))
 			return false;
 		if(IsSet($_SESSION['OAUTH_ACCESS_TOKEN'][$access_token_url]))
@@ -1229,7 +1229,7 @@ class oauth_client_class
 			return $this->SetError('Session variables are not accessible in this PHP environment');
 		if(session_id() === ''
 		&& !session_start())
-			return($this->SetPHPError('it was not possible to start the PHP session', $php_errormsg));
+			return($this->SetPHPError('it was not possible to start the PHP session', error_get_last()));
 		if(IsSet($_SESSION['OAUTH_ACCESS_TOKEN'][$access_token_url]))
 			Unset($_SESSION['OAUTH_ACCESS_TOKEN'][$access_token_url]);
 		return true;
@@ -2171,11 +2171,11 @@ class oauth_client_class
 				{
 					if(!file_exists($this->configuration_file))
 						return $this->SetError('the OAuth server configuration file '.$this->configuration_file.' does not exist');
-					return $this->SetPHPError('could not read the OAuth server configuration file '.$this->configuration_file, $php_errormsg);
+					return $this->SetPHPError('could not read the OAuth server configuration file '.$this->configuration_file, error_get_last());
 				}
 				$oauth_server = json_decode($json);
 				if(!IsSet($oauth_server))
-					return $this->SetPHPError('It was not possible to decode the OAuth server configuration file '.$this->configuration_file.' eventually due to incorrect format', $php_errormsg);
+					return $this->SetPHPError('It was not possible to decode the OAuth server configuration file '.$this->configuration_file.' eventually due to incorrect format', error_get_last());
 				if(GetType($oauth_server) !== 'object')
 					return $this->SetError('It was not possible to decode the OAuth server configuration file '.$this->configuration_file.' because it does not correctly define a JSON object');
 				if(!IsSet($oauth_server->servers)
