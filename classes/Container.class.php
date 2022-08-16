@@ -227,7 +227,7 @@ class Container {
 		$cList=$this->GetChildContainerList();
 		$lev++;
 		if(count($cList) >0){
-			while(list($cID,$container)=each($cList)){
+			foreach($cList as $cID=>$container){
 				$tree.=$container->AddContainerToTree($lev);
 			}
 		}
@@ -235,7 +235,7 @@ class Container {
 		$dcList=$this->GetChildDCList();
 
 		if(count($dcList) >0){
-			while(list($dcID,$datacenter)=each($dcList)){
+			foreach($dcList as $dcID=>$datacenter){
 				$tree.=$datacenter->AddDCToTree($lev);
 			} //DC
 		}
@@ -293,7 +293,7 @@ class Container {
 			
 			$cList=$this->GetChildContainerList();
 			if ( count( $cList ) > 0 ) {
-				while ( list( $cID, $container ) = each( $cList ) ) {
+				foreach($cList as $cID=>$container){
 					if (is_null($container->MapX) || $container->MapX==0 
 						|| is_null($container->MapY) || $container->MapY==0 ){
 						$mapHTML.="<div>\n";
@@ -314,7 +314,7 @@ class Container {
 			
 			$dcList=$this->GetChildDCList();
 			if ( count( $dcList ) > 0 ) {
-				while ( list( $dcID, $dc ) = each( $dcList ) ) {
+				foreach($dcList as $dcID=>$dc){
 					if (is_null($dc->MapX) || $dc->MapX==0 
 						|| is_null($dc->MapY) || $dc->MapY==0 ){
 						$mapHTML.="<div>\n";
@@ -365,7 +365,7 @@ class Container {
 			
 			$cList=$this->GetChildContainerList();
 			if ( count( $cList ) > 0 ) {
-				while ( list( $cID, $container ) = each( $cList ) ) {
+				foreach($cList as $cID=>$container){
 					if ((is_null($container->MapX) || $container->MapX<0 || $container->MapX>$width 
 						|| is_null($container->MapY) || $container->MapY<0 || $container->MapY>$height)
 						&& $tipo=="container" && $id==$container->ContainerID ){
@@ -390,7 +390,7 @@ class Container {
 			
 			$dcList=$this->GetChildDCList();
 			if ( count( $dcList ) > 0 ) {
-				while ( list( $dcID, $dc ) = each( $dcList ) ) {
+				foreach($dcList as $dcID=>$dc){
 					if ((is_null($dc->MapX) || $dc->MapX<0 || $dc->MapX>$width
 						|| is_null($dc->MapY) || $dc->MapY<0 || $dc->MapY>$height)
 						&& $tipo=="dc" && $id==$dcID){
@@ -441,7 +441,7 @@ class Container {
 		
 		$dcList=$this->GetChildDCList();
 		if(count($dcList) >0){
-			while(list($dcID,$datacenter)=each($dcList)){
+			foreach($dcList as $dcID=>$datacenter){
 				$dcStats=$datacenter->GetDCStatistics();
 				$cStats["DCs"]++;
 				$cStats["TotalU"]+=$dcStats["TotalU"];
@@ -459,7 +459,7 @@ class Container {
 		
 		$cList=$this->GetChildContainerList();
 		if(count($cList) >0){
-			while(list($cID,$container)=each($cList)){
+			foreach($cList as $cID=>$container){
 				$childStats=$container->GetContainerStatistics();
 				$cStats["DCs"]+=$childStats["DCs"];
 				$cStats["TotalU"]+=$childStats["TotalU"];
