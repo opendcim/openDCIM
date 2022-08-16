@@ -28,7 +28,7 @@ class PDF extends FPDF {
   var $pdfconfig;
   var $pdfDB;
   
-	function PDF(){
+	function __construct(){
 		parent::FPDF();
 	}
   
