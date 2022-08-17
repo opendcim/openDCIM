@@ -38,7 +38,7 @@ class PDF extends FPDF {
 
   
 	function __construct(){
-		parent::FPDF('L');
+		parent::__construct('L');
 	}
   
 	function Header() {
