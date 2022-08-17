@@ -604,7 +604,7 @@ class DataCenter {
 
 		$zone->DataCenterID=$this->DataCenterID;
 		$zoneList=$zone->GetZonesByDC(); 
-		while(list($zoneNum,$myzone)=each($zoneList)){
+		foreach($zoneList as $zoneNum=>$myzone){
 			$tree.=str_repeat(" ",$lev+3)."<li class=\"liClosed\" id=\"zone$myzone->ZoneID\"><a class=\"ZONE\" href=\"zone_stats.php?zone="
 				."$myzone->ZoneID\">$myzone->Description</a>\n";
 			$tree.=str_repeat(" ",$lev+4)."<ul>\n";
