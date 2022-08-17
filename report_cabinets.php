@@ -187,7 +187,7 @@
         $body.="<tr><td class=\"cabpos\">".__("Pos")."</td><td>".__("Device")."</td></tr></thead><tbody>";
 
         $heighterr="";
-        while(list($dev_index,$device)=each($devList)){
+        foreach($devList as $dev_index=>$device){
             list($noTemplFlag, $noOwnerFlag, $highlight) =
                 renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device);
             if($device->Height<1 && !$rear){
