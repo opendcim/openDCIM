@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Copyright (c) 2013, Open Source Solutions Limited, Dublin, Ireland
+    Copyright (c) 2012-2016, Open Source Solutions Limited, Dublin, Ireland
     All rights reserved.
 
     Contact: Barry O'Donovan - barry (at) opensolutions (dot) ie
@@ -33,50 +33,45 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-namespace OSS_SNMP\MIBS\SNMP;
+namespace OSS_SNMP\MIBS;
 
 /**
- * A class for performing SNMP V2 queries
+ * A class for performing SNMP V2 queries on generic devices
  *
- * @copyright Copyright (c) 2013, Open Source Solutions Limited, Dublin, Ireland
- * @author Barry O'Donovan <barry@opensolutions.ie>
+ * @copyright Copyright (c) 2012-2016, Open Source Solutions Limited, Dublin, Ireland
+ * @author Luis Alberto Herrero <laherre@unizar.es>
  */
-class Engine extends \OSS_SNMP\MIB
+class RFC1213 extends \OSS_SNMP\MIB
 {
-    const OID_BOOTS         = '.1.3.6.1.6.3.10.2.1.2.0';
-    const OID_TIME          = '.1.3.6.1.6.3.10.2.1.3.0';
-
+    const OID_RFC1213_PHYSADDRESS                  = '.1.3.6.1.2.1.3.1.1.2';
+    
     /**
-     * Get the SNMP engine boots
      *
+     * NOTE- must use "community@vlan" as  community
      *
-     * > "The number of times that the SNMP engine has (re-)initialized itself since snmpEngineID was last configured."
-     *
-     * @see http://tools.cisco.com/Support/SNMP/do/BrowseOID.do?local=en&translate=Translate&objectInput=1.3.6.1.6.3.10.2.1.2#oidContent
-     *
-     * @return int The SNMP engine boots
+     * @param $ifindex
+     * @return associative array for macaddress in this device
+     *      [
+     *          "ifindex.instance.ip" => macaddress
+     *      ]
+     * (instance usually "1", ifindex the vlan_ifindex if vlan )
+     * ex.
+     *      [
+     *          "53.1.10.0.1.5" => "0008E4F1F322",
+     *      ]
+     *  if $ifindex only search for this ifindex, if $ifindex and $ip search for both
      */
-    public function boots()
-    {
-        return $this->getSNMP()->get( self::OID_BOOTS );
-    }
-
-    /**
-     * Get the SNMP engine time
-     *
-     *
-     * > "The number of seconds since the value of the snmpEngineBoots object last changed.
-     * > When incrementing this objects value would cause it to exceed its maximum, snmpEngineBoots
-     * > is incremented as if a re-initialization had occurred, and this objects value consequently
-     * > reverts to zero."
-     *
-     * @see http://tools.cisco.com/Support/SNMP/do/BrowseOID.do?local=en&translate=Translate&objectInput=1.3.6.1.6.3.10.2.1.2#oidContent
-     *
-     * @return int The SNMP engine time
-     */
-    public function time()
-    {
-        return $this->getSNMP()->get( self::OID_TIME );
+    public function physAddress($ifindex = null, $ip = null) {
+        
+        $oid = self::OID_RFC1213_PHYSADDRESS;
+        
+        if ($ifindex) {
+            $oid .= "." . $ifindex;
+            if ($ip) {
+                $oid .= ".1." . $ip;
+            }
+        }
+        return $this->getSNMP()->subOidWalk($oid, 11, -1);
     }
 
 }

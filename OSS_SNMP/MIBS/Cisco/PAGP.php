@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Copyright (c) 2013, Open Source Solutions Limited, Dublin, Ireland
+    Copyright (c) 2012-2016, Open Source Solutions Limited, Dublin, Ireland
     All rights reserved.
 
     Contact: Barry O'Donovan - barry (at) opensolutions (dot) ie
@@ -9,7 +9,7 @@
 
     This file is part of the OSS_SNMP package.
 
-    Redistribution and use in source and binary forms, with or without
+        Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
 
         * Redistributions of source code must retain the above copyright
@@ -33,50 +33,49 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-namespace OSS_SNMP\MIBS\SNMP;
+namespace OSS_SNMP\MIBS\Cisco;
 
 /**
- * A class for performing SNMP V2 queries
+ * A class for performing SNMP V2 queries on Cisco devices
  *
- * @copyright Copyright (c) 2013, Open Source Solutions Limited, Dublin, Ireland
- * @author Barry O'Donovan <barry@opensolutions.ie>
+ * @copyright Copyright (c) 2012-2016, Open Source Solutions Limited, Dublin, Ireland
+ * @author Luis Alberto Herrero <laherre@unizar.es>
  */
-class Engine extends \OSS_SNMP\MIB
+class PAGP extends \OSS_SNMP\MIBS\Cisco
 {
-    const OID_BOOTS         = '.1.3.6.1.6.3.10.2.1.2.0';
-    const OID_TIME          = '.1.3.6.1.6.3.10.2.1.3.0';
 
+    const OID_PAGP_GROUPIFINDEX                 = '1.3.6.1.4.1.9.9.98.1.1.1.1.8';
+    
     /**
-     * Get the SNMP engine boots
      *
-     *
-     * > "The number of times that the SNMP engine has (re-)initialized itself since snmpEngineID was last configured."
-     *
-     * @see http://tools.cisco.com/Support/SNMP/do/BrowseOID.do?local=en&translate=Translate&objectInput=1.3.6.1.6.3.10.2.1.2#oidContent
-     *
-     * @return int The SNMP engine boots
+     * @return associative array with the physic interface index (key) and the agregation port ifindex (value)
+     *   if key == value OR value == 0 not agregation
      */
-    public function boots()
-    {
-        return $this->getSNMP()->get( self::OID_BOOTS );
+    public function groupIfIndex() {
+        return $this->getSNMP()->subOidWalk( self::OID_PAGP_GROUPIFINDEX, 15 );
     }
-
+    
     /**
-     * Get the SNMP engine time
+     * Gets an associate array of PAGP ports with the [id] => name of it's constituent ports
      *
+     * E.g.:
+     *    [5048] => Array
+     *        (
+     *            [10111] => GigabitEthernet1/0/11
+     *            [10112] => GigabitEthernet1/0/12
+     *        )
      *
-     * > "The number of seconds since the value of the snmpEngineBoots object last changed.
-     * > When incrementing this objects value would cause it to exceed its maximum, snmpEngineBoots
-     * > is incremented as if a re-initialization had occurred, and this objects value consequently
-     * > reverts to zero."
-     *
-     * @see http://tools.cisco.com/Support/SNMP/do/BrowseOID.do?local=en&translate=Translate&objectInput=1.3.6.1.6.3.10.2.1.2#oidContent
-     *
-     * @return int The SNMP engine time
+     * @return array Associate array of LAG ports with the [id] => name of it's constituent ports
      */
-    public function time()
+    public function getPAGPPorts()
     {
-        return $this->getSNMP()->get( self::OID_TIME );
+        $ports = array();
+
+        foreach( $this->groupIfIndex() as $portId => $aggPortId )
+            if( $aggPortId != 0 &&  $portId != $aggPortId)
+                $ports[ $aggPortId ][$portId] = $this->getSNMP()->useIface()->names()[$portId];
+
+        return $ports;
     }
 
 }
