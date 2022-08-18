@@ -58,7 +58,11 @@ if( substr( $sysDescr, 0, 11 ) == 'ExtremeXOS ' )
         // the model is not included in the system description here so we need to pull it out of the entity MIB
         // this may need to be checked on a model by model basis.
         // Works for:
-        $this->setModel( $this->getSNMPHost()->get( '.1.3.6.1.2.1.47.1.1.1.1.2.1' ) );
+        if( $this instanceof \OSS_SNMP\TestPlatform ) {
+            $this->setModel('PHPunit');
+        } else {
+            $this->setModel($this->getSNMPHost()->get('.1.3.6.1.2.1.47.1.1.1.1.2.1'));
+        }
     }
     else if( substr( $sysDescr, 0, 12 ) == 'ExtremeXOS (' )
     {
@@ -82,7 +86,19 @@ if( substr( $sysDescr, 0, 11 ) == 'ExtremeXOS ' )
     } catch( Exception $e ) {
         $this->setSerialNumber( '(error)' );
     }
-
-
 }
 
+// 'Extreme BR-SLX9850-4 Router, SLX Operating System Version 18r.1.00a.'
+if( substr( $sysDescr, 0, 10 ) == 'Extreme BR' )
+{
+    $this->setVendor( 'Extreme Networks' );
+    $this->setOs( 'SLX' );
+
+    preg_match( '/^Extreme ([\w\-]+) Router, SLX Operating System Version ([\w.\-]+)\.$/',
+        $sysDescr, $matches );
+
+    $this->setModel( $matches[1] );
+    $this->setOsVersion( $matches[2] );
+    $this->setOsDate( null );
+
+}
