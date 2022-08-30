@@ -979,6 +979,37 @@ paths:
       security:
       - api_key: []
       - user_id: []
+  /pdustats/{PDUID}:
+    post:
+      summary: Update PDU Reading for a specific device
+      tags:
+      - "PDUStats"
+      - "Device"
+      description: "Updates a power device with a new reading"
+      produces:
+      - "application/json"
+      operationId: "UpdatePDUStats"
+      parameters:
+        - in: path
+          name: "PDUID"
+          required: true
+          type: string
+          description: "keyValue of the DeviceID to be updated"
+        - in: body
+          name: "body"
+          required: true
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/PDUStats"
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+      security:
+      - api_key: []
+      - user_id: []
   /sensorreadings/{SensorID}:
     post:
       summary: Update Sensor Reading for a specific device
