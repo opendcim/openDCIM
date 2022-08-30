@@ -751,6 +751,7 @@ paths:
       summary: Retrieve a list of pollable CDU (Power Sensor) devices matching the specified filter criteria, with a DeviceType of CDU and valid SNMP information.
       tags:
       - "Device"
+      - "PDUStats"
       description: 'If no parameters are specified, all record information that you are authorized to view is returned.'
       produces:
       - "application/json"
@@ -1491,6 +1492,18 @@ definitions:
         enum:
         - "Active"
         - "Inactive"
+  PDUStats:
+    type: "object"
+    properties:
+      PDUID:
+        type: "integer"
+        format: "integer"
+      Wattage:
+        type: "integer"
+        format: "integer"
+      LastRead:
+        type: "string"
+        format: "Timestamp of last reading"
   Person:
     type: "object"
     properties:
