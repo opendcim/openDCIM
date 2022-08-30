@@ -746,6 +746,54 @@ paths:
       security:
       - api_key: []
       - user_id: [] 
+  /pollers/power:
+    get:
+      summary: Retrieve a list of pollable CDU (Power Sensor) devices matching the specified filter criteria, with a DeviceType of CDU and valid SNMP information.
+      tags:
+      - "Device"
+      description: 'If no parameters are specified, all record information that you are authorized to view is returned.'
+      produces:
+      - "application/json"
+      operationId: "GetSensors"
+      parameters:
+        - name: Cabinet
+          in: query
+          required: false
+          type: string
+          description: "Filter results to those that match the given keyValue.  A value of -1 retrieves items in the virtual StorageRoom."
+          allowEmptyValue: true
+        - name: DataCenterID
+          in: query
+          required: false
+          type: string
+          description: "Filter results to those that match the given keyValue (does not work for StorageRoom - see note for Position)."
+          allowEmptyValue: true
+        - name: CabRowID
+          in: query
+          required: false
+          type: string
+          description: "Filter results to those that match the given keyValue"
+          allowEmptyValue: true
+        - name: ZoneID
+          in: query
+          required: false
+          type: string
+          description: "Filter results to those that match the given keyValue"
+          allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              allOf:
+                -  $ref: "#/definitions/Device"
+                -  $ref: "#/definitions/DeviceTemplate"
+      security:
+      - api_key: []
+      - user_id: []         
   /pollers/sensors:
     get:
       summary: Retrieve a list of pollable Sensor devices matching the specified filter criteria, with a DeviceType of Sensor and valid SNMP information.

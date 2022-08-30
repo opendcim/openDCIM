@@ -1338,6 +1338,53 @@ $app->get( '/powerpanel/:panelid', function($panelid) {
 });
 
 //
+// URL: /api/v1/pollers/power
+// Method: GET
+// Params: Optionally filter by DataCenterID, ZoneID, RowID, CabinetID
+// Returns: Device information for all polling power/CDU sensors that meet the filter criteria
+$app->get( '/pollers/power', function() {
+	$filters = getParsedBody();
+
+	$dev = new Device();
+
+	foreach( $filters as $prop=>$value ) {
+		$dev->$prop = $value;
+	}
+
+	$dev->DeviceType="CDU";
+
+	$tmpList = $dev->Search(false, false);
+	$devList = array();
+	$tmpDTList = array();
+	$dtList = array();
+
+	foreach( $tmpList as $tmpDev ) {
+		if ( $tmpDev->PrimaryIP > "" && $tmpDev->TemplateID>0 && $tmpDev->SNMPFailureCount<3 ) {
+			$devList[] = $tmpDev;
+			if ( ! in_array( $tmpDev->TemplateID, $tmpDTList ) ) {
+				$tmpDTList[] = $tmpDev->TemplateID;
+			}
+		}
+	}
+
+	foreach( $tmpDTList as $prop=>$value ) {
+		$devTemplate = new DeviceTemplate();
+		$devTemplate->TemplateID = $value;
+		$devTemplate->GetTemplate();
+		$dtList[] = $devTemplate;
+	}
+
+	$r["error"] = false;
+	$r["errorcode"] = 200;
+	$r["filters"] = $filters;
+	$r["DeviceList"] = $devList;
+	$r["TemplateList"] = $dtList;
+
+	echoResponse( $r );
+
+});
+
+//
 // URL: /api/v1/pollers/sensors
 // Method: GET
 // Params: Optionally filter by DataCenterID, ZoneID, RowID, CabinetID
@@ -1372,7 +1419,6 @@ $app->get( '/pollers/sensors', function() {
 		$devTemplate->TemplateID = $value;
 		$devTemplate->GetTemplate();
 		$dtList[] = $devTemplate;
-		error_log( "Adding template ID=".$devTemplate->TemplateID );
 	}
 
 	$r["error"] = false;
