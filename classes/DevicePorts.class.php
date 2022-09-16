@@ -182,7 +182,7 @@ class DevicePorts {
 					}
 				}
 				// pull port name first from snmp then from template then just call it port x
-				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:(isset($tports[$i]) && $tports[$i]->Label)?$tports[$i]->Label:__("Port").$i;
+				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:((isset($tports[$i]) && $tports[$i]->Label)?$tports[$i]->Label:__("Port").$i);
 				$portList[$i]->Notes=(isset($aliasList[$n]))?$aliasList[$n]:'';
 				$portList[$i]->createPort($update_existing);
 			}
