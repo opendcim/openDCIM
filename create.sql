@@ -190,7 +190,7 @@ CREATE TABLE fac_ColorCoding (
 --
 -- Create a table for things that we want to cache, such as the Navigation Menu
 --
-
+DROP TABLE IF EXISTS fac_DataCache;
 CREATE TABLE fac_DataCache (
   ItemType varchar(80) not null,
   Value mediumtext not null, primary key (ItemType)
@@ -946,7 +946,7 @@ CREATE TABLE fac_DeviceCustomAttribute(
   AttributeType varchar(8) NOT NULL DEFAULT "string",
   Required tinyint(1) NOT NULL DEFAULT 0,
   AllDevices tinyint(1) NOT NULL DEFAULT 0,
-  DefaultValue varchar(65000),
+  DefaultValue TEXT(65000),
   PRIMARY KEY (AttributeID),
   UNIQUE (Label)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -959,7 +959,7 @@ CREATE TABLE fac_DeviceTemplateCustomValue (
   TemplateID int(11) NOT NULL,
   AttributeID int(11) NOT NULL,
   Required tinyint(1) NOT NULL DEFAULT 0,
-  Value varchar(65000),
+  Value TEXT(65000),
   PRIMARY KEY (TemplateID, AttributeID)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -970,7 +970,7 @@ DROP TABLE IF EXISTS fac_DeviceCustomValue;
 CREATE TABLE fac_DeviceCustomValue (
   DeviceID int(11) NOT NULL,
   AttributeID int(11) NOT NULL,
-  Value varchar(65000),
+  Value TEXT(65000),
   PRIMARY KEY (DeviceID, AttributeID)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

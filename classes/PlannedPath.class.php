@@ -68,8 +68,8 @@ class PlannedPath {
 	
 	private function escribe_log($texto){
 		//remove next line if you want a log file on server
-		//return;
-		
+		return;
+		// @FIXME need to specify a proper path for the log file otherwise it's probably writing in the classes folder //
 	    $ddf = fopen('ppath.log','ab');
         fwrite($ddf,$texto."\r\n");
 	    fclose($ddf);

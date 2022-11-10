@@ -210,10 +210,10 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 
 	$used=$cab->CabinetOccupancy($cab->CabinetID);
 	@$SpacePercent=($cab->CabinetHeight>0)?number_format($used/$cab->CabinetHeight*100,0):0;
-	@$WeightPercent=number_format($totalWeight/$cab->MaxWeight*100,0);
-	@$PowerPercent=number_format(($totalWatts/1000)/$cab->MaxKW*100,0);
+	@$WeightPercent=($cab->MaxWeight>0)?number_format($totalWeight/$cab->MaxWeight*100,0):0;
+	@$PowerPercent=($cab->MaxKW>0)?number_format(($totalWatts/1000)/$cab->MaxKW*100,0):0;
 	$measuredWatts = $pdu->GetWattageByCabinet( $cab->CabinetID );
-	@$MeasuredPercent=number_format(($measuredWatts/1000)/$cab->MaxKW*100,0);
+	@$MeasuredPercent=($cab->MaxKW>0)?number_format(($measuredWatts/1000)/$cab->MaxKW*100,0):0;
 	$CriticalColor=$config->ParameterArray["CriticalColor"];
 	$CautionColor=$config->ParameterArray["CautionColor"];
 	$GoodColor=$config->ParameterArray["GoodColor"];
