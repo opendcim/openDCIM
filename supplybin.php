@@ -37,7 +37,7 @@
 				$bin->UpdateBin();
 
 				// only attempt to alter the contents of the bin if we have the proper elements
-				if(isset($_POST['supplyid']) && count($_POST['supplyid']>0)){
+				if(isset($_POST['supplyid']) && count($_POST['supplyid'])){
 					// process all of the submitted values into a new array to handle multiple instances of any part being added
 					$cleansupplies=array();
 					foreach($_POST['supplyid'] as $key => $value){
