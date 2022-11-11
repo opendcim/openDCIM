@@ -53,7 +53,7 @@
 
   <script type="text/javascript">
 	$(document).ready(function(){
-		$('#chosenList').multiselect();
+		$('#chosenList').multiselect({sortable:false});
 	});
   </script>
 

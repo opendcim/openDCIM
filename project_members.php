@@ -84,7 +84,7 @@
 
   <script type="text/javascript">
 	$(document).ready(function(){
-		$('#chosenList').multiselect();
+		$('#chosenList').multiselect({sortable:false});
 
 		$('#datacenterid').change(function(e){
 			document.location.href='project_members.php?membertype=<?php echo $memberType; ?>&projectid='+$('#projectid').val()+'&datacenterid='+this.value;

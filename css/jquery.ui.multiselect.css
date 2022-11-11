@@ -2,7 +2,7 @@
  * ----------------------------------*/
 
 .ui-multiselect { border: solid 1px; font-size: 0.8em; }
-.ui-multiselect ul { -moz-user-select: none; }
+.ui-multiselect ul { -moz-user-select: none; user-select: none; }
 .ui-multiselect li { margin: 0; padding: 0; cursor: default; line-height: 20px; height: 20px; font-size: 11px; list-style: none; }
 .ui-multiselect li a { color: #999; text-decoration: none; padding: 0; display: block; float: left; cursor: pointer;}
 .ui-multiselect li.ui-draggable-dragging { padding-left: 10px; }
