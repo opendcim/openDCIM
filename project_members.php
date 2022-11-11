@@ -30,7 +30,7 @@
 
 	// Update if form was submitted and action is set
 	if(isset($_POST['action']) && $_POST['action']=="Submit"){
-		$grpMembers=$_POST['chosen'];
+		$grpMembers=!empty($_POST['chosen'])?$_POST['chosen']:array();
 		if (( sizeof( $grpMembers ) > 0 ) && isset( $_REQUEST['projectid'] )) {
 			$ProjectID = $_REQUEST['projectid'];
 			ProjectMembership::clearMembership( $ProjectID );
