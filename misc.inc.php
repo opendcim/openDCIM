@@ -1200,10 +1200,10 @@ function getNameFromNumber($num){
 
 function mangleDate($dateString) {
 	// Take various formats of the date that may have been stored in the db and present them in a nice manner according to ISO8601 Format
-	if ( $dateString == null ) {
+	if ( $dateString == null || $dateString == "0000-00-00" || $dateString == "0") {
 		return "";
 	}
-
+	
 	if ( date( "Y-m-d", $dateString ) == "1969-12-31" ) {
 		return "";
 	} else {
