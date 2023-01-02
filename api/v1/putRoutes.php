@@ -373,6 +373,67 @@ $app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposi
 	echoResponse( $r );
 });
 
+
+
+//
+//	URL:	/api/v1/deviceport/
+//	Method:	PUT
+//	Params: 
+//	Returns: record as created
+//
+
+$app->put( '/deviceport', function() {
+
+// DevicePort->updatePort() takes care of all this:
+// - verify both devices exist
+// - verify rights to both devices
+// -verify both ports exist
+// - update database, including deleting both old connections
+
+/*
+    Example payload:
+      "DeviceID": "1", //mandatory
+      "PortNumber": "1", //mandatory
+      "Label": "Port1",
+      "MediaID": "0",
+      "ColorID": "0",
+      "ConnectedDeviceID": null,
+      "ConnectedPort": null,
+      "Notes": ""
+*/
+// so all we need to do is populate a new DevicePorts object for the 
+// A-side port, populate its attributes
+// and call updatePort(); if it returns false then there was an error
+// It is expected that this would overwrite the entire existing port
+// due to being a PUT instead of POST
+	$dp = new DevicePorts();
+	$vars = getParsedBody();
+	foreach($vars as $prop => $val){
+		if ( property_exists($dp, $prop)) {
+			$dp->$prop=$val;
+		}
+	}
+	$status = $dp->updatePort();
+	if (! $status) {
+		$r['error'] = true;
+		$r['errorcode'] = 400;
+		$r['message'] = __("Port update failed");
+	} else {
+		// load the new port
+		$dp = new DevicePorts();
+		$dp->DeviceID = $vars['DeviceID'];
+		$dp->PortNumber = $vars['PortNumber'];
+		$dp->getPort();
+		$r['error']=false;
+		$r['errorcode']=200;
+		// convert the deviceport into an array
+		$port = array();
+		foreach($dp as $prop => $val){
+			$port[$prop]=$val;
+		}
+		$r['deviceport']=$port;
+	}
+});
 //
 //	URL:	/api/v1/devicestatus/:status
 //	Method:	PUT
