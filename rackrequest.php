@@ -1,6 +1,11 @@
 <?php
-	require_once( 'db.inc.php' );
-	require_once( 'facilities.inc.php' );
+	require_once "db.inc.php";
+	require_once "facilities.inc.php";
+	require __DIR__."/vendor/autoload.php";
+
+	use PHPMailer\PHPMailer\PHPMailer;
+	use PHPMailer\PHPMailer\Exception;
+	use PHPMailer\PHPMailer\SMTP;
 
 	$subheader=__("Data Center Rack Request");
 
@@ -34,46 +39,27 @@
 		$tmpContact->PersonID=$_POST["requestorid"];
 		$tmpContact->GetPerson();
 
+		$mail = new PHPMailer(true);
+		$mail->SMTPDebug = SMTP::DEBUG_OFF;
+		$mail->isSMTP();
+		$mail->Host = $config->ParameterArray['SMTPServer'];
+		$mail->Port = $config->ParameterArray['SMTPPort'];
+
 		// If any port other than 25 is specified, assume encryption and authentication
 		if($config->ParameterArray['SMTPPort']!= 25){
-			$transport=Swift_SmtpTransport::newInstance()
-				->setHost($config->ParameterArray['SMTPServer'])
-				->setPort($config->ParameterArray['SMTPPort'])
-				->setEncryption('ssl')
-				->setUsername($config->ParameterArray['SMTPUser'])
-				->setPassword($config->ParameterArray['SMTPPassword']);
-		}else{
-			$transport=Swift_SmtpTransport::newInstance()
-				->setHost($config->ParameterArray['SMTPServer'])
-				->setPort($config->ParameterArray['SMTPPort']);
+			$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+			$mail->SMTPAuth = true;
+			$mail->Username = $config->ParameterArray['SMTPUser'];
+			$mail->Password = $config->ParameterArray['SMTPPassword'];
 		}
 
-		$mailer=Swift_Mailer::newInstance($transport);
-		$message=Swift_Message::NewInstance()->setSubject($config->ParameterArray['MailSubject']);
+		$mail->Subject = $config->ParameterArray['MailSubject'];
+		$mail->setFrom = $config->ParameterArray['MailFromAddr'];
+		$mail->isHTML(true);
+		$mail->addAddress($tmpContact->Email);
+		$mail->addAddress($config->ParameterArray['MailToAddr']);
 
-		// Set from address
-		try{		
-			$message->setFrom($config->ParameterArray['MailFromAddr']);
-		}catch(Swift_RfcComplianceException $e){
-			$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
-		}
-
-		// Add rack requestor to the list of recipients
-		try{		
-			$message->addTo($tmpContact->Email);
-		}catch(Swift_RfcComplianceException $e){
-			$error.=__("Check contact details for")." <a href=\"usermgr.php?PersonID=$tmpContact->PersonID\">$tmpContact->LastName, $tmpContact->FirstName</a>: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
-		}
-
-		// Add data center team to the list of recipients
-		try{		
-			$message->addTo($config->ParameterArray['MailToAddr']);
-		}catch(Swift_RfcComplianceException $e){
-			$error.=__("Data center team address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
-		}
-
-		$logo=$config->ParameterArray["PDFLogoFile"];
-		$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
+		$mail->addAttachment( $config->ParameterArray["PDFLogoFile"], "logo.png" );
 
 		$htmlMessage='<!doctype html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>ITS Data Center Inventory</title></head><body><div id="header" style="padding: 5px 0;background: '.$config->ParameterArray["HeaderColor"].';"><center><img src="'.$logo.'"></center></div><div class="page"><p><h3>'.__("ITS Facilities Rack Request").'</h3>'."\n";
 
@@ -112,13 +98,11 @@
 			
 			</body></html>";
 
-			$message->setBody($htmlMessage,'text/html');
-			try{
-				$result=$mailer->send($message);
-			}catch(Swift_RfcComplianceException $e){
-				$error.="Send: ".$e->getMessage()."<br>\n";
-			}catch(Swift_TransportException $e){
-				$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			$mail->Body = $htmlMessage;
+			try {
+				$mail->send();
+			} catch (Exception $e) {
+				error_log( "Mailer error: {$mail->ErrorInfo}" );
 			}
 		}elseif(($_POST['action']=='Update Request'||$_POST['action']=='Move to Rack') && (($person->RackRequest && $person->UserID==$contact->UserID)||$person->RackAdmin)){
 			$req->RequestorID=$_POST['requestorid'];
