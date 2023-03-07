@@ -150,13 +150,11 @@
 				"<a href=\"".redirect("devices.php?DeviceID=$dev->DeviceID")."\"> ".__("this link")."</a>.</p>
 				</body></html>");
 
-				$message->setBody($htmlMessage,'text/html');
-				try{
-					$result=$mailer->send($message);
-				}catch(Swift_RfcComplianceException $e){
-					$error.="Send: ".$e->getMessage()."<br>\n";
-				}catch(Swift_TransportException $e){
-					$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+				$mail->Body = $htmlMessage;
+				try {
+					$mail->send();
+				} catch (Exception $e) {
+					error_log( "Mailer error: {$mail->ErrorInfo}" );
 				}
 			
 				header('Location: '.redirect("devices.php?DeviceID=$dev->DeviceID"));
