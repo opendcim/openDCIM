@@ -366,7 +366,8 @@ class Device {
 		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,$dev->SNMPVersion,$dev->v3SecurityLevel,$dev->v3AuthProtocol,$dev->v3AuthPassphrase,$dev->v3PrivProtocol,$dev->v3PrivPassphrase);
 		$snmpresult=false;
 		try {
-			$snmpresult=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):(($walk)?$snmpHost->realWalk($oid):$snmpHost->get($oid));
+			$snmpresult=((is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):($walk))?$snmpHost->realWalk($oid):$snmpHost->get($oid);
+
 		}catch (Exception $e){
 			$dev->IncrementFailures();
 			error_log("Device::$caller($dev->DeviceID) ".$e->getMessage());
