@@ -17,3 +17,8 @@ drawings/
 /composer.json
 /composer.lock
 assets/
+
+#ignore symlinks
+scripts/jquery-ui.min.js
+scripts/jquery.min.js
+css/jquery-ui.css
