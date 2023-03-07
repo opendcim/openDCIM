@@ -25,6 +25,7 @@
 	// Only a site administrator can create or delete a cabinet
 	if(isset($_POST["delete"]) && $_POST["delete"]=="yes" && $person->SiteAdmin ) {
 		$cab->DeleteCabinet();
+		//@FIXME $status is an string, but treated as an object here to be sent back to user
 		$status['code']=200;
 		$status['msg']=redirect("dc_stats.php?dc=$cab->DataCenterID");
 		header('Content-Type: application/json');
@@ -123,7 +124,7 @@
 	if($cab->CabinetID > 0) {
 		// Get any tags associated with this device
 		$tags=$cab->GetTags();
-		if(count($tags>0)){
+		if(count($tags)){
 			// We have some tags so build the javascript elements we need to create the tags themselves
 			$taginsert="\t\ttags: {items: ".json_encode($tags)."},\n";
 		}

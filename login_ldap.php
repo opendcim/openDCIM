@@ -144,7 +144,7 @@
 					// a valid connection despite not authenticating when an invalid user is attempted with a blank password.
 					// This checks the results of our search to make sure they returned a valid object and if not stops the 
 					// authentication process.
-					if(gettype($ldapSearch) != "resource"){
+					if(!$ldapSearch && (gettype($ldapSearch) != "resource" || gettype($ldapSearch) != "object" )) {
 						debug_error_log( __("LDAP search error, did not return a valid resource.") . $ldapUser );
 					}else{
 						$ldapResults=ldap_get_entries($ldapConn,$ldapSearch);

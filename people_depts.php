@@ -21,7 +21,7 @@
 	
 	// Update if form was submitted and action is set
 	if(isset($_POST['action']) && $_POST['action']=="Submit"){
-		$grpMembers=$_POST['chosen'];
+		$grpMembers=!empty($_POST['chosen'])?$_POST['chosen']:array();
 		$person->AssignDepartments($grpMembers);
 	}
 
@@ -53,7 +53,7 @@
 
   <script type="text/javascript">
 	$(document).ready(function(){
-		$('#chosenList').multiselect();
+		$('#chosenList').multiselect({sortable:false});
 	});
   </script>
 

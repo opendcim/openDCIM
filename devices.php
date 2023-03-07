@@ -2494,7 +2494,7 @@ print "<!--				<div>".__("Panel")."</div> -->
 			
 			// Allow the user to modify the port if they have rights over the switch itself or
 			// the attached device.
-			$jsondata[$i]=($dev->Rights=="Write")?true:($tmpDev->Rights=="Write")?true:false;
+			$jsondata[$i]=($dev->Rights=="Write")?true:(($tmpDev->Rights=="Write")?true:false);
 
 			$cp=new DevicePorts();
 			if($port->ConnectedDeviceID>0 && !is_null($port->ConnectedDeviceID)){
@@ -2543,7 +2543,7 @@ print "<!--				<div>".__("Panel")."</div> -->
 
 			// Allow the user to modify the port if they have rights over the patch panel itself or
 			// the attached device, but only the front port.  The rear is still reserved for administrators only.
-			$jsondata[$i]=($dev->Rights=="Write")?true:($frontDev->Rights=="Write")?true:false;
+			$jsondata[$i]=($dev->Rights=="Write")?true:(($frontDev->Rights=="Write")?true:false);
 
 			$fp=""; //front port Label
 			$cPort=new DevicePorts();

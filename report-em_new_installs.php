@@ -2,6 +2,7 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
+	$error = "";
 	$device = new Device();
 	$devList = $device->GetDevicesbyAge($config->ParameterArray["NewInstallsPeriod"] );
 

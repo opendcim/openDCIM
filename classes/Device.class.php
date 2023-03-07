@@ -366,7 +366,7 @@ class Device {
 		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,$dev->SNMPVersion,$dev->v3SecurityLevel,$dev->v3AuthProtocol,$dev->v3AuthPassphrase,$dev->v3PrivProtocol,$dev->v3PrivPassphrase);
 		$snmpresult=false;
 		try {
-			$snmpresult=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):($walk)?$snmpHost->realWalk($oid):$snmpHost->get($oid);
+			$snmpresult=(is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):(($walk)?$snmpHost->realWalk($oid):$snmpHost->get($oid));
 		}catch (Exception $e){
 			$dev->IncrementFailures();
 			error_log("Device::$caller($dev->DeviceID) ".$e->getMessage());
@@ -1999,7 +1999,7 @@ class Device {
 				if($noimage){$imageratio=($parentTempl->Model=='HTRAY')?($height/$width):($width/$height);}
 				$slot->W=($parentTempl->Model=='HTRAY')?$parentDetails->targetWidth/$parentDev->ChassisSlots:$parentDetails->targetWidth;
 				$slot->H=($parentTempl->Model=='HTRAY')?$parentDetails->targetHeight:$parentDetails->targetHeight/$parentDev->ChassisSlots;
-				$slot->X=($parentTempl->Model=='HTRAY')?($rear)?($parentDev->ChassisSlots-$this->Position-$this->Height+1)*$slot->W:($slot->Position-1)*$slot->W:0;
+				$slot->X=($parentTempl->Model=='HTRAY')?(($rear)?($parentDev->ChassisSlots-$this->Position-$this->Height+1)*$slot->W:($slot->Position-1)*$slot->W):0;
 				$slot->Y=($parentTempl->Model=='HTRAY')?0:$parentDetails->targetHeight-$parentDetails->targetHeight/$parentDev->ChassisSlots*($this->Position+$this->Height-1);
 
 				// Enlarge the slot if needed

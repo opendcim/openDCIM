@@ -47,8 +47,8 @@ class DataCenter {
 		$this->DrawingFileName=sanitize($this->DrawingFileName);
 		$this->EntryLogging=intval($this->EntryLogging);
 		$this->ContainerID=intval($this->ContainerID);
-		$this->MapX=abs($this->MapX);
-		$this->MapY=abs($this->MapY);
+		$this->MapX=abs((is_numeric($this->MapX)?$this->MapX:0));
+		$this->MapY=abs((is_numeric($this->MapY)?$this->MapY:0));
 		$this->U1Position=in_array($this->U1Position, array("Top","Bottom","Default"))?$this->U1Position:"Default";
 	}
 

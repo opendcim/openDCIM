@@ -66,10 +66,10 @@ class Cabinet {
 		$this->MaxKW=float_sqlsafe(floatval($this->MaxKW));
 		$this->MaxWeight=intval($this->MaxWeight);
 		$this->InstallationDate=date("Y-m-d", strtotime($this->InstallationDate));
-		$this->MapX1=abs($this->MapX1);
-		$this->MapY1=abs($this->MapY1);
-		$this->MapX2=abs($this->MapX2);
-		$this->MapY2=abs($this->MapY2);
+		$this->MapX1=abs((is_numeric($this->MapX1)?$this->MapX1:0));
+		$this->MapY1=abs((is_numeric($this->MapY1)?$this->MapY1:0));
+		$this->MapX2=abs((is_numeric($this->MapX2)?$this->MapX2:0));
+		$this->MapY2=abs((is_numeric($this->MapY2)?$this->MapY2:0));
 		$this->FrontEdge=in_array($this->FrontEdge, array("Top","Right","Left","Bottom"))?$this->FrontEdge:"Top";
 		$this->Notes=sanitize($this->Notes,false);
 		$this->U1Position=in_array($this->U1Position, array("Top","Bottom","Default"))?$this->U1Position:"Default";

@@ -114,7 +114,7 @@ if($object>0){
 			$HumMax=intval($config->ParameterArray["HumidityRedHigh"]);
 						
 			
-			while(list($devID,$device)=each($devList)){
+			foreach($devList as $device) {
 				$totalWatts+=$device->GetDeviceTotalPower();
 				$DeviceTotalWeight=$device->GetDeviceTotalWeight();
 				$totalWeight+=$DeviceTotalWeight;
