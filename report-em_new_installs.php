@@ -1,46 +1,40 @@
 <?php
-	require_once( 'db.inc.php' );
-	require_once( 'facilities.inc.php' );
+	require_once "db.inc.php";
+	require_once "facilities.inc.php";
+	require __DIR__."/vendor/autoload.php";
+
+	use PHPMailer\PHPMailer\PHPMailer;
+	use PHPMailer\PHPMailer\Exception;
+	use PHPMailer\PHPMailer\SMTP;
 
 	$error = "";
 	$device = new Device();
 	$devList = $device->GetDevicesbyAge($config->ParameterArray["NewInstallsPeriod"] );
 
+	$mail = new PHPMailer(true);
+	$mail->SMTPDebug = SMTP::DEBUG_OFF;
+	$mail->isSMTP();
+	$mail->Host = $config->ParameterArray['SMTPServer'];
+	$mail->Port = $config->ParameterArray['SMTPPort'];
+
 	// If any port other than 25 is specified, assume encryption and authentication
 	if($config->ParameterArray['SMTPPort']!= 25){
-		$transport=Swift_SmtpTransport::newInstance()
-			->setHost($config->ParameterArray['SMTPServer'])
-			->setPort($config->ParameterArray['SMTPPort'])
-			->setEncryption('ssl')
-			->setUsername($config->ParameterArray['SMTPUser'])
-			->setPassword($config->ParameterArray['SMTPPassword']);
-	}else{
-		$transport=Swift_SmtpTransport::newInstance()
-			->setHost($config->ParameterArray['SMTPServer'])
-			->setPort($config->ParameterArray['SMTPPort']);
+		$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+		$mail->SMTPAuth = true;
+		$mail->Username = $config->ParameterArray['SMTPUser'];
+		$mail->Password = $config->ParameterArray['SMTPPassword'];
 	}
 
-	$mailer = Swift_Mailer::newInstance($transport);
-	$message = Swift_Message::NewInstance()->setSubject( __("Recent Data Center Installations Report" ) );
+	$mail->Subject = $config->ParameterArray['MailSubject'];
+	$mail->setFrom( $config->ParameterArray['MailFromAddr'] );
+	$mail->isHTML(true);
 
-	// Set from address
-	try{		
-		$message->setFrom($config->ParameterArray['MailFromAddr']);
-	}catch(Swift_RfcComplianceException $e){
-		$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
-	}
+	$mail->addAttachment( $config->ParameterArray["PDFLogoFile"], "logo.png" );
+	$mail->Subject = __("Recent Data Center Installations Report" );
 
-	// Add data center team to the list of recipients
-	try{		
-		$message->addTo($config->ParameterArray['FacMgrMail']);
-	}catch(Swift_RfcComplianceException $e){
-		$error.=__("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
-	}
+	$mail->addAddress($config->ParameterArray['FacMgrMail']);
 
-	$logo=getcwd().'/'.$config->ParameterArray["PDFLogoFile"];
-	$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
-
-	$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>ITS Data Center Inventory</title></head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p><h3>Installations in the Past 7 Days</h3>\n", $config->ParameterArray["HeaderColor"], $logo );
+	$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>ITS Data Center Inventory</title></head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p><h3>Installations in the Past 7 Days</h3>\n", $config->ParameterArray["HeaderColor"], "logo.png" );
 	
 	$htmlMessage .= sprintf( "<p>The following systems have been entered into openDCIM, with an Install Date set to within the past %d days.  Please review these entries to determine if follow-up documentation is required.</p>", $config->ParameterArray["NewInstallsPeriod"] );
 	
@@ -70,13 +64,10 @@
 		$htmlMessage .= "</table>\n";
 	}
 
-	$message->setBody($htmlMessage,'text/html');
-
+	$mail->Body = $htmlMessage;
 	try {
-		$result = $mailer->send( $message );
-	} catch( Swift_RfcComplianceException $e) {
-		$error .= "Send: " . $e->getMessage() . "<br>\n";
-	} catch( Swift_TransportException $e) {
-		$error .= "Server: <span class=\"errmsg\">" . $e->getMessage() . "</span><br>\n";
+		$mail->send();
+	} catch (Exception $e) {
+		error_log( "Mailer error: {$mail->ErrorInfo}" );
 	}
 ?>

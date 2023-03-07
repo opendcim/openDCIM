@@ -1,40 +1,34 @@
 <?php
-	require_once( 'db.inc.php' );
-	require_once( 'facilities.inc.php' );
+	require_once "db.inc.php";
+	require_once "facilities.inc.php";
+	require __DIR__."/vendor/autoload.php";
+
+	use PHPMailer\PHPMailer\PHPMailer;
+	use PHPMailer\PHPMailer\Exception;
+	use PHPMailer\PHPMailer\SMTP;
+
+	$mail = new PHPMailer(true);
+	$mail->SMTPDebug = SMTP::DEBUG_OFF;
+	$mail->isSMTP();
+	$mail->Host = $config->ParameterArray['SMTPServer'];
+	$mail->Port = $config->ParameterArray['SMTPPort'];
 
 	// If any port other than 25 is specified, assume encryption and authentication
 	if($config->ParameterArray['SMTPPort']!= 25){
-		$transport=Swift_SmtpTransport::newInstance()
-			->setHost($config->ParameterArray['SMTPServer'])
-			->setPort($config->ParameterArray['SMTPPort'])
-			->setEncryption('ssl')
-			->setUsername($config->ParameterArray['SMTPUser'])
-			->setPassword($config->ParameterArray['SMTPPassword']);
-	}else{
-		$transport=Swift_SmtpTransport::newInstance()
-			->setHost($config->ParameterArray['SMTPServer'])
-			->setPort($config->ParameterArray['SMTPPort']);
+		$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+		$mail->SMTPAuth = true;
+		$mail->Username = $config->ParameterArray['SMTPUser'];
+		$mail->Password = $config->ParameterArray['SMTPPassword'];
 	}
 
-	$mailer = Swift_Mailer::newInstance($transport);
-	$message = Swift_Message::NewInstance()->setSubject( __("Data Center Reserved Space Report" ) );
+	$mail->Subject = $config->ParameterArray['MailSubject'];
+	$mail->setFrom( $config->ParameterArray['MailFromAddr'] );
+	$mail->isHTML(true);
 
-	// Set from address
-	try{		
-		$message->setFrom($config->ParameterArray['MailFromAddr']);
-	}catch(Swift_RfcComplianceException $e){
-		$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
-	}
+	$mail->addAttachment( $config->ParameterArray["PDFLogoFile"], "logo.png" );
+	$mail->Subject = __("Recent Data Center Installations Report" );
 
-	// Add data center team to the list of recipients
-	try{		
-		$message->addTo($config->ParameterArray['FacMgrMail']);
-	}catch(Swift_RfcComplianceException $e){
-		$error.=__("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
-	}
-
-	$logo=getcwd().'/'.$config->ParameterArray["PDFLogoFile"];
-	$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
+	$mail->addAddress($config->ParameterArray['FacMgrMail']);
 	
 	$style = "
 <style type=\"text/css\">
@@ -45,7 +39,7 @@
 }
 </style>";
 
-	$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Data Center Inventory Reservations"), $style, $config->ParameterArray["HeaderColor"], $logo  );
+	$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Data Center Inventory Reservations"), $style, $config->ParameterArray["HeaderColor"], "logo.png"  );
 
 	$datedList = Device::GetReservationsByDate();
 	
@@ -114,13 +108,10 @@
 	
 	$htmlMessage .= sprintf( "<br><h3>%s: %d</h3>\n", __("Total U Reserved in DCIM"), $totalU );
 
-	$message->setBody($htmlMessage,'text/html');
-
+	$mail->Body = $htmlMessage;
 	try {
-		$result = $mailer->send( $message );
-	} catch( Swift_RfcComplianceException $e) {
-		$error .= "Send: " . $e->getMessage() . "<br>\n";
-	} catch( Swift_TransportException $e) {
-		$error .= "Server: <span class=\"errmsg\">" . $e->getMessage() . "</span><br>\n";
+		$mail->send();
+	} catch (Exception $e) {
+		error_log( "Mailer error: {$mail->ErrorInfo}" );
 	}
 ?>

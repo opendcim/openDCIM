@@ -1,6 +1,11 @@
 <?php
-    require_once('db.inc.php');
-    require_once('facilities.inc.php');
+	require_once "db.inc.php";
+	require_once "facilities.inc.php";
+	require __DIR__."/vendor/autoload.php";
+
+	use PHPMailer\PHPMailer\PHPMailer;
+	use PHPMailer\PHPMailer\Exception;
+	use PHPMailer\PHPMailer\SMTP;
     
     $vm=new VM();
     $dev=new Device();
@@ -8,46 +13,28 @@
 
 	$error="";
 
+	$mail = new PHPMailer(true);
+	$mail->SMTPDebug = SMTP::DEBUG_OFF;
+	$mail->isSMTP();
+	$mail->Host = $config->ParameterArray['SMTPServer'];
+	$mail->Port = $config->ParameterArray['SMTPPort'];
+
 	// If any port other than 25 is specified, assume encryption and authentication
 	if($config->ParameterArray['SMTPPort']!= 25){
-		$transport=Swift_SmtpTransport::newInstance()
-			->setHost($config->ParameterArray['SMTPServer'])
-			->setPort($config->ParameterArray['SMTPPort'])
-			->setEncryption('ssl')
-			->setUsername($config->ParameterArray['SMTPUser'])
-			->setPassword($config->ParameterArray['SMTPPassword']);
-	}else{
-		$transport=Swift_SmtpTransport::newInstance()
-			->setHost($config->ParameterArray['SMTPServer'])
-			->setPort($config->ParameterArray['SMTPPort']);
+		$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+		$mail->SMTPAuth = true;
+		$mail->Username = $config->ParameterArray['SMTPUser'];
+		$mail->Password = $config->ParameterArray['SMTPPassword'];
 	}
 
-	$mailer=Swift_Mailer::newInstance($transport);
-	$message=Swift_Message::NewInstance()->setSubject(__("Virtual Machine Inventory Exception Report"));
+	$mail->Subject = $config->ParameterArray['MailSubject'];
+	$mail->setFrom( $config->ParameterArray['MailFromAddr'] );
+	$mail->isHTML(true);
 
-	// Set from address
-	try{		
-		$message->setFrom($config->ParameterArray['MailFromAddr']);
-		$message->SetReplyTo($config->ParameterArray["MailToAddr"]);
-	}catch(Swift_RfcComplianceException $e){
-		$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
-	}
+	$mail->addAttachment( $config->ParameterArray["PDFLogoFile"], "logo.png" );
+	$mail->Subject = __("Virtual Machine Inventory Exception Report" );
 
-	// Add people to recipient list
-	try{		
-		$message->setTo($config->ParameterArray['MailToAddr']);
-		/* // Add additional recipients below this section using the following examples
-		 * // Using addTo() to add recipients iteratively
-		 * $message->addTo('person1@example.org');
-		 * $message->addTo('person2@example.org', 'Person 2 Name');
-		 */
-
-	}catch(Swift_RfcComplianceException $e){
-		$error.=__("Data center team address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
-	}
-
-	$logo=getcwd().'/'.$config->ParameterArray["PDFLogoFile"];
-	$logo=$message->embed(Swift_Image::fromPath($logo)->setFilename('logo.png'));
+	$mail->addAddress($config->ParameterArray['MailToAddr']);
 	
 	$style = "
 <style type=\"text/css\">
@@ -63,7 +50,7 @@
 	if(count($vmList) >0){
 		$vmCount=count($vmList);
 
-		$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Virtual Machine Inventory Exception Report"), $style, $config->ParameterArray["HeaderColor"], $logo  );
+		$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Virtual Machine Inventory Exception Report"), $style, $config->ParameterArray["HeaderColor"], "logo.png"  );
 		$htmlMessage.="<p>".__("This is an automated message from the")." {$config->ParameterArray["OrgName"]} ".__("Inventory
 			Process.  This process is scheduled to run once each business day.</p>
 			<p>The following")." $vmCount ".__("Virtual Machines were detected in the environment
@@ -92,13 +79,11 @@
       
 		$htmlMessage.="</table></body></html>";
 
-		$message->setBody($htmlMessage,'text/html');
-		try{
-			$result=$mailer->send($message);
-		}catch(Swift_RfcComplianceException $e){
-			$error.="Send: ".$e->getMessage()."<br>\n";
-		}catch(Swift_TransportException $e){
-			$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+		$mail->Body = $htmlMessage;
+		try {
+			$mail->send();
+		} catch (Exception $e) {
+			error_log( "Mailer error: {$mail->ErrorInfo}" );
 		}
     }
 
@@ -107,7 +92,7 @@
 	if(count($vmList) >0){
 		$vmCount=count($vmList);
 
-      		$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Virtual Machine Inventory Expiration Report"), $style, $config->ParameterArray["HeaderColor"], $logo  );
+      		$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Virtual Machine Inventory Expiration Report"), $style, $config->ParameterArray["HeaderColor"], "logo.png" );
 		$htmlMessage.="<p>".__("This is an automated message from the")." {$config->ParameterArray["OrgName"]} ".__("Virtual Machine Inventory
 			Process.  This process is scheduled to run once each business day.")."</p>
 			<p>".__("The following")." $vmCount ".__("Virtual Machines have not been detected within the
@@ -130,15 +115,11 @@
 			$htmlMessage.="<tr><td>$dev->Label</td><td>$vmRow->vmName</td><td>$vmRow->vmState</td><td>$vmRow->LastUpdated</td></tr>\n";
 		}
       
-		$htmlMessage.="</table></body></html>";
-
-		$message->setBody($htmlMessage,'text/html');
-		try{
-			$result=$mailer->send($message);
-		}catch(Swift_RfcComplianceException $e){
-			$error.="Send: ".$e->getMessage()."<br>\n";
-		}catch(Swift_TransportException $e){
-			$error.="Server: <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+		$mail->Body = $htmlMessage;
+		try {
+			$mail->send();
+		} catch (Exception $e) {
+			error_log( "Mailer error: {$mail->ErrorInfo}" );
 		}
 
 		// Delete 'em

@@ -1,49 +1,43 @@
 <?php
-	require_once( "../db.inc.php" );
-	require_once( "../facilities.inc.php" );
+	require_once "../db.inc.php";
+	require_once "../facilities.inc.php";
+	require "../vendor/autoload.php";
+
+	use PHPMailer\PHPMailer\PHPMailer;
+	use PHPMailer\PHPMailer\Exception;
+	use PHPMailer\PHPMailer\SMTP;
 
 	header("Content-type: text/html");
 
 	if(isset( $_REQUEST['SMTPServer'] ) && isset( $_REQUEST['SMTPPort'] ) && isset( $_REQUEST['SMTPUser'] ) && isset( $_REQUEST['SMTPPassword'] ) && isset( $_REQUEST['FacMgrMail']) ) {
-		if ( $_REQUEST['SMTPPort'] != 25 ) {
-			$transport=Swift_SmtpTransport::newInstance()
-				->setHost($_REQUEST['SMTPServer'])
-				->setPort($_REQUEST['SMTPPort'])
-				->setEncryption('ssl')
-				->setUsername($_REQUEST['SMTPUser'])
-				->setPassword($_REQUEST['SMTPPassword']);
-		} else {
-			$transport=Swift_SmtpTransport::newInstance()
-				->setHost($_REQUEST['SMTPServer'])
-				->setPort($_REQUEST['SMTPPort']);
-		}
+		$mail = new PHPMailer(true);
+		$mail->SMTPDebug = SMTP::DEBUG_OFF;
+		$mail->isSMTP();
+		$mail->isHTML(true);
+		$mail->Host = $config->ParameterArray['SMTPServer'];
+		$mail->Port = $config->ParameterArray['SMTPPort'];
 
-		$mailer = Swift_Mailer::newInstance($transport);
-		$message = Swift_Message::NewInstance()->setSubject( __("openDCIM Test Message" ) );
+		// If any port other than 25 is specified, assume encryption and authentication
+		if($config->ParameterArray['SMTPPort']!= 25){
+			$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+			$mail->SMTPAuth = true;
+			$mail->Username = $config->ParameterArray['SMTPUser'];
+			$mail->Password = $config->ParameterArray['SMTPPassword'];
+		}
 
 		if ( isset( $_REQUEST['MailFrom'])) {
-			$mailFrom = $_REQUEST['MailFrom'];
+			$mail->setFrom( $_REQUEST['MailFrom'] );
 		} else {
-			$mailFrom = $_REQUEST['FacMgrMail'];
-		}
-
-		try{		
-			$message->setFrom($mailFrom);
-		}catch(Swift_RfcComplianceException $e){
-			$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
+			$mail->setFrom( $_REQUEST['FacMgrMail'] );
 		}
 
 		if ( isset( $_REQUEST['MailToAddr'])) {
-			$mailTo = $_REQUEST['MailToAddr'];
+			$mail->addAddress( $_REQUEST['MailToAddr'] );
 		} else {
-			$mailTo = $_REQUEST['FacMgrMail'];
+			$mail->addAddress( $_REQUEST['FacMgrMail'] );
 		}
 
-		try{		
-			$message->addTo($mailTo);
-		}catch(Swift_RfcComplianceException $e){
-			$error.=__("MailTo").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
-		}
+		$mail->Subject = __("Test Email from openDCIM");
 
 		$style = "
 <style type=\"text/css\">
@@ -58,14 +52,11 @@
 
 		$htmlMessage .= __("<p>This is a test email sent by an administrator from the openDCIM system at") . ' ' . $_SERVER['SERVER_NAME'] . '</p>';
 
-		$message->setBody($htmlMessage,'text/html');
-
+		$mail->Body = $htmlMessage;
 		try {
-			$result = $mailer->send( $message );
-		} catch( Swift_RfcComplianceException $e) {
-			$error .= "Send: " . $e->getMessage() . "<br>\n";
-		} catch( Swift_TransportException $e) {
-			$error .= "Server: <span class=\"errmsg\">" . $e->getMessage() . "</span><br>\n";
+			$mail->send();
+		} catch (Exception $e) {
+			error_log( "Mailer error: {$mail->ErrorInfo}" );
 		}
 	} else {
 		$error = __("Script called without sufficient parameters.") . "<br>" . print_r( strip_tags($_REQUEST), true );

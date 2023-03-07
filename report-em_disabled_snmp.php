@@ -22,18 +22,15 @@
 	}
 
 	$mail->Subject = $config->ParameterArray['MailSubject'];
-	$mail->setFrom = $config->ParameterArray['MailFromAddr'];
+	$mail->setFrom( $config->ParameterArray['MailFromAddr'] );
 	$mail->isHTML(true);
-	$mail->addAddress($tmpContact->Email);
-	$mail->addAddress($config->ParameterArray['MailToAddr']);
 	$mail->Subject = __("Data Center Disabled SNMP Devices Report" );
 
 	$mail->addAddress( $config->ParameterArray['FacMgrMail'] );
 
-
 	$mail->addAttachment( $config->ParameterArray["PDFLogoFile"], "logo.png" );
 
-	$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>ITS Data Center Inventory</title></head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", $config->ParameterArray["HeaderColor"], $logo );
+	$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>ITS Data Center Inventory</title></head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", $config->ParameterArray["HeaderColor"], "logo.png" );
 	
 	$htmlMessage .= sprintf( "<p>The following devices have been disabled from SNMP polling due to three consecutive failed attempts.  Click on the link provided to re-enable, or click on the 'Enable All' button to re-activate all at once.</p>" );
 	
@@ -80,7 +77,6 @@
 		$htmlMessage .= $exceptionRows;
 		$htmlMessage .= "</table>\n";
 	}
-
 
 	$mail->Body = $htmlMessage;
 	try {
