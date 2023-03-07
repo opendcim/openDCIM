@@ -141,7 +141,7 @@ class PowerPorts {
 			if(isset($tports[$i])){
 				// Get any attributes from the template
 				foreach($tports[$i] as $key => $value){
-					if(array_key_exists($key,$portList[$i])){
+					if(property_exists($portList[$i],$key)){
 						$portList[$i]->$key=$value;
 					}
 				}

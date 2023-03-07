@@ -90,8 +90,10 @@
 		$breadcrumbpath="";
 		if($path!='.'){
 			foreach(explode("/",$path) as $i => $d) {
-				$breadcrumb.="<a href=\"?dl=$breadcrumbpath$d\">$d</a>/";
-				$breadcrumbpath.="$d/";
+				if(is_readable($breadcrumbpath.$d."/")){
+					$breadcrumb.="<a href=\"?dl=$breadcrumbpath$d\">$d</a>/";
+					$breadcrumbpath.="$d/";
+				}
 			}
 		}
 		$imageselect=__("Current selection").': '.$breadcrumb.'<br><input type="hidden" id="directoryselectionvalue" value="'.$breadcrumbpath.'"><div id="filelist">';
@@ -114,7 +116,7 @@
 	}
 
 	function BuildFileList($returnjson=false,$path="."){
-		$path=trim($path);
+		$path=sanitize(trim($path));
 		# Make sure we don't have any path shenanigans going on
 		$path=str_replace(array("..","./"),"",$path);
 		# we don't need trailing slashes, and leading slashes are going to be invalid paths

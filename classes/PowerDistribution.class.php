@@ -542,8 +542,10 @@ class PowerDistribution {
 				$result = $mailer->send( $message );
 			} catch( Swift_RfcComplianceException $e) {
 				$error .= "Send: " . $e->getMessage() . "<br>\n";
+				error_log("PowerDistribution::UpdateStats:RfcComplianceException ".$e->getMessage());
 			} catch( Swift_TransportException $e) {
 				$error .= "Server: <span class=\"errmsg\">" . $e->getMessage() . "</span><br>\n";
+				error_log("PowerDistribution::UpdateStats:TransportException ".$e->getMessage());
 			}
 		}
 	}

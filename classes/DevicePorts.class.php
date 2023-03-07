@@ -176,13 +176,13 @@ class DevicePorts {
 				if(isset($tports[$i])){
 					// Get any attributes from the device template
 					foreach($tports[$i] as $key => $value){
-						if(array_key_exists($key,$portList[$i])){
+						if(property_exists($portList[$i],$key)){
 							$portList[$i]->$key=$value;
 						}
 					}
 				}
 				// pull port name first from snmp then from template then just call it port x
-				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:(isset($tports[$i]) && $tports[$i]->Label)?$tports[$i]->Label:__("Port").$i;
+				$portList[$i]->Label=(isset($nameList[$n]))?$nameList[$n]:((isset($tports[$i]) && $tports[$i]->Label)?$tports[$i]->Label:__("Port").$i);
 				$portList[$i]->Notes=(isset($aliasList[$n]))?$aliasList[$n]:'';
 				$portList[$i]->createPort($update_existing);
 			}
@@ -195,7 +195,7 @@ class DevicePorts {
 				if(isset($tports[$i])){
 					// Get any attributes from the device template
 					foreach($tports[$i] as $key => $value){
-						if(array_key_exists($key,$portList[$i])){
+						if(property_exists($portList[$i], $key)){
 							$portList[$i]->$key=$value;
 						}
 					}
@@ -351,6 +351,8 @@ class DevicePorts {
 			$path[$n]->DeviceID = $path[$n-1]->ConnectedDeviceID;
 			// Patch panels have +/- port numbers to designate front/rear, so as you
 			// traverse the path, you have to flip
+			var_dump($path[$n-1]);
+			var_dump($path[$n]);
 			$path[$n]->PortNumber = -($path[$n-1]->ConnectedPort);
 			$path[$n]->getPort();
 		}
@@ -473,7 +475,7 @@ class DevicePorts {
 	}
 
 
-	static function getPatchCandidates($DeviceID,$PortNum=null,$listports=null,$patchpanels=null,$scopelimit=null){
+	static function getPatchCandidates($DeviceID,$PortNum=null,$listports=null,$patchpanels=null,$scopelimit=null,$term=null){
 		/*
 		 * $DeviceID = ID of the device that you are wanting to make a connection from
 		 * $PortNum(optional) = Port Number on the device you are wanting to connect,
@@ -525,6 +527,9 @@ class DevicePorts {
 					$limiter=" AND Cabinet IN (SELECT CabinetID FROM fac_Cabinet WHERE DataCenterID=$cab->DataCenterID)";
 					break;
 				default:
+					if ( ! is_null( $term ) && strlen($term)>0 ) {
+						$limiter=" AND fac_Device.Label like '%$term%";
+					}
 					break;
 			}
 		}
@@ -556,9 +561,9 @@ class DevicePorts {
 			
 			$sqlSameCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
 				Cabinet=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Position 
-				DESC, Label ASC;";
+				DESC, Label ASC limit 500;";
 			$sqlDiffCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
-				Cabinet!=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Label ASC;";
+				Cabinet!=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Label ASC limit 500;";
 			
 			foreach(array($sqlSameCabDevice, $sqlDiffCabDevice) as $sql){
 				foreach($dbh->query($sql) as $row){
@@ -570,7 +575,7 @@ class DevicePorts {
 		}else{
 			$sql="SELECT a.*, b.Cabinet as CabinetID FROM fac_Ports a, fac_Device b WHERE 
 				Ports>0 AND Cabinet>-1 AND a.DeviceID=b.DeviceID AND 
-				a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
+				a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp limit 500;";
 			foreach($dbh->query($sql) as $row){
 				$candidates[]=array("DeviceID"=>$row["DeviceID"], "Label"=>$row["Label"], "CabinetID"=>$row["CabinetID"]);
 			}

@@ -745,7 +745,104 @@ paths:
           description: "successful operation"
       security:
       - api_key: []
-      - user_id: []    
+      - user_id: [] 
+  /pollers/power:
+    get:
+      summary: Retrieve a list of pollable CDU (Power Sensor) devices matching the specified filter criteria, with a DeviceType of CDU and valid SNMP information.
+      tags:
+      - "Device"
+      - "PDUStats"
+      description: 'If no parameters are specified, all record information that you are authorized to view is returned.'
+      produces:
+      - "application/json"
+      operationId: "GetSensors"
+      parameters:
+        - name: Cabinet
+          in: query
+          required: false
+          type: string
+          description: "Filter results to those that match the given keyValue.  A value of -1 retrieves items in the virtual StorageRoom."
+          allowEmptyValue: true
+        - name: DataCenterID
+          in: query
+          required: false
+          type: string
+          description: "Filter results to those that match the given keyValue (does not work for StorageRoom - see note for Position)."
+          allowEmptyValue: true
+        - name: CabRowID
+          in: query
+          required: false
+          type: string
+          description: "Filter results to those that match the given keyValue"
+          allowEmptyValue: true
+        - name: ZoneID
+          in: query
+          required: false
+          type: string
+          description: "Filter results to those that match the given keyValue"
+          allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              allOf:
+                -  $ref: "#/definitions/Device"
+                -  $ref: "#/definitions/DeviceTemplate"
+      security:
+      - api_key: []
+      - user_id: []         
+  /pollers/sensors:
+    get:
+      summary: Retrieve a list of pollable Sensor devices matching the specified filter criteria, with a DeviceType of Sensor and valid SNMP information.
+      tags:
+      - "Device"
+      description: 'If no parameters are specified, all record information that you are authorized to view is returned.'
+      produces:
+      - "application/json"
+      operationId: "GetSensors"
+      parameters:
+        - name: Cabinet
+          in: query
+          required: false
+          type: string
+          description: "Filter results to those that match the given keyValue.  A value of -1 retrieves items in the virtual StorageRoom."
+          allowEmptyValue: true
+        - name: DataCenterID
+          in: query
+          required: false
+          type: string
+          description: "Filter results to those that match the given keyValue (does not work for StorageRoom - see note for Position)."
+          allowEmptyValue: true
+        - name: CabRowID
+          in: query
+          required: false
+          type: string
+          description: "Filter results to those that match the given keyValue"
+          allowEmptyValue: true
+        - name: ZoneID
+          in: query
+          required: false
+          type: string
+          description: "Filter results to those that match the given keyValue"
+          allowEmptyValue: true
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              allOf:
+                -  $ref: "#/definitions/Device"
+                -  $ref: "#/definitions/DeviceTemplate"
+      security:
+      - api_key: []
+      - user_id: []         
   /powerport/{DeviceID}:
     get:
       summary: Power Port information for a specific device
@@ -879,6 +976,37 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Project"
+      security:
+      - api_key: []
+      - user_id: []
+  /pdustats/{PDUID}:
+    post:
+      summary: Update PDU Reading for a specific device
+      tags:
+      - "PDUStats"
+      - "Device"
+      description: "Updates a power device with a new reading"
+      produces:
+      - "application/json"
+      operationId: "UpdatePDUStats"
+      parameters:
+        - in: path
+          name: "PDUID"
+          required: true
+          type: string
+          description: "keyValue of the DeviceID to be updated"
+        - in: body
+          name: "body"
+          required: true
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/PDUStats"
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
       security:
       - api_key: []
       - user_id: []
@@ -1395,6 +1523,18 @@ definitions:
         enum:
         - "Active"
         - "Inactive"
+  PDUStats:
+    type: "object"
+    properties:
+      PDUID:
+        type: "integer"
+        format: "integer"
+      Wattage:
+        type: "integer"
+        format: "integer"
+      LastRead:
+        type: "string"
+        format: "Timestamp of last reading"
   Person:
     type: "object"
     properties:

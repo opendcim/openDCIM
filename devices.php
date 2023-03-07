@@ -1778,7 +1778,7 @@ echo($copy)?"<h3>$copyerr</h3>":'';
 echo '<div class="center"><div>
 <h3></h3><h3 id="messages"></h3>
 <div id="Positionselector"></div>
-<form name="deviceform" id="deviceform" method="POST">
+<form name="deviceform" id="deviceform" method="POST" autocomplete="off">
 <div class="left">
 <fieldset>
 	<legend>'.__("Asset Tracking").'</legend>
@@ -2058,11 +2058,11 @@ echo '
 	<div class="table">
 		<div>
 		  <div><label for="APIUsername">'.__("API Username").'</label></div>
-		  <div><input type="text" name="APIUsername" id="APIUsername" value="'.$dev->APIUsername.'"></div>
+		  <div><input autocomplete="off" type="text" name="APIUsername" id="APIUsername" value="'.$dev->APIUsername.'"></div>
 		</div>
 		<div>
 		  <div><label for="APIPassword">'.__("API Password").'</label></div>
-		  <div><input type="password" name="APIPassword" id="APIPassword" value="'.$dev->APIPassword.'"></div>
+		  <div><input autocomplete="off" type="password" name="APIPassword" id="APIPassword" value="'.$dev->APIPassword.'"></div>
 		</div>
 		<div>
 		  <div><label for="APIPort">'.__("API Port").'</label></div>
@@ -2122,7 +2122,7 @@ echo '
 		</div>
 		<div>
 		  <div><label for="v3AuthPassphrase">'.__("SNMPv3 Passphrase").'</label></div>
-		  <div><input type="password" name="v3AuthPassphrase" id="v3AuthPassphrase" value="'.$dev->v3AuthPassphrase.'"></div>
+		  <div><input autocomplete="off" type="password" name="v3AuthPassphrase" id="v3AuthPassphrase" value="'.$dev->v3AuthPassphrase.'"></div>
 		</div>
 		<div>
 		  <div><label for="v3PrivProtocol">'.__("SNMPv3 PrivProtocol").'</label></div>
@@ -2139,7 +2139,7 @@ echo '
 		</div>
 		<div>
 		  <div><label for="v3PrivPassphrase">'.__("SNMPv3 PrivPassphrase").'</label></div>
-		  <div><input type="password" name="v3PrivPassphrase" id="v3PrivPassphrase" value="'.$dev->v3PrivPassphrase.'"></div>
+		  <div><input autocomplete="off" type="password" name="v3PrivPassphrase" id="v3PrivPassphrase" value="'.$dev->v3PrivPassphrase.'"></div>
 		</div>
 		<div>
 		  <div><label for="SNMPFailureCount">'.__("Consecutive SNMP Failures").'*</label></div>
@@ -2494,7 +2494,7 @@ print "<!--				<div>".__("Panel")."</div> -->
 			
 			// Allow the user to modify the port if they have rights over the switch itself or
 			// the attached device.
-			$jsondata[$i]=($dev->Rights=="Write")?true:($tmpDev->Rights=="Write")?true:false;
+			$jsondata[$i]=($dev->Rights=="Write")?true:(($tmpDev->Rights=="Write")?true:false);
 
 			$cp=new DevicePorts();
 			if($port->ConnectedDeviceID>0 && !is_null($port->ConnectedDeviceID)){
@@ -2543,7 +2543,7 @@ print "<!--				<div>".__("Panel")."</div> -->
 
 			// Allow the user to modify the port if they have rights over the patch panel itself or
 			// the attached device, but only the front port.  The rear is still reserved for administrators only.
-			$jsondata[$i]=($dev->Rights=="Write")?true:($frontDev->Rights=="Write")?true:false;
+			$jsondata[$i]=($dev->Rights=="Write")?true:(($frontDev->Rights=="Write")?true:false);
 
 			$fp=""; //front port Label
 			$cPort=new DevicePorts();

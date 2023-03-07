@@ -68,7 +68,7 @@
 			$error .= "Server: <span class=\"errmsg\">" . $e->getMessage() . "</span><br>\n";
 		}
 	} else {
-		$error = __("Script called without sufficient parameters.") . "<br>" . print_r( $_REQUEST, true );
+		$error = __("Script called without sufficient parameters.") . "<br>" . print_r( strip_tags($_REQUEST), true );
 	}
 
 	if ( isset( $error ) ) {

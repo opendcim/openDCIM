@@ -248,6 +248,9 @@ function attribsql($attrib,$val,&$sql,$loose){
  */
 
 if(!extension_loaded('mbstring')){
+	define("MB_CASE_UPPER","MB_CASE_UPPER");
+	define("MB_CASE_LOWER", "MB_CASE_LOWER");
+	define("MB_CASE_TITLE", "MB_CASE_TITLE");
 	function mb_strtoupper($text,$encoding=null){
 		return strtoupper($text);
 	}
@@ -1197,10 +1200,10 @@ function getNameFromNumber($num){
 
 function mangleDate($dateString) {
 	// Take various formats of the date that may have been stored in the db and present them in a nice manner according to ISO8601 Format
-	if ( $dateString == null ) {
+	if ( $dateString == null || $dateString == "0000-00-00" || $dateString == "0") {
 		return "";
 	}
-
+	
 	if ( date( "Y-m-d", $dateString ) == "1969-12-31" ) {
 		return "";
 	} else {

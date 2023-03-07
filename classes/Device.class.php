@@ -367,6 +367,7 @@ class Device {
 		$snmpresult=false;
 		try {
 			$snmpresult=((is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):($walk))?$snmpHost->realWalk($oid):$snmpHost->get($oid);
+
 		}catch (Exception $e){
 			$dev->IncrementFailures();
 			error_log("Device::$caller($dev->DeviceID) ".$e->getMessage());
@@ -1414,24 +1415,24 @@ class Device {
 		// This will store all our extended sql
 		$sqlextend="";
 		foreach($o as $prop => $val){
-			if(property_exists("Device",$prop)){
+			if(property_exists("Device",$prop) || in_array( $prop, array( "DataCenterID", "ZoneID", "CabRowID", "CabinetID" ))){
 				extendsql($prop,$this->$prop,$sqlextend,$loose);
 			}else{
 				if(array_key_exists($prop,$attrList)){
 					attribsql($attrList[$prop]->AttributeID,$val,$customSQL,$loose);
-				}else{
-					// The requested attribute is not valid.  Ain't nobody got time for that!
+				} else {
+				// The requested attribute is not valid.  Ain't nobody got time for that!
 				}
 			}
 		}
+
 		if($sqlextend==""){
-			// No base attributes to search, only custom
-			$sqlextend="WHERE TRUE";
+			$sqlextend="WHERE TRUE ";
 		}
 		if($customSQL!=""){
 			$customSQL="AND DeviceID IN (SELECT DeviceID FROM fac_DeviceCustomValue $customSQL)";
 		}
-		$sql="SELECT * FROM fac_Device $sqlextend $customSQL ORDER BY Label ASC;";
+		$sql="SELECT * FROM fac_Device, fac_Cabinet $sqlextend AND fac_Device.Cabinet=fac_Cabinet.CabinetID $customSQL ORDER BY Label ASC;";
 
 		$deviceList=array();
 
@@ -1999,7 +2000,7 @@ class Device {
 				if($noimage){$imageratio=($parentTempl->Model=='HTRAY')?($height/$width):($width/$height);}
 				$slot->W=($parentTempl->Model=='HTRAY')?$parentDetails->targetWidth/$parentDev->ChassisSlots:$parentDetails->targetWidth;
 				$slot->H=($parentTempl->Model=='HTRAY')?$parentDetails->targetHeight:$parentDetails->targetHeight/$parentDev->ChassisSlots;
-				$slot->X=($parentTempl->Model=='HTRAY')?($rear)?($parentDev->ChassisSlots-$this->Position-$this->Height+1)*$slot->W:($slot->Position-1)*$slot->W:0;
+				$slot->X=($parentTempl->Model=='HTRAY')?(($rear)?($parentDev->ChassisSlots-$this->Position-$this->Height+1)*$slot->W:($slot->Position-1)*$slot->W):0;
 				$slot->Y=($parentTempl->Model=='HTRAY')?0:$parentDetails->targetHeight-$parentDetails->targetHeight/$parentDev->ChassisSlots*($this->Position+$this->Height-1);
 
 				// Enlarge the slot if needed

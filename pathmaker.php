@@ -453,6 +453,7 @@
 									select.children().detach();
 									select.append(opt.clone()).attr('name','port'+port);
 									$.each(data, function(i,por){
+										por.Label = (por.PortNumber>0?por.Label:(por.Label + " (rear)"));
 										var o=opt.clone().val(por.PortNumber).text(por.Label);
 										select.append(o);
 									});

@@ -179,7 +179,7 @@
 </div>
 </div> <!-- END div.table -->
 </form>
-<iframe name="projectadmin" id="projectadmin" width="700px" frameborder=0 scrolling="no"></iframe>
+<iframe name="projectadmin" id="projectadmin" width="700px" frameborder=0 scrolling="no" height="400px"></iframe>
 <br>
 </div></div>
 <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>

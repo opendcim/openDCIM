@@ -103,9 +103,8 @@
 				}
 				exit;
 			} else {
-				$content="<h3>Login failed.</h3>You are in maintenance mode, as set by the site" .
-					"administrator in the database.";
-				debug_error_log("Maintenance mode is set and invalid credentials were passed.");
+				$content="<h3>Login failed.</h3>The ldap_debug_password is set and only the user dcim is valid for recovery.  Run UPDATE fac_Config SET Value='' WHERE Parameter='LDAP_Debug_Password'; to clear the debug password.";
+				debug_error_log("LDAP_Debug_Password is set and user attempted to login as something other than dcim.  Clear the password setting.");
 			}
 		} else {
 			$ldapConn=ldap_connect($config->ParameterArray['LDAPServer']);
@@ -145,7 +144,7 @@
 					// a valid connection despite not authenticating when an invalid user is attempted with a blank password.
 					// This checks the results of our search to make sure they returned a valid object and if not stops the 
 					// authentication process.
-					if(gettype($ldapSearch) != "resource"){
+					if(!$ldapSearch && (gettype($ldapSearch) != "resource" || gettype($ldapSearch) != "object" )) {
 						debug_error_log( __("LDAP search error, did not return a valid resource.") . $ldapUser );
 					}else{
 						$ldapResults=ldap_get_entries($ldapConn,$ldapSearch);

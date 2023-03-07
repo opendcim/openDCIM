@@ -36,11 +36,11 @@ class Zone {
 		$this->DataCenterID=intval($this->DataCenterID);
 		$this->Description=sanitize($this->Description);
 		// ensure all coordinates are positive values
-		$this->MapX1=abs($this->MapX1);
-		$this->MapY1=abs($this->MapY1);
-		$this->MapX2=abs($this->MapX2);
-		$this->MapY2=abs($this->MapY2);
-		$this->MapZoom=abs($this->MapZoom);
+		$this->MapX1=abs((is_numeric($this->MapX1)?$this->MapX1:0));
+		$this->MapY1=abs((is_numeric($this->MapY1)?$this->MapY1:0));
+		$this->MapX2=abs((is_numeric($this->MapX2)?$this->MapX2:0));
+		$this->MapY2=abs((is_numeric($this->MapY2)?$this->MapY2:0));
+		$this->MapZoom=abs((is_numeric($this->MapZoom)?$this->MapZoom:0));
 	}
 
 	function MakeDisplay(){

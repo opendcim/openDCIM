@@ -67,8 +67,13 @@ class LogActions {
 		$log->ChildID=$dbRow["ChildID"];
 		$log->Property=$dbRow["Property"];
 		$log->Action=$dbRow["Action"];
-		$log->OldVal=$dbRow["OldVal"];
-		$log->NewVal=$dbRow["NewVal"];
+		if (strpos($log->Property, "assword") || strpos($log->Property, "ommunity")) {
+			$log->OldVal=str_repeat("*", strlen($dbRow["OldVal"]));
+			$log->NewVal=str_repeat("*", strlen($dbRow["NewVal"]));
+		}else{
+			$log->OldVal=$dbRow["OldVal"];
+			$log->NewVal=$dbRow["NewVal"];
+		}
 		$log->Time=$dbRow["Time"];
 
 		return $log;
@@ -362,7 +367,7 @@ class LogActions {
 		// If we want to really sanitize this list uncomment the function below
 //		$this->UserID=(ArraySearchRecursive($this->UserID,$p->GetUserList(),'UserID'))?$this->UserID:'';
 		$this->UserID=sanitize($this->UserID);
-		$this->Class=in_array($this->Class,get_declared_classes())?$this->Class:'';
+		$this->Class=(class_exists($this->Class,true))?$this->Class:'';
 		$this->ObjectID=sanitize($this->ObjectID);
 		$this->ChildID=sanitize($this->ChildID);
 		$this->Action=sanitize($this->Action);

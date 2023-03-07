@@ -300,7 +300,7 @@ echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact 
 </div>
 </div> <!-- END div.table -->
 </form>
-<iframe name="groupadmin" id="groupadmin" scrolling="no"></iframe>
+<iframe name="groupadmin" id="groupadmin" scrolling="no" height="400px"></iframe>
 <br>
 </div></div>
 <?php echo '<a href="index.php">[ ',__("Return to Main Menu"),' ]</a>'; ?>

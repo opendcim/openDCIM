@@ -1747,7 +1747,6 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
     // Crude status reporting
 
     $config = new Config();
-    $config->Config();
     addColumnIndices($DProps);
 
     // Generate new workbook 'DC_Statistics_<timestamp>.xlsx'

@@ -28,7 +28,12 @@
 	developers, functions have been split out into more granular groupings.
 */
 
-if ( isset( $config ) && method_exists( "config", "ParameterArray" ) ){
+/* Avoid timezone related error with slim */
+if (!ini_get('date.timezone')) {
+	ini_set('date.timezone', 'America/Chicago');
+}
+
+if ( isset( $config ) && property_exists( $config, "ParameterArray" ) ){
 	date_default_timezone_set($config->ParameterArray['timezone']);
 } elseif ( getenv("TZ") != "" ) {
 	date_default_timezone_set( getenv("TZ"));
