@@ -1958,7 +1958,7 @@ class Device {
 			$picturefile=$config->ParameterArray['picturepath'].$templ->FrontPictureFile;
 		}
 		if (!file_exists($path.$picturefile)){
-			$picturefile="pictures/P_ERROR.png";
+			$picturefile=$config->ParameterArray["picturepath"]."P_ERROR.png";
 		}
 		@list($width, $height)=getimagesize($path.$picturefile);
 		// Make sure there is an image! DOH! If either is 0 then use a text box
@@ -2242,8 +2242,16 @@ class Device {
 			}
 
 			$parent=new stdClass();
-			$parent->zoomX=$targetWidth/$pictW;
-			$parent->zoomY=$targetHeight/$pictH;
+			if ( $pictW > 0 )
+				$parent->zoomX=$targetWidth/$pictW;
+			else
+				$parent->zoomX=0;
+
+			if ( $pictH > 0 )
+				$parent->zoomY=$targetHeight/$pictH;
+			else
+				$parent->zoomY=0;
+			
 			$parent->targetWidth=$targetWidth;
 			$parent->targetHeight=$targetHeight;
 			$parent->Height=$pictH;
