@@ -24,8 +24,8 @@ if ( isset( $_FILES['inputfile'] )) {
   $targetFile = $target_dir . basename($_FILES['inputfile']['name']);
 
   try {
-    $inFileType = PHPExcel_IOFactory::identify($_FILES['inputfile']['tmp_name']);
-    $objReader = PHPExcel_IOFactory::createReader($inFileType);
+    $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($_FILES['inputfile']['tmp_name']);
+    $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
     $objXL = $objReader->load($_FILES['inputfile']['tmp_name']);
   } catch (Exception $e) {
     die("Error opening file: ".$e->getMessage());
@@ -48,8 +48,8 @@ if ( isset( $_FILES['inputfile'] )) {
   // Make sure that we can still access the file
   $targetFile = $_SESSION['inputfile'];
   try {
-    $inFileType = PHPExcel_IOFactory::identify($targetFile);
-    $objReader = PHPExcel_IOFactory::createReader($inFileType);
+    $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($targetFile);
+    $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
     $objXL = $objReader->load($targetFile);
   } catch (Exception $e) {
     die("Error opening file: ".$e->getMessage());
@@ -116,8 +116,8 @@ if ( isset( $_FILES['inputfile'] )) {
 
   $targetFile = $_SESSION['inputfile'];
   try {
-    $inFileType = PHPExcel_IOFactory::identify($targetFile);
-    $objReader = PHPExcel_IOFactory::createReader($inFileType);
+    $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($targetFile);
+    $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
     $objXL = $objReader->load($targetFile);
   } catch (Exception $e) {
     die("Error opening file: ".$e->getMessage());

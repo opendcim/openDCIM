@@ -1,6 +1,6 @@
 <?php
-	require_once('db.inc.php');
-	require_once('facilities.inc.php');
+	require_once "db.inc.php";
+	require_once "facilities.inc.php";
 
   if(!$person->BulkOperations){
     header('Location: '.redirect());
@@ -24,8 +24,8 @@
     $targetFile = $target_dir . basename($_FILES['inputfile']['name']);
 
     try {
-      $inFileType = PHPExcel_IOFactory::identify($_FILES['inputfile']['tmp_name']);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
+      $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($_FILES['inputfile']['tmp_name']);
+      $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
       $objXL = $objReader->load($_FILES['inputfile']['tmp_name']);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
@@ -48,8 +48,8 @@
     // Make sure that we can still access the file
     $targetFile = $_SESSION['inputfile'];
     try {
-      $inFileType = PHPExcel_IOFactory::identify($targetFile);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
+      $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($targetFile);
+      $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
       $objXL = $objReader->load($targetFile);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
@@ -116,8 +116,8 @@
 
     $targetFile = $_SESSION['inputfile'];
     try {
-      $inFileType = PHPExcel_IOFactory::identify($targetFile);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
+      $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($targetFile);
+      $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
       $objXL = $objReader->load($targetFile);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
@@ -152,7 +152,7 @@
       $rowError = false;
 
       $devPort = new DevicePorts();
- 
+
       // Load up the $row[] array with the values according to the mapping supplied by the user
       foreach( $fields as $fname ) {
         $addr = chr( 64 + $_REQUEST[$fname]);
@@ -230,7 +230,7 @@
         $rearPortOpt=" PortNumber > 0";
         $sourcePortLabel=$row["SourcePort"];
       }
-      
+
      $st = $dbh->prepare( "select count(*) as TotalMatches, Label, PortNumber from fac_Ports where DeviceID=:DeviceID  and Label=:SourcePort  and ".$rearPortOpt." ;" );
 
       $st->execute( array(  ":DeviceID"=>$devPort->DeviceID, 
@@ -266,7 +266,7 @@
         $rearPortOpt=" PortNumber > 0";
         $targetPortLabel=$row["TargetPort"];
       }
-      
+
       $st = $dbh->prepare( "select count(*) as TotalMatches, Label, PortNumber from fac_Ports where DeviceID=:DeviceID and Label=:TargetPort and ".$rearPortOpt  .";" );
       $st->execute( array( ":DeviceID"=>$devPort->ConnectedDeviceID, ":TargetPort"=>$targetPortLabel));
       if ( ! $val = $st->fetch() ) {
@@ -279,7 +279,7 @@
       } else {
         $errors = true;
         $content .= "<li>Target Port: " . $row["TargetDeviceID"] . "::" . $targetPortLabel . " is not unique or not found.  Total = " . $val["TotalMatches"];
-         
+
       }
 
       // Do not fail if the Color Code or Media Type are not defined for the site.
@@ -345,14 +345,14 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>

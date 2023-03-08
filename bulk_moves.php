@@ -1,7 +1,8 @@
 <?php
-	require_once('db.inc.php');
-	require_once('facilities.inc.php');
-
+	require_once "db.inc.php";
+	require_once "facilities.inc.php";
+  require_once __DIR__."/vendor/autoload.php";
+  
   if(!$person->BulkOperations){
     header('Location: '.redirect());
     exit;
@@ -24,8 +25,8 @@
     $targetFile = $target_dir . basename($_FILES['inputfile']['name']);
 
     try {
-      $inFileType = PHPExcel_IOFactory::identify($_FILES['inputfile']['tmp_name']);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
+      $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($_FILES['inputfile']['tmp_name']);
+      $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
       $objXL = $objReader->load($_FILES['inputfile']['tmp_name']);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
@@ -48,8 +49,8 @@
     // Make sure that we can still access the file
     $targetFile = $_SESSION['inputfile'];
     try {
-      $inFileType = PHPExcel_IOFactory::identify($targetFile);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
+      $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($targetFile);
+      $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
       $objXL = $objReader->load($targetFile);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
@@ -119,8 +120,8 @@
     // Once again, open the uploaded Excel file.  Will possibly move to a function to eliminate repetition.
     $targetFile = $_SESSION['inputfile'];
     try {
-      $inFileType = PHPExcel_IOFactory::identify($targetFile);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
+      $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($targetFile);
+      $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
       $objXL = $objReader->load($targetFile);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
@@ -281,8 +282,8 @@
 
     $targetFile = $_SESSION['inputfile'];
     try {
-      $inFileType = PHPExcel_IOFactory::identify($targetFile);
-      $objReader = PHPExcel_IOFactory::createReader($inFileType);
+      $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($targetFile);
+      $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
       $objXL = $objReader->load($targetFile);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
@@ -301,7 +302,7 @@
     for ( $n = 2; $n <= $highestRow; $n++ ) {
       $rowError = false;
       $dev = new Device();
- 
+
       // Load up the $row[] array with the values according to the mapping supplied by the user
       foreach( $fields as $fname ) {
         $addr = chr( 64 + $_REQUEST[$fname]);
@@ -447,14 +448,14 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css" />
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>

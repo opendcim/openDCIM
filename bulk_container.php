@@ -1,15 +1,14 @@
 <?php
-	require_once('db.inc.php');
-	require_once('facilities.inc.php');
+  require_once "db.inc.php";
+  require_once "facilities.inc.php";
+  require_once __DIR__."/vendor/autoload.php";
 
   if(!$person->BulkOperations){
     header('Location: '.redirect());
     exit;
   }
 
-require_once 'vendor/box/spout/src/Spout/Autoloader/autoload.php';
-use Box\Spout\Reader\ReaderFactory;
-use Box\Spout\Common\Type;
+
 
 //	Uncomment these if you need/want to set a title in the header
 //	$header=__("");
@@ -27,27 +26,17 @@ use Box\Spout\Common\Type;
     $target_dir = '/tmp/';
     $targetFile = $target_dir . basename($_FILES['inputfile']['name']);
 
-    $targetInfo = pathinfo($targetFile);
-    $targetType = $targetInfo['extension'];
-
-    move_uploaded_file( $_FILES['inputfile']['tmp_name'], $targetFile );
-
     try {
-      if ( $targetType == "xlsx" ) {
-        $objReader = ReaderFactory::create(Type::XLSX);
-      } elseif ( $targetType == "csv" ) {
-        $objReader = ReaderFactory::create(Type::CSV);
-      } else {
-        die("Error identifying file type.");
-      }
-      $objReader->open($targetFile);
-      $objReader->close();
+      $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($_FILES['inputfile']['tmp_name']);
+      $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
+      $objXL = $objReader->load($_FILES['inputfile']['tmp_name']);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
     }
 
+    move_uploaded_file( $_FILES['inputfile']['tmp_name'], $targetFile );
+
     $_SESSION['inputfile'] = $targetFile;
-    $_SESSION['inputtype'] = $targetType;
 
     echo "<meta http-equiv='refresh' content='0; url=" . $_SERVER['SCRIPT_NAME'] . "?stage=headers'>";
     exit;
@@ -61,16 +50,10 @@ use Box\Spout\Common\Type;
 
     // Make sure that we can still access the file
     $targetFile = $_SESSION['inputfile'];
-    $targetType = $_SESSION['inputtype'];
     try {
-      if ( $targetType == "xlsx" ) {
-        $objReader = ReaderFactory::create(Type::XLSX);
-      } elseif ( $targetType == "csv" ) {
-        $objReader = ReaderFactory::create(Type::CSV);
-      } else {
-        die("Error identifying file type.");
-      }
-      $objReader->open($targetFile);
+      $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($targetFile);
+      $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
+      $objXL = $objReader->load($targetFile);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
     }
@@ -86,19 +69,13 @@ use Box\Spout\Common\Type;
 
     // Find out how many columns are in the spreadsheet so that we can load them as possible values for the fields
     // and we don't really care how many rows there are at this point.
-    $rowCount = 1;
-    foreach( $objReader->getSheetIterator() as $sheet ) {
-      foreach( $sheet->getRowIterator() as $row ) {
-        if ( $rowCount == 1 ) {
-          $headerList = $row;
-          break;
-        }
-      }
-      break;    
-    }
+    $sheet = $objXL->getSheet(0);
+    $highestColumn = $sheet->getHighestColumn();
+
+    $headerList = $sheet->rangeToArray('A1:' . $highestColumn . '1' );
 
     $fieldList = array( "None" );
-    foreach( $headerList as $fName ) {
+    foreach( $headerList[0] as $fName ) {
       $fieldList[] = $fName;
     }
 
@@ -134,17 +111,10 @@ use Box\Spout\Common\Type;
     //
 
     $targetFile = $_SESSION['inputfile'];
-    $targetType = $_SESSION['inputtype'];
-
     try {
-      if ( $targetType == "xlsx" ) {
-        $objReader = ReaderFactory::create(Type::XLSX);
-      } elseif ( $targetType == "csv" ) {
-        $objReader = ReaderFactory::create(Type::CSV);
-      } else {
-        die("Error identifying file type.");
-      }
-      $objReader->open($targetFile);
+      $inFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($targetFile);
+      $objReader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inFileType);
+      $objXL = $objReader->load($targetFile);
     } catch (Exception $e) {
       die("Error opening file: ".$e->getMessage());
     }
@@ -158,121 +128,117 @@ use Box\Spout\Common\Type;
 
     $rowNum = 1;
 
-    foreach( $objReader->getSheetIterator() as $sheet ) {
-      foreach( $sheet->getRowIterator() as $sheetRow ) {
-        // Skip the header row
-        if ( $rowNum == 1 ) {
-          $rowNum++;
-          continue;
-        }
+    $sheet = $objXL->getSheet(0);
+    $highestRow = $sheet->getHighestRow();
 
-        $rowError = false;
+    $rowNum = 1;
 
-        // Load up the $row[] array with the values according to the mapping supplied by the user
-        foreach( $fields as $fname ) {
-          if ( $_REQUEST[$fname] != 0 ) {
-            $row[$fname] = sanitize($sheetRow[$_REQUEST[$fname]-1]);
-          }
-        }
+    for ( $n = 2; $n <= $highestRow; $n++ ) {
+      $rowError = false;
 
-        // Stop processing once you hit the first blank cell for 'Location' - some Excel files will return $sheet->getHighestRow() way past the end of any meaningful data
-        if ( $row["DataCenter"] == "" ) {
-          break;
-        }
+      // Load up the $row[] array with the values according to the mapping supplied by the user
+      foreach( $fields as $fname ) {
+        $addr = chr( 64 + $_REQUEST[$fname]);
+        $row[$fname] = sanitize($sheet->getCell( $addr . $n )->getValue());
+      }
 
-        $ContainerID = 0;
+      // Stop processing once you hit the first blank cell for 'Location' - some Excel files will return $sheet->getHighestRow() way past the end of any meaningful data
+      if ( $row["DataCenter"] == "" ) {
+        break;
+      }
 
-        // First, check the Container existence, and add, if needed
-        if ( $row["Container"] != "" )  {
-          $st = $dbh->prepare("select count(*) as TotalHits, ContainerID from fac_Container where UCASE(Name)=UCASE(:Name)");
-          $st->execute( array( ":Name"=>$row["Container"]));
-          if ( ! $val = $st->fetch() ) {
-            $info = $dbh->errorInfo();
-            error_log( "PDO Error: {$info[2]}");
-          }
-          
-          if ( $val["TotalHits"] != 1 ) {
-            $st = $dbh->prepare("insert into fac_Container set Name=:Name");
-            $st->execute( array( ":Name"=>$row["Container"]));
-            $ContainerID = $dbh->lastInsertID();
-            $content .= "<li>Container Added: $ContainerID - " . $row["Container"] . "</li>\n";
-          } else {
-            $ContainerID = $val["ContainerID"];
-          }
-        }
+      $ContainerID = 0;
 
-        /*
-         *
-         *  Section for looking up the DataCenter and setting the true DataCenterID
-         *
-         */
-        $st = $dbh->prepare( "select count(DataCenterID) as TotalMatches, DataCenterID from fac_DataCenter where ucase(Name)=ucase(:DataCenter)" );
-        $st->execute( array( ":DataCenter"=>$row["DataCenter"] ));
+      // First, check the Container existence, and add, if needed
+      if ( $row["Container"] != "" )  {
+        $st = $dbh->prepare("select count(*) as TotalHits, ContainerID from fac_Container where UCASE(Name)=UCASE(:Name)");
+        $st->execute( array( ":Name"=>$row["Container"]));
         if ( ! $val = $st->fetch() ) {
           $info = $dbh->errorInfo();
           error_log( "PDO Error: {$info[2]}");
         }
-
-        if ( $val["TotalMatches"] == 1 ) {
-          $DataCenterID = $val["DataCenterID"];
+        
+        if ( $val["TotalHits"] != 1 ) {
+          $st = $dbh->prepare("insert into fac_Container set Name=:Name");
+          $st->execute( array( ":Name"=>$row["Container"]));
+          $ContainerID = $dbh->lastInsertID();
+          $content .= "<li>Container Added: $ContainerID - " . $row["Container"] . "</li>\n";
         } else {
-          $st = $dbh->prepare("insert into fac_DataCenter set ContainerID=:ContainerID, Name=:Name");
-          $st->execute( array( ":ContainerID"=>$ContainerID, ":Name"=>$row["DataCenter"]));
-          $DataCenterID = $dbh->lastInsertID();
-          $content .= "<li>DataCenter Added: $DataCenterID - " . $row["DataCenter"] . "</li>\n";
+          $ContainerID = $val["ContainerID"];
         }
+      }
 
-        /*
-         *
-         *  Section for looking up the ZoneID and setting the true ZoneID
-         *
-         */
-        
-        $ZoneID = 0;
+      /*
+       *
+       *  Section for looking up the DataCenter and setting the true DataCenterID
+       *
+       */
+      $st = $dbh->prepare( "select count(DataCenterID) as TotalMatches, DataCenterID from fac_DataCenter where ucase(Name)=ucase(:DataCenter)" );
+      $st->execute( array( ":DataCenter"=>$row["DataCenter"] ));
+      if ( ! $val = $st->fetch() ) {
+        $info = $dbh->errorInfo();
+        error_log( "PDO Error: {$info[2]}");
+      }
 
-        // Zone is optional, so only do this if we have a non-empty cell
-        if ( $row["Zone"] != "" && $DataCenterID > 0 ) {
-          $st = $dbh->prepare( "select count(ZoneID) as TotalMatches, ZoneID from fac_Zone where DataCenterID=:DataCenterID and ucase(Description)=ucase(:Zone)" );
-          $st->execute( array( ":DataCenterID"=>$DataCenterID, ":Zone"=>$row["Zone"] ));
-          if ( ! $val = $st->fetch() ) {
-            $info = $dbh->errorInfo();
-            error_log( "PDO Error: {$info[2]}");
-          }
+      if ( $val["TotalMatches"] == 1 ) {
+        $DataCenterID = $val["DataCenterID"];
+      } else {
+        $st = $dbh->prepare("insert into fac_DataCenter set ContainerID=:ContainerID, Name=:Name");
+        $st->execute( array( ":ContainerID"=>$ContainerID, ":Name"=>$row["DataCenter"]));
+        $DataCenterID = $dbh->lastInsertID();
+        $content .= "<li>DataCenter Added: $DataCenterID - " . $row["DataCenter"] . "</li>\n";
+      }
+
+      /*
+       *
+       *  Section for looking up the ZoneID and setting the true ZoneID
+       *
+       */
+      
+      $ZoneID = 0;
+
+      // Zone is optional, so only do this if we have a non-empty cell
+      if ( $row["Zone"] != "" && $DataCenterID > 0 ) {
+        $st = $dbh->prepare( "select count(ZoneID) as TotalMatches, ZoneID from fac_Zone where DataCenterID=:DataCenterID and ucase(Description)=ucase(:Zone)" );
+        $st->execute( array( ":DataCenterID"=>$DataCenterID, ":Zone"=>$row["Zone"] ));
+        if ( ! $val = $st->fetch() ) {
+          $info = $dbh->errorInfo();
+          error_log( "PDO Error: {$info[2]}");
         }
+      }
 
-        if ( $row["Zone"]!="" && $val["TotalMatches"] == 1 ) {
-          $ZoneID = $val["ZoneID"];
-        } elseif ($row["Zone"]!="" ) {
-          $st = $dbh->prepare( "insert into fac_Zone set DataCenterID=:DataCenterID, Description=:Description" );
-          $st->execute( array( ":DataCenterID"=>$DataCenterID, ":Description"=>$row["Zone"] ));
-          $ZoneID = $dbh->lastInsertID();
-          $content .= "<li>Data Center + Zone added:  $ZoneID -  " . $row["DataCenter"] . " - " . $row["Zone"] . "</li>\n";
-        }
+      if ( $row["Zone"]!="" && $val["TotalMatches"] == 1 ) {
+        $ZoneID = $val["ZoneID"];
+      } elseif ($row["Zone"]!="" ) {
+        $st = $dbh->prepare( "insert into fac_Zone set DataCenterID=:DataCenterID, Description=:Description" );
+        $st->execute( array( ":DataCenterID"=>$DataCenterID, ":Description"=>$row["Zone"] ));
+        $ZoneID = $dbh->lastInsertID();
+        $content .= "<li>Data Center + Zone added:  $ZoneID -  " . $row["DataCenter"] . " - " . $row["Zone"] . "</li>\n";
+      }
 
-        /*
-         *
-         *  Section for looking up the RowID and adding, if not exists
-         *
-         */
-        
-        // Rows are also optional
-        if ( $row["Row"] != "" && $DataCenterID > 0 ) {
-          $st = $dbh->prepare( "select count(RowID) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ZoneID=:ZoneID and ucase(Name)=ucase(:Name)" );
-          $st->execute( array( ":DataCenterID"=>$DataCenterID, ":ZoneID"=>$ZoneID, ":Name"=>$row["Row"] ));
-          if ( ! $val = $st->fetch() ) {
-            $info = $dbh->errorInfo();
-            error_log( "PDO Error: {$info[2]}");
-          }
+      /*
+       *
+       *  Section for looking up the RowID and adding, if not exists
+       *
+       */
+      
+      // Rows are also optional
+      if ( $row["Row"] != "" && $DataCenterID > 0 ) {
+        $st = $dbh->prepare( "select count(RowID) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ZoneID=:ZoneID and ucase(Name)=ucase(:Name)" );
+        $st->execute( array( ":DataCenterID"=>$DataCenterID, ":ZoneID"=>$ZoneID, ":Name"=>$row["Row"] ));
+        if ( ! $val = $st->fetch() ) {
+          $info = $dbh->errorInfo();
+          error_log( "PDO Error: {$info[2]}");
         }
+      }
 
-        if ( $row["Row"]!="" && $val["TotalMatches"] == 1 ) {
-          $ZoneID = $val["CabRowID"];
-        } elseif ($row["Zone"]!="" ) {
-          $st = $dbh->prepare( "insert into fac_CabRow set DataCenterID=:DataCenterID, ZoneID=:ZoneID, Name=:Name" );
-          $st->execute( array( ":DataCenterID"=>$DataCenterID, ":ZoneID"=>$ZoneID, ":Name"=>$row["Row"] ));
-          $CabRowID = $dbh->lastInsertID();
-          $content .= "<li>Data Center + Zone + Row added:  $CabRowID -  " . $row["DataCenter"] . " - " . $row["Zone"] . " - " . $row["Row"] . "</li>\n";
-        }
+      if ( $row["Row"]!="" && $val["TotalMatches"] == 1 ) {
+        $ZoneID = $val["CabRowID"];
+      } elseif ($row["Zone"]!="" ) {
+        $st = $dbh->prepare( "insert into fac_CabRow set DataCenterID=:DataCenterID, ZoneID=:ZoneID, Name=:Name" );
+        $st->execute( array( ":DataCenterID"=>$DataCenterID, ":ZoneID"=>$ZoneID, ":Name"=>$row["Row"] ));
+        $CabRowID = $dbh->lastInsertID();
+        $content .= "<li>Data Center + Zone + Row added:  $CabRowID -  " . $row["DataCenter"] . " - " . $row["Zone"] . " - " . $row["Row"] . "</li>\n";
       }
     }
 
