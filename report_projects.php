@@ -44,7 +44,7 @@
         $cabList = Cabinet::ListCabinets( false, true );
         $tmpList = DeviceTemplate::GetTemplateList( true );
 
-    	$workBook = new PHPExcel();
+    	$workBook = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
     	
     	$workBook->getProperties()->setCreator("openDCIM");
     	$workBook->getProperties()->setLastModifiedBy("openDCIM");
@@ -59,12 +59,12 @@
 
         $sheet->SetTitle('Front Page');
         // add logo
-        $objDrawing = new PHPExcel_Worksheet_Drawing();
+        $objDrawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
         $objDrawing->setWorksheet($sheet);
         $objDrawing->setName("Logo");
         $objDrawing->setDescription("Logo");
         $apath = __DIR__ . DIRECTORY_SEPARATOR ;
-        $objDrawing->setPath($apath . $config->ParameterArray['PDFLogoFile']);
+        $objDrawing->setPath($apath . $config->ParameterArray['PDFLogoFile'], true);
         $objDrawing->setCoordinates('A1');
         $objDrawing->setOffsetX(5);
         $objDrawing->setOffsetY(5);
@@ -111,7 +111,7 @@
             $row = $offset + $idx;
             $sheet->setCellValueExplicit('B' . ($row),
                 $remarks[$idx],
-                PHPExcel_Cell_DataType::TYPE_STRING);
+                \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         }
         $sheet->getStyle('B' . $offset . ':B' . ($offset + $max_remarks - 1))
             ->getAlignment()
@@ -126,7 +126,7 @@
             $prDevList = ProjectMembership::getProjectMembership( $p->ProjectID );
 
             if ( sizeof( $prCabList ) + sizeof( $prDevList ) > 0 ) {
-                $sheet = $workBook->createSheet();
+                $sheet = $workBook->createSheet(null);
                 $sheet->setTitle( $p->ProjectName );
 
                 $sheet->setCellValue( 'A1', __("Project Name:"));
@@ -210,7 +210,7 @@
     	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     	header( sprintf( "Content-Disposition: attachment;filename=\"opendcim-%s.xlsx\"", date( "YmdHis" ) ) );
     	
-    	$writer = new PHPExcel_Writer_Excel2007($workBook);
+    	$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($workBook);
     	$writer->save('php://output');
     } else {
         $pList = Projects::getProjectList();

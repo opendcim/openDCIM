@@ -95,7 +95,7 @@ if (!isset($_REQUEST['action'])){
 } else {
 	$today = date( "Y-m-d" );
 
-	$xl = new PHPExcel();
+	$xl = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 	
 	$xl->getProperties()->setCreator("openDCIM");
 	$xl->getProperties()->setLastModifiedBy("openDCIM");
@@ -262,7 +262,7 @@ if (!isset($_REQUEST['action'])){
 		
 	usort( $cabList, 'compareCab' );
 
-	$currSheet = $xl->createSheet();
+	$currSheet = $xl->createSheet(null);
 	$currSheet->setTitle( "Affected Cabinets" );
 
 	$currSheet->setCellValue( "A1", "Data Center" );
@@ -299,7 +299,7 @@ if (!isset($_REQUEST['action'])){
 				->applyFromArray(
 					array(
 							'fill' => array(
-								'type' => PHPExcel_Style_Fill::FILL_SOLID,
+								'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
 								'color' => array( 'rgb' => 'F28A8C')
 							)
 					)
@@ -317,7 +317,7 @@ if (!isset($_REQUEST['action'])){
 	/* Create third worksheet that shows detailed device listing for everything in the cabinets affected. */
 
 
-	$currSheet = $xl->createSheet();
+	$currSheet = $xl->createSheet(null);
 	$currSheet->setTitle( "Affected Devices" );
 
 	$currSheet->setCellValue( "A1", "Data Center" );
@@ -391,7 +391,7 @@ if (!isset($_REQUEST['action'])){
 						->applyFromArray(
 							array(
 									'fill' => array(
-										'type' => PHPExcel_Style_Fill::FILL_SOLID,
+										'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
 										'color' => array( 'rgb' => 'F28A8C')
 									)
 							)
@@ -410,7 +410,7 @@ if (!isset($_REQUEST['action'])){
 	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 	header( sprintf( "Content-Disposition: attachment;filename=\"opendcim-%s.xlsx\"", date( "YmdHis" ) ) );
 	
-	$writer = new PHPExcel_Writer_Excel2007($xl);
+	$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($xl);
 	$writer->save('php://output');
 }
 ?>

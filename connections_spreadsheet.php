@@ -8,7 +8,7 @@
 		$cab = new Cabinet();
 		$mfg = new Manufacturer();
 		
-		$sheet = new PHPExcel();
+		$sheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		
 		$sheet->getProperties()->setCreator("openDCIM");
 		$sheet->getProperties()->setLastModifiedBy("openDCIM");
@@ -66,10 +66,10 @@
 			
 			// Insert a picture into the device specific worksheet
 			if ( file_exists( "pictures/".$devTmpl->FrontPictureFile ) ) {
-				$img = new PHPExcel_Worksheet_Drawing();
+				$img = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
 				$img->setWorksheet($sheet->setActiveSheetIndex($devNum));
 				$img->setName($dev->Label);
-				$img->setPath("pictures/".$devTmpl->FrontPictureFile);
+				$img->setPath("pictures/".$devTmpl->FrontPictureFile, true);
 				$img->setCoordinates('B9');
 				$img->setOffsetX(1);
 				$img->setOffsetY(5);

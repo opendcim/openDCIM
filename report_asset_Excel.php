@@ -165,7 +165,7 @@ $DProps = array(
         'Logo Name' => __("Logo Name"),
         'Logo Description' => __("Logo Description"),
         'PageSize' => $config->ParameterArray['PageSize'],
-        'Orientation' => PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT,
+        'Orientation' => \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT,
         'Columns' => array(
             array('', '', null, null),
             array('', '', null, null)
@@ -221,7 +221,7 @@ $DProps = array(
 		'Border Style' => array(
 			'borders' => array(
 				'bottom' => array(
-					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
 					'color' => array(
 						'rgb' => '95B3D7'
 					)
@@ -229,7 +229,7 @@ $DProps = array(
 			)
 		),
 		'PageSize' => $config->ParameterArray['PageSize'],
-		'Orientation' => PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE,
+		'Orientation' => \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE,
 		// Columns format is <header_title>, <format_spec>, <width>, <special_attr>
 		'Columns' => array(
 			array(__("DC Room"), '', 21, 'wrap'),
@@ -264,7 +264,7 @@ $DProps = array(
         'HeaderRange' => null,
         'HeaderHeight' => null,
         'PageSize' => $config->ParameterArray['PageSize'],
-        'Orientation' => PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT,
+        'Orientation' => \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT,
         'Columns' => array(
             array('DevID', '', null, null),
             array('Zone', '', null, null),
@@ -299,7 +299,7 @@ $DProps = array(
         'HeaderRange' => null,
         'HeaderHeight' => null,
         'PageSize' => $config->ParameterArray['PageSize'],
-        'Orientation' => PHPExcel_Worksheet_PageSetup::ORIENTATION_PORTRAIT,
+        'Orientation' => \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT,
         'Columns' => array(
             array('CabID', '', null, null),
             array('Zone', '', null, null),
@@ -457,7 +457,7 @@ function buildColumnIndex($colSpec)
     $idx = 0;
     $colIndex = array();
     foreach ($colSpec as $val) {
-        $colIndex[$val[0]] = array($idx, PHPExcel_Cell::stringFromColumnIndex($idx));
+        $colIndex[$val[0]] = array($idx, \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($idx));
         $idx ++;
     }
 
@@ -526,7 +526,7 @@ function addColumnIndices(&$DProps)
 /**
  * Set properties of Excel document
  *
- * @param PHPExcel $objPHPExcel
+ * @param \PhpOffice\PhpSpreadsheet\Spreadsheet $objPHPExcel
  *  workbook to be generated
  * @param string $thisDate
  *  the date on which the workbook is generated
@@ -559,7 +559,7 @@ function setDocumentProperties($objPHPExcel, $thisDate, $ownerName, $DProps)
 /**
  * Set the properties of a worksheet
  *
- * @param PHPExcel_Worksheet $worksheet
+ * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $worksheet
  * @param string $WSKind kind of worksheet
  * @param array $DProps array with the document properties
  * @param string $thisDate timestamp of the execution of the script
@@ -571,19 +571,19 @@ function setWorksheetProperties($worksheet, $wsKind, $DProps, $thisDate)
     // Set the printout options
     switch ($DProps[$wsKind]['PageSize']) {
         case 'A4':
-            $page_size = PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4;
+            $page_size = \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4;
             break;
         case 'A3':
-            $page_size = PHPExcel_Worksheet_PageSetup::PAPERSIZE_A3;
+            $page_size = \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A3;
             break;
         case 'Letter':
-            $page_size = PHPExcel_Worksheet_PageSetup::PAPERSIZE_LETTER;
+            $page_size = \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LETTER;
             break;
         case 'Legal':
-            $page_size = PHPExcel_Worksheet_PageSetup::PAPERSIZE_LEGAL;
+            $page_size = \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LEGAL;
             break;
         default:
-            $page_size = PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4;
+            $page_size = \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4;
             break;
     }
     // Set orientation, fit to page width, paper size and page number to 1
@@ -636,7 +636,7 @@ function computeHeaderRange($headerDef)
 {
     // columns start is zero based, therefore adjustment required
     $headerLen = count($headerDef) - 1;
-    $headerRange = 'A1:' . PHPExcel_Cell::stringFromColumnIndex($headerLen) . '1';
+    $headerRange = 'A1:' . \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($headerLen) . '1';
 
     return $headerRange;
 }
@@ -644,7 +644,7 @@ function computeHeaderRange($headerDef)
 /**
  * Write the header of a worksheet
  *
- * @param PHPExcel_Worksheet $worksheet
+ * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $worksheet
  * @param string $wsKind the kind of worksheet
  * @param array $wsProps the attribues of the worksheet
  */
@@ -658,7 +658,7 @@ function writeWSHeader($worksheet, $wsKind, $wsProps)
     $colNames = getHeaderNames($wsProps['Columns']);
     $worksheet->fromArray($colNames, null, 'A1');
     if ($wsProps['HeaderHeight']) {
-        $worksheet->getRowDimension('1')->setRowHeight($wsProps['HeaderHeight']);
+        $worksheet->getRowDimension('1', true)->setRowHeight($wsProps['HeaderHeight']);
     }
     $freezeCell = 'A2';
     $repeat_header = true;
@@ -676,7 +676,7 @@ function writeWSHeader($worksheet, $wsKind, $wsProps)
     }
     $worksheet->freezePane($freezeCell);
     $worksheet->getStyle($hrange)->getFill()
-        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
     $worksheet->getStyle($hrange)->getFill()
         ->getStartColor()->setRGB($wsProps['FillColor']);
     $worksheet->getStyle($hrange)->getFont()
@@ -690,15 +690,15 @@ function writeWSHeader($worksheet, $wsKind, $wsProps)
 /**
  * Format the columns of the worksheet according to the attribute definition
  *
- * @param PHPExcel_Worksheet $worksheet
+ * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $worksheet
  * @param array $columns
  */
 function formatWSColumns($worksheet, $columns)
 {
     $fmt_code = array(
-        'T' => PHPExcel_Style_NumberFormat::FORMAT_TEXT,
+        'T' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT,
         'D' => 'yyyy-mm-dd',
-        'N' => PHPExcel_Style_NumberFormat::FORMAT_NUMBER,
+        'N' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER,
         'F' => '0.0',
         'P' => '0.0%',
         '' => null
@@ -712,20 +712,20 @@ function formatWSColumns($worksheet, $columns)
         if ($col[2]) {
             // set the column width if a specific value is defined
 
-           $colLetter = PHPExcel_Cell::stringFromColumnIndex($colidx);
-           $worksheet->getColumnDimension($colLetter)->setWidth($col[2]);
+           $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colidx);
+           $worksheet->getColumnDimension($colLetter, true)->setWidth($col[2]);
 
         }
         if ($col[3] and ($col[3] == 'wrap')) {
             // set text wrapping attribute if requested
-            $colLetter = PHPExcel_Cell::stringFromColumnIndex($colidx);
+            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colidx);
             $range = $colLetter . '2:' . $colLetter . $highestRow;
             $worksheet->getStyle($range)->getAlignment()->setWrapText(true);
         }
         if ($colFmt != $col[1]) {
             // assign the format to the range if a format is explicitly required
-            $start_col = PHPExcel_Cell::stringFromColumnIndex($start);
-            $end_col =  PHPExcel_Cell::stringFromColumnIndex($start+$idx-1);
+            $start_col = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($start);
+            $end_col =  \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($start+$idx-1);
             $range = $start_col . '2:' . $end_col . $highestRow;
             $colFmtSpec = $fmt_code[$colFmt];
             if ($colFmtSpec) {
@@ -741,8 +741,8 @@ function formatWSColumns($worksheet, $columns)
         }
         $colidx++;
     }
-    $start_col = PHPExcel_Cell::stringFromColumnIndex($start);
-    $end_col =  PHPExcel_Cell::stringFromColumnIndex($start+$idx-1);
+    $start_col = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($start);
+    $end_col =  \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($start+$idx-1);
     $range = $start_col . '2:' . $end_col . $highestRow;
     $colFmtSpec = $fmt_code[$colFmt];
     if ($colFmtSpec) {
@@ -1161,7 +1161,7 @@ function addRackStat(&$invCab, $cab, $cabinetColumns, $dc, $dcContainerList)
  * Compute the full inventory on devices in the data centers and return the data
  *   center summary statistics
  *
- * @param PHPExcel_Worksheet $worksheet
+ * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $worksheet
  * @param array $DProps properties defined for the Excel document
  * @return (array|array|array|boolean)[]
  *      statistics array, device inventory, cabinet inventory
@@ -1379,7 +1379,7 @@ function computeDCStatsSummary(&$DCStats, $KPIS)
 /**
  * Write the rack inventory to the worksheet
  *
- * @param PHPExcel_Worksheet $worksheet
+ * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $worksheet
  * @param array $sheetProps
  * @param array $Rack_Inv
  */
@@ -1409,7 +1409,7 @@ function writeRackInventoryContent($worksheet, $sheetProps, $Rack_Inv)
                 $colIdxAlpha = $sheetProps['ColIdx'][$colName][1];
                 $worksheet->setCellValueExplicit(
                     $colIdxAlpha . $row, $rack[$colName],
-                    PHPExcel_Cell_DataType::TYPE_STRING);
+                    \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             }
             $row++;
             $percentDone += $subIncrement;
@@ -1452,7 +1452,7 @@ function statsLine($itemName, $values)
 /**
  * Write one line of the data center statistics
  *
- * @param PHPExcel_Worksheet $worksheet
+ * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $worksheet
  * @param string $style
  * @param array $wsProps
  * @param integer $rownum
@@ -1462,12 +1462,12 @@ function writeDCStatsLine($worksheet, $style, $wsProps, $rownum, $DCStatsSum)
 {
     $worksheet->fromArray($DCStatsSum, null, 'A' . $rownum);
     $lastCol = count($DCStatsSum) - 1;
-    $range = 'A' . $rownum . ':' . PHPExcel_Cell::stringFromColumnIndex($lastCol)
+    $range = 'A' . $rownum . ':' . \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($lastCol)
         . $rownum;
     switch ($style) {
         case 'Total':
             $worksheet->getStyle($range)
-                ->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+                ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
             $worksheet->getStyle($range)->getFill()->getStartColor()
                 ->setRGB($wsProps['FillColor']);
             $worksheet->getStyle($range)
@@ -1493,7 +1493,7 @@ function writeDCStatsLine($worksheet, $style, $wsProps, $rownum, $DCStatsSum)
  *     DC
  *
  * @param array $wsProps
- * @param PHPExcel_Worksheet $worksheet
+ * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $worksheet
  * @param array DCStats
  * @param int $level level of statistic data
  * @param int $row row number
@@ -1541,7 +1541,7 @@ function writeDCStatsContent($wsProps, $worksheet, &$DCStats, $level, &$row,
  * Write sheet 'DC Stats Summary <timestamp>'
  *
  * @param array $DProps
- * @param PHPExcel $objPHPExcel
+ * @param \PhpOffice\PhpSpreadsheet\Spreadsheet $objPHPExcel
  * @param array DCStats
  * @param string $thisDate
  */
@@ -1562,7 +1562,7 @@ function writeDCStatsSummary($DProps, $objPHPExcel, $DCStats, $thisDate)
 /**
  * Write the front page of the Excel spreadsheet
  *
- * @param PHPExcel_Worksheet $worksheet
+ * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $worksheet
  * @param array $config
  * @param array $DProps
  */
@@ -1570,12 +1570,12 @@ function writeFrontPageContent($worksheet, $config, $DProps)
 {
     $worksheet->SetTitle('Front Page');
     // add logo
-    $objDrawing = new PHPExcel_Worksheet_Drawing();
+    $objDrawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
     $objDrawing->setWorksheet($worksheet);
     $objDrawing->setName($DProps['Front Page']['Logo Name']);
     $objDrawing->setDescription($DProps['Front Page']['Logo Description']);
     $apath = __DIR__ . DIRECTORY_SEPARATOR ;
-    $objDrawing->setPath($apath . $config->ParameterArray['PDFLogoFile']);
+    $objDrawing->setPath($apath . $config->ParameterArray['PDFLogoFile'], true);
     $objDrawing->setCoordinates('A1');
     $objDrawing->setOffsetX(5);
     $objDrawing->setOffsetY(5);
@@ -1596,7 +1596,7 @@ function writeFrontPageContent($worksheet, $config, $DProps)
     $worksheet->getStyle('A2')
         ->getFont()
         ->setBold(true);
-    $worksheet->getRowDimension('2')->setRowHeight($org_font_size + 2);
+    $worksheet->getRowDimension('2', true)->setRowHeight($org_font_size + 2);
     $worksheet->setCellValue('A4', 'Report generated by \''
         . $DProps['Doc']['User']
         . '\' on ' . date('Y-m-d H:i:s'));
@@ -1615,19 +1615,19 @@ function writeFrontPageContent($worksheet, $config, $DProps)
         $row = $offset + $idx;
         $worksheet->setCellValueExplicit('B' . ($row),
             $DProps['Front Page']['remarks'][$idx],
-            PHPExcel_Cell_DataType::TYPE_STRING);
+            \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
     }
     $worksheet->getStyle('B' . $offset . ':B' . ($offset + $max_remarks - 1))
         ->getAlignment()
         ->setWrapText(true);
-    $worksheet->getColumnDimension('B')->setWidth(120);
+    $worksheet->getColumnDimension('B', true)->setWidth(120);
     $worksheet->getTabColor()->setRGB($fillcolor);
 }
 
 /**
  * Write the content of the "DC Inventory" worksheet
  *
- * @param PHPExcel_Worksheet $worksheet
+ * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $worksheet
  * @param array $sheetProps properties of the worksheet
  * @param array $invData array with the inventory data
  */
@@ -1643,7 +1643,7 @@ function writeDCInvContent($worksheet, $sheetProps, $invData)
         $colLetter = $colIdx[$colName][1];
         for ($row = 0; $row < $highestRow; $row++) {
             $worksheet->setCellValueExplicit($colLetter . ($row+2),
-                $invData[$row][$colName], PHPExcel_Cell_DataType::TYPE_STRING);
+                $invData[$row][$colName], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         }
     }
     // unset($invData);
@@ -1653,7 +1653,7 @@ function writeDCInvContent($worksheet, $sheetProps, $invData)
  * Write sheet 'DC Inventory <timestamp>'
  *
  * @param array $DProps
- * @param PHPExcel $objPHPExcel
+ * @param \PhpOffice\PhpSpreadsheet\Spreadsheet $objPHPExcel
  * @param string $thisDate
  * @return (array|array|boolean)[] DC statistics and rack inventory
  */
@@ -1698,7 +1698,7 @@ function writeDCInventory($DProps, $objPHPExcel, $thisDate)
  * Write sheet 'Rack Inventory <timestamp>'
  *
  * @param array $DProps
- * @param PHPExcel $objPHPExcel
+ * @param \PhpOffice\PhpSpreadsheet\Spreadsheet $objPHPExcel
  * @param array $Rack_Inv
  * @param string $thisDate
  */
@@ -1718,7 +1718,7 @@ function writeRackInventory($DProps, $objPHPExcel, $Rack_Inv, $thisDate)
  *
  * @param array $DProps
  * @param array $config
- * @param PHPExcel $objPHPExcel
+ * @param \PhpOffice\PhpSpreadsheet\Spreadsheet $objPHPExcel
  * @param $thisDate the date string of the current execution
  */
 function writeFrontPage($DProps, $config, $objPHPExcel, $thisDate)
@@ -1736,7 +1736,7 @@ function writeFrontPage($DProps, $config, $objPHPExcel, $thisDate)
  * Generate new workbook 'DC_Statistics_<timestamp>.xlsx'
  *
  * @param array $DProps
- * @param PHPExcel $objPHPExcel
+ * @param \PhpOffice\PhpSpreadsheet\Spreadsheet $objPHPExcel
  * @param string $thisDate
  */
 function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
@@ -1778,20 +1778,20 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
  * only a reduction on the required memory footprint but provides a speedup of
  * 5% (40.18sec vs 47.23sec). Memory reduction was factor 2.2 (182.5MB vs 396.5MB).
  */
-$cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_in_memory_serialized;
-$retcode = PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
+$cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_in_memory_serialized;
+$retcode = \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod);
 
 // REMARK: Comment in if a reporting on the resource usage is needed
 // ReportStats::get()->useStatReporting();
 
 $thisDate = date('Y-m-d');
 
-$objPHPExcel = new PHPExcel();
+$objPHPExcel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 writeExcelReport($DProps, $objPHPExcel, $thisDate);
 
 // send out document, save Excel 2007 file
 
-$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+$objWriter = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($objPHPExcel);
 if (PHP_SAPI != 'cli') {
     header('Content-type: application/application/vnd.openxmlformats-officedocument.'
         . 'spreadsheetml.sheet');

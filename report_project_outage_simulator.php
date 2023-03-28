@@ -108,18 +108,18 @@ if (!isset($_REQUEST['action'])){
 	$tmpPerson = new People();
 	$dept = new Department();
 	$dc = new DataCenter();
-	$sheet = new PHPExcel();
+	$sheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
 	// Define useful styles and a function to get a colour style
 	$styles = array(
 			'center' => array(
 					'alignment' => array(
-							'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+							'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
 						)
 				),
 			'left' => array(
 					'alignment' => array(
-							'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
+							'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
 						)
 				),
 			'bold' => array(
@@ -132,7 +132,7 @@ if (!isset($_REQUEST['action'])){
 	function colorStyle($fg='',$bg=''){
 		$style = array(
 			'fill' => array(
-					'type' => PHPExcel_Style_Fill::FILL_SOLID,
+					'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
 					'color' => array('rgb' => $bg)
 			),
 			'font' => array(
@@ -608,13 +608,13 @@ if (!isset($_REQUEST['action'])){
 	$row++;
 	$activeSheet->setSelectedCell('K1');
 	$logo=getcwd().'/'.$config->ParameterArray["PDFLogoFile"];
-	$img = new PHPExcel_Worksheet_Drawing();
+	$img = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
 	$img->setName($config->ParameterArray["PDFLogoFile"]);
-	$img->setPath($logo);
+	$img->setPath($logo, true);
 	$img->setWorksheet($activeSheet);
 	$img->setCoordinates('D1');
 
-	$writer = new PHPExcel_Writer_Excel2007($sheet);
+	$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($sheet);
 
 	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 	header( "Content-Disposition: attachment;filename=\"openDCIM-power-outage-simulation.xlsx\"" );

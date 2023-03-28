@@ -39,9 +39,9 @@
 				$mediaIDList[]=''.$mt->MediaID;
 			}
 		}
-		$writer = new PHPExcel_Writer_Excel2007(generate_spreadsheet($devList,$mediaIDList));
+		$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx(generate_spreadsheet($devList,$mediaIDList));
 
-		$tmpName = @tempnam(PHPExcel_Shared_File::sys_get_temp_dir(),'tmpcnxs');
+		$tmpName = @tempnam(\PhpOffice\PhpSpreadsheet\Shared\File::sys_get_temp_dir(),'tmpcnxs');
 		$writer->save($tmpName);
 
 		$mail = new PHPMailer(true);

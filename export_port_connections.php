@@ -39,7 +39,7 @@
 			$mediaIDList[]=''.$mt->MediaID;
 		}
 	}
-	$writer = new PHPExcel_Writer_Excel2007(generate_spreadsheet($devList,$mediaIDList));
+	$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx(generate_spreadsheet($devList,$mediaIDList));
 
 	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 	if ( $_REQUEST["deviceid"] == "wo" ) {
