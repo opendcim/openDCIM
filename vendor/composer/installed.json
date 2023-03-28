@@ -385,17 +385,17 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.11.0",
-            "version_normalized": "1.11.0.0",
+            "version": "1.11.1",
+            "version_normalized": "1.11.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "14daed4296fae74d9e3201d2c4925d1acb7aa614"
+                "reference": "7284c22080590fb39f2ffa3e9057f10a4ddd0e0c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/14daed4296fae74d9e3201d2c4925d1acb7aa614",
-                "reference": "14daed4296fae74d9e3201d2c4925d1acb7aa614",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/7284c22080590fb39f2ffa3e9057f10a4ddd0e0c",
+                "reference": "7284c22080590fb39f2ffa3e9057f10a4ddd0e0c",
                 "shasum": ""
             },
             "require": {
@@ -410,7 +410,7 @@
                 "doctrine/common": "^2.13.3 || ^3.2.2",
                 "phpunit/phpunit": "^7.5.20 || ^8.5.23 || ^9.5.13"
             },
-            "time": "2022-03-03T13:19:32+00:00",
+            "time": "2023-03-08T13:26:56+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -435,7 +435,7 @@
             ],
             "support": {
                 "issues": "https://github.com/myclabs/DeepCopy/issues",
-                "source": "https://github.com/myclabs/DeepCopy/tree/1.11.0"
+                "source": "https://github.com/myclabs/DeepCopy/tree/1.11.1"
             },
             "funding": [
                 {
@@ -1049,68 +1049,6 @@
             "install-path": "../phpseclib/phpseclib"
         },
         {
-            "name": "phpstan/phpstan",
-            "version": "1.10.5",
-            "version_normalized": "1.10.5.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "1fb6f494d82455151ecf15c5c191923f5d84324e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/1fb6f494d82455151ecf15c5c191923f5d84324e",
-                "reference": "1fb6f494d82455151ecf15c5c191923f5d84324e",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2|^8.0"
-            },
-            "conflict": {
-                "phpstan/phpstan-shim": "*"
-            },
-            "time": "2023-03-07T16:48:45+00:00",
-            "bin": [
-                "phpstan",
-                "phpstan.phar"
-            ],
-            "type": "library",
-            "installation-source": "dist",
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "PHPStan - PHP Static Analysis Tool",
-            "keywords": [
-                "dev",
-                "static analysis"
-            ],
-            "support": {
-                "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.10.5"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/ondrejmirtes",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/phpstan",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
-                    "type": "tidelift"
-                }
-            ],
-            "install-path": "../phpstan/phpstan"
-        },
-        {
             "name": "psr/http-client",
             "version": "1.0.1",
             "version_normalized": "1.0.1.0",
@@ -1387,135 +1325,6 @@
             "install-path": "../psr/simple-cache"
         },
         {
-            "name": "rector/rector",
-            "version": "0.15.21",
-            "version_normalized": "0.15.21.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/rectorphp/rector.git",
-                "reference": "1cee8cc5d6d836e1bf9a3006d7b062adde3a6022"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/1cee8cc5d6d836e1bf9a3006d7b062adde3a6022",
-                "reference": "1cee8cc5d6d836e1bf9a3006d7b062adde3a6022",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2|^8.0",
-                "phpstan/phpstan": "^1.10.1"
-            },
-            "conflict": {
-                "rector/rector-doctrine": "*",
-                "rector/rector-downgrade-php": "*",
-                "rector/rector-phpunit": "*",
-                "rector/rector-symfony": "*"
-            },
-            "time": "2023-03-06T11:44:29+00:00",
-            "bin": [
-                "bin/rector"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "0.15-dev"
-                }
-            },
-            "installation-source": "dist",
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Instant Upgrade and Automated Refactoring of any PHP code",
-            "keywords": [
-                "automation",
-                "dev",
-                "migration",
-                "refactoring"
-            ],
-            "support": {
-                "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/0.15.21"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/tomasvotruba",
-                    "type": "github"
-                }
-            ],
-            "install-path": "../rector/rector"
-        },
-        {
-            "name": "rector/rector-phpoffice",
-            "version": "0.14.0",
-            "version_normalized": "0.14.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/rectorphp/rector-phpoffice.git",
-                "reference": "6cdeaf81be3b318a0a16c81c63dcb982d6490d02"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector-phpoffice/zipball/6cdeaf81be3b318a0a16c81c63dcb982d6490d02",
-                "reference": "6cdeaf81be3b318a0a16c81c63dcb982d6490d02",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.1"
-            },
-            "conflict": {
-                "rector/rector": "<0.12"
-            },
-            "require-dev": {
-                "phpstan/extension-installer": "^1.1",
-                "phpstan/phpstan": "^1.8.2",
-                "phpstan/phpstan-webmozart-assert": "^1.2",
-                "phpunit/phpunit": "^9.5.21",
-                "rector/phpstan-rules": "^0.6",
-                "rector/rector": "dev-main",
-                "rector/rector-debugging": "dev-main",
-                "symplify/easy-coding-standard": "^11.1",
-                "symplify/phpstan-extensions": "^11.1",
-                "symplify/phpstan-rules": "^11.1",
-                "symplify/rule-doc-generator": "^11.1",
-                "symplify/vendor-patches": "^11.1"
-            },
-            "time": "2022-11-14T15:15:33+00:00",
-            "type": "rector-extension",
-            "extra": {
-                "enable-patching": true,
-                "branch-alias": {
-                    "dev-main": "0.11-dev"
-                },
-                "rector": {
-                    "includes": [
-                        "config/config.php"
-                    ]
-                }
-            },
-            "installation-source": "dist",
-            "autoload": {
-                "psr-4": {
-                    "Rector\\PHPOffice\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Rector migration rules for PHP Office to PhpSpreadSheet",
-            "support": {
-                "issues": "https://github.com/rectorphp/rector-phpoffice/issues",
-                "source": "https://github.com/rectorphp/rector-phpoffice/tree/0.14.0"
-            },
-            "install-path": "../rector/rector-phpoffice"
-        },
-        {
             "name": "robrichards/xmlseclibs",
             "version": "3.1.1",
             "version_normalized": "3.1.1.0",
@@ -1740,8 +1549,5 @@
         }
     ],
     "dev": true,
-    "dev-package-names": [
-        "phpstan/phpstan",
-        "rector/rector"
-    ]
+    "dev-package-names": []
 }

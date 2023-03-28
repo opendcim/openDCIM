@@ -7,11 +7,9 @@ namespace Composer\Autoload;
 class ComposerStaticInitae0c1a8752912043eea48eea67adca57
 {
     public static $files = array (
-        '9b38cf48e83f5d8f60375221cd213eee' => __DIR__ . '/..' . '/phpstan/phpstan/bootstrap.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
-        '38143a9afc50997d55e4815db8489d1c' => __DIR__ . '/..' . '/rector/rector/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -30,7 +28,6 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         'R' => 
         array (
             'RobRichards\\XMLSecLibs\\' => 23,
-            'Rector\\PHPOffice\\' => 17,
         ),
         'P' => 
         array (
@@ -83,10 +80,6 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         'RobRichards\\XMLSecLibs\\' => 
         array (
             0 => __DIR__ . '/..' . '/robrichards/xmlseclibs/src',
-        ),
-        'Rector\\PHPOffice\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/rector/rector-phpoffice/src',
         ),
         'Psr\\SimpleCache\\' => 
         array (
