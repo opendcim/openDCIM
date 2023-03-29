@@ -11,14 +11,14 @@ msgstr ""
 
 #: openDCIM/bulk_cabinet.php:13
 msgid "Bulk Cabinet Importer"
-msgstr ""
+msgstr "Bulk Cabinet Importer"
 
 #: openDCIM/bulk_cabinet.php:62 openDCIM/bulk_container.php:63
 #: openDCIM/bulk_importer.php:62 openDCIM/bulk_moves.php:61
 #: openDCIM/bulk_network.php:60 openDCIM/bulk_power.php:60
 msgid ""
 "Pick the appropriate column header (line 1) for each field name listed below."
-msgstr ""
+msgstr "Pick the appropriate column header (line 1) for each field name listed below."
 
 #: openDCIM/bulk_cabinet.php:63 openDCIM/bulk_container.php:64
 #: openDCIM/bulk_departments.php:63 openDCIM/bulk_importer.php:63
