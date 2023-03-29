@@ -900,7 +900,6 @@ if(!(isset($devMode)&&$devMode)) {
 */
 
 if( AUTHENTICATION=="OIDC" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)){
-	error_log( "Misc: 903");
 	header("Location: ".redirect('login_oidc.php'));
 	exit;
 }
@@ -925,7 +924,6 @@ if( AUTHENTICATION=="LDAP" && !isset($_SESSION['userid']) && php_sapi_name()!="c
 // And just because you're logged in, it doesn't mean that we have your People record...
 if(!People::Current()){
 	if(AUTHENTICATION=="OIDC" && !isset($loginPage) ) {
-		error_log( "Misc: 927" );
 		header("Location: ".redirect('login_oidc.php'));
 		exit;
 	} elseif ( AUTHENTICATION=="Saml" && !isset($loginPage) ){

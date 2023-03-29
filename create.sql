@@ -796,7 +796,7 @@ CREATE TABLE fac_Config (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO fac_Config VALUES
-	('Version','21.01','','',''),
+	('Version','23.01','','',''),
 	('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),
 	('ClassList','ITS, Internal, Customer','List','string','ITS, Internal, Customer'),
 	('SpaceRed','80','percentage','float','80'),
@@ -903,6 +903,9 @@ INSERT INTO fac_Config VALUES
 	('LDAPPhone1','','string','string',''),
 	('LDAPPhone2','','string','string',''),
 	('LDAPPhone3','','string','string',''),
+  ('OIDCEndpoint','','string','string',''),
+  ('OIDCClientID','','string','string',''),
+  ('OIDCClientSecret','','string','string',''),
 	('SAMLGroupAttribute', '', 'string', '', 'memberOf'),
 	('SAMLBaseURL', '', 'string', 'string', ''),
 	('SAMLShowSuccessPage', 'enabled', 'string', 'Enabled/Disabled', 'enabled'),
