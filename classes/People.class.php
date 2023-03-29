@@ -226,7 +226,7 @@ class People {
 			}
 			$cperson->UserID=$_SERVER['REMOTE_USER'];
 			$cperson->GetUserRights( true );
-		} elseif(AUTHENTICATION=="Oauth" || AUTHENTICATION=="LDAP" || AUTHENTICATION=="Saml"){
+		} elseif(AUTHENTICATION=="OIDC" || AUTHENTICATION=="LDAP" || AUTHENTICATION=="Saml"){
 			if(!isset($_SESSION['userid'])){
 				return false;
 			}

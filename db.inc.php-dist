@@ -53,11 +53,10 @@
 
 		@define( "AUTHENTICATION", "Apache" );
 
-	/* If you want to use Oauth authentication, comment the above 3 lines, uncomment the next 4 lines
-	   and place your authentication handler in login.php (create symbolic link). 
-	   ex.  cp oauth/login_with_google.php oauth/login.php
+	/* If you want to use OIDC authentication, comment the above defines for AUTHENTICATION,
+	   uncomment the OIDC define below
 	*/
-		// define( "AUTHENTICATION", "Oauth" );
+		// define( "AUTHENTICATION", "OIDC" );
 
 	/* If you want to use Saml authentication, comment the above defines for AUTHENTICATION,
            uncomment the Saml define below

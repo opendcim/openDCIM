@@ -1758,7 +1758,7 @@ echo '<div class="main">
 			<li><a href="#cc">',__("Cabling"),'</a></li>
 			<li><a href="#dca">',__("Custom Device Attributes"),'</a></li>
 			<li><a href="#mappers">',__("Attribute Mapping"),'</a></li>
-			<li><a href="#ldap">',__("LDAP"),'</a></li>
+			<li><a href="#ldap">',__("OIDC/LDAP"),'</a></li>
 			<li><a href="#saml">',__("SAML"),'</a></li>
 			<li><a href="#preflight">',__("Pre-Flight Check"),'</a></li>
 			<li><a href="#credits">',__("Credits"),'</a></li>
@@ -2428,7 +2428,7 @@ echo '<div class="main">
 			</div>
 		</div>
 		<div id="mappers">
-			<h3>',__("LDAP or SAML Attribute Mapping"),'</h3>
+			<h3>',__("Authentication Attribute Mapping"),'</h3>
 			<div class="table">
 				<div>
 					<div><label for="AttrFirstName">',__("FirstName"),'</label></div>
@@ -2455,7 +2455,7 @@ echo '<div class="main">
 					<div><input type="text" size="40" defaultvalue="',$config->defaults["AttrPhone3"],'" name="AttrPhone3" value="',$config->ParameterArray["AttrPhone3"],'"></div>
 				</div>
 			</div>
-			<h3>',__("Group Mapping"),'</h3>
+			<h3>',__("Group/Scope Mapping"),'</h3>
 			<div class="table">
 				<div>
 					<div><label for="SAMLGroupAttribute">',__("SAML Attribute containing Groups"),'</label></div>
@@ -2504,6 +2504,21 @@ echo '<div class="main">
 			</div>
 		</div>
 		<div id="ldap">
+			<h3>',__("OIDC Connection Configuration"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="OIDCEndpoint">',__("OIDC Authorization Endpoint"),'</label></div>
+					<div><input type="text" size=50 defaultvalue="',$config->defaults["OIDCEndpoint"],'" name="OIDCEndpoint" value="',$config->ParameterArray["OIDCEndpoint"],'"></div>
+				</div>
+				<div>
+					<div><label for="OIDCClientID">',__("OIDC Client ID"),'</label></div>
+					<div><input type="text" defaultvalue="',$config->defaults["OIDCClientID"],'" name="OIDCClientID" value="',$config->ParameterArray["OIDCClientID"],'"></div>
+				</div>
+				<div>
+					<div><label for="OIDCClientSecret">',__("OIDC Client Secret"),'</label></div>
+					<div><input type="text" size=50 defaultvalue="',$config->defaults["OIDCClientSecret"],'" name="OIDCClientSecret" value="',$config->ParameterArray["OIDCClientSecret"],'"></div>
+				</div>
+			</div>
 			<h3>',__("LDAP Authentication and Authorization Configuration"),'</h3>
 			<div class="table">
 				<div>
@@ -2544,7 +2559,7 @@ echo '<div class="main">
 				</div>
 			</div>
 		</div>
-			<div id="saml">
+		<div id="saml">
 			<h3>',__("SAML Authentication Configuration"),'</h3>
 			<div class="table">
 				<div>

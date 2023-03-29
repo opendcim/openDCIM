@@ -143,7 +143,7 @@ function ArraySearchRecursive($Needle,$Haystack,$NeedleKey="",$Strict=false,$Pat
 
 	if(AUTHENTICATION=="Apache"){
 		$person->UserID=$_SERVER['REMOTE_USER'];
-	}elseif(AUTHENTICATION=="Oauth" || AUTHENTICATION=="LDAP" || AUTHENTICATION=="Saml"){
+	}elseif(AUTHENTICATION=="OIDC" || AUTHENTICATION=="LDAP" || AUTHENTICATION=="Saml"){
 		if ( isset( $_SESSION['userid'] ) ) {
 			$person->UserID=$_SESSION['userid'];
 		}

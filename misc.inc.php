@@ -895,12 +895,13 @@ if(!(isset($devMode)&&$devMode)) {
 }
 
 /*
-	If we are using Oauth authentication, go ahead and figure out who
+	If we are using OIDC authentication, go ahead and figure out who
 	we are.  It may be needed for the installation.
 */
 
-if( AUTHENTICATION=="Oauth" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" ){
-	header("Location: ".redirect('oauth/login.php'));
+if( AUTHENTICATION=="OIDC" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)){
+	error_log( "Misc: 903");
+	header("Location: ".redirect('login_oidc.php'));
 	exit;
 }
 
@@ -923,8 +924,9 @@ if( AUTHENTICATION=="LDAP" && !isset($_SESSION['userid']) && php_sapi_name()!="c
 
 // And just because you're logged in, it doesn't mean that we have your People record...
 if(!People::Current()){
-	if(AUTHENTICATION=="Oauth"){
-		header("Location: ".redirect('oauth/login.php'));
+	if(AUTHENTICATION=="OIDC" && !isset($loginPage) ) {
+		error_log( "Misc: 927" );
+		header("Location: ".redirect('login_oidc.php'));
 		exit;
 	} elseif ( AUTHENTICATION=="Saml" && !isset($loginPage) ){
 		header("Location: ".redirect('saml/login.php'));
@@ -1024,6 +1026,10 @@ if( AUTHENTICATION == "LDAP" ) {
 
 if (AUTHENTICATION == "Saml" ) {
 	$lmenu[]='<a href="saml/logout.php"><span>'.__("Logout").'</span></a>';
+}
+
+if (AUTHENTICATION == "OIDC" ) {
+	$lmenu[]='<a href="login_oidc.php?logout"><span>'.__("Logout").'</span></a>';
 }
 
 # Can really think that this is necessary - here for completemess
