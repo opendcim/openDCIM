@@ -1223,6 +1223,10 @@ function pdo_debugParams($stmt) {
 	return $r;
 }
 
+function myThoughts() {
+	return __("Fuck Putin");
+}
+
 class JobQueue {
 	var $SessionID;
 	var $Percentage;
