@@ -3787,7 +3787,7 @@ msgstr "Ampérage du disjoncteur de tête"
 
 #: openDCIM/power_panel.php:267
 msgid "Panel Voltage"
-msgstr "Tension d'alimentation\n"
+msgstr "Tension d'alimentation"
 
 #: openDCIM/power_panel.php:271
 msgid "Numbering Scheme"
