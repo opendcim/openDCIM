@@ -6,7 +6,7 @@
     $reportHTML=(!isset($reportHTML))?__("No Data to Display"):$reportHTML;
 
     // $mpdf=new \Mpdf\Mpdf('','',0,'',20,15,48,25,10,10);
-    $mpdf=new \Mpdf\Mpdf(['tempDir'=>sys_get_temp_dir()]);
+    $mpdf=new \Mpdf\Mpdf(['tempDir'=>sys_get_temp_dir(),'mode'=>'s']);
     // $mpdf->useOnlyCoreFonts = true;    // false is default
     //$mpdf->SetProtection(array('print'));
     $mpdf->SetTitle($header . " " . $subheader);
