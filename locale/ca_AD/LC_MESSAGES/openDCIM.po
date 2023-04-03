@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-29 16:35-0500\n"
+"POT-Creation-Date: 2023-03-29 18:34-0500\n"
 "PO-Revision-Date: 2014-08-04 13:57-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -3623,6 +3623,10 @@ msgstr ""
 
 #: openDCIM/misc.inc.php:1129 openDCIM/report_cabinets.php:182
 msgid "Side"
+msgstr ""
+
+#: openDCIM/misc.inc.php:1227
+msgid "Fuck Putin"
 msgstr ""
 
 #: openDCIM/pathmaker.php:5

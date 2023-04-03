@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-29 16:35-0500\n"
+"POT-Creation-Date: 2023-03-29 18:34-0500\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3588,6 +3588,10 @@ msgstr "Déconnexion"
 msgid "Side"
 msgstr "Côté"
 
+#: openDCIM/misc.inc.php:1227
+msgid "Fuck Putin"
+msgstr ""
+
 #: openDCIM/pathmaker.php:5
 msgid "Creating an end to end connection"
 msgstr "Créer une chaine de liaison point à point"
@@ -3783,7 +3787,7 @@ msgstr "Ampérage du disjoncteur de tête"
 
 #: openDCIM/power_panel.php:267
 msgid "Panel Voltage"
-msgstr "Tension d'alimentation\n"
+msgstr "Tension d'alimentation"
 
 #: openDCIM/power_panel.php:271
 msgid "Numbering Scheme"
