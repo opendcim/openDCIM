@@ -20,6 +20,7 @@
         $pwrPanel = new PowerPanel();
         $cabinet = new Cabinet();
 ?>
+<!doctype html>
 <html>
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
