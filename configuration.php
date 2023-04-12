@@ -690,7 +690,7 @@
 
 		$("#configtabs").tabs({
 			activate: function( event, ui ) {
-				if(ui.newPanel.selector=="#preflight"){
+				if(ui.newPanel[0].id=="preflight"){
 					var preflight=document.getElementsByTagName("iframe");
 					preflight[0].style.width='100%';
 					preflight[0].style.height=preflight[0].contentWindow.document.body.offsetHeight + 50 + "px";
