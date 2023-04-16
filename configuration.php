@@ -2458,7 +2458,7 @@ echo '<div class="main">
 			<h3>',__("Group/Scope Mapping"),'</h3>
 			<div class="table">
 				<div>
-					<div><label for="SAMLGroupAttribute">',__("SAML Attribute containing Groups"),'</label></div>
+					<div><label for="SAMLGroupAttribute">OIDC/',__("SAML Attribute containing Groups"),'</label></div>
 					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLGroupAttribute"],'" name="SAMLGroupAttribute" value="',$config->ParameterArray["SAMLGroupAttribute"],'"></div>
 				</div>
 				<div>
