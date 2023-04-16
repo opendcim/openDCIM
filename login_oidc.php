@@ -21,6 +21,7 @@ $oidc = new OpenIDConnectClient($config->ParameterArray["OIDCEndpoint"],
 
 if ( isset($_GET['logout'])) {
 	error_log( "Logging out" );
+	$token = $_SESSION["ID_TOKEN"];
 	// Unfortunately session_destroy() doesn't actually clear out existing variables, so let's nuke from orbit
 	session_unset();
 	$_SESSION=array();
@@ -28,7 +29,7 @@ if ( isset($_GET['logout'])) {
 	session_destroy();
 	session_commit();
 
-	$oidc->signOut($_SESSION["ID_TOKEN"], $config->ParameterArray["InstallURL"]);
+	$oidc->signOut($token, $config->ParameterArray["InstallURL"]);
 
 	$content="<h3>Logout successful.</h3>";
 }
@@ -42,7 +43,6 @@ $person = new People();
 $person->UserID = $oidc->requestUserInfo('user_id');
 if ( ! $person->GetPersonByUserID() )
 	$person->CreatePerson();
-
 
 if ( $config->ParameterArray["AttrFirstName"] != "" )
 	$person->FirstName = $oidc->requestUserInfo($config->ParameterArray["AttrFirstName"]);
@@ -62,29 +62,33 @@ if ( $config->ParameterArray["AttrPhone2"] != "" )
 if ( $config->ParameterArray["AttrPhone3"] != "" )
 	$person->Phone3 = $oidc->requestUserInfo($config->ParameterArray["AttrPhone3"]);
 
-$person->revokeAll();
-$groupList = $oidc->requestUserInfo('roles');
-
-if ( in_array( $config->ParameterArray["LDAPSiteAccess"], $groupList ) )
-	$person->SiteAccess = true;
-if ( in_array( $config->ParameterArray["LDAPReadAccess"], $groupList ) )
-	$person->ReadAccess = true;
-if ( in_array( $config->ParameterArray["LDAPWriteAccess"], $groupList ) )
-	$person->WriteAccess = true;
-if ( in_array( $config->ParameterArray["LDAPDeleteAccess"], $groupList ) )
-	$person->DeleteAccess = true;
-if ( in_array( $config->ParameterArray["LDAPAdminOwnDevices"], $groupList ) )
-	$person->AdminOwnDevices = true;
-if ( in_array( $config->ParameterArray["LDAPRackRequest"], $groupList ) )
-	$person->RackRequest = true;
-if ( in_array( $config->ParameterArray["LDAPRackAdmin"], $groupList ) )
-	$person->RackAdmin = true;
-if ( in_array( $config->ParameterArray["LDAPContactAdmin"], $groupList ) )
-	$person->ContactAdmin = true;
-if ( in_array( $config->ParameterArray["LDAPSiteAdmin"], $groupList ) )
-	$person->SiteAdmin = true;
-if ( in_array( $config->ParameterArray["LDAPBulkOperations"], $groupList ) )
-	$person->BulkOperations = true;
+// If an attribute name for 'Groups' is specified, use it to override rights.  Otherwise, leave existing accounts alone.
+if ( $config->ParameterArray["SAMLGroupAttribute"] != "" ) {
+	$person->revokeAll();
+	$groupList = $oidc->requestUserInfo($config->ParameterArray["SAMLGroupAttribute"]);
+	if ( is_array( $groupList ) && sizeof($groupList)>0 ) {
+		if ( in_array( $config->ParameterArray["LDAPSiteAccess"], $groupList ) )
+			$person->SiteAccess = true;
+		if ( in_array( $config->ParameterArray["LDAPReadAccess"], $groupList ) )
+			$person->ReadAccess = true;
+		if ( in_array( $config->ParameterArray["LDAPWriteAccess"], $groupList ) )
+			$person->WriteAccess = true;
+		if ( in_array( $config->ParameterArray["LDAPDeleteAccess"], $groupList ) )
+			$person->DeleteAccess = true;
+		if ( in_array( $config->ParameterArray["LDAPAdminOwnDevices"], $groupList ) )
+			$person->AdminOwnDevices = true;
+		if ( in_array( $config->ParameterArray["LDAPRackRequest"], $groupList ) )
+			$person->RackRequest = true;
+		if ( in_array( $config->ParameterArray["LDAPRackAdmin"], $groupList ) )
+			$person->RackAdmin = true;
+		if ( in_array( $config->ParameterArray["LDAPContactAdmin"], $groupList ) )
+			$person->ContactAdmin = true;
+		if ( in_array( $config->ParameterArray["LDAPSiteAdmin"], $groupList ) )
+			$person->SiteAdmin = true;
+		if ( in_array( $config->ParameterArray["LDAPBulkOperations"], $groupList ) )
+			$person->BulkOperations = true;
+	}
+}
 
 $person->UpdatePerson();
 
