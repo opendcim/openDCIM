@@ -346,9 +346,6 @@ echo '			</select>
 		</div>
 	</div>';
 	
-	/**************************************************************************
-    *********** START - Add Action field to the Rack Request From page ********
-    **************************************************************************/
 	if(isset($config->ParameterArray['RackRequestsActions']) && $config->ParameterArray['RackRequestsActions'] == 'enabled') {
         echo '
             <div>
@@ -369,9 +366,6 @@ echo '			</select>
             <input type="hidden" name="requestedaction" value="',$req->RequestedAction,'" />
         ';
     }
-    /**************************************************************************
-    *********** END - Add Action field to the Rack Request From page ********
-    **************************************************************************/
 
 echo '
     <div>
