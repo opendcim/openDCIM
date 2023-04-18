@@ -1136,6 +1136,9 @@ msgstr "Filter Cabinet List"
 msgid "Rack Requests"
 msgstr "Rack Requests"
 
+#. **************************************************************************
+#. ********** START - Add Action field to the Rack Request From page ********
+#. **************************************************************************
 #: openDCIM/configuration.php:1962
 msgid "Rack Requests Actions"
 msgstr "Rack Requests Actions"
@@ -1160,6 +1163,9 @@ msgstr "Change"
 msgid "Retire"
 msgstr "Retire"
 
+#. **************************************************************************
+#. ********** END - Add Action field to the Rack Request From page **********
+#. **************************************************************************
 #: openDCIM/configuration.php:1970
 msgid "Mail Subject"
 msgstr "Mail Subject"
