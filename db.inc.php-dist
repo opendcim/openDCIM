@@ -37,7 +37,7 @@
 
 	try{
 		$pdoconnect="mysql:host=$dbhost;port=$dbport;dbname=$dbname";
-		$dbh=new PDO($pdoconnect,$dbuser,$dbpass,$pdo_options);
+		$dbh=@new PDO($pdoconnect,$dbuser,$dbpass,$pdo_options);
 		$dbh->exec("SET @@SESSION.sql_mode = ''");
 	}catch(PDOException $e){
 		printf( "Error!  %s\n", $e->getMessage() );
