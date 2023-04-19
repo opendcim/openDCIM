@@ -1224,7 +1224,7 @@ function pdo_debugParams($stmt) {
 }
 
 function myThoughts() {
-	return __("Fuck Putin");
+	return __("Putin khulyo!");
 }
 
 class JobQueue {
