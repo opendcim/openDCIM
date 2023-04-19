@@ -149,6 +149,14 @@ div#imageselection { display: none;}
 
 #tooltip, #cdutooltip { min-height: 300px; min-width: 550px; }
 
+#tt .available.connected-list {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+#tt .available.connected-list::-webkit-scrollbar {
+	display: none;
+}
+
 .customattrsheader { padding-right: 10px; }
 #customattrs input, #customattrs select { background-color: transparent; border-style: ridge; }
 

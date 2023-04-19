@@ -163,7 +163,7 @@
 		},
 		_getOptionNode: function(option) {
 			option = $(option);
-			var node = $('<li class="ui-state-default ui-element" title="'+option.text()+'" data-selected-value="' + option.val() + '"><span class="ui-icon"/>'+option.text()+'<a href="#" class="action"><span class="ui-corner-all ui-icon"></span></a></li>').hide();
+			var node = $('<li class="ui-state-default ui-element" title="'+option.text()+'" data-selected-value="' + option.val() + '"><span class="ui-icon"></span>'+option.text()+'<a href="#" class="action"><span class="ui-corner-all ui-icon"/></a></li>').hide();
 			node.data('optionLink', option);
 			return node;
 		},
@@ -279,7 +279,7 @@
 		_registerAddEvents: function(elements) {
 			var that = this;
 			elements.click(function() {
-				var item = that._setSelected($(elements).parent().parent(), true);
+				var item = that._setSelected($(elements).parent(), true);
 				that.count += 1;
 				that._updateCount();
 				return false;
@@ -304,8 +304,9 @@
 		},
 		_registerRemoveEvents: function(elements) {
 			var that = this;
+			console.log(elements);
 			elements.click(function() {
-				that._setSelected($(elements).parent().parent(), false);
+				that._setSelected($(elements).parent(), false);
 				that.count -= 1;
 				that._updateCount();
 				return false;
