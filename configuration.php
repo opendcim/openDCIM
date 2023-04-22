@@ -2455,6 +2455,17 @@ echo '<div class="main">
 					<div><input type="text" size="40" defaultvalue="',$config->defaults["AttrPhone3"],'" name="AttrPhone3" value="',$config->ParameterArray["AttrPhone3"],'"></div>
 				</div>
 			</div>
+			<h3>',__("Username Transformations"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="SAMLaccountPrefix">',__("Remove Account Prefix"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLaccountPrefix"],'" name="SAMLaccountPrefix" value="',$config->ParameterArray["SAMLaccountPrefix"],'"></div>
+				</div>
+				<div>
+					<div><label for="SAMLaccountSuffix">',__("Remove Account Suffix"),'</label></div>
+					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLaccountSuffix"],'" name="SAMLaccountSuffix" value="',$config->ParameterArray["SAMLaccountSuffix"],'"></div>
+				</div>
+			</div>
 			<h3>',__("Group/Scope Mapping"),'</h3>
 			<div class="table">
 				<div>
@@ -2517,6 +2528,10 @@ echo '<div class="main">
 				<div>
 					<div><label for="OIDCClientSecret">',__("OIDC Client Secret"),'</label></div>
 					<div><input type="text" size=50 defaultvalue="',$config->defaults["OIDCClientSecret"],'" name="OIDCClientSecret" value="',$config->ParameterArray["OIDCClientSecret"],'"></div>
+				</div>
+				<div>
+					<div><label for="OIDCUserID">',__("OIDC UserID Attribute"),'</label></div>
+					<div><input type="text" size=50 defaultvalue="',$config->defaults["OIDCUserID"],'" name="OIDCUserID" value="',$config->ParameterArray["OIDCUserID"],'"></div>
 				</div>
 			</div>
 			<h3>',__("LDAP Authentication and Authorization Configuration"),'</h3>
@@ -2652,17 +2667,6 @@ echo '<div class="main">
 				</div>
 			</div>
 			</fieldset>
-			<h3>',__("SAML Account Configuration"),'</h3>
-			<div class="table">
-				<div>
-					<div><label for="SAMLaccountPrefix">',__("Remove Account Prefix"),'</label></div>
-					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLaccountPrefix"],'" name="SAMLaccountPrefix" value="',$config->ParameterArray["SAMLaccountPrefix"],'"></div>
-				</div>
-				<div>
-					<div><label for="SAMLaccountSuffix">',__("Remove Account Suffix"),'</label></div>
-					<div><input type="text" size="60" defaultvalue="',$config->defaults["SAMLaccountSuffix"],'" name="SAMLaccountSuffix" value="',$config->ParameterArray["SAMLaccountSuffix"],'"></div>
-				</div>
-			</div>
 		</div>
 		<div id="preflight">
 			<iframe src="preflight.inc.php"></iframe>

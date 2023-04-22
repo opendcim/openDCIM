@@ -35,12 +35,24 @@ if ( isset($_GET['logout'])) {
 }
 
 $oidc->authenticate();
+$check_username = $oidc->requestUserInfo($config->ParameterArray["OIDCUserID"]);
 
-$_SESSION["userid"] = $oidc->requestUserInfo('user_id');
+// Remove the prefix and suffix from the user name
+$lenprefix = strlen($config->ParameterArray["SAMLaccountPrefix"]);
+if (substr(strtoupper($check_username), 0, $lenprefix) == strtoupper($config->ParameterArray["SAMLaccountPrefix"])) {
+    $check_username = substr($check_username, $lenprefix);
+}
+
+$suffixStart = strlen($check_username)-strlen($config->ParameterArray["SAMLaccountSuffix"]);
+if (substr(strtoupper($check_username), $suffixStart, strlen($check_username)) == strtoupper($config->ParameterArray["SAMLaccountSuffix"])) {
+    $check_username = substr($check_username, 0, $suffixStart);
+}
+
+$_SESSION["userid"] = $check_username;
 $_SESSION["ID_TOKEN"] = $oidc->getIdToken();
 
 $person = new People();
-$person->UserID = $oidc->requestUserInfo('user_id');
+$person->UserID = $oidc->requestUserInfo($config->ParameterArray["OIDCUserID"]);
 if ( ! $person->GetPersonByUserID() )
 	$person->CreatePerson();
 
@@ -64,6 +76,7 @@ if ( $config->ParameterArray["AttrPhone3"] != "" )
 
 // If an attribute name for 'Groups' is specified, use it to override rights.  Otherwise, leave existing accounts alone.
 if ( $config->ParameterArray["SAMLGroupAttribute"] != "" ) {
+	/*
 	$person->revokeAll();
 	$groupList = $oidc->requestUserInfo($config->ParameterArray["SAMLGroupAttribute"]);
 	if ( is_array( $groupList ) && sizeof($groupList)>0 ) {
@@ -88,6 +101,7 @@ if ( $config->ParameterArray["SAMLGroupAttribute"] != "" ) {
 		if ( in_array( $config->ParameterArray["LDAPBulkOperations"], $groupList ) )
 			$person->BulkOperations = true;
 	}
+	*/
 }
 
 $person->UpdatePerson();
