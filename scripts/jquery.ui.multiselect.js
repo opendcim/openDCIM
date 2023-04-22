@@ -304,7 +304,6 @@
 		},
 		_registerRemoveEvents: function(elements) {
 			var that = this;
-			console.log(elements);
 			elements.click(function() {
 				that._setSelected($(elements).parent(), false);
 				that.count -= 1;
