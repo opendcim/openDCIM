@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-18 18:27-0500\n"
+"POT-Creation-Date: 2023-04-21 20:19-0500\n"
 "PO-Revision-Date: 2014-08-04 13:57-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -518,7 +518,7 @@ msgid "Notes"
 msgstr ""
 
 #: openDCIM/cabinets.php:347 openDCIM/cabrow.php:196
-#: openDCIM/cdu_templates.php:236 openDCIM/configuration.php:2699
+#: openDCIM/cdu_templates.php:236 openDCIM/configuration.php:2703
 #: openDCIM/container.php:285 openDCIM/datacenter.php:313
 #: openDCIM/departments.php:214 openDCIM/device_manufacturers.php:203
 #: openDCIM/devices.php:2590 openDCIM/disposition.php:115
@@ -567,7 +567,7 @@ msgid "Return to Navigator"
 msgstr "Return t' Navigator"
 
 #: openDCIM/cabinets.php:362 openDCIM/cabrow.php:204
-#: openDCIM/cdu_templates.php:245 openDCIM/configuration.php:2704
+#: openDCIM/cdu_templates.php:245 openDCIM/configuration.php:2708
 #: openDCIM/container.php:299 openDCIM/datacenter.php:339
 #: openDCIM/departments.php:225 openDCIM/device_manufacturers.php:218
 #: openDCIM/device_templates.php:1128 openDCIM/disposition.php:121
@@ -1184,8 +1184,8 @@ msgstr ""
 #: openDCIM/configuration.php:2070 openDCIM/configuration.php:2166
 #: openDCIM/configuration.php:2174 openDCIM/configuration.php:2305
 #: openDCIM/configuration.php:2318 openDCIM/configuration.php:2333
-#: openDCIM/configuration.php:2373 openDCIM/configuration.php:2551
-#: openDCIM/configuration.php:2572 openDCIM/usermgr.php:289
+#: openDCIM/configuration.php:2373 openDCIM/configuration.php:2566
+#: openDCIM/configuration.php:2587 openDCIM/usermgr.php:289
 msgid "Disabled"
 msgstr "Broken"
 
@@ -1194,8 +1194,8 @@ msgstr "Broken"
 #: openDCIM/configuration.php:1965 openDCIM/configuration.php:2063
 #: openDCIM/configuration.php:2071 openDCIM/configuration.php:2167
 #: openDCIM/configuration.php:2175 openDCIM/configuration.php:2306
-#: openDCIM/configuration.php:2319 openDCIM/configuration.php:2552
-#: openDCIM/configuration.php:2573
+#: openDCIM/configuration.php:2319 openDCIM/configuration.php:2567
+#: openDCIM/configuration.php:2588
 #, fuzzy
 msgid "Enabled"
 msgstr "Broken"
@@ -1707,212 +1707,215 @@ msgid "Phone3"
 msgstr ""
 
 #: openDCIM/configuration.php:2458
-msgid "Group/Scope Mapping"
+msgid "Username Transformations"
 msgstr ""
 
 #: openDCIM/configuration.php:2461
+msgid "Remove Account Prefix"
+msgstr ""
+
+#: openDCIM/configuration.php:2465
+msgid "Remove Account Suffix"
+msgstr ""
+
+#: openDCIM/configuration.php:2469
+msgid "Group/Scope Mapping"
+msgstr ""
+
+#: openDCIM/configuration.php:2472
 msgid "SAML Attribute containing Groups"
 msgstr ""
 
-#: openDCIM/configuration.php:2465 openDCIM/install.php:1731
+#: openDCIM/configuration.php:2476 openDCIM/install.php:1731
 msgid "Site Access"
 msgstr ""
 
-#: openDCIM/configuration.php:2469 openDCIM/install.php:1735
+#: openDCIM/configuration.php:2480 openDCIM/install.php:1735
 msgid "Global Read"
 msgstr ""
 
-#: openDCIM/configuration.php:2473 openDCIM/install.php:1739
+#: openDCIM/configuration.php:2484 openDCIM/install.php:1739
 msgid "Global Write"
 msgstr ""
 
-#: openDCIM/configuration.php:2477 openDCIM/install.php:1743
+#: openDCIM/configuration.php:2488 openDCIM/install.php:1743
 msgid "Global Delete"
 msgstr ""
 
-#: openDCIM/configuration.php:2481 openDCIM/install.php:1747
+#: openDCIM/configuration.php:2492 openDCIM/install.php:1747
 msgid "Admin Owned Devices"
 msgstr ""
 
-#: openDCIM/configuration.php:2485 openDCIM/install.php:1751
+#: openDCIM/configuration.php:2496 openDCIM/install.php:1751
 #, fuzzy
 msgid "Enter Rack Request"
 msgstr "Sink Request"
 
-#: openDCIM/configuration.php:2489 openDCIM/install.php:1755
+#: openDCIM/configuration.php:2500 openDCIM/install.php:1755
 #, fuzzy
 msgid "Complete Rack Request"
 msgstr "Sink Request"
 
-#: openDCIM/configuration.php:2493 openDCIM/install.php:1759
+#: openDCIM/configuration.php:2504 openDCIM/install.php:1759
 msgid "Contact Admin"
 msgstr ""
 
-#: openDCIM/configuration.php:2497
+#: openDCIM/configuration.php:2508
 #, fuzzy
 msgid "Bulk Operations"
 msgstr "Contact R'ports"
 
-#: openDCIM/configuration.php:2501 openDCIM/install.php:1763
+#: openDCIM/configuration.php:2512 openDCIM/install.php:1763
 msgid "Site Admin"
 msgstr ""
 
-#: openDCIM/configuration.php:2507
+#: openDCIM/configuration.php:2518
 #, fuzzy
 msgid "OIDC Connection Configuration"
 msgstr "Data Center Configuration"
 
-#: openDCIM/configuration.php:2510
+#: openDCIM/configuration.php:2521
 #, fuzzy
 msgid "OIDC Authorization Endpoint"
 msgstr "R'ports"
 
-#: openDCIM/configuration.php:2514
+#: openDCIM/configuration.php:2525
 msgid "OIDC Client ID"
 msgstr ""
 
-#: openDCIM/configuration.php:2518
+#: openDCIM/configuration.php:2529
 msgid "OIDC Client Secret"
 msgstr ""
 
-#: openDCIM/configuration.php:2522 openDCIM/install.php:1709
+#: openDCIM/configuration.php:2533
+msgid "OIDC UserID Attribute"
+msgstr ""
+
+#: openDCIM/configuration.php:2537 openDCIM/install.php:1709
 msgid "LDAP Authentication and Authorization Configuration"
 msgstr ""
 
-#: openDCIM/configuration.php:2525 openDCIM/install.php:1712
+#: openDCIM/configuration.php:2540 openDCIM/install.php:1712
 msgid "LDAP Server URI"
 msgstr ""
 
-#: openDCIM/configuration.php:2529 openDCIM/install.php:1716
+#: openDCIM/configuration.php:2544 openDCIM/install.php:1716
 msgid "Base DN"
 msgstr ""
 
-#: openDCIM/configuration.php:2533
+#: openDCIM/configuration.php:2548
 msgid "Base Search"
 msgstr ""
 
-#: openDCIM/configuration.php:2534
+#: openDCIM/configuration.php:2549
 msgid "Leave blank for Active Directory"
 msgstr ""
 
-#: openDCIM/configuration.php:2537 openDCIM/install.php:1720
+#: openDCIM/configuration.php:2552 openDCIM/install.php:1720
 msgid "Bind DN"
 msgstr ""
 
-#: openDCIM/configuration.php:2541
+#: openDCIM/configuration.php:2556
 msgid "User Search"
 msgstr ""
 
-#: openDCIM/configuration.php:2545 openDCIM/install.php:1724
+#: openDCIM/configuration.php:2560 openDCIM/install.php:1724
 msgid "LDAP Session Expiration (Seconds)"
 msgstr ""
 
-#: openDCIM/configuration.php:2549
+#: openDCIM/configuration.php:2564
 msgid "LDAP Debugging"
 msgstr ""
 
-#: openDCIM/configuration.php:2557
+#: openDCIM/configuration.php:2572
 msgid "Emergency Bypass Password"
 msgstr ""
 
-#: openDCIM/configuration.php:2563
+#: openDCIM/configuration.php:2578
 #, fuzzy
 msgid "SAML Authentication Configuration"
 msgstr "Data Center Configuration"
 
-#: openDCIM/configuration.php:2566
+#: openDCIM/configuration.php:2581
 msgid "Base URL"
 msgstr ""
 
-#: openDCIM/configuration.php:2570
+#: openDCIM/configuration.php:2585
 msgid "Show Success Page"
 msgstr ""
 
-#: openDCIM/configuration.php:2578
+#: openDCIM/configuration.php:2593
 msgid "SAML SP Information and Certificate Generation"
 msgstr ""
 
-#: openDCIM/configuration.php:2582
+#: openDCIM/configuration.php:2597
 msgid "Entity ID"
 msgstr ""
 
-#: openDCIM/configuration.php:2586
+#: openDCIM/configuration.php:2601
 msgid "Country (2 Character)"
 msgstr ""
 
-#: openDCIM/configuration.php:2590
+#: openDCIM/configuration.php:2605
 msgid "State or Province"
 msgstr ""
 
-#: openDCIM/configuration.php:2594
+#: openDCIM/configuration.php:2609
 msgid "Organization"
 msgstr ""
 
-#: openDCIM/configuration.php:2607
+#: openDCIM/configuration.php:2622
 #, fuzzy
 msgid "Certificate Expiration"
 msgstr "Data Exceptions R'port"
 
-#: openDCIM/configuration.php:2611
+#: openDCIM/configuration.php:2626
 msgid "SP Private Key"
 msgstr ""
 
-#: openDCIM/configuration.php:2615
+#: openDCIM/configuration.php:2630
 msgid "SP x509 Certificate"
 msgstr ""
 
-#: openDCIM/configuration.php:2620
+#: openDCIM/configuration.php:2635
 msgid "Generate/Renew Certificate"
 msgstr ""
 
-#: openDCIM/configuration.php:2625
+#: openDCIM/configuration.php:2640
 #, fuzzy
 msgid "SAML Identity Provider Configuration"
 msgstr "Data Center Configuration"
 
-#: openDCIM/configuration.php:2629
+#: openDCIM/configuration.php:2644
 msgid "IdP entityId"
 msgstr ""
 
-#: openDCIM/configuration.php:2633
+#: openDCIM/configuration.php:2648
 msgid "IdP Metadata URL"
 msgstr ""
 
-#: openDCIM/configuration.php:2637
+#: openDCIM/configuration.php:2652
 msgid "SSO URL"
 msgstr ""
 
-#: openDCIM/configuration.php:2641
+#: openDCIM/configuration.php:2656
 msgid "SLS URL"
 msgstr ""
 
-#: openDCIM/configuration.php:2645
+#: openDCIM/configuration.php:2660
 msgid "IdP x509 Certificate"
 msgstr ""
 
-#: openDCIM/configuration.php:2650
+#: openDCIM/configuration.php:2665
 msgid "Refresh IdP Metadata"
 msgstr ""
 
-#: openDCIM/configuration.php:2655
-#, fuzzy
-msgid "SAML Account Configuration"
-msgstr "Data Center Configuration"
-
-#: openDCIM/configuration.php:2658
-msgid "Remove Account Prefix"
-msgstr ""
-
-#: openDCIM/configuration.php:2662
-msgid "Remove Account Suffix"
-msgstr ""
-
-#: openDCIM/configuration.php:2704
+#: openDCIM/configuration.php:2708
 #, fuzzy
 msgid "Reserved"
 msgstr "R'ports"
 
-#: openDCIM/configuration.php:2704
+#: openDCIM/configuration.php:2708
 msgid "Disposed"
 msgstr ""
 
@@ -3630,7 +3633,7 @@ msgid "Side"
 msgstr ""
 
 #: openDCIM/misc.inc.php:1227
-msgid "Fuck Putin"
+msgid "Putin khulyo!"
 msgstr ""
 
 #: openDCIM/pathmaker.php:5
@@ -6321,6 +6324,10 @@ msgstr ""
 #: openDCIM/classes/SwitchInfo.class.php:105
 msgid "First port detection failed, please report to openDCIM developers"
 msgstr ""
+
+#, fuzzy
+#~ msgid "SAML Account Configuration"
+#~ msgstr "Data Center Configuration"
 
 #, fuzzy
 #~ msgid "Power Connections Count"
