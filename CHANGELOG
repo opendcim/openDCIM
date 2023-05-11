@@ -12,7 +12,7 @@ Changes in 23.01
 * Upgraded libraries for SAML
 * Deprecated the old Oauth-Social login libraries
 * Added OIDC login with configuration via UI
-* Migrated from PHPSpreadsheet (deprecated) to PHPOffice
+* Migrated from PHPExcel (deprecated) to PHPOffice
 * Updated jquery libraries
 * Migrated from SwiftMailer (deprecated) to PHPMailer
 
