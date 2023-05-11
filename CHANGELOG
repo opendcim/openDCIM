@@ -6,6 +6,16 @@ GitHub, at http://github.com/opendcim/openDCIM/issues, where you can also downlo
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 23.01
+----------------
+* Primary focus was in compatibility with PHP 8.x
+* Upgraded libraries for SAML
+* Deprecated the old Oauth-Social login libraries
+* Added OIDC login with configuration via UI
+* Migrated from PHPSpreadsheet (deprecated) to PHPOffice
+* Updated jquery libraries
+* Migrated from SwiftMailer (deprecated) to PHPMailer
+
 Changes in 21.01
 ----------------
 * Mostly focused on bug fixes
