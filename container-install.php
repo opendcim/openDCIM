@@ -245,12 +245,10 @@ upgrade();
 if(isset($results)){
 	date_default_timezone_set($config->ParameterArray['timezone']);
 
-	$fh=fopen('install.err', 'a');
-	fwrite($fh, date("Y-m-d g:i:s a\n"));
 	foreach($results as $key => $value){
 		foreach($value as $status => $message){
 			if($status==1){$class="error";}else{$class="success";}
-			fwrite($fh, $message);
+			error_log( $message );
 		}
 	}
 	fclose($fh);
