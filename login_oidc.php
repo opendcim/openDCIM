@@ -37,8 +37,6 @@ if ( isset($_GET['logout'])) {
 $oidc->authenticate();
 $check_username = $oidc->requestUserInfo($config->ParameterArray["OIDCUserID"]);
 
-error_log( "Username: ${check_username}");
-
 // Remove the prefix and suffix from the user name
 $lenprefix = strlen($config->ParameterArray["SAMLaccountPrefix"]);
 if (substr(strtoupper($check_username), 0, $lenprefix) == strtoupper($config->ParameterArray["SAMLaccountPrefix"])) {
