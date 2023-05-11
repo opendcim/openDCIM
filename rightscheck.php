@@ -17,7 +17,7 @@ $userid=exec('id -u');
 $grpid=exec('id -g');
 
 // The directories we want writable for uploads
-$wantedpaths=array('drawings', 'pictures','vendor'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'ttfontdata');
+$wantedpaths=array('drawings', 'pictures');
 
 print "<table>
 	<tr>

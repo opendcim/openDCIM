@@ -175,7 +175,7 @@
 
 	// Do a quick check for file rights.
 	$all_paths_writable=true;
-	$wantedpaths=array('vendor'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'ttfontdata');
+	$wantedtitle="";
 	if ( is_object( $config )) {
 		$wantedpaths[] = $config->ParameterArray["drawingpath"];
 		$wantedpaths[] = $config->ParameterArray["picturepath"];
@@ -186,7 +186,11 @@
 
 	foreach($wantedpaths as $i => $file){
 		$all_paths_writable=(is_writable('.'.DIRECTORY_SEPARATOR.$file) && $all_paths_writable)?true:false;
+		if(!is_writable('.'.DIRECTORY_SEPARATOR.$file)){
+			$wantedtitle="{$wantedtitle}{$file} is not writeable\n";
+		}
 	}
+	$wantedtitle=addslashes(htmlentities($wantedtitle));
 
 	if($all_paths_writable) {
 		$tests['directory_rights']['state']="good";
@@ -247,7 +251,8 @@
         echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}.hide{display: none;}</style></head><body><span id="sped"><a href="https://wiki.opendcim.org/wiki/index.php/System_Requirements" target="_blank">System Requirements</a> | <a href="https://wiki.opendcim.org/wiki/index.php/Installation" target="_blank">Installation Guide</a></span><table>';
 		foreach($tests as $test => $text){
 			$hide=($test=='api_test')?' class="hide"':'';
-			print "<tr id=\"$test\"$hide><th>$test</th><td>{$text['message']}</td><td>{$text['state']}</td></tr>";
+			$title=($test=='directory_rights')?' title="'.$wantedtitle.'"':'';
+			print "<tr id=\"$test\"$hide><th>$test</th><td>{$text['message']}</td><td{$title}>{$text['state']}</td></tr>";
 		}
 		echo '<tr><th>javascript</th><td>Javascript is used heavily for data validation and a more polished user experience.</td><td><script>document.write("good");document.getElementById("api_test").className=document.getElementById("api_test").className.replace(/\bhide\b/,"");</script><noscript>fail</noscript></td></tr>
 			</table>
