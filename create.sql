@@ -904,6 +904,7 @@ INSERT INTO fac_Config VALUES
 	('LDAPPhone2','','string','string',''),
 	('LDAPPhone3','','string','string',''),
   ('OIDCEndpoint','','string','string',''),
+  ('OIDCUserID','user_id','string','string','user_id'),
   ('OIDCClientID','','string','string',''),
   ('OIDCClientSecret','','string','string',''),
 	('SAMLGroupAttribute', '', 'string', '', 'memberOf'),
