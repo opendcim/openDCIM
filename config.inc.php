@@ -6,7 +6,7 @@ class Config{
 	
 	function __construct(){
 		global $dbh;
-		
+
 		//Get parameter value pairs from fac_Config
 		$sql='select Parameter, Value, DefaultVal from fac_Config';
                 $sth=$dbh->prepare($sql);

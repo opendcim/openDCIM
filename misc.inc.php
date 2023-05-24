@@ -1,8 +1,11 @@
 <?php
 /* All functions contained herein will be general use functions */
 
-/* Create a quick reference for datacenter data */
-@$_SESSION['datacenters']=DataCenter::GetDCList(true);
+$result=$dbh->prepare("SHOW TABLES;");
+$result->execute();
+if($result->rowCount()==0) {
+		header("Location: install.php" );
+}
 
 /* Generic html sanitization routine */
 
@@ -1038,6 +1041,10 @@ if (AUTHENTICATION == "OIDC" ) {
 #	}
 #	$lmenu[]='<a href="saml/logout.php"><span>'.__("Logout").'</span></a>';
 #}
+
+
+/* Create a quick reference for datacenter data */
+@$_SESSION['datacenters']=DataCenter::GetDCList(true);
 
 function download_file($archivo, $downloadfilename = null) {
 	if (file_exists($archivo)) {
