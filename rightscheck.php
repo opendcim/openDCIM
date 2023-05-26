@@ -17,7 +17,7 @@ $userid=exec('id -u');
 $grpid=exec('id -g');
 
 // The directories we want writable for uploads
-$wantedpaths=array('drawings', 'pictures');
+$wantedpaths=array('drawings', 'pictures','assets/drawings','assets/pictures');
 
 print "<table>
 	<tr>
@@ -107,7 +107,8 @@ foreach($scanned_directory as $i => $file){
 }
 
 # Add in extra paths here that aren't part of the root loop.
-printrow('vendor'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'mpdf'.DIRECTORY_SEPARATOR.'ttfontdata',$wantedpaths,$userid,$grpid);
+printrow('assets'.DIRECTORY_SEPARATOR.'drawings',$wantedpaths,$userid,$grpid);
+printrow('assets'.DIRECTORY_SEPARATOR.'pictures',$wantedpaths,$userid,$grpid);
 
 # Handle paths that may or may not be set in the configuration screen for docker
 # clowns.

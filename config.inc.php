@@ -9,22 +9,30 @@ class Config{
 
 		//Get parameter value pairs from fac_Config
 		$sql='select Parameter, Value, DefaultVal from fac_Config';
-                $sth=$dbh->prepare($sql);
-                $sth->execute();
-		while ($row = $sth->fetch()) {
-			if ($row['Parameter']== 'ClassList'){
-				$List = explode(', ', $row['Value']);
-				$this->ParameterArray[$row['Parameter']]=$List;
-				$this->defaults[$row['Parameter']]=$row['DefaultVal'];
-			}else{
-				// this allows us to support quotes in paths for whatever reason
-				if(preg_match('/.*path$|PDFLogoFile/',$row['Parameter'])){
-					$this->ParameterArray[$row['Parameter']]=html_entity_decode($row['Value'],ENT_QUOTES);
+		$sth=$dbh->prepare($sql);
+		// this gets called via db.inc on a new install and will throw an exception
+		// this prevents that and allows the install to continue and call this again
+		// later and populate correctly
+		try {
+			$sth->execute();
+			while ($row = $sth->fetch()) {
+				if ($row['Parameter']== 'ClassList'){
+					$List = explode(', ', $row['Value']);
+					$this->ParameterArray[$row['Parameter']]=$List;
+					$this->defaults[$row['Parameter']]=$row['DefaultVal'];
 				}else{
-					$this->ParameterArray[$row['Parameter']]=$row['Value'];
+					// this allows us to support quotes in paths for whatever reason
+					if(preg_match('/.*path$|PDFLogoFile/',$row['Parameter'])){
+						$this->ParameterArray[$row['Parameter']]=html_entity_decode($row['Value'],ENT_QUOTES);
+					}else{
+						$this->ParameterArray[$row['Parameter']]=$row['Value'];
+					}
+					$this->defaults[$row['Parameter']]=$row['DefaultVal'];
 				}
-				$this->defaults[$row['Parameter']]=$row['DefaultVal'];
 			}
+		} catch (PDOException $e) {
+			$info=$e->getMessage();
+			error_log("UpdateConfig::PDO Error: {$info} SQL=$sql");
 		}
 		return;
 	}
