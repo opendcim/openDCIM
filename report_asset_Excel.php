@@ -1773,16 +1773,6 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
     }
 }
 
-/*
- * Caching with Memory Serialized using PHPExcel 1.7.8 actually showed not
- * only a reduction on the required memory footprint but provides a speedup of
- * 5% (40.18sec vs 47.23sec). Memory reduction was factor 2.2 (182.5MB vs 396.5MB).
- */
-$cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_in_memory_serialized;
-$retcode = \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod);
-
-// REMARK: Comment in if a reporting on the resource usage is needed
-// ReportStats::get()->useStatReporting();
 
 $thisDate = date('Y-m-d');
 
