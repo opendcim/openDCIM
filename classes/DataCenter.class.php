@@ -547,12 +547,12 @@ class DataCenter {
 		// Count the U used up by devices that are (a) not chassis cards; (b) in a cabinet in the data center; (c) not a server or array; and (d) not in the Storage Room (Cabinet=-1)
 		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE 
 			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND ParentDevice=0 AND
-			a.DeviceType NOT IN ('Server','Storage Array') and a.Status NOT IN ('Reserved', 'Salvage') and a.Cabinet>0;";
+			a.DeviceType NOT IN ('Server','Appliance','Storage Array','Switch') and a.Status NOT IN ('Reserved', 'Salvage') and a.Cabinet>0;";
 		$dcStats["Infrastructure"]=($test=$this->query($sql)->fetchColumn())?$test:0;
  
 		$sql="SELECT SUM(a.Height) as TotalU FROM fac_Device a,fac_Cabinet b WHERE 
 			a.Cabinet=b.CabinetID AND b.DataCenterID=$this->DataCenterID AND ParentDevice=0 AND
-			a.Status not in ('Reserved', 'Salvage') AND a.DeviceType IN ('Server', 'Storage Array') and a.Cabinet>0;";
+			a.Status not in ('Reserved', 'Salvage') AND a.DeviceType IN ('Server','Appliance','Storage Array','Switch') and a.Cabinet>0;";
 		$dcStats["Occupied"]=($test=$this->query($sql)->fetchColumn())?$test:0;
 
 		// There should never be a case where a device marked as reserved ends up in the Storage Room, but S.U.T. #44
