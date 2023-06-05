@@ -1773,7 +1773,6 @@ function writeExcelReport(&$DProps, $objPHPExcel, $thisDate)
     }
 }
 
-
 $thisDate = date('Y-m-d');
 
 $objPHPExcel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();

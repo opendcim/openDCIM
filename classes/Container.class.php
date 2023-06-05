@@ -35,8 +35,8 @@ class Container {
 		$this->Name=sanitize($this->Name);
 		$this->ParentID=intval($this->ParentID);
 		$this->DrawingFileName=sanitize($this->DrawingFileName);
-		$this->MapX=abs($this->MapX);
-		$this->MapY=abs($this->MapY);
+		$this->MapX=abs(intval($this->MapX));
+		$this->MapY=abs(intval($this->MapY));
 	}
 	
 	function MakeDisplay(){
@@ -50,8 +50,8 @@ class Container {
 		$container->Name=$row["Name"];
 		$container->ParentID=$row["ParentID"];
 		$container->DrawingFileName=$row["DrawingFileName"];
-		$container->MapX=$row["MapX"];
-		$container->MapY=$row["MapY"];
+		$container->MapX=intval($row["MapX"]);
+		$container->MapY=intval($row["MapY"]);
 		$container->MakeDisplay();
 
 		return $container;
