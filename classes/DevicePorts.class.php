@@ -561,9 +561,9 @@ class DevicePorts {
 			
 			$sqlSameCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
 				Cabinet=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Position 
-				DESC, Label ASC limit 500;";
+				DESC, Label ASC;";
 			$sqlDiffCabDevice="SELECT * FROM fac_Device WHERE Ports>0 AND 
-				Cabinet!=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Label ASC limit 500;";
+				Cabinet!=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Label ASC;";
 			
 			foreach(array($sqlSameCabDevice, $sqlDiffCabDevice) as $sql){
 				foreach($dbh->query($sql) as $row){
@@ -575,7 +575,7 @@ class DevicePorts {
 		}else{
 			$sql="SELECT a.*, b.Cabinet as CabinetID FROM fac_Ports a, fac_Device b WHERE 
 				Ports>0 AND Cabinet>-1 AND a.DeviceID=b.DeviceID AND 
-				a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp limit 500;";
+				a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
 			foreach($dbh->query($sql) as $row){
 				$candidates[]=array("DeviceID"=>$row["DeviceID"], "Label"=>$row["Label"], "CabinetID"=>$row["CabinetID"]);
 			}
