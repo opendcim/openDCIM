@@ -74,11 +74,14 @@ class ProjectMembership {
 		while ( $row = $st->fetch() ) {
 			$d = new Device();
 			$d->DeviceID = $row->MemberID;
-			$d->GetDevice();
-			if ( $IndexByID == true ) {
-				$result[$d->DeviceID] = $d;
+			if ($d->GetDevice()) {
+				if ( $IndexByID == true ) {
+					$result[$d->DeviceID] = $d;
+				} else {
+					$result[] = $d;
+				}
 			} else {
-				$result[] = $d;
+				error_log("getProjectMembership: DeviceID {$d->DeviceID} is assigned to projectid {$ProjectID} but device no longer exists.");
 			}
 		}
 
@@ -91,11 +94,14 @@ class ProjectMembership {
 			while ( $row = $st->fetch() ) {
 				$d = new Device();
 				$d->DeviceID = $row[0];
-				$d->GetDevice();
-				if ( $IndexByID == true ) {
-					$result[$d->DeviceID] = $d;
+				if ($d->GetDevice()) {
+					if ( $IndexByID == true ) {
+						$result[$d->DeviceID] = $d;
+					} else {
+						$result[] = $d;
+					}
 				} else {
-					$result[] = $d;
+					error_log("getProjectMembership: DeviceID {$d->DeviceID} is assigned to projectid {$ProjectID} but device no longer exists.");
 				}
 			}
 		}
