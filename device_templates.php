@@ -73,8 +73,8 @@
 	$status='';
 
 	if(isset($_FILES['templateFile']) && $_FILES['templateFile']['error']==0 && $_FILES['templateFile']['type']='text/xml'){
-		$result=$template->ImportTemplate($_FILES['templateFile']['tmp_name']);
-		$status=($result["status"]=="")?__("Template File Imported"):$result["status"].'<a id="import_err" style="margin-left: 1em;" title="'.__("View errors").'" href="#"><img src="images/info.png"></a>';
+		$importresult=$template->ImportTemplate($_FILES['templateFile']['tmp_name']);
+		$status=($importresult["status"]=="")?__("Template File Imported"):$importresult["status"].'<a id="import_err" style="margin-left: 1em;" title="'.__("View errors").'" href="#"><img src="images/info.png"></a>';
 	}
 	
 	if(isset($_REQUEST['TemplateID']) && $_REQUEST['TemplateID'] >0){
@@ -1145,10 +1145,10 @@ echo '<div id="imageselection" title="',__("Image file selector"),'">
 <!-- end dialog: importFile -->  
 <!-- dialog: import_err -->  
 <div id="dlg_import_err" style="display:none;" title="<?php echo __("Import log");?>">  
-<?php 	
-if (isset($result["log"])){
+<?php
+if (isset($importresult["log"])){
 	print '<ul style="list-style-type:disc; padding: 5px;">';
-	foreach($result["log"] as $logline){
+	foreach($importresult["log"] as $logline){
 		print "<li style=\"padding: 5px;\">$logline</li>";
 	}
 	print "</ul>";
@@ -1173,7 +1173,7 @@ function bindevents() {
 		$(this).click(function(){
 			preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
 			preview.html("<img src=\"<?php echo $config->ParameterArray['picturepath'];?>"+$(this).text()+'" alt="preview">').attr('image',$(this).text());
-			preview.children('img').load(function(){
+			preview.children('img').on("load", function(){
 				var topmargin=0;
 				var leftmargin=0;
 				if($(this).height()<$(this).width()){
