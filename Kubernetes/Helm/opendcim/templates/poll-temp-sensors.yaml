@@ -1,0 +1,23 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: poll-temp-sensors
+  namespace: opendcim
+  labels:
+    {{- include "opendcim.labels" . | nindent 4 }}
+spec:
+  schedule: "*/15 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: opendcim-sensors
+            image:  "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            args:
+            - /usr/bin/php
+            - /var/www/html/poll_temperature_sensors.php
+            env:
+            {{- include "helpers.list-env-normal-variables" . | indent 12 }}
+            {{- include "helpers.list-env-secret-variables" . | indent 12 }}
+          restartPolicy: Never
