@@ -89,12 +89,20 @@
 		$tests['php_zip']['message']='PHP is missing the <a href="http://php.net/manual/en/book.zip.php">zip extension</a>. Please install it. This is necessary for the bulk import functions to operate correctly.';
 	}
 
+	if(extension_loaded('ldap')) {
+		$tests['php_ldap']['state']="good";
+		$tests['php_ldap']['message']='';
+	}else{
+		$tests['php_ldap']['state']="warning";
+		$tests['php_ldap']['message']='PHP is missing the <a href="http://php.net/manual/en/book.ldap.php">ldap extension</a>. Please install it. This is necessary for the advanced login functions like single sign on to work.';
+	}
+
 	if(extension_loaded('curl')) {
 		$tests['php_curl']['state']="good";
 		$tests['php_curl']['message']='';
 	}else{
 		$tests['php_curl']['state']="warning";
-		$tests['php_curl']['message']='PHP is missing the <a href="http://php.net/manual/en/book.curl.php">curl extension</a>. Please install it. This is necessary for the advanced login functions like single signon to work.';
+		$tests['php_curl']['message']='PHP is missing the <a href="http://php.net/manual/en/book.curl.php">curl extension</a>. Please install it. This is necessary for the advanced login functions like single sign on to work.';
 	}
 
 	if (function_exists('json_encode')) {
@@ -176,6 +184,10 @@
 					$tests["openSSL"]["message"]="openSSL is required in order to process Saml based authentication.";
 				}
 		} elseif(is_object( $config ) && AUTHENTICATION=="LDAP") {
+			if ($tests['php_ldap']['state']=="warning"){
+				// If authentication is set to LDAP then the ldap module moves to required and no longer a warning if missing
+				$tests['php_ldap']['state']="fail";
+			}
 			$tests["Remote User"]["state"]="good";
 			$tests["Remote User"]["message"]="";
 		}else {
