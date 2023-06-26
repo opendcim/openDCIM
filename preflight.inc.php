@@ -13,17 +13,17 @@
 	}
 
 	if (extension_loaded('mbstring')) {
-		$tests['mbstring']['state']="good";
-		$tests['mbstring']['message']='';
+		$tests['php_mbstring']['state']="good";
+		$tests['php_mbstring']['message']='';
 	}else{
-		$tests['mbstring']['state']="fail";
-		$tests['mbstring']['message']='PHP is missing the <a href="http://php.net/mbstring">mbstring extension</a>';
+		$tests['php_mbstring']['state']="fail";
+		$tests['php_mbstring']['message']='PHP is missing the <a href="http://php.net/mbstring">mbstring extension</a>';
 		$errors++;
 	}
 
 	if(extension_loaded('gettext')) {
-		$tests['gettext']['state']="good";
-		$tests['gettext']['message']='';
+		$tests['php_gettext']['state']="good";
+		$tests['php_gettext']['message']='';
 
 		$path='./locale';
 		$dir=scandir($path);
@@ -44,54 +44,73 @@
 			$locales[]=substr($line, 0, strpos($line, '.'));
 		}
 		if(count($locales)>1){
-			$tests['gettext']['message'].="Locales detected: ";
+			$tests['php_gettext']['message'].="Locales detected: ";
 			foreach(array_intersect($locales,$lang) as $locale){
-				$tests['gettext']['message'].="$locale, ";
+				$tests['php_gettext']['message'].="$locale, ";
 			}
 		}else{
-			$tests['gettext']['state']="fail";
-			$tests['gettext']['message']='Gettext is detected but we cannot verify that you have the appropriate locales loaded and available. <a href="http://wiki.opendcim.org/wiki/index.php/Translation">http://wiki.opendcim.org/wiki/index.php/Translation</a>';
+			$tests['php_gettext']['state']="fail";
+			$tests['php_gettext']['message']='Gettext is detected but we cannot verify that you have the appropriate locales loaded and available. <a href="http://wiki.opendcim.org/wiki/index.php/Translation">http://wiki.opendcim.org/wiki/index.php/Translation</a>';
 		}
 	}else{
-		$tests['gettext']['state']="fail";
-		$tests['gettext']['message']='PHP is missing the <a href="http://php.net/manual/book.gettext.php">Gettext extension</a>. Please install it.';
+		$tests['php_gettext']['state']="fail";
+		$tests['php_gettext']['message']='PHP is missing the <a href="http://php.net/manual/book.gettext.php">Gettext extension</a>. Please install it.';
 	}
 
 	if(extension_loaded('snmp')) {
-		$tests['snmp']['state']="good";
-		$tests['snmp']['message']='';
+		$tests['php_snmp']['state']="good";
+		$tests['php_snmp']['message']='';
 	}else{
-		$tests['snmp']['state']="fail";
-		$tests['snmp']['message']='PHP is missing the <a href="http://php.net/manual/book.snmp.php">snmp extension</a>. Please install it.';
+		$tests['php_snmp']['state']="fail";
+		$tests['php_snmp']['message']='PHP is missing the <a href="http://php.net/manual/book.snmp.php">snmp extension</a>. Please install it.';
 	}
 
 	if(extension_loaded('gd')) {
-		$tests['gd']['state']="good";
-		$tests['gd']['message']='';
+		$tests['php_gd']['state']="good";
+		$tests['php_gd']['message']='';
 	}else{
-		$tests['gd']['state']="warning";
-		$tests['gd']['message']='PHP is missing the <a href="http://php.net/manual/en/book.image.php">gd extension</a>. Please install it. Some reports will fail if this isn\'t present';
+		$tests['php_gd']['state']="warning";
+		$tests['php_gd']['message']='PHP is missing the <a href="http://php.net/manual/en/book.image.php">gd extension</a>. Please install it. Some reports will fail if this isn\'t present';
 	}
 
 	if(function_exists('utf8_decode')){
-		$tests['php-xml']['state']="good";
-		$tests['php-xml']['message']='';
+		$tests['php_xml']['state']="good";
+		$tests['php_xml']['message']='';
 	}else{
-		$tests['php-xml']['state']="fail";
-		$tests['php-xml']['message']='PHP is missing the <a href="http://us3.php.net/manual/en/book.xml.php">XML Parser</a>.  Please install it.<br><br>For CENT/RHEL yum -y install php-xml';
+		$tests['php_xml']['state']="fail";
+		$tests['php_xml']['message']='PHP is missing the <a href="http://us3.php.net/manual/en/book.xml.php">XML Parser</a>.  Please install it.<br><br>For CENT/RHEL yum -y install php-xml';
 	}
 
 	if(extension_loaded('zip')) {
-		$tests['zip']['state']="good";
-		$tests['zip']['message']='';
+		$tests['php_zip']['state']="good";
+		$tests['php_zip']['message']='';
 	}else{
-		$tests['zip']['state']="warning";
-		$tests['zip']['message']='PHP is missing the <a href="http://php.net/manual/en/book.zip.php">zip extension</a>. Please install it. This is necessary for the bulk import functions to operate correctly.';
+		$tests['php_zip']['state']="warning";
+		$tests['php_zip']['message']='PHP is missing the <a href="http://php.net/manual/en/book.zip.php">zip extension</a>. Please install it. This is necessary for the bulk import functions to operate correctly.';
 	}
 
-	$tests['pdo']['message']='';
+	if(extension_loaded('curl')) {
+		$tests['php_curl']['state']="good";
+		$tests['php_curl']['message']='';
+	}else{
+		$tests['php_curl']['state']="warning";
+		$tests['php_curl']['message']='PHP is missing the <a href="http://php.net/manual/en/book.curl.php">curl extension</a>. Please install it. This is necessary for the advanced login functions like single signon to work.';
+	}
+
+	if (function_exists('json_encode')) {
+		$tests['php_json']['state']="good";
+		$tests['php_json']['message']='PHP json module detected';
+	}else{
+		$tests['php_json']['state']="fail";
+		$tests['php_json']['message']='PHP is missing the <a href="http://php.net/manual/book.json.php">JavaScript Object Notation (JSON) extension</a>.  Please install it.';
+		$errors++;
+	}
+	// Sort the array at this point to get all the PHP modules together so it's more clear to the user
+	uksort($tests, 'strcasecmp');
+
+	$tests['php_pdo']['message']='';
 	if (extension_loaded('PDO')) {
-		$tests['pdo']['state']="good";
+		$tests['php_pdo']['state']="good";
 		if (count(PDO::getAvailableDrivers())>0) {
 			$tests['pdodrivers']['message']='Available drivers: '.implode(", ",PDO::getAvailableDrivers());
 			$tests['pdodrivers']['state']="good";
@@ -129,8 +148,8 @@
 			$errors++;
 		}
 	}else{
-		$tests['pdo']['state']="fail";
-		$tests['pdo']['message']='openDCIM requires the <a href="http://php.net/manual/pdo.installation.php">PDO extension</a> and you do not appear to have it loaded';
+		$tests['php_pdo']['state']="fail";
+		$tests['php_pdo']['message']='openDCIM requires the <a href="http://php.net/manual/pdo.installation.php">PDO extension</a> and you do not appear to have it loaded';
 		$tests['pdodrivers']['state']="fail";
 		$tests['pdodrivers']['message']='No PDO drivers have been detected';
 		$errors++;
@@ -239,16 +258,8 @@
 		$errors++;
 	}
 
-	if (function_exists('json_encode')) {
-		$tests['json']['state']="good";
-		$tests['json']['message']='PHP json module detected';
-	}else{
-		$tests['json']['state']="fail";
-		$tests['json']['message']='PHP is missing the <a href="http://php.net/manual/book.json.php">JavaScript Object Notation (JSON) extension</a>.  Please install it.';
-		$errors++;
-	}
 	if ($errors >0 || !isset($_GET['preflight-ok'])) {
-        echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}.hide{display: none;}</style></head><body><span id="sped"><a href="https://wiki.opendcim.org/wiki/index.php/System_Requirements" target="_blank">System Requirements</a> | <a href="https://wiki.opendcim.org/wiki/index.php/Installation" target="_blank">Installation Guide</a></span><table>';
+        echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}.warning td:last-child{font-weight: bold;background-color: yellow;}.hide{display: none;}</style></head><body><span id="sped"><a href="https://wiki.opendcim.org/wiki/index.php/System_Requirements" target="_blank">System Requirements</a> | <a href="https://wiki.opendcim.org/wiki/index.php/Installation" target="_blank">Installation Guide</a></span><table>';
 		foreach($tests as $test => $text){
 			$hide=($test=='api_test')?' class="hide"':'';
 			$title=($test=='directory_rights')?' title="'.$wantedtitle.'"':'';
@@ -266,6 +277,8 @@
 		if(typeof cells!="undefined"){
 			if(cells[cells.length-1].textContent=="fail"){
 				rows[row].className=rows[row].className + " fail";
+			} else if(cells[cells.length-1].textContent=="warning"){
+				rows[row].className=rows[row].className + " warning";
 			}
 		}
 	}
