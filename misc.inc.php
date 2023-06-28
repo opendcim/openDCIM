@@ -969,10 +969,8 @@ if(($person->Disabled || ($person->PersonID==0 && $person->UserID!="cli_admin"))
 $menu=$rmenu=$rrmenu=$camenu=$wamenu=$samenu=$lmenu=array();
 
 $rmenu[]='<a href="reports.php"><span>'.__("Reports").'</span></a>';
-
-if($config->ParameterArray["WorkOrderBuilder"]){
-	$class=(isset($_COOKIE['workOrder']) && $_COOKIE['workOrder']!='[0]')?'':'hide';
-	array_unshift($rmenu , '<a class="'.$class.'" href="workorder.php"><span>'.__("Work Order").'</span></a>');
+if($config->ParameterArray["WorkOrderBuilder"] == 'enabled' && isset($_COOKIE['workOrder']) && $_COOKIE['workOrder']!='[0]'){
+	array_unshift($rmenu , '<a href="workorder.php"><span>'.__("Work Order").'</span></a>');
 }
 
 if ( $config->ParameterArray["RackRequests"] == "enabled" && $person->RackRequest ) {
