@@ -2160,7 +2160,7 @@ class Device {
 	function GetDevicePicture($rear=false,$targetWidth=220,$nolinks=false){
 		global $config;
 		// Just in case
-		$targetWidth=($targetWidth==0)?220:$targetWidth;
+		$targetWidth=intval(($targetWidth==0)?220:$targetWidth);
 		$rear=($rear==true || $rear==false)?$rear:true;
 		$nolinks=($nolinks==true || $nolinks==false)?$nolinks:false;
 
