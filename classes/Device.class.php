@@ -2029,7 +2029,7 @@ class Device {
 					$slot->H=($hor_blade)?$slot->W*$imageratio:$slot->W/$imageratio;
 					$slot->Y=$originalH-$slot->H;
 				}
-				// Reset the zoome on the parent to 1 just for trays
+				// Reset the zoom on the parent to 1 just for trays
 				$parentDetails->zoomX=1;
 				$parentDetails->zoomY=1;
 			}
@@ -2111,6 +2111,11 @@ class Device {
 			$flags=($flags!='')?'<span class="hlight">'.$flags.'</span>':'';
 
 			$label="";
+
+			// PHP8 doesn't like dividing by zero, so make sure we have something that isn't 0
+			$parentDetails->targetWidth=($parentDetails->targetWidth==0)?1:$parentDetails->targetWidth;
+			$parentDetails->targetHeight=($parentDetails->targetHeight==0)?1:$parentDetails->targetHeight;
+
 			$resp.="\t\t<div class=\"dept$this->Owner $rotar\" style=\"left: ".number_format(round($left/$parentDetails->targetWidth*100,2),2,'.','')."%; top: ".number_format(round($top/$parentDetails->targetHeight*100,2),2,'.','')."%; width: ".number_format(round($width/$parentDetails->targetWidth*100,2),2,'.','')."%; height:".number_format(round($height/$parentDetails->targetHeight*100,2),2,'.','')."%;\">\n$clickable";
 //			if(($templ->FrontPictureFile!="" && !$rear) || ($templ->RearPictureFile!="" && $rear)){
 			if($picturefile!=$config->ParameterArray['picturepath']){
@@ -2139,8 +2144,8 @@ class Device {
 // if($this->ChassisSlots<4){$resp.=$label;}
 
 			if($this->ChassisSlots >0){
-				$kidsHavingKids->targetWidth=$width;
-				$kidsHavingKids->targetHeight=$height;
+				$kidsHavingKids->targetWidth=intval($width);
+				$kidsHavingKids->targetHeight=intval($height);
 				$kidsHavingKids->zoomX=$width/$kidsHavingKids->Width;
 				$kidsHavingKids->zoomY=$height/$kidsHavingKids->Height;
 				$kidsHavingKids->parentDev=$this;
@@ -2252,8 +2257,8 @@ class Device {
 			else
 				$parent->zoomY=0;
 			
-			$parent->targetWidth=$targetWidth;
-			$parent->targetHeight=$targetHeight;
+			$parent->targetWidth=intval($targetWidth);
+			$parent->targetHeight=intval($targetHeight);
 			$parent->Height=$pictH;
 			$parent->Width=$pictW;
 			$parent->parentDev=$this;
