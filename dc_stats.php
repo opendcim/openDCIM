@@ -390,6 +390,7 @@ echo '
 			delegate: "area[name^=cab]",
 			menu: "#options",
 			select: function(event, ui) {
+				console.log('in the select event');
 				var row=(ui.item.context.parentElement.getAttribute('data-context')=='row'||ui.item.context.parentElement.getAttribute('data-context')=='alignment')?true:false;
 				var cabid=ui.target.context.attributes.name.value.substr(3);
 				$.post('',{cabinetid: cabid, airflow: ui.cmd, row: row}).done(function(){startmap()}); 
@@ -397,7 +398,7 @@ echo '
 			beforeOpen: function(event, ui) {
 				$('#options').removeClass('hide');
 				$('.center .nav > select').val('airflow').trigger('change');
-				$(".canvas > map").contextmenu("showEntry", "row", $(ui.target.context).data('row'));
+				$(".canvas > map").contextmenu("showEntry", "row", $(ui.target).data('row'));
 			}
 		});
 <?php

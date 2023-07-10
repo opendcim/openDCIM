@@ -251,7 +251,7 @@
 		},
 		/** Return ui-menu entry (<A> or <LI> tag). */
 		_getMenuEntry: function(cmd, wantLi){
-			var $entry = this.$menu.find("li a[href=#" + normCommand(cmd) + "]");
+			var $entry = this.$menu.find('li a[href="#' + normCommand(cmd) + '"]');
 			return wantLi ? $entry.closest("li") : $entry;
 		},
 		/** Close context menu. */
