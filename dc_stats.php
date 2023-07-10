@@ -390,9 +390,8 @@ echo '
 			delegate: "area[name^=cab]",
 			menu: "#options",
 			select: function(event, ui) {
-				console.log('in the select event');
-				var row=(ui.item.context.parentElement.getAttribute('data-context')=='row'||ui.item.context.parentElement.getAttribute('data-context')=='alignment')?true:false;
-				var cabid=ui.target.context.attributes.name.value.substr(3);
+				var row=(ui.item[0].parentElement.getAttribute('data-context')=='row'||ui.item[0].parentElement.getAttribute('data-context')=='alignment')?true:false;
+				var cabid=ui.target[0].attributes.name.value.substr(3);
 				$.post('',{cabinetid: cabid, airflow: ui.cmd, row: row}).done(function(){startmap()}); 
     		},
 			beforeOpen: function(event, ui) {
