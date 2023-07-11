@@ -116,7 +116,7 @@ class DevicePorts {
 		return $row["ActivePorts"];
 	}
 		
-	function createPort($ignore_errors=false) {
+	function createPort($update_existing=false) {
 		global $dbh;
 		
 		$this->MakeSafe();
@@ -124,9 +124,13 @@ class DevicePorts {
 		$sql="INSERT INTO fac_Ports SET DeviceID=$this->DeviceID, PortNumber=$this->PortNumber, 
 			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
 			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort, 
-			Notes=\"$this->Notes\";";
-			
-		if(!$dbh->query($sql) && !$ignore_errors){
+			Notes=\"$this->Notes\"";
+
+		if ( $update_existing ) {
+			$sql .= " ON DUPLICATE KEY UPDATE PortNumber=$this->PortNumber";
+		}
+
+		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
 			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
