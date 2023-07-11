@@ -289,6 +289,7 @@ canvas#background { position: absolute; }
 * html .ui-autocomplete {height: 100px;}
 .ui-autocomplete li.ui-menu-item {display: block;}
 .ui-menu .ui-menu-item a { line-height: 1 !important; white-space: nowrap !important; overflow: hidden;}
+#mapadjust .main .ui-menu .ui-menu-item a { line-height: 1.5 !important;}
 
 #gandalf {
 	height: 100%;
