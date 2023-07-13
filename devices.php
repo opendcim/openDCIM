@@ -2046,6 +2046,11 @@ echo '<fieldset id="sensorreadings">
 		</fieldset>';
 		}
 
+echo '<fieldset id="deviceimages">
+	<legend>'.__("Device Images").'</legend>
+	<div>';
+		$frontpic=($templ->FrontPictureFile!='')?' src="'.$config->ParameterArray['picturepath'].'/'.$templ->FrontPictureFile.'"':'';
+		$rearpic=($templ->RearPictureFile!='')?' src="'.$config->ParameterArray['picturepath'].'/'.$templ->RearPictureFile.'"':'';
 echo '
 		<img id="devicefront" src="'.$config->ParameterArray['picturepath'].'/'.$templ->FrontPictureFile.'" alt="front of device">
 		<img id="devicerear" src="'.$config->ParameterArray['picturepath'].'/'.$templ->RearPictureFile.'" alt="rear of device">
