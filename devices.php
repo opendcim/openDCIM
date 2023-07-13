@@ -1263,10 +1263,6 @@ $(document).ready(function() {
 		$('#pdutest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
 	});
 
-	// If the current hypervisor value is not ProxMox, set the field types to hidden
-	// to prevent browser/password manager autofill
-	$('#APIUsername,#APIPassword').attr("type","hidden");
-
 	// Add in refresh functions for virtual machines
 	var VMtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
 	var VMbutton=$('<button>',{'type':'button'}).css({'position':'absolute','top':'10px','right':'2px'}).text('Refresh');
@@ -2050,26 +2046,25 @@ echo '<fieldset id="sensorreadings">
 		</fieldset>';
 		}
 
-echo '<fieldset id="deviceimages">
-	<legend>'.__("Device Images").'</legend>
-	<div>';
-		$frontpic=($templ->FrontPictureFile!='')?' src="'.$config->ParameterArray['picturepath'].'/'.$templ->FrontPictureFile.'"':'';
-		$rearpic=($templ->RearPictureFile!='')?' src="'.$config->ParameterArray['picturepath'].'/'.$templ->RearPictureFile.'"':'';
 echo '
 		<img id="devicefront" src="'.$config->ParameterArray['picturepath'].'/'.$templ->FrontPictureFile.'" alt="front of device">
 		<img id="devicerear" src="'.$config->ParameterArray['picturepath'].'/'.$templ->RearPictureFile.'" alt="rear of device">
 	</div>
-</fieldset>
-<fieldset id="proxmoxblock" class="hide">
+</fieldset>';
+
+$apiusernamefieldtype = ($dev->Hypervisor==proxmox)?"text":"hidden";
+$apipasswordfieldtype = ($dev->Hypervisor==proxmox)?"password":"hidden";
+
+echo '<fieldset id="proxmoxblock" class="hide">
 	<legend>'.__("ProxMox Configuration").'</legend>
 	<div class="table">
 		<div>
 		  <div><label for="APIUsername">'.__("API Username").'</label></div>
-		  <div><input autocomplete="off" type="text" name="APIUsername" id="APIUsername" value="'.$dev->APIUsername.'"></div>
+		  <div><input autocomplete="off" type=".$apiusernamefieldtype." name="APIUsername" id="APIUsername" value="'.$dev->APIUsername.'"></div>
 		</div>
 		<div>
 		  <div><label for="APIPassword">'.__("API Password").'</label></div>
-		  <div><input autocomplete="off" type="password" name="APIPassword" id="APIPassword" value="'.$dev->APIPassword.'"></div>
+		  <div><input autocomplete="off" type="'.$apipasswordfieldtype.'" name="APIPassword" id="APIPassword" value="'.$dev->APIPassword.'"></div>
 		</div>
 		<div>
 		  <div><label for="APIPort">'.__("API Port").'</label></div>
