@@ -1263,8 +1263,8 @@ $(document).ready(function() {
 		$('#pdutest').dialog({minWidth: 850, position: { my: "center", at: "top", of: window },closeOnEscape: true });
 	});
 
-    // If the current hypervisor value is not ProxMox, set the field types to hidden
-    // to prevent browser/password manager autofill
+	// If the current hypervisor value is not ProxMox, set the field types to hidden
+	// to prevent browser/password manager autofill
 	$('#APIUsername,#APIPassword').attr("type","hidden");
 
 	// Add in refresh functions for virtual machines
