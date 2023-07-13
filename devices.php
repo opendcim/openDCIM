@@ -1265,7 +1265,7 @@ $(document).ready(function() {
 
     // If the current hypervisor value is not ProxMox, set the field types to hidden
     // to prevent browser/password manager autofill
-    $('#APIUsername,#APIPassword').attr("type","hidden");
+	$('#APIUsername,#APIPassword').attr("type","hidden");
 
 	// Add in refresh functions for virtual machines
 	var VMtable=$('<div>').addClass('table border').append('<div><div>VM Name</div><div>Status</div><div>Owner</div><div>Last Updated</div></div>');
@@ -1398,13 +1398,13 @@ $(document).ready(function() {
 		if($(this).val()=='ProxMox'){
 			$('#proxmoxblock').removeClass('hide');
 			$('#snmpblock').addClass('hide');
-        	$('#APIUsername').attr("type","text");
-        	$('#APIPassword').attr("type","password");
+			$('#APIUsername').attr("type","text");
+			$('#APIPassword').attr("type","password");
 		}else{
 			// Put back any hidden / renamed fields
 			$('#proxmoxblock').addClass('hide');
 			$('#snmpblock').removeClass('hide');
-        	$('#APIUsername,#APIPassword').attr("type","hidden");
+			$('#APIUsername,#APIPassword').attr("type","hidden");
 		}
 	}).change();
 
