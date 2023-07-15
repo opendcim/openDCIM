@@ -1288,4 +1288,35 @@ class JobQueue {
 		}
 	}
 }
+
+function refreshCountries() {
+	if ( !$person->SiteAdmin){
+	    header('Location: '.redirect());
+	    exit;
+	}
+
+	$headerList = array( "Content-Type: application/json" );
+
+	$ch = curl_init( "http://api.geonames.org/countryInfoJSON?username=opendcim" );
+	curl_setopt( $ch, CURLOPT_HEADER, 0 );
+	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headerList );
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+
+	$result = curl_exec( $ch );
+
+	if ( $countryData = json_decode( $result, true, 20, JSON_PARTIAL_OUTPUT_ON_ERROR ) ) {		
+		// Update the fac_Country table
+		$sql = "insert into fac_Country set countryCode=:countryCode, countryName=:countryName on duplicate key update countryName=:countryName";
+		$stmt = $dbh->prepare( $sql );
+
+		foreach ( $countryData["geonames"] as $country ) {
+			$stmt->execute( array( ":countryCode"=>$country["countryCode"], ":countryName"=>$country["countryName"] ));
+		}
+
+		return;
+	} else {
+		// Something went wrong with the transfer
+		return false;
+	}
+}
 ?>

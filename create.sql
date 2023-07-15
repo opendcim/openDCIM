@@ -490,7 +490,7 @@ CREATE TABLE fac_People (
   FirstName varchar(40) NOT NULL,
   Phone1 varchar(20) NOT NULL,
   Phone2 varchar(20) NOT NULL,
-  Phone3 varchar(20) NOT NULL,
+  Country char(2) NOT NULL,
   Email varchar(80) NOT NULL,
   APIKey varchar(80) NOT NULL,
   AdminOwnDevices tinyint(1) NOT NULL,
@@ -928,7 +928,7 @@ INSERT INTO fac_Config VALUES
 	("AttrEmail", "mail", "string", "string", "mail"),
 	("AttrPhone1", "telephonenumber", "string", "string", "telephonenumber"),
 	("AttrPhone2", "mobile", "string", "string", "mobile"),
-	("AttrPhone3", "pager", "string", "string", "pager"),
+	("AttrCountry", "", "Country", "string", ""),
 	("drawingpath", "assets/drawings/", "string", "string", "assets/drawings/"),
 	("picturepath", "assets/pictures/", "string", "string", "assets/pictures/"),
 	("RackRequestsActions", "disabled", "Enabled/Disabled", "string", "disabled"),
@@ -1056,3 +1056,13 @@ INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('QA', '#FFFFFF');
 INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Production', '#FFFFFF');
 INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Spare', '#FFFFFF');
 INSERT INTO fac_DeviceStatus (Status, ColorCode) VALUES ('Disposed', '#FFFFFF');
+
+--
+-- GDPR Related Tables
+--
+
+CREATE TABLE fac_Country (
+  countryCode CHAR(2) NOT NULL,
+  countryName VARCHAR(80) NOT NULL,
+  PRIMARY KEY (countryCode)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

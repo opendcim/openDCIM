@@ -24,7 +24,7 @@
 			$userRights->FirstName=$_POST['FirstName'];
 			$userRights->Phone1=$_POST['Phone1'];
 			$userRights->Phone2=$_POST['Phone2'];
-			$userRights->Phone3=$_POST['Phone3'];
+			$userRights->Country=$_POST['Country'];
 			$userRights->Email=$_POST['Email'];
 
 			if ( isset($_POST['NewKey']) ) {
@@ -259,8 +259,8 @@ echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact 
    <div><input type="text" name="Phone2" id="Phone2" value="',$userRights->Phone2,'"></div>
 </div>
 <div>
-   <div><label for="Phone3">',__("Phone 3"),'</label></div>
-   <div><input type="text" name="Phone3" id="Phone3" value="',$userRights->Phone3,'"></div>
+   <div><label for="Country">',__("Country"),'</label></div>
+   <div><input type="text" name="Country" id="Country" value="',$userRights->Country,'"></div>
 </div>
 <div>
    <div><label for="Email">',__("Email Address"),'</label></div>
