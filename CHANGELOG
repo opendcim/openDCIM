@@ -6,6 +6,10 @@ GitHub, at http://github.com/opendcim/openDCIM/issues, where you can also downlo
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 23.02
+----------------
+* UI Bug Fixes related to jquery upgrades in 23.01
+
 Changes in 23.01
 ----------------
 * Primary focus was in compatibility with PHP 8.x
