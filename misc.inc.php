@@ -876,7 +876,8 @@ if(!function_exists("updateNavTreeHTML")){
 if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage))
 {
 	$savedurl = $_SERVER['SCRIPT_NAME'] . "?" . sanitize($_SERVER['QUERY_STRING']);
-	setcookie( 'targeturl', $savedurl, time()+60 );
+	$options =  array ( 'expires' => time()+60, 'SameSite' => 'Strict' );
+	setcookie( 'targeturl', $savedurl, $options );
 	header("Location: ".redirect('saml/login.php'));
 	exit;
 }
@@ -919,7 +920,8 @@ if( AUTHENTICATION=="LDAP" && $config->ParameterArray["LDAPSessionExpiration"] >
 
 if( AUTHENTICATION=="LDAP" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage)) {
 	$savedurl = $_SERVER['SCRIPT_NAME'] . "?" . $_SERVER['QUERY_STRING'];
-	setcookie( 'targeturl', $savedurl, time()+60 );
+	$options =  array ( 'expires' => time()+60, 'SameSite' => 'Strict' );
+	setcookie( 'targeturl', $savedurl, $options );
 	header("Location: ".redirect('login_ldap.php'));
 	exit;
 }
@@ -1162,7 +1164,6 @@ function BuildCabinet($cabid,$face="front"){
 			}
 		}
 	}
-
 	// If they have rights to the device then make the picture clickable
 	$clickable=($cab->Rights!="None")?"\t\t<a href=\"cabnavigator.php?cabinetid=$cab->CabinetID\">\n\t":"";
 	$clickableend=($cab->Rights!="None")?"\n\t\t</a>\n":"";
