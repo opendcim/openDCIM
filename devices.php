@@ -1394,10 +1394,12 @@ $(document).ready(function() {
 		if($(this).val()=='ProxMox'){
 			$('#proxmoxblock').removeClass('hide');
 			$('#snmpblock').addClass('hide');
+			$('#APIPassword').attr("type","password");
 		}else{
 			// Put back any hidden / renamed fields
 			$('#proxmoxblock').addClass('hide');
 			$('#snmpblock').removeClass('hide');
+			$('#APIPassword').attr("type","hidden");
 		}
 	}).change();
 
@@ -2052,8 +2054,11 @@ echo '
 		<img id="devicefront" src="'.$config->ParameterArray['picturepath'].'/'.$templ->FrontPictureFile.'" alt="front of device">
 		<img id="devicerear" src="'.$config->ParameterArray['picturepath'].'/'.$templ->RearPictureFile.'" alt="rear of device">
 	</div>
-</fieldset>
-<fieldset id="proxmoxblock" class="hide">
+</fieldset>';
+
+$apipasswordfieldtype = ($dev->Hypervisor==proxmox)?"password":"hidden";
+
+echo '<fieldset id="proxmoxblock" class="hide">
 	<legend>'.__("ProxMox Configuration").'</legend>
 	<div class="table">
 		<div>
@@ -2062,7 +2067,7 @@ echo '
 		</div>
 		<div>
 		  <div><label for="APIPassword">'.__("API Password").'</label></div>
-		  <div><input autocomplete="off" type="password" name="APIPassword" id="APIPassword" value="'.$dev->APIPassword.'"></div>
+		  <div><input autocomplete="off" type="'.$apipasswordfieldtype.'" name="APIPassword" id="APIPassword" value="'.$dev->APIPassword.'"></div>
 		</div>
 		<div>
 		  <div><label for="APIPort">'.__("API Port").'</label></div>
