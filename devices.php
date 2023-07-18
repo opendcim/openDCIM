@@ -1394,13 +1394,12 @@ $(document).ready(function() {
 		if($(this).val()=='ProxMox'){
 			$('#proxmoxblock').removeClass('hide');
 			$('#snmpblock').addClass('hide');
-			$('#APIUsername').attr("type","text");
 			$('#APIPassword').attr("type","password");
 		}else{
 			// Put back any hidden / renamed fields
 			$('#proxmoxblock').addClass('hide');
 			$('#snmpblock').removeClass('hide');
-			$('#APIUsername,#APIPassword').attr("type","hidden");
+			$('#APIPassword').attr("type","hidden");
 		}
 	}).change();
 
@@ -2057,7 +2056,6 @@ echo '
 	</div>
 </fieldset>';
 
-$apiusernamefieldtype = ($dev->Hypervisor==proxmox)?"text":"hidden";
 $apipasswordfieldtype = ($dev->Hypervisor==proxmox)?"password":"hidden";
 
 echo '<fieldset id="proxmoxblock" class="hide">
@@ -2065,7 +2063,7 @@ echo '<fieldset id="proxmoxblock" class="hide">
 	<div class="table">
 		<div>
 		  <div><label for="APIUsername">'.__("API Username").'</label></div>
-		  <div><input autocomplete="off" type=".$apiusernamefieldtype." name="APIUsername" id="APIUsername" value="'.$dev->APIUsername.'"></div>
+		  <div><input autocomplete="off" type="text" name="APIUsername" id="APIUsername" value="'.$dev->APIUsername.'"></div>
 		</div>
 		<div>
 		  <div><label for="APIPassword">'.__("API Password").'</label></div>
