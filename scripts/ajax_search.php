@@ -59,7 +59,7 @@
 			$sql="SELECT DISTINCT Notes FROM fac_Device WHERE Notes LIKE '%$searchTerm%' 
 				UNION SELECT DISTINCT Notes FROM fac_Cabinet WHERE Notes LIKE '%$searchTerm%' 
 				UNION SELECT DISTINCT Notes FROM fac_Ports WHERE Notes LIKE '%$searchTerm%' 
-				UNION SELECT DISTINCT PortNotes AS Notes FROM fac_Ports	WHERE PortNotes LIKE '%$searchTerm%' 
+				UNION SELECT DISTINCT Notes FROM fac_Ports WHERE Notes LIKE '%$searchTerm%' 
 				UNION SELECT DISTINCT Notes FROM fac_PowerPorts	WHERE Notes LIKE '%$searchTerm%';";
 		}elseif($field=="Custom"){
 			$sql="SELECT DISTINCT Value FROM fac_DeviceCustomValue WHERE 
