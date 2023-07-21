@@ -188,6 +188,8 @@ class VM {
 	function UpdateVMOwner() {
 		global $dbh;
 
+		$this->MakeSafe();
+
 		$sql="UPDATE fac_VMInventory SET Owner=$this->Owner, PrimaryContact=$this->PrimaryContact WHERE VMIndex=$this->VMIndex;";
 		$dbh->query($sql);
 	} 
@@ -198,11 +200,15 @@ class VM {
 	}
   
 	function GetDeviceInventory() {
+		$this->MakeSafe();
+
 		$sql="SELECT * FROM fac_VMInventory WHERE DeviceID=$this->DeviceID ORDER BY vmName;";
 		return $this->search($sql);
 	}
   
 	function GetVMListbyOwner() {
+		$this->MakeSafe();
+
 		$sql="SELECT * FROM fac_VMInventory WHERE Owner=$this->Owner ORDER BY DeviceID, vmName;";
 		return $this->search($sql);
 	}
