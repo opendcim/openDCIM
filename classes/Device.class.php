@@ -1436,12 +1436,17 @@ class Device {
 
 		$deviceList=array();
 
-		foreach($dbh->query($sql) as $deviceRow){
-			if($indexedbyid){
-				$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
-			}else{
-				$deviceList[]=Device::RowToObject($deviceRow);
+		try{
+			foreach($dbh->query($sql) as $deviceRow){
+				if($indexedbyid){
+					$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
+				}else{
+					$deviceList[]=Device::RowToObject($deviceRow);
+				}
 			}
+		}catch (Exception $e){
+			error_log("PDO Error: {$e->getMessage()} SQL=$sql");
+			return false;
 		}
 
 		return $deviceList;
