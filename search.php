@@ -98,9 +98,9 @@
 		$title=__("Device Model search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=="notes"){
 		$dev->Notes=$searchTerm;
-		$devList=$dev->LooseSearch(true);
+		$devList=$dev->LooseSearch(true,true);
 		$cab->Notes=$searchTerm;
-		$cabList=$cab->LooseSearch(true);
+		$cabList=$cab->LooseSearch(true,true);
 		// DevicePorts and PowerPorts use the same structures and functions so 
 		// we're just looping the search to not repeat code 
 		foreach(array('DevicePorts','PowerPorts') as $pt){
