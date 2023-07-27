@@ -12,10 +12,12 @@
 	$devList = $device->GetDevicesbyAge($config->ParameterArray["NewInstallsPeriod"] );
 
 	$mail = new PHPMailer(true);
+	$mail->CharSet = 'UTF-8';
 	$mail->SMTPDebug = SMTP::DEBUG_OFF;
 	$mail->isSMTP();
 	$mail->Host = $config->ParameterArray['SMTPServer'];
 	$mail->Port = $config->ParameterArray['SMTPPort'];
+	$mail->SMTPAutoTLS = false;
 
 	// If any port other than 25 is specified, assume encryption and authentication
 	if($config->ParameterArray['SMTPPort']!= 25){
