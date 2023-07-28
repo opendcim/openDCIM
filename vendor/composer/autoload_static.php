@@ -179,6 +179,7 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         'DataMechanism' => __DIR__ . '/../..' . '/classes/DataMechanism.class.php',
         'Department' => __DIR__ . '/../..' . '/classes/Department.class.php',
         'Device' => __DIR__ . '/../..' . '/classes/Device.class.php',
+        'DCIMMail' => __DIR__ . '/../..' . '/classes/DCIMMail.class.php',
         'DeviceCustomAttribute' => __DIR__ . '/../..' . '/classes/DeviceCustomAttribute.class.php',
         'DevicePorts' => __DIR__ . '/../..' . '/classes/DevicePorts.class.php',
         'DeviceStatus' => __DIR__ . '/../..' . '/classes/DeviceStatus.inc.php',

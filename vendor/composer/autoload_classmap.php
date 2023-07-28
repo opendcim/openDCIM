@@ -21,6 +21,7 @@ return array(
     'Container' => $baseDir . '/classes/Container.class.php',
     'DataCenter' => $baseDir . '/classes/DataCenter.class.php',
     'DataMechanism' => $baseDir . '/classes/DataMechanism.class.php',
+    'DCIMMail' => $baseDir . '/classes/DCIMMail.class.php',
     'Department' => $baseDir . '/classes/Department.class.php',
     'Device' => $baseDir . '/classes/Device.class.php',
     'DeviceCustomAttribute' => $baseDir . '/classes/DeviceCustomAttribute.class.php',
