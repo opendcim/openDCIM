@@ -15,9 +15,6 @@ class DCIMMail extends PHPMailer {
 		$this->CharSet = 'UTF-8';
 		$this->isHTML(true);
 
-		if (count($this->all_recipients) == 0){
-			$this->addAddress($config->ParameterArray['FacMgrMail']);
-		}
 		if ($this->From == ''){
 			$this->setFrom( $config->ParameterArray['MailFromAddr'] );
 		}
@@ -38,5 +35,15 @@ class DCIMMail extends PHPMailer {
 			$this->Username = $config->ParameterArray['SMTPUser'];
 			$this->Password = $config->ParameterArray['SMTPPassword'];
 		}
+	}
+
+	function send() {
+		global $config;
+
+		if (count($this->all_recipients) == 0){
+			$this->addAddress($config->ParameterArray['FacMgrMail']);
+		}
+
+		parent::send();
 	}
 }
