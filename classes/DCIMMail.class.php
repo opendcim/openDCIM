@@ -38,6 +38,5 @@ class DCIMMail extends PHPMailer {
 			$this->Username = $config->ParameterArray['SMTPUser'];
 			$this->Password = $config->ParameterArray['SMTPPassword'];
 		}
-error_log(print_r($this,true));
 	}
 }
