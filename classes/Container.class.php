@@ -25,6 +25,7 @@
 class Container {
 	var $ContainerID;
 	var $Name;
+	var $countryCode;
 	var $ParentID;
 	var $DrawingFileName;
 	var $MapX;
@@ -33,6 +34,7 @@ class Container {
 	function MakeSafe(){
 		$this->ContainerID=intval($this->ContainerID);
 		$this->Name=sanitize($this->Name);
+		$this->countryCode=sanitize($this->countryCode);
 		$this->ParentID=intval($this->ParentID);
 		$this->DrawingFileName=sanitize($this->DrawingFileName);
 		$this->MapX=abs(intval($this->MapX));
@@ -48,6 +50,7 @@ class Container {
 		$container=new Container();
 		$container->ContainerID=$row["ContainerID"];
 		$container->Name=$row["Name"];
+		$container->countryCode=$row["countryCode"];
 		$container->ParentID=$row["ParentID"];
 		$container->DrawingFileName=$row["DrawingFileName"];
 		$container->MapX=intval($row["MapX"]);
@@ -71,7 +74,7 @@ class Container {
 		global $dbh;
 		
 		$this->MakeSafe();
-		$sql="INSERT INTO fac_Container set Name=\"$this->Name\", ParentID=$this->ParentID, 
+		$sql="INSERT INTO fac_Container set Name=\"$this->Name\", countryCode=\"$this->countryCode\", ParentID=$this->ParentID, 
 				DrawingFileName=\"$this->DrawingFileName\", MapX=$this->MapX, MapY=$this->MapY;";
 
 		if(!$dbh->exec($sql)){
@@ -89,13 +92,15 @@ class Container {
 	}
 
 	function UpdateContainer(){
+		global $dbh;
+		
 		$this->MakeSafe();
 
 		$oldcontainer=new Container();
 		$oldcontainer->ContainerID=$this->ContainerID;
 		$oldcontainer->GetContainer();
 
-		$sql="UPDATE fac_Container SET Name=\"$this->Name\", ParentID=$this->ParentID, 
+		$sql="UPDATE fac_Container SET Name=\"$this->Name\", countryCode=\"$this->countryCode\", ParentID=$this->ParentID, 
 			DrawingFileName=\"$this->DrawingFileName\", MapX=$this->MapX, MapY=$this->MapY 
 			WHERE ContainerID=$this->ContainerID;";
 		
@@ -104,6 +109,13 @@ class Container {
 				
 			return false;
 		}else{
+			// Update all data centers within this container to have the same countryCode, but only if it's not blank
+			if ( $this->countryCode != '' ) {
+				$sql = "update fac_DataCenter set countryCode=:countryCode where ContainerID=:ContainerID";
+				$st = $dbh->prepare( $sql );
+				$st->execute( array( ":countryCode"=>$this->countryCode, ":ContainerID"=>$this->ContainerID));
+			}
+
 			updateNavTreeHTML();			
 
 			(class_exists('LogActions'))?LogActions::LogThis($this,$oldcontainer):'';

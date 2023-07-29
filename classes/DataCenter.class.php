@@ -27,6 +27,7 @@ class DataCenter {
 	var $Name;
 	var $SquareFootage;
 	var $DeliveryAddress;
+	var $countryCode;
 	var $Administrator;
 	var $MaxkW;
 	var $DrawingFileName;
@@ -42,6 +43,7 @@ class DataCenter {
 		$this->Name=sanitize($this->Name);
 		$this->SquareFootage=intval($this->SquareFootage);
 		$this->DeliveryAddress=sanitize($this->DeliveryAddress);
+		$this->countryCode=sanitize($this->countryCode);
 		$this->Administrator=sanitize($this->Administrator);
 		$this->MaxkW=intval($this->MaxkW);
 		$this->DrawingFileName=sanitize($this->DrawingFileName);
@@ -72,6 +74,7 @@ class DataCenter {
 		$dc->Name=$row["Name"];
 		$dc->SquareFootage=$row["SquareFootage"];
 		$dc->DeliveryAddress=$row["DeliveryAddress"];
+		$dc->countryCode=$row["countryCode"];
 		$dc->Administrator=$row["Administrator"];
 		$dc->MaxkW=$row["MaxkW"];
 		$dc->DrawingFileName=$row["DrawingFileName"];
@@ -138,10 +141,23 @@ class DataCenter {
 	function CreateDataCenter(){
 		global $dbh;
 		$this->MakeSafe();
+
+		// countryCode sanity check if there is a defined country for a defined ContainerID
+		if ( intval($this->ContainerID)>0 ) {
+			$cont = new Container();
+			$cont->ContainerID=$this->ContainerID();
+			$cont->GetContainer();
+
+			if ( $cont->countryCode != "" ) {
+				$this->countryCode=$cont->countryCode;
+			}
+		}
+
+		// Check to see if there is a countryCode at the upstream container - if so, that will always override the countryCode at the DC level
 		
 		$sql="INSERT INTO fac_DataCenter SET Name=\"$this->Name\", 
-			SquareFootage=$this->SquareFootage, DeliveryAddress=\"$this->DeliveryAddress\", 
-			Administrator=\"$this->Administrator\", MaxkW=$this->MaxkW, 
+			SquareFootage=$this->SquareFootage, DeliveryAddress=\"$this->DeliveryAddress\",
+			countryCode=\"$this->countryCode\", Administrator=\"$this->Administrator\", MaxkW=$this->MaxkW, 
 			DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
 			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY, 
 			U1Position=\"$this->U1Position\";";
@@ -154,7 +170,7 @@ class DataCenter {
 		}
 
 		$this->DataCenterID=$dbh->lastInsertId();
-		
+
 		updateNavTreeHTML();
 				
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
@@ -229,9 +245,20 @@ class DataCenter {
 	function UpdateDataCenter(){
 		$this->MakeSafe();
 
+		// countryCode sanity check if there is a defined country for a defined ContainerID
+		if ( intval($this->ContainerID)>0 ) {
+			$cont = new Container();
+			$cont->ContainerID=$this->ContainerID();
+			$cont->GetContainer();
+
+			if ( $cont->countryCode != "" ) {
+				$this->countryCode=$cont->countryCode;
+			}
+		}
+
 		$sql="UPDATE fac_DataCenter SET Name=\"$this->Name\", 
 			SquareFootage=$this->SquareFootage, DeliveryAddress=\"$this->DeliveryAddress\", 
-			Administrator=\"$this->Administrator\", MaxkW=$this->MaxkW, 
+			countryCode=\"$this->countryCode\", Administrator=\"$this->Administrator\", MaxkW=$this->MaxkW, 
 			DrawingFileName=\"$this->DrawingFileName\", EntryLogging=0,	
 			ContainerID=$this->ContainerID,	MapX=$this->MapX, MapY=$this->MapY, 
 			U1Position=\"$this->U1Position\" WHERE DataCenterID=$this->DataCenterID;";

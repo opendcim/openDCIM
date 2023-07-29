@@ -37,7 +37,7 @@ class People {
 	var $FirstName;
 	var $Phone1;
 	var $Phone2;
-	var $Country;
+	var $countryCode;
 	var $Email;
 	var $AdminOwnDevices;
 	var $ReadAccess;
@@ -58,7 +58,7 @@ class People {
 		$this->FirstName=sanitize($this->FirstName);
 		$this->Phone1=sanitize($this->Phone1);
 		$this->Phone2=sanitize($this->Phone2);
-		$this->Country=sanitize($this->Country);
+		$this->countryCode=sanitize($this->countryCode);
 		$this->Email=sanitize($this->Email);
 		$this->AdminOwnDevices=intval($this->AdminOwnDevices);
 		$this->ReadAccess=intval($this->ReadAccess);
@@ -79,7 +79,7 @@ class People {
 		$this->FirstName=stripslashes($this->FirstName);
 		$this->Phone1=stripslashes($this->Phone1);
 		$this->Phone2=stripslashes($this->Phone2);
-		$this->Country=stripslashes($this->Country);
+		$this->countryCode=stripslashes($this->countryCode);
 		$this->Email=stripslashes($this->Email);
 		$this->AdminOwnDevices=intval($this->AdminOwnDevices);
 		$this->ReadAccess=intval($this->ReadAccess);
@@ -101,7 +101,7 @@ class People {
 		$person->FirstName=$row["FirstName"];
 		$person->Phone1=$row["Phone1"];
 		$person->Phone2=$row["Phone2"];
-		$person->Country=$row["Country"];
+		$person->countryCode=$row["countryCode"];
 		$person->Email=$row["Email"];
 		$person->AdminOwnDevices=$row["AdminOwnDevices"];
 		$person->ReadAccess=$row["ReadAccess"];
@@ -192,7 +192,7 @@ class People {
 		
 		$sql="INSERT INTO fac_People SET UserID=\"$this->UserID\", LastName=\"$this->LastName\", 
 			FirstName=\"$this->FirstName\", Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", 
-			Country=\"$this->Country\", Email=\"$this->Email\", 
+			countryCode=\"$this->countryCode\", Email=\"$this->Email\", 
 			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess, 
 			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
 			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
@@ -393,7 +393,7 @@ class People {
 		
 		$sql="UPDATE fac_People SET UserID=\"$this->UserID\", LastName=\"$this->LastName\", 
 			FirstName=\"$this->FirstName\", Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", 
-			Country=\"$this->Country\", Email=\"$this->Email\", 
+			countryCode=\"$this->countryCode\", Email=\"$this->Email\", 
 			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess, 
 			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
 			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 

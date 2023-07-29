@@ -12,6 +12,9 @@
 	
 	$status="";
 
+	$c = new Country();
+	$countryList = $c->CountryList();
+
 	$dc=new DataCenter();
 	
 	// AJAX Action
@@ -30,6 +33,7 @@
 	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
 		$dc->DataCenterID=$_POST['datacenterid'];
 		$dc->Name=trim($_POST['name']);
+		$dc->countryCode=trim($_POST['countryCode']);
 		$dc->SquareFootage=$_POST['squarefootage'];
 		$dc->DeliveryAddress=$_POST['deliveryaddress'];
 		$dc->Administrator=$_POST['administrator'];
@@ -52,6 +56,7 @@
 	if(isset($_POST['cambio_cont'])&& $_POST['cambio_cont']=='SI'){
 		$dc->DataCenterID=$_POST['datacenterid'];
 		$dc->Name=trim($_POST['name']);
+		$dc->countryCode=trim($_POST['countryCode']);
 		$dc->SquareFootage=$_POST['squarefootage'];
 		$dc->DeliveryAddress=$_POST['deliveryaddress'];
 		$dc->Administrator=$_POST['administrator'];
@@ -69,6 +74,19 @@
 	elseif(isset($_REQUEST['datacenterid'])&&$_REQUEST['datacenterid'] >0){
 		$dc->DataCenterID=(isset($_POST['datacenterid']) ? $_POST['datacenterid'] : $_GET['datacenterid']);
 		$dc->GetDataCenter();
+
+		// Container countryCode will always override the data center countryCode if it has been set and the datacenter is a member of the container
+		if ( intval($dc->ContainerID)>0 ) {
+			$cont = new Container();
+			$cont->ContainerID=$dc->ContainerID;
+			$cont->GetContainer();
+
+			if ( $cont->countryCode != "" ) {
+				$forceCountry = $cont->countryCode;
+			} else {
+				$forceCountry = '';
+			}
+		}
 	}
 	$dcList=$dc->GetDCList();
 
@@ -259,6 +277,26 @@ echo '	</select></div>
 <div>
    <div><label for="deliveryaddress">',__("Delivery Address"),'</label></div>
    <div><input class="validate[optional,minSize[1],maxSize[200]]" type="text" name="deliveryaddress" id="deliveryaddress" size="60" maxlength="200" value="',$dc->DeliveryAddress,'"></div>
+</div>
+<div>
+	<div><label for="Country">',__("Country"),'</label></div>
+   <div>';
+   	if ( $forceCountry == "" ) {
+   		print '<select name="countryCode" id="countryCode">';
+   	} else {
+   		print '<select name="countryCode" id="countryCode" disabled>';
+   	}
+   	print '<option value="">None</option>';
+   	foreach($countryList as $countryRow ) {
+   		if (($forceCountry != "" && $forceCountry == $countryRow->countryCode ) || ($dc->countryCode == $countryRow->countryCode) ) {
+   			$selected = 'selected';
+   		} else {
+   			$selected = '';
+   		}
+   		print "<option value=$countryRow->countryCode $selected>" . $countryRow->countryCode . " - " . $countryRow->countryName . "</option>\n";
+   	}
+   	echo '		</select>&nbsp;
+   </div>
 </div>
 <div>
    <div><label for="administrator">',__("Administrator"),'</label></div>

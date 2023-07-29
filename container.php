@@ -10,12 +10,16 @@
 		exit;
 	}
 	
+	$c = new Country();
+	$countryList = $c->CountryList();
+
 	$c=new Container();
 	$status="";
 
 	if(isset($_POST['action'])&&(($_POST['action']=='Create')||($_POST['action']=='Update'))){
 		$c->ContainerID=$_POST['containerid'];
 		$c->Name=trim($_POST['name']);
+		$c->countryCode=trim($_POST['countryCode']);
 		$c->DrawingFileName=$_POST['drawingfilename'];
 		$c->ParentID=$_POST['parentid'];
 		$c->MapX=$_POST['x'];
@@ -41,6 +45,7 @@
 	if(isset($_POST['cambio_cont'])&& $_POST['cambio_cont']=='SI'){
 		$c->ContainerID=$_POST['containerid'];
 		$c->Name=trim($_POST['name']);
+		$c->countryCode=trim($_POST['countryCode']);
 		$c->DrawingFileName=$_POST['drawingfilename'];
 		$c->ParentID=$_POST['parentid'];
 		if ($c->ParentID==0){
@@ -240,6 +245,22 @@ echo '	</select></div>
 <div>
    <div><label for="cname">',__("Name"),'</label></div>
    <div><input class="validate[required,minSize[3],maxSize[80]]" type="text" name="name" id="cname" size="50" maxlength="80" value="',$c->Name,'"></div>
+</div>
+<div>
+	<div><label for="Country">',__("Country"),'</label></div>
+   <div>
+   	<select name="countryCode" id="countryCode">
+   	<option value="">None</option>';
+   	foreach($countryList as $countryRow ) {
+   		if ($c->countryCode == $countryRow->countryCode ) {
+   			$selected = 'selected';
+   		} else {
+   			$selected = '';
+   		}
+   		print "<option value=$countryRow->countryCode $selected>" . $countryRow->countryCode . " - " . $countryRow->countryName . "</option>\n";
+   	}
+   	echo '		</select>&nbsp;
+   </div>
 </div>
 <div>
    <div><label for="drawingfilename">',__("Drawing URL"),'</label></div>

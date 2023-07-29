@@ -19,6 +19,7 @@ return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'ConnectionPath' => $baseDir . '/classes/ConnectionPath.class.php',
     'Container' => $baseDir . '/classes/Container.class.php',
+    'Country' => $baseDir . '/classes/Country.class.php',
     'DataCenter' => $baseDir . '/classes/DataCenter.class.php',
     'DataMechanism' => $baseDir . '/classes/DataMechanism.class.php',
     'DCIMMail' => $baseDir . '/classes/DCIMMail.class.php',

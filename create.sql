@@ -48,6 +48,7 @@ DROP TABLE IF EXISTS fac_Container;
 CREATE TABLE fac_Container (
   ContainerID int(11) NOT NULL AUTO_INCREMENT,
   Name varchar(120) NOT NULL,
+  countryCode CHAR(2) NOT NULL,
   ParentID int(11) NOT NULL DEFAULT '0',
   DrawingFileName varchar(255) DEFAULT NULL,
   MapX int(11) NOT NULL,
@@ -207,6 +208,7 @@ CREATE TABLE fac_DataCenter (
   Name varchar(255) NOT NULL,
   SquareFootage int(11) NOT NULL,
   DeliveryAddress varchar(255) NOT NULL,
+  countryCode char(2) NOT NULL,
   Administrator varchar(80) NOT NULL,
   MaxkW int(11) NOT NULL,
   DrawingFileName varchar(255) NOT NULL,
@@ -937,7 +939,9 @@ INSERT INTO fac_Config VALUES
   ('ReservationExpiration', '0', 'days', 'integer', '0'),
   ('PowerAlertsEmail', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
   ('SensorAlertsEmail', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
-  ('AssignCabinetLabels','Location','Name','string','Location')
+  ('AssignCabinetLabels','Location','Name','string','Location'),
+  ('GDPRCountryIsolation', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
+  ('DefaultCountry', 'US', 'Country', 'string', 'US')
 ;
 
 --

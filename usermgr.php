@@ -9,6 +9,9 @@
 		exit;
 	}
 
+	$c = new Country;
+	$countryList = $c->CountryList();
+
 	$userRights=new People();
 	$status="";
 
@@ -24,7 +27,7 @@
 			$userRights->FirstName=$_POST['FirstName'];
 			$userRights->Phone1=$_POST['Phone1'];
 			$userRights->Phone2=$_POST['Phone2'];
-			$userRights->Country=$_POST['Country'];
+			$userRights->countryCode=$_POST['countryCode'];
 			$userRights->Email=$_POST['Email'];
 
 			if ( isset($_POST['NewKey']) ) {
@@ -260,7 +263,20 @@ echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact 
 </div>
 <div>
    <div><label for="Country">',__("Country"),'</label></div>
-   <div><input type="text" name="Country" id="Country" value="',$userRights->Country,'"></div>
+   <div>
+   	<select name="countryCode" id="countryCode">';
+   	foreach($countryList as $countryRow ) {
+   		if ($userRights->countryCode == $countryRow->countryCode ) {
+   			$selected = 'selected';
+   		} elseif ( $userRights->countryCode == '' && $countryRow->countryCode == $config->ParameterArray['DefaultCountry'] ) {
+   			$selected = 'selected';
+   		} else {
+   			$selected = '';
+   		}
+   		print "<option value=$countryRow->countryCode $selected>" . $countryRow->countryCode . " - " . $countryRow->countryName . "</option>\n";
+   	}
+   	echo '		</select>&nbsp;
+   </div>
 </div>
 <div>
    <div><label for="Email">',__("Email Address"),'</label></div>
