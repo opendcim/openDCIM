@@ -3,10 +3,6 @@
 	require_once "facilities.inc.php";
 	require __DIR__."/vendor/autoload.php";
 
-	use PHPMailer\PHPMailer\PHPMailer;
-	use PHPMailer\PHPMailer\Exception;
-	use PHPMailer\PHPMailer\SMTP;
-
 	$subheader=__("Data Center Operations Work Order Builder");
 	$error = '';
 	$result = 0;
@@ -44,30 +40,9 @@
 		$tmpName = @tempnam(\PhpOffice\PhpSpreadsheet\Shared\File::sys_get_temp_dir(),'tmpcnxs');
 		$writer->save($tmpName);
 
-		$mail = new PHPMailer(true);
-		$mail->CharSet = 'UTF-8';
-		$mail->SMTPDebug = SMTP::DEBUG_OFF;
-		$mail->isSMTP();
-		$mail->Host = $config->ParameterArray['SMTPServer'];
-		$mail->Port = $config->ParameterArray['SMTPPort'];
-		$mail->SMTPAutoTLS = false;
-
-		// If any port other than 25 is specified, assume encryption and authentication
-		if($config->ParameterArray['SMTPPort']!= 25){
-			$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-			$mail->SMTPAuth = true;
-			$mail->Username = $config->ParameterArray['SMTPUser'];
-			$mail->Password = $config->ParameterArray['SMTPPassword'];
-		}
-
-		$mail->Subject = "openDCIM-workorder-".date( "YmdHis" )."-connections";
-		$mail->setFrom( $config->ParameterArray['MailFromAddr'] );
-		$mail->isHTML(true);
-
-		$mail->addAttachment( $config->ParameterArray["PDFLogoFile"], "logo.png" );
+		$mail = new DCIMMail(true);
 		$mail->Subject = __("openDCIM-workorder-".date( "YmdHis" )."-connections");
-
-		$mail->addAddress($config->ParameterArray['FacMgrMail']);
+		$mail->addAttachment( $config->ParameterArray["PDFLogoFile"], "logo.png" );
 
 		$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>Device Port Connections</title></head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\">\n", $config->ParameterArray["HeaderColor"], "logo.png" );
 		

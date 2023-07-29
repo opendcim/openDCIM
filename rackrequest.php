@@ -3,10 +3,6 @@
 	require_once "facilities.inc.php";
 	require __DIR__."/vendor/autoload.php";
 
-	use PHPMailer\PHPMailer\PHPMailer;
-	use PHPMailer\PHPMailer\Exception;
-	use PHPMailer\PHPMailer\SMTP;
-
 	$subheader=__("Data Center Rack Request");
 
 	if($config->ParameterArray["RackRequests"] != "enabled" || !$person->RackRequest){
@@ -39,25 +35,7 @@
 		$tmpContact->PersonID=$_POST["requestorid"];
 		$tmpContact->GetPerson();
 
-		$mail = new PHPMailer(true);
-		$mail->CharSet = 'UTF-8';
-		$mail->SMTPDebug = SMTP::DEBUG_OFF;
-		$mail->isSMTP();
-		$mail->Host = $config->ParameterArray['SMTPServer'];
-		$mail->Port = $config->ParameterArray['SMTPPort'];
-		$mail->SMTPAutoTLS = false;
-
-		// If any port other than 25 is specified, assume encryption and authentication
-		if($config->ParameterArray['SMTPPort']!= 25){
-			$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-			$mail->SMTPAuth = true;
-			$mail->Username = $config->ParameterArray['SMTPUser'];
-			$mail->Password = $config->ParameterArray['SMTPPassword'];
-		}
-
-		$mail->Subject = $config->ParameterArray['MailSubject'];
-		$mail->setFrom = $config->ParameterArray['MailFromAddr'];
-		$mail->isHTML(true);
+		$mail = new DCIMMail(true);
 		$mail->addAddress($tmpContact->Email);
 		$mail->addAddress($config->ParameterArray['MailToAddr']);
 

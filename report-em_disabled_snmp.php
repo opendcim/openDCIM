@@ -3,33 +3,8 @@
 	require_once "facilities.inc.php";
 	require __DIR__."/vendor/autoload.php";
 
-	use PHPMailer\PHPMailer\PHPMailer;
-	use PHPMailer\PHPMailer\Exception;
-	use PHPMailer\PHPMailer\SMTP;
-
-	$mail = new PHPMailer(true);
-	$mail->CharSet = 'UTF-8';
-	$mail->SMTPDebug = SMTP::DEBUG_OFF;
-	$mail->isSMTP();
-	$mail->Host = $config->ParameterArray['SMTPServer'];
-	$mail->Port = $config->ParameterArray['SMTPPort'];
-	$mail->SMTPAutoTLS = false;
-
-	// If any port other than 25 is specified, assume encryption and authentication
-	if($config->ParameterArray['SMTPPort']!= 25){
-		$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-		$mail->SMTPAuth = true;
-		$mail->Username = $config->ParameterArray['SMTPUser'];
-		$mail->Password = $config->ParameterArray['SMTPPassword'];
-	}
-
-	$mail->Subject = $config->ParameterArray['MailSubject'];
-	$mail->setFrom( $config->ParameterArray['MailFromAddr'] );
-	$mail->isHTML(true);
+	$mail = new DCIMMail(true);
 	$mail->Subject = __("Data Center Disabled SNMP Devices Report" );
-
-	$mail->addAddress( $config->ParameterArray['FacMgrMail'] );
-
 	$mail->addAttachment( $config->ParameterArray["PDFLogoFile"], "logo.png" );
 
 	$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>ITS Data Center Inventory</title></head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", $config->ParameterArray["HeaderColor"], "logo.png" );
