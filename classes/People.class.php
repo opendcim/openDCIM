@@ -50,7 +50,9 @@ class People {
 	var $SiteAdmin;
 	var $APIKey;
 	var $Disabled;
-	
+	var $LastActivity;
+	var $ExpirationDate;
+
 	function MakeSafe(){
 		$this->PersonID=intval($this->PersonID);
 		$this->UserID=sanitize($this->UserID);
@@ -70,6 +72,7 @@ class People {
 		$this->BulkOperations=intval($this->BulkOperations);
 		$this->SiteAdmin=intval($this->SiteAdmin);
 		$this->Disabled=intval($this->Disabled);
+		$this->ExpirationDate=sanitize($this->ExpirationDate);
 	}
 	
 	function MakeDisplay(){
@@ -91,6 +94,7 @@ class People {
 		$this->BulkOperations=intval($this->BulkOperations);
 		$this->SiteAdmin=intval($this->SiteAdmin);
 		$this->Disabled=intval($this->Disabled);
+		$this->ExpirationDate=stripslashes($this->ExpirationDate);
 	}
 
 	static function RowToObject($row){
@@ -114,6 +118,8 @@ class People {
 		$person->SiteAdmin=$row["SiteAdmin"];
 		$person->APIKey=$row["APIKey"];
 		$person->Disabled=$row["Disabled"];
+		$person->LastActivity=$row["LastActivity"];
+		$person->ExpirationDate=$row["ExpirationDate"];
 
 		$person->MakeDisplay();
 
@@ -197,7 +203,7 @@ class People {
 			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
 			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
 			RackAdmin=$this->RackAdmin, BulkOperations=$this->BulkOperations, SiteAdmin=$this->SiteAdmin,
-			APIKey=\"$this->APIKey\", Disabled=$this->Disabled;";
+			APIKey=\"$this->APIKey\", Disabled=$this->Disabled, ExpirationDate=\"$this->ExpirationDate\";";
 
 		if(!$this->query($sql)){
 			$info=$dbh->errorInfo();
@@ -211,6 +217,8 @@ class People {
 	}
 	
 	static function Current(){
+		global $dbh;
+
 		$cperson=new People();
 
 		if(php_sapi_name()=="cli"){
@@ -233,6 +241,8 @@ class People {
 			$cperson->UserID=$_SESSION['userid'];
 			$cperson->GetUserRights();
 		}
+
+		$dbh->exec("update fac_People set LastActivity=NOW() where PersonID=".$cperson->PersonID);
 		
 		return $cperson;
 	}

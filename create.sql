@@ -504,8 +504,9 @@ CREATE TABLE fac_People (
   RackAdmin tinyint(1) NOT NULL,
   BulkOperations tinyint(1) NOT NULL,
   SiteAdmin tinyint(1) NOT NULL,
-  APIToken varchar(80) NOT NULL,
   Disabled tinyint(1) NOT NULL,
+  LastActivity DATETIME NOT NULL,
+  ExpirationDate DATE NOT NULL,
   PRIMARY KEY(PersonID),
   UNIQUE KEY UserID (UserID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

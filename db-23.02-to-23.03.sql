@@ -13,6 +13,8 @@ CREATE TABLE fac_Country (
 
 ALTER TABLE fac_People drop column Phone3;
 ALTER TABLE fac_People add column countryCode char(2) NOT NULL after Phone2;
+ALTER TABLE fac_People add column LastActivity DATETIME NOT NULL after Disabled;
+ALTER TABLE fac_People add column ExpirationDate DATE NOT NULL after LastActivity;
 ALTER TABLE fac_DataCenter add column countryCode char(2) NOT NULL after DeliveryAddress;
 ALTER TABLE fac_Container add column countryCode char(2) NOT NULL after Name;
 

@@ -29,6 +29,7 @@
 			$userRights->Phone2=$_POST['Phone2'];
 			$userRights->countryCode=$_POST['countryCode'];
 			$userRights->Email=$_POST['Email'];
+			$userRights->ExpirationDate=$_POST['ExpirationDate'];
 
 			if ( isset($_POST['NewKey']) ) {
 				$userRights->APIKey=md5($userRights->UserID . date('Y-m-d H:i:s') );
@@ -285,6 +286,14 @@ echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact 
 <div>
    <div><label for="Email">',__("Email Address"),'</label></div>
    <div><input type="text" class="validate[optional,custom[email],condRequired[RackRequest]]" name="Email" id="Email" value="',$userRights->Email,'"></div>
+</div>
+<div>
+	<div><label for="LastActivity">',__("Last Activity"),'</label></div>
+	<div>',$userRights->LastActivity=='0000-00-00 00:00:00'?__("Never"):date('r',strtotime($userRights->LastActivity)),'</div>
+</div>
+<div>
+	<div><label for="ExpirationDate">',__("Expiration Date"),'</label></div>
+	<div><input type="text" name="ExpirationDate" id="ExpirationDate" value=',$userRights->ExpirationDate=='0000-00-00'?'':date('Y/m/d',strtotime($userRights->ExpirationDate)),'></div>
 </div>
 <div>
    <div><label for="APIKey">',__("API Key"),'</label></div>
