@@ -30,10 +30,14 @@
 	if(isset($_POST['action']) && $_POST["action"]=="Delete"){
 		header('Content-Type: application/json');
 		$response=false;
+		$deleteContacts=false;
+		if (isset($_POST["DeleteContacts"])) {
+			$deleteContacts = $_POST["DeleteContacts"];
+		}
 		if(isset($_POST["TransferTo"])){
 			$dept=new Department();
 			$dept->DeptID=$_POST['deptid'];
-			if($dept->DeleteDepartment($_POST["TransferTo"])){
+			if($dept->DeleteDepartment($_POST["TransferTo"], $deleteContacts)){
 				$response=true;
 			}
 		}
@@ -139,7 +143,7 @@
 							modal: true,
 							buttons: {
 								Yes: function(e){
-									$.post('',{action:'Delete',deptid:$('#deptid').val(),TransferTo:$('#copy').val()},function(data){
+									$.post('',{action:'Delete',deptid:$('#deptid').val(),TransferTo:$('#copy').val(),DeleteContacts:$('#deletecontacts').val()},function(data){
 										if(data){
 											location.href='departments.php?deptid='+$('#copy').val();
 										}else{
@@ -232,6 +236,7 @@
 		<br>
 		<div>Transfer all existing equipment and users to <select id="copy"></select></div>
 		</div>
+		<div>Optionally remove all accounts of People assigned to this Department?<select id="deletecontacts"><option value="false">No</option><option value="true">Yes</option></select>
 	</div>
 	<div title="',__("Are you REALLY sure?"),'" id="doublecheck">
 		<div id="modaltext" class="warning"><span style="float:left; margin:0 7px 20px 0;" class="ui-icon ui-icon-alert"></span>',__("Are you sure REALLY sure?  There is no undo!!"),'

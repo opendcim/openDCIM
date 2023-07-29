@@ -121,7 +121,7 @@ class Department {
 		$this->MakeDisplay();
 	}
 
-	function DeleteDepartment($TransferTo=null){
+	function DeleteDepartment($TransferTo=null,$DeleteContacts=false){
 		// Make sure we have a real department to delete so we don't pull some bonehead move and delete everything set to 0
 		if(!$this->GetDeptByID()){
 			return false;
@@ -159,11 +159,16 @@ class Department {
 		}
 
 		foreach($users as $p){
-			// If we don't have a value over 0 then we're just removing this department and they won't be added to another group
-			if(!is_null($TransferTo) && intval($TransferTo)>0){
-				// Add this user into the new department
-				$sql="INSERT INTO fac_DeptContacts SET DeptID=".intval($TransferTo).", ContactID=$p->PersonID;";
-	 			$this->exec($sql);
+			if ( $DeleteContacts ) {
+				$person->PersonID=$p->PersonID;
+				$person->DeletePerson();
+			} else {
+				// If we don't have a value over 0 then we're just removing this department and they won't be added to another group
+				if(!is_null($TransferTo) && intval($TransferTo)>0){
+					// Add this user into the new department
+					$sql="INSERT INTO fac_DeptContacts SET DeptID=".intval($TransferTo).", ContactID=$p->PersonID;";
+		 			$this->exec($sql);
+				}
 			}
 		}
 	
