@@ -2056,7 +2056,7 @@ echo '
 	</div>
 </fieldset>';
 
-$apipasswordfieldtype = ($dev->Hypervisor==proxmox)?"password":"hidden";
+$apipasswordfieldtype = ($dev->Hypervisor=='proxmox')?"password":"hidden";
 
 echo '<fieldset id="proxmoxblock" class="hide">
 	<legend>'.__("ProxMox Configuration").'</legend>
