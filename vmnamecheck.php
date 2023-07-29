@@ -12,7 +12,10 @@
 	$mail = new DCIMMail(true);
 	$mail->Subject = __("Virtual Machine Inventory Exception Report" );
 	$mail->addAttachment( $config->ParameterArray["PDFLogoFile"], "logo.png" );
-	
+
+	# Send to datacenter address instead of facility manager
+	$mail->addAddress($config->ParameterArray['MailToAddr']);
+
 	$style = "
 <style type=\"text/css\">
 @media print {
