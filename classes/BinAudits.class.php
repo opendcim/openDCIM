@@ -50,5 +50,15 @@ class BinAudits {
 		$sql="INSERT INTO fac_BinAudits SET BinID=$this->BinID, UserID=\"$this->UserID\", AuditStamp=\"$this->AuditStamp\";";
 		$this->exec($sql);
 	}
+
+	public static function RedactUser($UserID) {
+		global $dbh;
+
+		$sql = "update fac_BinAudits set UserID='REDACTED' where UserID=:UserID";
+		$st = $dbh->prepare( $sql );
+		$st->execute( array( ":UserID"=>$UserID ));
+
+		return;
+	}
 }
 ?>

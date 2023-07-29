@@ -65,8 +65,12 @@
 				$status=__("Updated");
 				$userRights->UpdatePerson();
 			}
-		}else{
-		//Should we ever add a delete user function it will go here
+		}elseif($_POST['action']=='DeleteUser' && $_POST['UserID'] != $person->UserID) {
+			// You can't delete yourself
+			$userRights->UserID=$_POST['UserID'];
+			$userRights->DeletePerson();
+
+			$userRights->UserID=0;
 		}
 		// Reload rights because actions like disable reset other rights
 		$userRights->GetUserRights();
@@ -308,7 +312,7 @@ echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact 
 <div class="caption" id="controls">';
 
 	if($userRights->PersonID>0){
-		echo '<button type="submit" name="action" value="Update">',__("Update"),'</button><button type="button" id="showdept">',__("Department Membership"),'</button><button class="hide" id="transferdevices" type="button">',__("Transfer Devices"),'</button>';
+		echo '<button type="submit" name="action" value="Update">',__("Update"),'</button><button type="button" id="showdept">',__("Department Membership"),'</button><button class="hide" id="transferdevices" type="button">',__("Transfer Devices"),'</button><button type="submit" name="action" value="DeleteUser" id="deleteuser">',__("Delete User"),'</button>';
 	}else{
 		echo '	 <button type="submit" name="action" value="Create">',__("Create"),'</button>';
 	}

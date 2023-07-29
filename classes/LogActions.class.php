@@ -404,6 +404,16 @@ class LogActions {
 		return array_unique($values);
 	}
 
+	public static function RedactUser($UserID) {
+		global $dbh;
+
+		$sql = "update fac_GenericLog set UserID='REDACTED' where UserID=:UserID";
+		$st = $dbh->prepare( $sql );
+		$st->execute( array(":UserID"=>$UserID));
+
+		return;
+	}
+
 	function Search($num_rec_per_page=0,$page=1){
 		$this->MakeSafe();
 

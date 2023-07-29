@@ -1395,6 +1395,20 @@ class Device {
 		return $deviceList;
 	}
 
+	static function RedactUser($UserID) {
+		global $dbh;
+
+		$p = new People;
+		$p->UserID=$UserID;
+		$p->GetPersonByUserID();
+
+		$sql = "update fac_Device set PrimaryContact='' where PrimaryContact=:PersonID";
+		$st = $dbh->prepare( $sql );
+		$st->execute(array(":PersonID"=>$p->PersonID));
+
+		return;
+	}
+	
 	function Search($indexedbyid=false,$loose=false,$filterrights=false){
 		global $dbh;
 		$o=array();

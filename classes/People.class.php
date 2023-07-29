@@ -236,6 +236,23 @@ class People {
 		
 		return $cperson;
 	}
+
+	function DeletePerson() {
+		// First step is to redact all entries referencing the user
+		LogActions::RedactUser($this->UserID);
+		Device::RedactUser($this->UserID);
+		BinAudits::RedactUser($this->UserID);
+		ProjectMembership::RedactUser($this->UserID);
+		Department::RedactUser($this->UserID);
+
+		global $dbh;
+
+		$sql = "delete from fac_People where PersonID=:PersonID";
+		$st = $dbh->prepare( $sql );
+		$st->execute(array(":PersonID"=>$this->PersonID));
+
+		return;
+	}
 	
 	function GetDeptsByPerson() {
 		$sql="SELECT DeptID FROM fac_DeptContacts WHERE ContactID=" . intval( $this->PersonID );

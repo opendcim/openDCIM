@@ -2451,8 +2451,8 @@ echo '<div class="main">
 					<div><input type="text" size="40" defaultvalue="',$config->defaults["AttrPhone2"],'" name="AttrPhone2" value="',$config->ParameterArray["AttrPhone2"],'"></div>
 				</div>
 				<div>
-					<div><label for="AttrPhone3">',__("Phone3"),'</label></div>
-					<div><input type="text" size="40" defaultvalue="',$config->defaults["AttrPhone3"],'" name="AttrPhone3" value="',$config->ParameterArray["AttrPhone3"],'"></div>
+					<div><label for="AttrCountry">',__("Country"),'</label></div>
+					<div><input type="text" size="40" defaultvalue="',$config->defaults["AttrCountry"],'" name="AttrCountry" value="',$config->ParameterArray["AttrCountry"],'"></div>
 				</div>
 			</div>
 			<h3>',__("Username Transformations"),'</h3>

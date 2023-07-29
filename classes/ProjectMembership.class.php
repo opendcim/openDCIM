@@ -205,5 +205,19 @@ class ProjectMembership {
 			return $st->execute( array( ":MemberType"=>$MemberType, ":MemberID"=>$MemberID ));
 		}
 	}
+
+	public static function RedactUser( $UserID ) {
+		global $dbh;
+
+		$p = new People();
+		$p->UserID=$UserID;
+		$p->GetPersonByUserID();
+
+		$sql = "delete from fac_ProjectMembership where MemberID=:MemberID";
+		$st = $dbh->prepare( $sql );
+		$st->execute(array(":MemberID"=>$p->PersonID));
+
+		return;
+	}
 }
 ?>

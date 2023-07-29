@@ -277,6 +277,20 @@ class Department {
 		}
 	}
 
+	public static function RedactUser($UserID) {
+		global $dbh;
+
+		$p = new People();
+		$p->UserID=$UserID;
+		$p->GetPersonByUserID();
+
+		$sql = "delete from fac_DeptContacts where ContactID=:PersonID";
+		$st = $dbh->prepare($sql);
+		$st->execute( array(":PersonID"=>$p->PersonID ));
+
+		return;
+	}
+
 	function Search($indexedbyid=false,$loose=false){
 		$o=array();
 		// Store any values that have been added before we make them safe 
