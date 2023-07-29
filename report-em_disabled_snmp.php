@@ -1,7 +1,6 @@
 <?php
 	require_once "db.inc.php";
 	require_once "facilities.inc.php";
-	require __DIR__."/vendor/autoload.php";
 
 	$mail = new DCIMMail(true);
 	$mail->Subject = __("Data Center Disabled SNMP Devices Report" );

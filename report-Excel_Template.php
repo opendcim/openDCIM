@@ -6,7 +6,6 @@
 
 	require_once "db.inc.php";
 	require_once "facilities.inc.php";
-	require_once "vendor/autoload.php";
 
 	$person = People::Current();
 

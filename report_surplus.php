@@ -1,12 +1,6 @@
 <?php
-/*	Template file for creating Excel based reports
-	
-	Basically just the setup of the front page for consistency
-*/
-
 	require_once "db.inc.php";
 	require_once "facilities.inc.php";
-	require_once "vendor/autoload.php";
 
 	$person = People::Current();
 
