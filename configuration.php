@@ -18,6 +18,9 @@
 	require_once(TOOLKIT_PATH . '_toolkit_loader.php');
 	require_once( "./saml/settings.php" );
 
+	$c = new Country;
+	$countryList = $c->CountryList();
+
 	/*
 	 * Automatic Key/Cert Generation Function for Saml
 	 */
@@ -1750,9 +1753,8 @@ echo '<div class="main">
 	<div id="configtabs">
 		<ul>
 			<li><a href="#general">',__("General"),'</a></li>
-			<li><a href="#workflow">',__("Workflow"),'</a></li>
-			<li><a href="#style">',__("Style"),'</a></li>
-			<li><a href="#email">',__("Email"),'</a></li>
+			<li><a href="#workflow">',__("Workflow/Style"),'</a></li>
+			<li><a href="#privacy">',__("Privacy/Email"),'</a></li>
 			<li><a href="#reporting">',__("Reporting"),'</a></li>
 			<li><a href="#tt">',__("ToolTips"),'</a></li>
 			<li><a href="#cc">',__("Cabling"),'</a></li>
@@ -1978,21 +1980,24 @@ echo '<div class="main">
 					<div><label for="RackOverdueHours">',__("Critical (Hours)"),'</label></div>
 					<div><input type="text" defaultvalue="',$config->defaults["RackOverdueHours"],'" name="RackOverdueHours" value="',$config->ParameterArray["RackOverdueHours"],'"></div>
 				</div>
-			</div> <!-- end table -->
-			<h3>',__("Online Repository"),'</h3>
-			<h5>',__("UserID and Key are not needed to pull from the repository, only to send."),'</h5>
-			<div class="table" id="repository">
-				<div>
-					<div><label for="APIUserID">',__("API UserID"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["APIUserID"],'" name="APIUserID" value="',$config->ParameterArray["APIUserID"],'"></div>
-				</div>
-				<div>
-					<div><label for="APIKey">',__("API Key"),'</label></div>
-					<div><input type="text" defaultvalue="',$config->defaults["APIKey"],'" name="APIKey" value="',$config->ParameterArray["APIKey"],'"></div>
-				</div>
+			</div> <!-- end table -->',
+# Hide this until/if one we can actually get people to use an online repo, otherwise it's just adding confusion
+#			<h3>',__("Online Repository"),'</h3>
+#			<h5>',__("UserID and Key are not needed to pull from the repository, only to send."),'</h5>
+#			<div class="table" id="repository">
+#				<div>
+#					<div><label for="APIUserID">',__("API UserID"),'</label></div>
+#					<div><input type="text" defaultvalue="',$config->defaults["APIUserID"],'" name="APIUserID" value="',$config->ParameterArray["APIUserID"],'"></div>
+#				</div>
+#				<div>
+#					<div><label for="APIKey">',__("API Key"),'</label></div>
+#					<div><input type="text" defaultvalue="',$config->defaults["APIKey"],'" name="APIKey" value="',$config->ParameterArray["APIKey"],'"></div>
+#				</div>
+#			</div>
+			'<div>
+				<input type="hidden" name="APIUserID" value="',$config->ParameterArray["APIUserID"],'">
+				<input type="hidden" name="APIKey" value="',$config->ParameterArray["APIKey"],'">
 			</div>
-		</div>
-		<div id="style">
 			<h3>',__("Racks & Maps"),'</h3>
 			<div class="table">
 				<div>
@@ -2113,7 +2118,29 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 		</div>
-		<div id="email">
+		<div id="privacy">
+			<h3>',__("GDPR Enforcement"),'</h3>
+			<div class="table">
+				<div>
+					<div><label for="GDPRCountryIsolation">',__("GDPR Enforcement of Country Isolation"),'</label></div>
+					<div><select id="GDPRCountryIsolation" name="GDPRCountryIsolation" defaultvalue="',$config->defaults["GDPRCountryIsolation"],'" data="',$config->ParameterArray["GDPRCountryIsolation"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div><label for "DefaultCountry">',__("Default Country for Users"),'</label></div>
+					<div><select id="DefaultCountry" name="DefaultCountry" defaultValue="',$config->defaults["DefaultCountry"],'" data="',$config->ParameterArray["DefaultCountry"],'">';
+					foreach ( $countryList as $country ) {
+						print "<option value=\"" . $country->countryCode . "\">" . $country->countryCode . " - " . $country->countryName . "</option>";
+					}
+					echo '
+						</select>
+					</div>
+				</div>
+			</div>
+			<h3>',__("SMTP Options"),'</h3>
 		    <fieldset id="smtpblock">
 			<div class="table">
 				<div>
