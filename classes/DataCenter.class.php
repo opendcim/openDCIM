@@ -248,7 +248,7 @@ class DataCenter {
 		// countryCode sanity check if there is a defined country for a defined ContainerID
 		if ( intval($this->ContainerID)>0 ) {
 			$cont = new Container();
-			$cont->ContainerID=$this->ContainerID();
+			$cont->ContainerID=$this->ContainerID;
 			$cont->GetContainer();
 
 			if ( $cont->countryCode != "" ) {
@@ -304,6 +304,22 @@ class DataCenter {
 		}
 
 		return $datacenterList;
+	}
+
+	static function GetDCListByCountry($countryCode) {
+		global $dbh;
+
+		$sql = "select * from fac_DataCenter where countryCode=:countryCode ORDER BY Name ASC";
+		$st = $dbh->prepare($sql);
+		$st->execute( array( ":countryCode"=>$countryCode ));
+		$st->setFetchMode( PDO::FETCH_CLASS, 'DataCenter' );
+
+		$dcList = array();
+		while ( $row = $st->fetch()) {
+			$dcList[] = $row;
+		}
+
+		return $dcList;
 	}
 
 	function GetDataCenterbyID(){

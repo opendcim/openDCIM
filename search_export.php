@@ -2,7 +2,7 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
-	if ( !$person->SiteAdmin || $person->ReadAccess ) {
+	if ( !( $person->SiteAdmin || $person->ReadAccess ) ) {
 		echo "This report requires global read access.";
 		header("Refresh: 5; url=".redirect());
 		exit;
@@ -11,7 +11,11 @@
 	$subheader=__("Data Center View/Export");
 
 	$datacenter=new DataCenter();
-	$dcList=$datacenter->GetDCList();
+	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+		$dcList = $datacenter->GetDCListByCountry($person->countryCode);
+	} else {
+		$dcList=$datacenter->GetDCList();
+	}
 	
 	$dept=new Department();
 	$dev=new Device();
@@ -111,6 +115,11 @@
 		if($dc!=''){
 			$dc=intval($dc);
 			$dclimit=($dc==0)?'':" and c.DataCenterID=$dc ";
+
+			if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+				$dclimit .= " and a.countryCode='".$person->countryCode."' ";
+			}
+
 			$ca_sql="SELECT AttributeID, Label, AttributeType from fac_DeviceCustomAttribute ORDER BY AttributeID ASC;";
 			$custom_concat = '';
 			$ca_result=$dbh->query($ca_sql)->fetchAll();
