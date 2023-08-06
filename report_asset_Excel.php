@@ -18,7 +18,7 @@ require_once 'facilities.inc.php';
 
 $ReportOutputFolder = "/tmp/";
 
-if(!$person->ReadAccess){
+if( !$person->ReadAccess){
     // No soup for you.
     header('Location: '.redirect());
     exit;
@@ -146,7 +146,7 @@ ini_set('max_execution_time', '0');
 // Properties of the document and worksheets.
 $DProps = array(
     'Doc' => array(
-        'version' => 1.0,
+        'version' => 2.0,
         'Subject' => __("Asset Report"),
         'Description' => __("Data Center Statistics on all data centers assets."),
         'Title' => __("Data Center Statistics"),
@@ -454,11 +454,11 @@ class ReportStats
  */
 function buildColumnIndex($colSpec)
 {
-    $idx = 0;
+    $idx = 1;
     $colIndex = array();
     foreach ($colSpec as $val) {
         $colIndex[$val[0]] = array($idx, \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($idx));
-        $idx ++;
+        $idx++;
     }
 
     return $colIndex;
@@ -656,6 +656,7 @@ function writeWSHeader($worksheet, $wsKind, $wsProps)
         $hrange = computeHeaderRange($wsProps['Columns']);
     }
     $colNames = getHeaderNames($wsProps['Columns']);
+
     $worksheet->fromArray($colNames, null, 'A1');
     if ($wsProps['HeaderHeight']) {
         $worksheet->getRowDimension('1', true)->setRowHeight($wsProps['HeaderHeight']);
@@ -674,7 +675,7 @@ function writeWSHeader($worksheet, $wsKind, $wsProps)
     	case 'Rack Inventory':
     	    break;
     }
-    $worksheet->freezePane($freezeCell);
+    // $worksheet->freezePane($freezeCell);
     $worksheet->getStyle($hrange)->getFill()
         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
     $worksheet->getStyle($hrange)->getFill()
@@ -1170,6 +1171,8 @@ function computeSheetBodyDCInventory($DProps)
 {
     global $person;
     global $sessID;
+    global $config;
+
     $dc = new DataCenter();
     $cab = new Cabinet();
     $device = new Device();
@@ -1182,7 +1185,12 @@ function computeSheetBodyDCInventory($DProps)
     $contactList = $person->GetUserList('indexed');
 
     $limitedUser = false;
-    $dcList = $dc->GetDCList();
+    if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin) {
+        $dcList = $dc->GetDCListByCountry( $person->countryCode );
+    } else {
+        $dcList = $dc->GetDCList();
+    }
+
     $Stats = array();
 
     // A little code to update the counter
@@ -1634,6 +1642,7 @@ function writeFrontPageContent($worksheet, $config, $DProps)
 function writeDCInvContent($worksheet, $sheetProps, $invData)
 {
     $colIdx = $sheetProps['ColIdx'];
+
     // first line is the header for the worksheet
     $worksheet->fromArray($invData, null, 'A2');
     ReportStats::get()->report('Info', 'Number of Inventory entries '.count($invData));
@@ -1642,7 +1651,8 @@ function writeDCInvContent($worksheet, $sheetProps, $invData)
     foreach ($sheetProps['ExpStr'] as $colName) {
         $colLetter = $colIdx[$colName][1];
         for ($row = 0; $row < $highestRow; $row++) {
-            $worksheet->setCellValueExplicit($colLetter . ($row+2),
+            $cellRow = $row + 2;
+            $worksheet->setCellValueExplicit($colLetter . $cellRow,
                 $invData[$row][$colName], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         }
     }

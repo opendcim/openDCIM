@@ -16,7 +16,7 @@
 		$dc = new DataCenter();
 		$dc->DataCenterID = $cab->DataCenterID;
 		$dc->GetDataCenterbyID();
-		if ( $dc->countryCode != $person->countryCode )  {
+		if ( !$person->SiteAdmin && $dc->countryCode != $person->countryCode )  {
 			error_log( "GDPR Isolation Enabled:  User country: ".$person->countryCode." denied access to Data Center country: ".$dc->countryCode );
 			header('Location: '.redirect());
 			exit;

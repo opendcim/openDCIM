@@ -160,7 +160,7 @@ class Cabinet {
 			$dc = new DataCenter();
 			$dc->DataCenterID = $this->DataCenterID;
 			$dc->GetDataCenterbyID();
-			if ( $dc->countryCode == $person->countryCode ) {
+			if ( $dc->countryCode == $person->countryCode || $person->SiteAdmin ) {
 				if($person->canRead($this->AssignedTo)){$this->Rights="Read";}
 				if($person->canWrite($this->AssignedTo)){$this->Rights="Write";}				
 			}
