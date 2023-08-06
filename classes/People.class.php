@@ -263,6 +263,20 @@ class People {
 
 		return;
 	}
+
+	function ExpirePeople() {
+		global $dbh;
+
+		$sql = "select * from fac_People where ExpirationDate!='0000-00-00' AND ExpirationDate<CURDATE()";
+		$st = $dbh->prepare( $sql );
+		$st->setFetchMode(PDO::FETCH_CLASS,'People');
+		$st->execute();
+
+		while ( $row = $st->fetch() ) {
+			error_log("Removing expired account - PersonID: " . $row->PersonID );
+			$row->DeletePerson();
+		}
+	}
 	
 	function GetDeptsByPerson() {
 		$sql="SELECT DeptID FROM fac_DeptContacts WHERE ContactID=" . intval( $this->PersonID );

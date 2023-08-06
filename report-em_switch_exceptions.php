@@ -2,6 +2,12 @@
 	require_once "db.inc.php";
 	require_once "facilities.inc.php";
 
+	if ( php_sapi_name() != "cli" ) {
+	echo "This script may only be run from the command line.";
+	header( "Refresh: 5; url=" . redirect());    
+	}
+  
+
 	$mail = new DCIMMail(true);
 	$mail->Subject = __("Data Center Switch Capacity Report" );
 	$mail->addAttachment( $config->ParameterArray["PDFLogoFile"], "logo.png" );

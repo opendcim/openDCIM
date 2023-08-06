@@ -272,6 +272,7 @@ class Device {
 
 	private function FilterRights(){
 		global $person;
+		global $config;
 		
 		$cab=new Cabinet();
 		$cab->CabinetID=$this->Cabinet;
@@ -286,6 +287,15 @@ class Device {
 			$this->Rights=($par->Rights=="Write")?"Write":$this->Rights;
 		}elseif($cab->GetCabinet()){
 			$this->Rights=($cab->Rights=="Write")?"Write":$this->Rights; // write because the cabinet is assigned
+		}
+		if ( !$person->SiteAdmin && $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+			$cab->GetCabinet();
+			$dc = new DataCenter();
+			$dc->DataCenterID=$cab->DataCenterID;
+			$dc->GetDataCenterbyID();
+			if ( $dc->countryCode != $person->countryCode ) {
+				$this->Rights = 'None';
+			}
 		}
 		if($person->SiteAdmin && $this->DeviceType=='Patch Panel'){$this->Rights="Write";} // admin override of rights for patch panels
 

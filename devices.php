@@ -7,6 +7,22 @@
 	$dev=new Device();
 	$cab=new Cabinet();
 
+	// Have to test for country isolation at the very top, before anything else
+	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && isset( $_REQUEST["DeviceID"] ) ) {
+		$dev->DeviceID = $_REQUEST["DeviceID"];
+		$dev->GetDevice();
+		$cab->CabinetID = $dev->Cabinet;
+		$cab->GetCabinet();
+		$dc = new DataCenter();
+		$dc->DataCenterID = $cab->DataCenterID;
+		$dc->GetDataCenterbyID();
+		if ( $dc->countryCode != $person->countryCode )  {
+			error_log( "GDPR Isolation Enabled:  User country: ".$person->countryCode." denied access to Data Center country: ".$dc->countryCode );
+			header('Location: '.redirect());
+			exit;
+		}
+	}
+
 	$validHypervisors=array( "None", "ESX", "ProxMox" );
 
 	$taginsert="";
