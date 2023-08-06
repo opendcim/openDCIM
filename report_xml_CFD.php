@@ -2,11 +2,13 @@
 	require_once("db.inc.php");
 	require_once("facilities.inc.php");
 
-if(!$person->SiteAdmin){
-    // No soup for you.
-    header('Location: '.redirect());
-    exit;
-}
+	// This report only works for SiteAdmins so there is no need for checks for GDPRCountryIsolation
+	
+	if(!$person->SiteAdmin){
+	    // No soup for you.
+	    header('Location: '.redirect());
+	    exit;
+	}
 
 	$subheader=__("XML Output for CFD Simulation");
 	

@@ -2,11 +2,12 @@
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
 
-if(!$person->ReadAccess){
-    // No soup for you.
-    header('Location: '.redirect());
-    exit;
-}
+    // Only SiteAdmin can run this report, so no need to check for GDPRCountryIsolation
+    if(!$person->SiteAdmin){
+        // No soup for you.
+        header('Location: '.redirect());
+        exit;
+    }
 
 	define('FPDF_FONTPATH','font/');
 	require('fpdf.php');
