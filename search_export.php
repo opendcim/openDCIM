@@ -11,7 +11,7 @@
 	$subheader=__("Data Center View/Export");
 
 	$datacenter=new DataCenter();
-	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
 		$dcList = $datacenter->GetDCListByCountry($person->countryCode);
 	} else {
 		$dcList=$datacenter->GetDCList();
@@ -116,7 +116,7 @@
 			$dc=intval($dc);
 			$dclimit=($dc==0)?'':" and c.DataCenterID=$dc ";
 
-			if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+			if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
 				$dclimit .= " and a.countryCode='".$person->countryCode."' ";
 			}
 

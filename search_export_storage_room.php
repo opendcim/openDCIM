@@ -4,8 +4,18 @@
 
 	$subheader=__("Storage Room View/Export");
 
+	if ( !( $person->SiteAdmin || $person->ReadAccess ) ) {
+		echo "This report requires global read access.";
+		header("Refresh: 5; url=".redirect());
+		exit;
+	}
+	
 	$datacenter=new DataCenter();
-	$dcList=$datacenter->GetDCList();
+	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
+		$dcList = $datacenter->GetDCListByCountry($person->countryCode);
+	} else {
+		$dcList=$datacenter->GetDCList();
+	}
 	
 	$templ=new DeviceTemplate();
 	$dept=new Department();
@@ -18,6 +28,11 @@
 		if($dc!=''){
 			$dc=intval($dc);
 			$dclimit=($dc==0)?'':" and b.Position=$dc ";
+
+			if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+				$dclimit .= " and a.countryCode='".$person->countryCode."' ";
+			}
+
 			$ca_sql="SELECT AttributeID, Label, AttributeType from fac_DeviceCustomAttribute ORDER BY AttributeID ASC;";
 			$custom_concat = '';
 			$ca_result=$dbh->query($ca_sql)->fetchAll();
