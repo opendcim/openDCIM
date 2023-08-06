@@ -3,9 +3,20 @@
 	require("facilities.inc.php");
 
 	if ( php_sapi_name() != "cli" ) {
-	echo "This script may only be run from the command line.";
-	header( "Refresh: 5; url=" . redirect());    
+		echo "This script may only be run from the command line.";
+		header( "Refresh: 5; url=" . redirect());    
 	}
-  	
-	Device::UpdateSensors();
+
+	# Filter Types (Case Sensitive) - Filter Value
+	# Country - 2 letter Country Code
+	# Container - Numeric ContainerID
+	# DataCenter - Numeric DataCenterID
+	# Zone - Numeric ZoneID
+	# Row - Numeric RowID
+	# None - No filtering applied
+
+	$filterType = "None";
+	$filterValue = "";
+
+	Device::UpdateSensorsFilter( $filterType, $filterValue );
 ?>

@@ -2417,17 +2417,49 @@ class Device {
 		return Device::UpdateSensors($this->Cabinet);
 	}	
 
+	static function UpdateSensors($CabinetID=null){
+		if ( ! is_null($CabinetID) ) {
+			$filterType = "Cabinet";
+			$filterValue = $CabinetID;
+			$this->UpdateSensorsFilter( $filterType, $filterValue );
+		}
+	}
+
 	// This is a train wreck to have it in here, but everything is lumped into Devices, now...
 	// this should now be functional however I question the positioning.  if we move this, update the function above
-	static function UpdateSensors($CabinetID=null){
+	static function UpdateSensorsFilter( $filterType, $filterValue ) {
 		global $config;
 		global $dbh;
 
+		$filterValue=sanitize($filterValue);
+
+		switch ( $filterType ) {
+			case "Country":
+				$filterSQL = "AND c.countryCode='$filterValue'";
+				break;
+			case "Container":
+				$filterSQL = "AND c.ContainerID='$filterValue'";
+				break;
+			case "DataCenter":
+				$filterSQL = "AND c.DataCenterID='$filterValue'";
+				break;
+			case "Zone":
+				$filterSQL = "AND b.ZoneID='$filterValue'";
+				break;
+			case "Row":
+				$filterSQL = "AND b.CabRowID='$filterValue'";
+				break;
+			case "Cabinet":
+				$filterSQL=(is_null($CabinetID))?"":" AND a.Cabinet=$cab->CabinetID";
+				break;
+			default:
+				$filterSQL = "";
+		}
 		// If CabinetID isn't specified try to update all sensors for the system
-		$cablimit=(is_null($CabinetID))?"":" AND a.Cabinet=$cab->CabinetID";
+		
 		$sql="SELECT a.DeviceID, b.DataCenterID, a.Cabinet, b.Location, a.BackSide, c.Name FROM fac_Device a, fac_Cabinet b, fac_DataCenter c WHERE 
 			DeviceType=\"Sensor\" AND PrimaryIP!=\"\" AND TemplateID>0 AND SNMPFailureCount<3 AND a.Cabinet=b.CabinetID AND
-			b.DataCenterID=c.DataCenterID $cablimit order by c.Name ASC, b.Location ASC;";
+			b.DataCenterID=c.DataCenterID $filterSQL order by c.Name ASC, b.Location ASC;";
 
 		$AlertList = "";
 		$htmlMessage = "";
