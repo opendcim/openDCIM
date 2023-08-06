@@ -128,6 +128,12 @@ function renderUnassignedTemplateOwnership($noTemplFlag, $noOwnerFlag, $device) 
 	$dc->DataCenterID=$dcID;
 	$dc->GetDataCenterbyID();
 
+	if ( !$person->SiteAdmin && ($config->ParameterArray["GDPRCountryIsolation"] == "enabled" && ( $dc->countryCode != $person->countryCode ) ) ) {
+		error_log( "GDPR Isolation Enabled:  User country: ".$person->countryCode." denied access to Data Center country: ".$dc->countryCode );
+		header('Location: '.redirect());
+		exit;
+	}
+	
 	$audit->CabinetID=$cab->CabinetID;
 
 	// You just have WriteAccess in order to perform/certify a rack audit

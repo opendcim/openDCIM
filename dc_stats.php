@@ -76,6 +76,13 @@
 	
 	$dc->DataCenterID=$_GET["dc"];
 	$dc->GetDataCenterbyID();
+
+	if ( !$person->SiteAdmin && ($config->ParameterArray["GDPRCountryIsolation"] == "enabled" && ( $dc->countryCode != $person->countryCode ) ) ) {
+		error_log( "GDPR Isolation Enabled:  User country: ".$person->countryCode." denied access to Data Center country: ".$dc->countryCode );
+		header('Location: '.redirect());
+		exit;
+	}
+
 	$dcStats=$dc->GetDCStatistics();
 
 	$rciStats = RCI::GetStatistics( "dc", $dc->DataCenterID );

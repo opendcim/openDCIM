@@ -154,9 +154,20 @@ class Cabinet {
 
 	private function FilterRights(){
 		global $person;
+		global $config;
 		$this->Rights='None';
-		if($person->canRead($this->AssignedTo)){$this->Rights="Read";}
-		if($person->canWrite($this->AssignedTo)){$this->Rights="Write";}
+		if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+			$dc = new DataCenter();
+			$dc->DataCenterID = $this->DataCenterID;
+			$dc->GetDataCenterbyID();
+			if ( $dc->countryCode == $person->countryCode ) {
+				if($person->canRead($this->AssignedTo)){$this->Rights="Read";}
+				if($person->canWrite($this->AssignedTo)){$this->Rights="Write";}				
+			}
+		} else {
+			if($person->canRead($this->AssignedTo)){$this->Rights="Read";}
+			if($person->canWrite($this->AssignedTo)){$this->Rights="Write";}
+		}
 
 		// Remove information that they shouldn't have access to
 		if($this->Rights=='None'){

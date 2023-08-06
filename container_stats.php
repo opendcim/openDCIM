@@ -14,6 +14,13 @@
 	
 	$c->ContainerID=$_GET["container"];
 	$c->GetContainer();
+
+	if ( !$person->SiteAdmin && ($config->ParameterArray["GDPRCountryIsolation"] == "enabled" && ( $c->countryCode != $person->countryCode ) ) ) {
+		error_log( "GDPR Isolation Enabled:  User country: ".$person->countryCode." denied access to Container country: ".$c->countryCode );
+		header('Location: '.redirect());
+		exit;
+	}
+
 	$cStats=$c->GetContainerStatistics();
 
 ?>
