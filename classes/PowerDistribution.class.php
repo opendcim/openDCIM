@@ -378,20 +378,40 @@ class PowerDistribution {
 		return ($this->query($sql))?$this->GetLastReading():false;
 	}
 	
-	function UpdateStats(){
+	function UpdateStats( $filterType="None", $filterValue="" ) {
 		global $config;
 		global $dbh;
 
 		$AlertList = "";
 		$htmlMessage = "";
-		
+		$filterValue = sanitize($filterValue);
+
+		switch ($filterType) {
+			case "Country":
+				$filterSQL = "AND f.countryCode='$filterValue'";
+				break;
+			case "Container":
+				$filterSQL = "AND f.ContainerID='$filterValue'";
+				break;
+			case "DataCenter":
+				$filterSQL = "AND e.DataCenterID='$filterValue'";
+				break;
+			case "Zone":
+				$filterSQL = "AND e.ZoneID='$filterValue'";
+				break;
+			case "Row":
+				$filterSQL = "AND e.CabRowID='$filterValue'";
+			default:
+				$filterSQL = "";
+		}
+
 		$sql="SELECT a.PDUID, a.BreakerSize, b.Voltage, b.Amperage, d.SNMPVersion, b.Multiplier, b.OID1, b.OID2, b.OID3, 
 			b.ProcessingProfile, b.Voltage, c.Label, c.SNMPFailureCount, e.Location, f.Name 
 			FROM fac_PowerDistribution a, fac_CDUTemplate b, fac_Device c, fac_DeviceTemplate d, fac_Cabinet e, fac_DataCenter f 
 			WHERE a.PDUID=c.DeviceID and a.TemplateID=b.TemplateID AND a.TemplateID=d.TemplateID and a.CabinetID=e.CabinetID and
-			e.DataCenterID=f.DataCenterID AND b.Managed=true AND c.PrimaryIP>'' and c.SNMPFailureCount<3
+			e.DataCenterID=f.DataCenterID AND b.Managed=true AND c.PrimaryIP>'' and c.SNMPFailureCount<3 $filterSQL
 			ORDER BY f.Name ASC, e.Location ASC";
-		
+
 		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
 		foreach($this->query($sql) as $row){
 			if(!$dev=PowerDistribution::BasicTests($row['PDUID'])){

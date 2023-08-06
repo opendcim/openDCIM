@@ -6,8 +6,19 @@
     echo "This script may only be run from the command line.";
     header( "Refresh: 5; url=" . redirect());    
   }
-    
-  $PDU=new PowerDistribution();
+
+  # Filter Types (Case Sensitive) - Filter Value
+  # Country - 2 letter Country Code
+  # Container - Numeric ContainerID
+  # DataCenter - Numeric DataCenterID
+  # Zone - Numeric ZoneID
+  # Row - Numeric RowID
+  # None - No filtering applied
+
+  $filterType = "None";
+  $filterValue = "";
+
+  $PDU=new PowerDistribution( $filterType, $filterValue );
   
   $PDU->UpdateStats();
 ?>
