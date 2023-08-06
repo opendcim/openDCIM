@@ -2,6 +2,12 @@
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
+	if ( !$person->SiteAdmin || $person->ReadAccess ) {
+		echo "This report requires global read access.";
+		header("Refresh: 5; url=".redirect());
+		exit;
+	}
+
 	$subheader=__("Data Center View/Export");
 
 	$datacenter=new DataCenter();
