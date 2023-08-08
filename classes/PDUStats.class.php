@@ -98,7 +98,7 @@ class PDUStats {
 		return true;
 	}
 
-	function Search($indexedbyid=false,$loose=false){
+	function Search( $indexedbyid=false,$loose=false ){
 		$this->MakeSafe();
 
 		$sqlextend="";

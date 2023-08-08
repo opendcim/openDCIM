@@ -980,6 +980,35 @@ paths:
       - api_key: []
       - user_id: []
   /pdustats/{PDUID}:
+    get:
+      summary: Data from the most recent poll of the PDU Devices 
+      tags:
+      - "PDUStats"
+      - "Device"
+      description: "Retrieves the most recent polling data for a PDU"
+      produces:
+      - "application/json"
+      operationId: "GetPDUStats"
+      parameters:
+        - in: path
+          name: "PDUID"
+          required: true 
+          type: string
+          description: "keyValue of the DeviceID matching the PDU"
+      responses:
+        "401":
+          description: "Access denied."
+        "404":
+          description: "No polling data recorded."
+        "200":
+          schema:
+            type: "array"
+            items:
+              $ref: "#definitions/PDUStats"
+      security:
+      - api_key: []
+      - user_id: []
+  /pdustats:
     post:
       summary: Update PDU Reading for a specific device
       tags:
@@ -990,18 +1019,11 @@ paths:
       - "application/json"
       operationId: "UpdatePDUStats"
       parameters:
-        - in: path
-          name: "PDUID"
-          required: true
-          type: string
-          description: "keyValue of the DeviceID to be updated"
         - in: body
           name: "body"
           required: true
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/PDUStats"
+            $ref: "#/definitions/PDUStats"
       responses:
         "401":
           description: "Access denied."

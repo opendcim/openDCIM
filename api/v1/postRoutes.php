@@ -606,9 +606,8 @@ $app->post( '/sensorreadings/:sensorid', function($sensorid) use ($person) {
 //		Optional: Wattage, LastRead
 //	Returns: true/false on update operation
 
-$app->post( '/pdustats/:pduid', function($pduid) use ($person) {
+$app->post( '/pdustats', function() use ($person) {
 	$pdustats=new PDUStats();
-	$pdustats->PDUID=$pduid;
 
 	$r['error']=true;
 	$r['errorcode']=400;

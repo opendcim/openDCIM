@@ -132,7 +132,7 @@ $app->add(function($request, $response, $next) use($person) {
 
 //	Slim Framework 2 middleware
 $app->hook( 'slim.before.dispatch', function() use($person) {
-	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" || AUTHENTICATION == "Saml" ) {
+	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" || AUTHENTICATION == "Saml" || AUTHENTICATION == "OIDC" ) {
 		// Getting request headers
 		$tmpHeaders = apache_request_headers();
 		// Force headers to all lowercase because we've seen inconsistencies between environments
@@ -150,11 +150,11 @@ $app->hook( 'slim.before.dispatch', function() use($person) {
 			$person->GetPersonByUserID();
 		} elseif ( isset( $headers['userid']) && isset( $headers['apikey'])) {
 			// Load up the $person variable
-			$person->UserID = $headers['userid'];
+			$person->UserID = $headers['user_id'];
 			$person->GetPersonByUserID();
 
 			// Now verify that their key matches
-			if ( $person->APIKey == $headers['apikey'] ) {
+			if ( $person->APIKey == $headers['api_key'] ) {
 				$valid = true;
 			}
 		}
