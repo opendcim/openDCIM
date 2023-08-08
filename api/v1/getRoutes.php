@@ -27,9 +27,18 @@
 //  Returns:	Last audit date of given parameter.
 //
 
-$app->get( '/audit', function() {
+$app->get( '/audit', function() use ($person){
 	$r = array();
 	$error = false;
+
+	if ( !$person->SiteAdmin ) {
+		$r['error'] = true;
+		$r['errorcode'] = 403;
+		$r['message'] = 'Forbidden';
+
+		echoResponse($r);
+		return;
+	}
 
 	$attrList = getParsedBody();
 
@@ -44,7 +53,6 @@ $app->get( '/audit', function() {
 	} else {
 		$error = true;
 	}
-
 
 	if ( ! $error ) {
 		$r['error'] = false;
@@ -64,9 +72,7 @@ $app->get( '/audit', function() {
 //	Params:  none
 //	Returns:  List of all people in the database
 //
-$app->get('/people', function() {
-	global $person;
-	
+$app->get('/people', function() use($person,$config) {	
 	$person->GetUserRights();
 
 	$sp=new People();
@@ -83,9 +89,16 @@ $app->get('/people', function() {
 		}
 	}
 
-	if(!$person->ContactAdmin){
+	if(!$person->ContactAdmin && $config->ParameterArray["GDPRCountryIsolation"] == "disabled"){
 		// Anybody that isn't an admin gets limited fields returned
 		$outputAttr = array( 'PersonID', 'FirstName', 'LastName' );
+	} elseif ($config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+		$r = array();
+		$r['error'] = true;
+		$r['errorcode'] = 403;
+		$r['message'] = "Forbidden";
+		echoResponse($r);
+		return;
 	}
 
 	$r = array();
@@ -103,7 +116,7 @@ $app->get('/people', function() {
 //	Returns:  List of all departments in the database
 //
 
-$app->get('/department', function() use($person) {
+$app->get('/department', function() use($person,$config) {
 	$r = array();
 
 	$dList = array();
@@ -119,11 +132,17 @@ $app->get('/department', function() use($person) {
 		} elseif( property_exists( $dept, $prop )) {
 			$dept->$prop=$val;
 		}
-	}		
+	}
 
-	$r['error'] = false;
-	$r['errorcode'] = 200;
-	$r['department'] = specifyAttributes( $outputAttr, $dept->Search( false, $loose ));
+	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->ContactAdmin ) {
+		$r['error'] = true;
+		$r['errorcode'] = 403;
+		$r['message'] = "Forbidden";
+	} else {
+		$r['error'] = false;
+		$r['errorcode'] = 200;
+		$r['department'] = specifyAttributes( $outputAttr, $dept->Search( false, $loose ));
+	}
 
 	echoResponse( $r );
 });
@@ -135,16 +154,18 @@ $app->get('/department', function() use($person) {
 //	Returns: List of all data centers in the database
 //
 
-$app->get('/datacenter', function() {
+$app->get('/datacenter', function() use ($person, $config) {
 	// Don't have to worry about rights, other than basic connection, to get data center list
 	
 	$dc = new DataCenter();
-	$dcList = $dc->GetDCList();
 
 	$outputAttr = array();
 	$loose = false;
 
 	$vars = getParsedBody();
+	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
+		$vars["countryCode"] = $person->countryCode;		
+	}
 
 	foreach( $vars as $prop=>$val ) {
 		if (strtoupper($prop) == "WILDCARDS" ) {
@@ -171,7 +192,7 @@ $app->get('/datacenter', function() {
 //	Returns: Details of specified datacenter
 //
 
-$app->get( '/datacenter/:id', function( $id ) {
+$app->get( '/datacenter/:id', function( $id ) use ($config, $person) {
 	$dc = new DataCenter();
 	$r = array();
 	$dc->DataCenterID = $id;
@@ -200,7 +221,7 @@ $app->get( '/datacenter/:id', function( $id ) {
 //	Returns: All cabinet information
 //
 
-$app->get( '/cabinet', function() {
+$app->get( '/cabinet', function() use ($config,$person) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
 	$loose = false;
@@ -224,6 +245,14 @@ $app->get( '/cabinet', function() {
 	$r['errorcode'] = 200;
 	$r['cabinet'] = array();
 	
+	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
+		$dcList = array();
+		$tmpDCList = $dc->GetDCListByCountry($person->countryCode);
+		foreach( $tmpDCList as $d ) {
+			$dcList[] = $d->DataCenterID;
+		}
+	}
+
 	foreach( $cList as $c ) {
 		$tmp = array();
 		foreach( $c as $prop=>$value ) {
@@ -238,7 +267,14 @@ $app->get( '/cabinet', function() {
 			$tmp['DataCenterName'] = $dc->Name;
 		}
 		
-		array_push( $r['cabinet'], $tmp );
+		// Only add in the values that match a DataCenterID from the list of good ones to use
+		if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+			if (( !$person->SiteAdmin  && in_array( $dc->DataCenterID, $dcList )) || $person->SiteAdmin ) {
+				array_push( $r['cabinet'], $tmp );
+			}
+		} else {
+			array_push( $r['cabinet'], $tmp );
+		}
 	}
 	
 	echoResponse( $r );
@@ -251,9 +287,18 @@ $app->get( '/cabinet', function() {
 //	Returns: All cabinet information for given ID
 //
 
-$app->get( '/cabinet/:cabinetid', function( $cabinetid ) {
+$app->get( '/cabinet/:cabinetid', function( $cabinetid ) use ($config,$person) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
+
+	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
+		$dcList = array();
+		$tmpDCList = $dc->GetDCListByCountry($person->countryCode);
+		foreach( $tmpDCList as $d ) {
+			$dcList[] = $d->DataCenterID;
+		}
+	}
+
 	if ( ! $cab->CabinetID = intval($cabinetid) ) {
 		$r['error'] = true;
 		$r['errorcode'] = 400;
@@ -264,17 +309,19 @@ $app->get( '/cabinet/:cabinetid', function( $cabinetid ) {
 		$r['cabinet'] = array();
 
 		$cab->GetCabinet();
-		
-		$tmp = array();
-		foreach( $cab as $prop=>$value ) {
-			$tmp[$prop] = $value;
+
+		if ( in_array( $cab->DataCenterID, $dcList ) ) {		
+			$tmp = array();
+			foreach( $cab as $prop=>$value ) {
+				$tmp[$prop] = $value;
+			}
+			$dc->DataCenterID = $cab->DataCenterID;
+			$dc->GetDataCenter();
+			
+			$tmp['DataCenterName'] = $dc->Name;
+			
+			array_push( $r['cabinet'], $tmp );
 		}
-		$dc->DataCenterID = $cab->DataCenterID;
-		$dc->GetDataCenter();
-		
-		$tmp['DataCenterName'] = $dc->Name;
-		
-		array_push( $r['cabinet'], $tmp );
 	}
 
 	echoResponse( $r );
@@ -287,7 +334,20 @@ $app->get( '/cabinet/:cabinetid', function( $cabinetid ) {
 //	Returns:  HTML representation of a device
 //
 
-$app->get( '/cabinet/:cabinetid/getpictures', function( $cabinetid ) {
+$app->get( '/cabinet/:cabinetid/getpictures', function( $cabinetid ) use ($config,$person) {
+	$dc = new DataCenter();
+
+	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
+		$dcList = array();
+		$tmpDCList = $dc->GetDCListByCountry($person->countryCode);
+	} else {
+		$tmpDCList = $dc->GetDCList();
+	}
+
+	foreach( $tmpDCList as $d ) {
+		$dcList[] = $d->DataCenterID;
+	}
+
 	$cab=new Cabinet($cabinetid);
 	
 	$r['error']=true;
@@ -297,47 +357,14 @@ $app->get( '/cabinet/:cabinetid/getpictures', function( $cabinetid ) {
 	if(!$cab->GetCabinet()){
 		$r['message']=__("Cabinet not found");
 	}else{
-		$r['error']=false;
-		$r['errorcode']=200;
-		$r['message']="";
-		$r['pictures']=$cab->getPictures();
+		if ( in_array($cab->DataCenterID, $dcList )) {
+			$r['error']=false;
+			$r['errorcode']=200;
+			$r['message']="";
+			$r['pictures']=$cab->getPictures();			
+		}
 	}
 
-	echoResponse( $r );
-});
-
-//
-//	URL:	/api/v1/cabinet/bydc/:datacenterid
-//	Method:	GET
-//	Params: datacenterid (passed in URL)
-//	Returns: All cabinet information within the given data center, if any
-//
-
-$app->get( '/cabinet/bydc/:datacenterid', function( $datacenterid ) {
-	$cab = new Cabinet;
-	$dc = new DataCenter();
-	$cab->DataCenterID = intval($datacenterid);
-	$cList = $cab->ListCabinetsByDC();
-	
-	$r['error'] = false;
-	$r['errorcode'] = 200;
-	$r['cabinet'] = array();
-	
-	foreach( $cList as $c ) {
-		$tmp = array();
-		foreach( $c as $prop=>$value ) {
-			$tmp[$prop] = $value;
-		}
-		if ( $dc->DataCenterID != $c->DataCenterID ) {
-			$dc->DataCenterID = $c->DataCenterID;
-			$dc->GetDataCenter();
-		}
-		
-		$tmp['DataCenterName'] = $dc->Name;
-		
-		array_push( $r['cabinet'], $tmp );
-	}
-	
 	echoResponse( $r );
 });
 
@@ -348,53 +375,41 @@ $app->get( '/cabinet/bydc/:datacenterid', function( $datacenterid ) {
 //	Returns: All cabinet sensor information for the specified cabinet, if any
 //
 
-$app->get( '/cabinet/:cabinetid/sensor', function( $cabinetid ) {
-	global $config;
-	
-	$r['error'] = false;
-	$r['errorcode'] = 200;
-	$r['sensors'] = array();
-
-	if ( $m = CabinetMetrics::getMetrics($cabinetid) ) {
-		$m->mUnits = $config->ParameterArray["mUnits"];
-		$r['sensors'] = $m;
-	}	
-
-	echoResponse( $r );
-});
-
-//
-//	URL:	/api/v1/cabinet/bydept/:deptid
-//	Method:	GET
-//	Params: deptid (passed in URL)
-//	Returns: All cabinet information for cabinets assigned to supplied deptid
-//
-
-$app->get( '/cabinet/bydept/:deptid', function( $deptid ) {
-	$cab = new Cabinet;
+$app->get( '/cabinet/:cabinetid/sensor', function( $cabinetid ) use ($config,$person) {
 	$dc = new DataCenter();
-	$cab->DeptID=intval($deptid);
-	$cList = $cab->GetCabinetsByDept();
-	
-	$r['error'] = false;
-	$r['errorcode'] = 200;
-	$r['cabinet'] = array();
-	
-	foreach( $cList as $c ) {
-		$tmp = array();
-		foreach( $c as $prop=>$value ) {
-			$tmp[$prop] = $value;
-		}
-		if ( $dc->DataCenterID != $c->DataCenterID ) {
-			$dc->DataCenterID = $c->DataCenterID;
-			$dc->GetDataCenter();
-		}
-		
-		$tmp['DataCenterName'] = $dc->Name;
-		
-		array_push( $r['cabinet'], $tmp );
+
+	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
+		$dcList = array();
+		$tmpDCList = $dc->GetDCListByCountry($person->countryCode);
+	} else {
+		$tmpDCList = $dc->GetDCList();
+	}
+
+	foreach( $tmpDCList as $d ) {
+		$dcList[] = $d->DataCenterID;
+	}
+
+	$cab = new Cabinet();
+	$cab->CabinetID = $cabinetid;
+	$cab->GetCabinet();
+
+	$r = array();
+	$r['error']=true;
+	$r['errorcode']=404;
+	$r['message']=__("Unknown error");
+
+	if ( in_array($cab->DataCenterID, $dcList ) ) {
+		$r['error'] = false;
+		$r['errorcode'] = 200;
+		$r['sensors'] = array();
+
+		if ( $m = CabinetMetrics::getMetrics($cabinetid) ) {
+			$m->mUnits = $config->ParameterArray["mUnits"];
+			$r['sensors'] = $m;
+		}			
 	}
 	
+
 	echoResponse( $r );
 });
 
@@ -1193,7 +1208,7 @@ $app->get( '/sensorreadings/:sensorid', function($sensorid) {
 //	Params:	none
 //	Returns:	PDU Stats reading for all pdus
 
-$app->get( '/pdustats', function() {
+$app->get( '/pdustats', function() use ($person) {
 	$pdustats=new PDUStats();
 	$outputAttr = array();
 	$attrList = getParsedBody();
@@ -1211,7 +1226,7 @@ $app->get( '/pdustats', function() {
 
 	$r['error']=false;
 	$r['errorcode']=200;
-	$r['pdustats']=specifyAttributes($outputAttr, $pdustats->Search(false,$loose));
+	$r['pdustats']=specifyAttributes($outputAttr, $pdustats->Search(false,$loose, $person));
 	echoResponse( $r );
 });
 
@@ -1221,7 +1236,7 @@ $app->get( '/pdustats', function() {
 //	Params:	pduid
 //	Returns:	PDU Stats reading for pduid
 
-$app->get( '/pdustats/:pduid', function($pduid) {
+$app->get( '/pdustats/:pduid', function($pduid) use ($person) {
 	$pdustats=new PDUStats();
 	$pdustats->PDUID=$pduid;
 

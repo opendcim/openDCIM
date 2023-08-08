@@ -99,6 +99,13 @@ class DataCenter {
 	}
 
 	function Search($indexedbyid=false,$loose=false){
+		global $person;
+		global $config;
+
+		if ($config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
+			$this->countryCode = $person->countryCode;
+		}
+
 		$o=new stdClass();
 		// Store any values that have been added before we make them safe 
 		foreach($this as $prop => $val){
@@ -276,8 +283,16 @@ class DataCenter {
 	}
 
 	function GetDataCenter(){
+		global $config;
+		global $person;
+
 		$this->MakeSafe();
-		$sql="SELECT * FROM fac_DataCenter WHERE DataCenterID=$this->DataCenterID;";
+		if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
+			$sql="SELECT * FROM fac_DataCenter WHERE DataCenterID=$this->DataCenterID and countryCode='$person->countryCode'";
+		} else {
+			$sql="SELECT * FROM fac_DataCenter WHERE DataCenterID=$this->DataCenterID;";
+		}
+		
 
 		if($row=$this->query($sql)->fetch()){
 			foreach(DataCenter::RowToObject($row) as $prop => $value){

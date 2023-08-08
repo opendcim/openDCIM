@@ -50,9 +50,16 @@ class PDUStats {
 	}
 	
 	function GetPDUStatsByID(){
+		global $person;
+		global $config;
+
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_PDUStats WHERE PDUID=$this->PDUID;";
+		$sql="SELECT * FROM fac_PDUStats WHERE PDUID=$this->PDUID";
+
+		if ( !$person->SiteAdmin && $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+			$sql = "SELECT a.* FROM fac_PDUStats a, fac_Device b, fac_Cabinet c, fac_DataCenter d WHERE PDUID=$this->PDUID and a.PDUID=b.DeviceID and b.Cabinet=c.CabinetID and c.DataCenterID=d.DataCenterID and d.countryCode='".$person->countryCode."'";
+		}
 
 		if($row=$this->query($sql)->fetch()){
 			foreach(PDUStats::RowToObject($row) as $prop => $value){
@@ -98,7 +105,10 @@ class PDUStats {
 		return true;
 	}
 
-	function Search( $indexedbyid=false,$loose=false ){
+	function Search( $indexedbyid=false,$loose=false ) {
+		global $config;
+		global $person;
+
 		$this->MakeSafe();
 
 		$sqlextend="";
@@ -108,7 +118,11 @@ class PDUStats {
 			}
 		}
 
-		$sql="SELECT * FROM fac_PDUStats $sqlextend;";
+		if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
+			$sql = "SELECT * FROM fac_PDUStats where PDUID in (select a.PDUID from fac_PDUStats a, fac_Device b, fac_Cabinet c, fac_DataCenter d WHERE a.PDUID=b.DeviceID and b.Cabinet=c.CabinetID and c.DataCenterID=d.DataCenterID and d.countryCode='".$person->countryCode."') $sqlextend";
+		} else {
+			$sql="SELECT * FROM fac_PDUStats $sqlextend;";
+		}
 
 		$pdustatsList=array();
 		foreach($this->query($sql) as $pdustatsRow){

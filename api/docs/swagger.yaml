@@ -9,7 +9,7 @@ info:
     Many routes that may seem to be missing are intentional, but we also acknowledge that we are filling
     out the routes as the need for them arise.  Prime example - there is no POST (edit) route for AuditLog,
     because of the very nature of what it is capturing."
-  version: "20.01"
+  version: "23.03"
   contact:
     url: "https://opendcim.org"
   license:
