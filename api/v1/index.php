@@ -5,7 +5,7 @@
 	// Not really a loginPage, but this variable will keep us from getting redirected when
 	// using LDAP auth and there's no session (so true RESTful API capability)
 	//
-	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == 'Saml' ) {
+	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == 'Saml' || AUTHENTICATION == "OIDC" ) {
 		$loginPage = true;
 	}
 
@@ -150,17 +150,18 @@ $app->hook( 'slim.before.dispatch', function() use($person) {
 			$person->GetPersonByUserID();
 		} elseif ( isset( $headers['userid']) && isset( $headers['apikey'])) {
 			// Load up the $person variable
-			$person->UserID = $headers['user_id'];
+			$person->UserID = $headers['userid'];
 			$person->GetPersonByUserID();
 
 			// Now verify that their key matches
-			if ( $person->APIKey == $headers['api_key'] ) {
+			if ( $person->APIKey == $headers['apikey'] ) {
 				$valid = true;
 			}
 		}
 
 		if ( ! $valid ) {
-				// API Key is missing in the header
+			error_log( "API access attempted without valid credentials." );
+			// API Key is missing in the header
 			$response['error'] = true;
 			$response['message'] = _("Access Denied");
 			$response['errorcode'] = 401;
