@@ -305,6 +305,9 @@ class LogActions {
 	}
 
 	static function GetLog($object=null,$limitbyclass=true){
+		global $config;
+		global $person;
+
 		$log=new LogActions();
 
 		if(!is_null($object)){
@@ -334,6 +337,14 @@ class LogActions {
 		$sql.=$add.' ORDER BY Time ASC;';
 		$events=array();		
 		foreach($log->query($sql) as $dbRow){
+			if ( $config->ParameterArray["GDPRPIIPrivacy"] == "enabled" && !$person->SiteAdmin ) {
+				$p = new People();
+				$p->UserID=$dbRow["UserID"];
+				$p->GetPersonByUserID();
+				if ( $p->countryCode != $person->countryCode ) {
+					$dbRow["UserID"] = "PIIProtected";				
+				}
+			}
 			$events[]=LogActions::RowToObject($dbRow);
 		}
 

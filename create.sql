@@ -942,6 +942,7 @@ INSERT INTO fac_Config VALUES
   ('SensorAlertsEmail', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
   ('AssignCabinetLabels','Location','Name','string','Location'),
   ('GDPRCountryIsolation', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
+  ('GDPRPIIPrivacy', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
   ('DefaultCountry', 'US', 'Country', 'string', 'US')
 ;
 

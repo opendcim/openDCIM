@@ -2130,6 +2130,14 @@ echo '<div class="main">
 					</div>
 				</div>
 				<div>
+					<div><label for="GDPRPIIPrivacy">',__("GPDR PII Privacy"),'</label></div>
+					<div><select id="GDPRPIIPrivacy" name="GDPRPIIPrivacy" defaultvalue="',$config->defaults["GDPRPIIPrivacy"],'" data="',$config->ParameterArray["GDPRPIIPrivacy"],'">
+							<option value="disabled">',__("Disabled"),'</option>
+							<option value="enabled">',__("Enabled"),'</option>
+						</select>
+					</div>					
+				</div>
+				<div>
 					<div><label for "DefaultCountry">',__("Default Country for Users"),'</label></div>
 					<div><select id="DefaultCountry" name="DefaultCountry" defaultValue="',$config->defaults["DefaultCountry"],'" data="',$config->ParameterArray["DefaultCountry"],'">';
 					foreach ( $countryList as $country ) {

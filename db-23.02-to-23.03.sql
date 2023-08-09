@@ -3,6 +3,7 @@
 ---
 
 INSERT into fac_Config set Parameter='GDPRCountryIsolation', Value='disabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='disabled';
+INSERT into fac_Config set Parameter='GDPRPIIPrivacy', Value='disabled', UnitOfMeasure='Enabled/Disabled', ValType='string', DefaultVal='disabled';
 INSERT into fac_Config set Parameter='DefaultCountry', Value='US', UnitOfMeasure='Country', ValType='string', DefaultVal='US';
 
 CREATE TABLE fac_Country (

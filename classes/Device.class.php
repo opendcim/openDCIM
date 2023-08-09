@@ -288,15 +288,19 @@ class Device {
 		}elseif($cab->GetCabinet()){
 			$this->Rights=($cab->Rights=="Write")?"Write":$this->Rights; // write because the cabinet is assigned
 		}
-		if ( !$person->SiteAdmin && $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+		if ( !$person->SiteAdmin && ($config->ParameterArray["GDPRCountryIsolation"] == "enabled" || $config->ParameterArray["GDPRPIIPrivacy"] == "enabled" )) {
 			$cab->GetCabinet();
 			$dc = new DataCenter();
 			$dc->DataCenterID=$cab->DataCenterID;
 			$dc->GetDataCenterbyID();
-			if ( $dc->countryCode != $person->countryCode ) {
+			if ( $dc->countryCode != $person->countryCode && $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
 				$this->Rights = 'None';
+			} else {
+				// PII Privacy only requires that we anonymize any user information, but they can still see the asset
+				$this->PrimaryContact = 0;
 			}
 		}
+
 		if($person->SiteAdmin && $this->DeviceType=='Patch Panel'){$this->Rights="Write";} // admin override of rights for patch panels
 
 		// Remove information that this user isn't allowed to see

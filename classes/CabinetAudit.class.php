@@ -46,12 +46,25 @@ class CabinetAudit {
 
 	function GetLastAudit( $db = null ) {
 		global $dbh;
+		global $config;
+		global $person;
 		
 		$sql = "select * from fac_GenericLog where ObjectID=\"" . intval( $this->CabinetID ) . "\" and Class=\"CabinetAudit\" order by Time DESC Limit 1";
 
 		if($row=$dbh->query($sql)->fetch()){
 			$this->CabinetID=$row["ObjectID"];
-			$this->UserID=$row["UserID"];
+			if ( !$person->SiteAdmin && ($config->ParameterArray["GDPRCountryIsolation"] == "enabled" || $config->ParameterArray["GDPRPIIPrivacy"] == "enabled" )) {
+				$p = new People();
+				$p->UserID = $row["UserID"];
+				$p->GetPersonByUserID();
+				if ( $p->countryCode != $person->countryCode ) {
+					$this->UserID="PIIProtected";
+				} else {
+					$this->UserID=$row["UserID"];
+				}
+			} else {
+				$this->UserID=$row["UserID"];
+			}
 			$this->AuditStamp=date("M d, Y H:i", strtotime($row["Time"]));
 
 			return true;
@@ -63,12 +76,25 @@ class CabinetAudit {
 	
 	function GetLastAuditByUser() {
 		global $dbh;
+		global $config;
+		global $person;
 				
 		$sql = "select * from fac_GenericLog where UserID=\"" . addslashes( $this->UserID ) . "\" and Class=\"CabinetAudit\" order by Time DESC Limit 1";
 
 		if ( $row = $dbh->query( $sql )->fetch() ) {
 			$this->CabinetID = $row["ObjectID"];
-			$this->UserID = $row["UserID"];
+			if ( !$person->SiteAdmin && ($config->ParameterArray["GDPRCountryIsolation"] == "enabled" || $config->ParameterArray["GDPRPIIPrivacy"] == "enabled" )) {
+				$p = new People();
+				$p->UserID = $row["UserID"];
+				$p->GetPersonByUserID();
+				if ( $p->countryCode != $person->countryCode ) {
+					$this->UserID="PIIProtected";
+				} else {
+					$this->UserID=$row["UserID"];
+				}
+			} else {
+				$this->UserID=$row["UserID"];
+			}
 			$this->AuditStamp = date( "M d, Y H:i", strtotime( $row["Time"] ) );
 		} else {
 			$info = $dbh->errorInfo();
