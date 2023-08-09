@@ -465,7 +465,7 @@ $app->post( '/devicetemplate/{templateid}/dataport/{portnumber}', function( Requ
 //	Returns: true/false on update operation
 //
 
-$app->post( '/devicetemplate/{templateid}/slot/{slotnum}', function( Request $request, Response $response, $args ) use ($person) {.
+$app->post( '/devicetemplate/{templateid}/slot/{slotnum}', function( Request $request, Response $response, $args ) use ($person) {
 	$templateid = intval($args["templateid"]);
 	$slotnum = intval($args["slotnum"]);
 
