@@ -11,10 +11,6 @@
 
 	require_once( "../../facilities.inc.php" );
 
-/*	Slim Framework v3 Specific Code
-
-	We had to roll back due to PHP version requirements.
-
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Message\ResponseInterface as Response;
 
@@ -27,9 +23,6 @@
 	$c = new \Slim\Container($configuration);
 	
 	$app = new \Slim\App($c);
-*/
-
-	$app = new \Slim\Slim();
 
 	// Import any local extensions to the API, which obviously will not be supported
 	foreach( glob("../local/*.php") as $filename) {
@@ -90,11 +83,11 @@ function echoResponse( $response ) {
 
 // Since Middleware is applied in reverse order that it is added, make sure the Authentication function below is always the last one
 
-/* Framework v3 Version of the Authentication Middleware
+// Framework v3 Version of the Authentication Middleware
 $app->add(function($request, $response, $next) use($person) {
-	if ( AUTHENTICATION == "LDAP" ) {
+	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" || AUTHENTICATION == "Saml" || AUTHENTICATION == "OIDC" ) {
 	    // Getting request headers
-	    $headers = $request->getServerParams();
+	    $headers = $request->getHeaders();
 
 	    $valid = false;
 	 
@@ -107,10 +100,10 @@ $app->add(function($request, $response, $next) use($person) {
 	 	} elseif ( isset($headers['HTTP_USERID']) && isset($headers['HTTP_APIKEY'])) {
 	    	// Load up the $person variable - so at this point, everything else functions
 	    	// the same way as with Apache authorization - using the $person class
-	    	$person->UserID = $headers['HTTP_USERID'];
+	    	$person->UserID = $headers['HTTP_USERID'][0];
 	    	$person->GetPersonByUserID();
 
-	    	if ( $person->APIKey == $headers['HTTP_APIKEY'] ) {
+	    	if ( $person->APIKey == $headers['HTTP_APIKEY'][0] ) {
 	    		$valid = true;
 	    	}
 	    }
@@ -127,63 +120,6 @@ $app->add(function($request, $response, $next) use($person) {
 
 	return $response;
 });
-
-*/
-
-//	Slim Framework 2 middleware
-$app->hook( 'slim.before.dispatch', function() use($person) {
-	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" || AUTHENTICATION == "Saml" || AUTHENTICATION == "OIDC" ) {
-		// Getting request headers
-		$tmpHeaders = apache_request_headers();
-		// Force headers to all lowercase because we've seen inconsistencies between environments
-		// It also removes the edge cases where people aren't sending in the 'correct' case per documentation
-		$headers = array_change_key_case( $tmpHeaders, CASE_LOWER );
-		$response = array();
-		$app = \Slim\Slim::getInstance();
-
-		$valid = false;
-
-		if ( isset( $_SESSION['userid'] )) {
-			$valid = true;
-
-			$person->UserID = $_SESSION['userid'];
-			$person->GetPersonByUserID();
-		} elseif ( isset( $headers['userid']) && isset( $headers['apikey'])) {
-			// Load up the $person variable
-			$person->UserID = $headers['userid'];
-			$person->GetPersonByUserID();
-
-			// Now verify that their key matches
-			if ( $person->APIKey == $headers['apikey'] ) {
-				$valid = true;
-			}
-		}
-
-		if ( ! $valid ) {
-			error_log( "API access attempted without valid credentials." );
-			// API Key is missing in the header
-			$response['error'] = true;
-			$response['message'] = _("Access Denied");
-			$response['errorcode'] = 401;
-			echoResponse($response );
-			$app->stop();
-
-		}
-	}
-
-	// Nothing to do if using Apache Authentication
-});
-
-// Another Framework v2 function to simulate some of the v3 stuff
-function getParsedBody() {
-	$app = \Slim\Slim::getInstance();
-
-	if ( ! $vars = json_decode( $app->request->getBody(), true )) {
-		$vars = $app->request->params();		
-	}
-
-	return $vars;
-}
 
 include_once 'getRoutes.php';
 include_once 'postRoutes.php';

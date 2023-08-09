@@ -1,520 +1,537 @@
 <?php
 /**
- * Slim - a micro PHP 5 framework
+ * Slim Framework (https://slimframework.com)
  *
- * @author      Josh Lockhart <info@slimframework.com>
- * @copyright   2011-2017 Josh Lockhart
- * @link        http://www.slimframework.com
- * @license     http://www.slimframework.com/license
- * @version     2.6.3
- * @package     Slim
- *
- * MIT LICENSE
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * @license https://github.com/slimphp/Slim/blob/3.x/LICENSE.md (MIT License)
  */
+
 namespace Slim\Http;
+
+use InvalidArgumentException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
+use RuntimeException;
+use Slim\Interfaces\Http\HeadersInterface;
 
 /**
  * Response
  *
- * This is a simple abstraction over top an HTTP response. This
- * provides methods to set the HTTP status, the HTTP headers,
- * and the HTTP body.
+ * This class represents an HTTP response. It manages
+ * the response status, headers, and body
+ * according to the PSR-7 standard.
  *
- * @package Slim
- * @author  Josh Lockhart
- * @since   1.0.0
+ * @link https://github.com/php-fig/http-message/blob/master/src/MessageInterface.php
+ * @link https://github.com/php-fig/http-message/blob/master/src/ResponseInterface.php
  */
-class Response implements \ArrayAccess, \Countable, \IteratorAggregate
+class Response extends Message implements ResponseInterface
 {
     /**
-     * @var int HTTP status code
+     * Status code
+     *
+     * @var int
      */
-    protected $status;
+    protected $status = StatusCode::HTTP_OK;
 
     /**
-     * @var \Slim\Http\Headers
+     * Reason phrase
+     *
+     * @var string
      */
-    public $headers;
+    protected $reasonPhrase = '';
 
     /**
-     * @var \Slim\Http\Cookies
+     * Status codes and reason phrases
+     *
+     * @var array
      */
-    public $cookies;
-
-    /**
-     * @var string HTTP response body
-     */
-    protected $body;
-
-    /**
-     * @var int Length of HTTP response body
-     */
-    protected $length;
-
-    /**
-     * @var array HTTP response codes and messages
-     */
-    protected static $messages = array(
+    protected static $messages = [
         //Informational 1xx
-        100 => '100 Continue',
-        101 => '101 Switching Protocols',
+        StatusCode::HTTP_CONTINUE => 'Continue',
+        StatusCode::HTTP_SWITCHING_PROTOCOLS => 'Switching Protocols',
+        StatusCode::HTTP_PROCESSING => 'Processing',
         //Successful 2xx
-        200 => '200 OK',
-        201 => '201 Created',
-        202 => '202 Accepted',
-        203 => '203 Non-Authoritative Information',
-        204 => '204 No Content',
-        205 => '205 Reset Content',
-        206 => '206 Partial Content',
-        226 => '226 IM Used',
+        StatusCode::HTTP_OK => 'OK',
+        StatusCode::HTTP_CREATED => 'Created',
+        StatusCode::HTTP_ACCEPTED => 'Accepted',
+        StatusCode::HTTP_NONAUTHORITATIVE_INFORMATION => 'Non-Authoritative Information',
+        StatusCode::HTTP_NO_CONTENT => 'No Content',
+        StatusCode::HTTP_RESET_CONTENT => 'Reset Content',
+        StatusCode::HTTP_PARTIAL_CONTENT => 'Partial Content',
+        StatusCode::HTTP_MULTI_STATUS => 'Multi-Status',
+        StatusCode::HTTP_ALREADY_REPORTED => 'Already Reported',
+        StatusCode::HTTP_IM_USED => 'IM Used',
         //Redirection 3xx
-        300 => '300 Multiple Choices',
-        301 => '301 Moved Permanently',
-        302 => '302 Found',
-        303 => '303 See Other',
-        304 => '304 Not Modified',
-        305 => '305 Use Proxy',
-        306 => '306 (Unused)',
-        307 => '307 Temporary Redirect',
+        StatusCode::HTTP_MULTIPLE_CHOICES => 'Multiple Choices',
+        StatusCode::HTTP_MOVED_PERMANENTLY => 'Moved Permanently',
+        StatusCode::HTTP_FOUND => 'Found',
+        StatusCode::HTTP_SEE_OTHER => 'See Other',
+        StatusCode::HTTP_NOT_MODIFIED => 'Not Modified',
+        StatusCode::HTTP_USE_PROXY => 'Use Proxy',
+        StatusCode::HTTP_UNUSED => '(Unused)',
+        StatusCode::HTTP_TEMPORARY_REDIRECT => 'Temporary Redirect',
+        StatusCode::HTTP_PERMANENT_REDIRECT => 'Permanent Redirect',
         //Client Error 4xx
-        400 => '400 Bad Request',
-        401 => '401 Unauthorized',
-        402 => '402 Payment Required',
-        403 => '403 Forbidden',
-        404 => '404 Not Found',
-        405 => '405 Method Not Allowed',
-        406 => '406 Not Acceptable',
-        407 => '407 Proxy Authentication Required',
-        408 => '408 Request Timeout',
-        409 => '409 Conflict',
-        410 => '410 Gone',
-        411 => '411 Length Required',
-        412 => '412 Precondition Failed',
-        413 => '413 Request Entity Too Large',
-        414 => '414 Request-URI Too Long',
-        415 => '415 Unsupported Media Type',
-        416 => '416 Requested Range Not Satisfiable',
-        417 => '417 Expectation Failed',
-        418 => '418 I\'m a teapot',
-        422 => '422 Unprocessable Entity',
-        423 => '423 Locked',
-        426 => '426 Upgrade Required',
-        428 => '428 Precondition Required',
-        429 => '429 Too Many Requests',
-        431 => '431 Request Header Fields Too Large',
+        StatusCode::HTTP_BAD_REQUEST => 'Bad Request',
+        StatusCode::HTTP_UNAUTHORIZED => 'Unauthorized',
+        StatusCode::HTTP_PAYMENT_REQUIRED => 'Payment Required',
+        StatusCode::HTTP_FORBIDDEN => 'Forbidden',
+        StatusCode::HTTP_NOT_FOUND => 'Not Found',
+        StatusCode::HTTP_METHOD_NOT_ALLOWED => 'Method Not Allowed',
+        StatusCode::HTTP_NOT_ACCEPTABLE => 'Not Acceptable',
+        StatusCode::HTTP_PROXY_AUTHENTICATION_REQUIRED => 'Proxy Authentication Required',
+        StatusCode::HTTP_REQUEST_TIMEOUT => 'Request Timeout',
+        StatusCode::HTTP_CONFLICT => 'Conflict',
+        StatusCode::HTTP_GONE => 'Gone',
+        StatusCode::HTTP_LENGTH_REQUIRED => 'Length Required',
+        StatusCode::HTTP_PRECONDITION_FAILED => 'Precondition Failed',
+        StatusCode::HTTP_REQUEST_ENTITY_TOO_LARGE => 'Request Entity Too Large',
+        StatusCode::HTTP_REQUEST_URI_TOO_LONG => 'Request-URI Too Long',
+        StatusCode::HTTP_UNSUPPORTED_MEDIA_TYPE => 'Unsupported Media Type',
+        StatusCode::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE => 'Requested Range Not Satisfiable',
+        StatusCode::HTTP_EXPECTATION_FAILED => 'Expectation Failed',
+        StatusCode::HTTP_IM_A_TEAPOT => 'I\'m a teapot',
+        StatusCode::HTTP_MISDIRECTED_REQUEST => 'Misdirected Request',
+        StatusCode::HTTP_UNPROCESSABLE_ENTITY => 'Unprocessable Entity',
+        StatusCode::HTTP_LOCKED => 'Locked',
+        StatusCode::HTTP_FAILED_DEPENDENCY => 'Failed Dependency',
+        StatusCode::HTTP_UPGRADE_REQUIRED => 'Upgrade Required',
+        StatusCode::HTTP_PRECONDITION_REQUIRED => 'Precondition Required',
+        StatusCode::HTTP_TOO_MANY_REQUESTS => 'Too Many Requests',
+        StatusCode::HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE => 'Request Header Fields Too Large',
+        StatusCode::HTTP_CONNECTION_CLOSED_WITHOUT_RESPONSE => 'Connection Closed Without Response',
+        StatusCode::HTTP_UNAVAILABLE_FOR_LEGAL_REASONS => 'Unavailable For Legal Reasons',
+        StatusCode::HTTP_CLIENT_CLOSED_REQUEST => 'Client Closed Request',
         //Server Error 5xx
-        500 => '500 Internal Server Error',
-        501 => '501 Not Implemented',
-        502 => '502 Bad Gateway',
-        503 => '503 Service Unavailable',
-        504 => '504 Gateway Timeout',
-        505 => '505 HTTP Version Not Supported',
-        506 => '506 Variant Also Negotiates',
-        510 => '510 Not Extended',
-        511 => '511 Network Authentication Required'
-    );
+        StatusCode::HTTP_INTERNAL_SERVER_ERROR => 'Internal Server Error',
+        StatusCode::HTTP_NOT_IMPLEMENTED => 'Not Implemented',
+        StatusCode::HTTP_BAD_GATEWAY => 'Bad Gateway',
+        StatusCode::HTTP_SERVICE_UNAVAILABLE => 'Service Unavailable',
+        StatusCode::HTTP_GATEWAY_TIMEOUT => 'Gateway Timeout',
+        StatusCode::HTTP_VERSION_NOT_SUPPORTED => 'HTTP Version Not Supported',
+        StatusCode::HTTP_VARIANT_ALSO_NEGOTIATES => 'Variant Also Negotiates',
+        StatusCode::HTTP_INSUFFICIENT_STORAGE => 'Insufficient Storage',
+        StatusCode::HTTP_LOOP_DETECTED => 'Loop Detected',
+        StatusCode::HTTP_NOT_EXTENDED => 'Not Extended',
+        StatusCode::HTTP_NETWORK_AUTHENTICATION_REQUIRED => 'Network Authentication Required',
+        StatusCode::HTTP_NETWORK_CONNECTION_TIMEOUT_ERROR => 'Network Connect Timeout Error',
+    ];
 
     /**
-     * Constructor
-     * @param string                   $body   The HTTP response body
-     * @param int                      $status The HTTP response status
-     * @param \Slim\Http\Headers|array $headers The HTTP response headers
+     * EOL characters used for HTTP response.
+     *
+     * @var string
      */
-    public function __construct($body = '', $status = 200, $headers = array())
-    {
-        $this->setStatus($status);
-        $this->headers = new \Slim\Http\Headers(array('Content-Type' => 'text/html'));
-        $this->headers->replace($headers);
-        $this->cookies = new \Slim\Http\Cookies();
-        $this->write($body);
+    const EOL = "\r\n";
+
+    /**
+     * @param int                   $status  The response status code.
+     * @param HeadersInterface|null $headers The response headers.
+     * @param StreamInterface|null  $body    The response body.
+     */
+    public function __construct(
+        $status = StatusCode::HTTP_OK,
+        HeadersInterface $headers = null,
+        StreamInterface $body = null
+    ) {
+        $this->status = $this->filterStatus($status);
+        $this->headers = $headers ? $headers : new Headers();
+        $this->body = $body ? $body : new Body(fopen('php://temp', 'r+'));
     }
 
-    public function getStatus()
+    /**
+     * This method is applied to the cloned object
+     * after PHP performs an initial shallow-copy. This
+     * method completes a deep-copy by creating new objects
+     * for the cloned object's internal reference pointers.
+     */
+    public function __clone()
+    {
+        $this->headers = clone $this->headers;
+    }
+
+    /**
+     * Gets the response status code.
+     *
+     * The status code is a 3-digit integer result code of the server's attempt
+     * to understand and satisfy the request.
+     *
+     * @return int
+     */
+    public function getStatusCode()
     {
         return $this->status;
     }
 
-    public function setStatus($status)
+    /**
+     * Return an instance with the specified status code and, optionally, reason phrase.
+     *
+     * If no reason phrase is specified, implementations MAY choose to default
+     * to the RFC 7231 or IANA recommended reason phrase for the response's
+     * status code.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that has the
+     * updated status and reason phrase.
+     *
+     * @link http://tools.ietf.org/html/rfc7231#section-6
+     * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     *
+     * @param int $code The 3-digit integer result code to set.
+     * @param string $reasonPhrase The reason phrase to use with the
+     *     provided status code; if none is provided, implementations MAY
+     *     use the defaults as suggested in the HTTP specification.
+     *
+     * @return static
+     *
+     * @throws InvalidArgumentException For invalid status code arguments.
+     */
+    public function withStatus($code, $reasonPhrase = '')
     {
-        $this->status = (int)$status;
+        $code = $this->filterStatus($code);
+
+        if (!is_string($reasonPhrase) && !method_exists($reasonPhrase, '__toString')) {
+            throw new InvalidArgumentException('ReasonPhrase must be a string');
+        }
+
+        $clone = clone $this;
+        $clone->status = $code;
+        if ($reasonPhrase === '' && isset(static::$messages[$code])) {
+            $reasonPhrase = static::$messages[$code];
+        }
+
+        if ($reasonPhrase === '') {
+            throw new InvalidArgumentException('ReasonPhrase must be supplied for this code');
+        }
+
+        $clone->reasonPhrase = $reasonPhrase;
+
+        return $clone;
     }
 
     /**
-     * DEPRECATION WARNING! Use `getStatus` or `setStatus` instead.
+     * Filter HTTP status code.
      *
-     * Get and set status
-     * @param  int|null $status
+     * @param  int $status HTTP status code.
+     *
      * @return int
+     *
+     * @throws InvalidArgumentException If an invalid HTTP status code is provided.
      */
-    public function status($status = null)
+    protected function filterStatus($status)
     {
+        if (!is_integer($status) ||
+            $status<StatusCode::HTTP_CONTINUE ||
+            $status>StatusCode::HTTP_NETWORK_CONNECTION_TIMEOUT_ERROR
+        ) {
+            throw new InvalidArgumentException('Invalid HTTP status code');
+        }
+
+        return $status;
+    }
+
+    /**
+     * Gets the response reason phrase associated with the status code.
+     *
+     * Because a reason phrase is not a required element in a response
+     * status line, the reason phrase value MAY be null. Implementations MAY
+     * choose to return the default RFC 7231 recommended reason phrase (or those
+     * listed in the IANA HTTP Status Code Registry) for the response's
+     * status code.
+     *
+     * @link http://tools.ietf.org/html/rfc7231#section-6
+     * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     *
+     * @return string Reason phrase; must return an empty string if none present.
+     */
+    public function getReasonPhrase()
+    {
+        if ($this->reasonPhrase) {
+            return $this->reasonPhrase;
+        }
+        if (isset(static::$messages[$this->status])) {
+            return static::$messages[$this->status];
+        }
+        return '';
+    }
+
+    /**
+     * Return an instance with the provided value replacing the specified header.
+     *
+     * If a Location header is set and the status code is 200, then set the status
+     * code to 302 to mimic what PHP does. See https://github.com/slimphp/Slim/issues/1730
+     *
+     * @param string $name Case-insensitive header field name.
+     * @param string|string[] $value Header value(s).
+     *
+     * @return static
+     *
+     * @throws InvalidArgumentException For invalid header names or values.
+     */
+    public function withHeader($name, $value)
+    {
+        $clone = clone $this;
+        $clone->headers->set($name, $value);
+
+        if ($this->body instanceof NonBufferedBody) {
+            header(sprintf('%s: %s', $name, $clone->getHeaderLine($name)));
+        }
+
+        if ($clone->getStatusCode() === StatusCode::HTTP_OK && strtolower($name) === 'location') {
+            $clone = $clone->withStatus(StatusCode::HTTP_FOUND);
+        }
+
+        return $clone;
+    }
+
+    /**
+     * Write data to the response body.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * Proxies to the underlying stream and writes the provided data to it.
+     *
+     * @param string $data
+     *
+     * @return static
+     */
+    public function write($data)
+    {
+        $this->getBody()->write($data);
+
+        return $this;
+    }
+
+    /**
+     * Redirect.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * This method prepares the response object to return an HTTP Redirect
+     * response to the client.
+     *
+     * @param  string|UriInterface $url    The redirect destination.
+     * @param  int|null            $status The redirect HTTP status code.
+     *
+     * @return static
+     */
+    public function withRedirect($url, $status = null)
+    {
+        $responseWithRedirect = $this->withHeader('Location', (string)$url);
+
+        if (is_null($status) && $this->getStatusCode() === StatusCode::HTTP_OK) {
+            $status = StatusCode::HTTP_FOUND;
+        }
+
         if (!is_null($status)) {
-            $this->status = (int) $status;
+            return $responseWithRedirect->withStatus($status);
         }
 
-        return $this->status;
+        return $responseWithRedirect;
     }
 
     /**
-     * DEPRECATION WARNING! Access `headers` property directly.
+     * Json.
      *
-     * Get and set header
-     * @param  string      $name  Header name
-     * @param  string|null $value Header value
-     * @return string      Header value
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * This method prepares the response object to return an HTTP Json
+     * response to the client.
+     *
+     * @param  mixed $data   The data
+     * @param  int   $status The HTTP status code.
+     * @param  int   $encodingOptions Json encoding options
+     *
+     * @return static
+     *
+     * @throws RuntimeException
      */
-    public function header($name, $value = null)
+    public function withJson($data, $status = null, $encodingOptions = 0)
     {
-        if (!is_null($value)) {
-            $this->headers->set($name, $value);
+        $response = $this->withBody(new Body(fopen('php://temp', 'r+')));
+        $response->body->write($json = json_encode($data, $encodingOptions));
+
+        // Ensure that the json encoding passed successfully
+        if ($json === false) {
+            throw new RuntimeException(json_last_error_msg(), json_last_error());
         }
 
-        return $this->headers->get($name);
-    }
-
-    /**
-     * DEPRECATION WARNING! Access `headers` property directly.
-     *
-     * Get headers
-     * @return \Slim\Http\Headers
-     */
-    public function headers()
-    {
-        return $this->headers;
-    }
-
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-    public function setBody($content)
-    {
-        $this->write($content, true);
-    }
-
-    /**
-     * DEPRECATION WARNING! use `getBody` or `setBody` instead.
-     *
-     * Get and set body
-     * @param  string|null $body Content of HTTP response body
-     * @return string
-     */
-    public function body($body = null)
-    {
-        if (!is_null($body)) {
-            $this->write($body, true);
+        $responseWithJson = $response->withHeader('Content-Type', 'application/json');
+        if (isset($status)) {
+            return $responseWithJson->withStatus($status);
         }
-
-        return $this->body;
+        return $responseWithJson;
     }
 
     /**
-     * Append HTTP response body
-     * @param  string   $body       Content to append to the current HTTP response body
-     * @param  bool     $replace    Overwrite existing response body?
-     * @return string               The updated HTTP response body
-     */
-    public function write($body, $replace = false)
-    {
-        if ($replace) {
-            $this->body = $body;
-        } else {
-            $this->body .= (string)$body;
-        }
-        $this->length = strlen($this->body);
-
-        return $this->body;
-    }
-
-    public function getLength()
-    {
-        return $this->length;
-    }
-
-    /**
-     * DEPRECATION WARNING! Use `getLength` or `write` or `body` instead.
+     * Is this response empty?
      *
-     * Get and set length
-     * @param  int|null $length
-     * @return int
-     */
-    public function length($length = null)
-    {
-        if (!is_null($length)) {
-            $this->length = (int) $length;
-        }
-
-        return $this->length;
-    }
-
-    /**
-     * Finalize
+     * Note: This method is not part of the PSR-7 standard.
      *
-     * This prepares this response and returns an array
-     * of [status, headers, body]. This array is passed to outer middleware
-     * if available or directly to the Slim run method.
-     *
-     * @return array[int status, array headers, string body]
-     */
-    public function finalize()
-    {
-        // Prepare response
-        if (in_array($this->status, array(204, 304))) {
-            $this->headers->remove('Content-Type');
-            $this->headers->remove('Content-Length');
-            $this->setBody('');
-        }
-
-        return array($this->status, $this->headers, $this->body);
-    }
-
-    /**
-     * DEPRECATION WARNING! Access `cookies` property directly.
-     *
-     * Set cookie
-     *
-     * Instead of using PHP's `setcookie()` function, Slim manually constructs the HTTP `Set-Cookie`
-     * header on its own and delegates this responsibility to the `Slim_Http_Util` class. This
-     * response's header is passed by reference to the utility class and is directly modified. By not
-     * relying on PHP's native implementation, Slim allows middleware the opportunity to massage or
-     * analyze the raw header before the response is ultimately delivered to the HTTP client.
-     *
-     * @param string        $name    The name of the cookie
-     * @param string|array  $value   If string, the value of cookie; if array, properties for
-     *                               cookie including: value, expire, path, domain, secure, httponly
-     */
-    public function setCookie($name, $value)
-    {
-        // Util::setCookieHeader($this->header, $name, $value);
-        $this->cookies->set($name, $value);
-    }
-
-    /**
-     * DEPRECATION WARNING! Access `cookies` property directly.
-     *
-     * Delete cookie
-     *
-     * Instead of using PHP's `setcookie()` function, Slim manually constructs the HTTP `Set-Cookie`
-     * header on its own and delegates this responsibility to the `Slim_Http_Util` class. This
-     * response's header is passed by reference to the utility class and is directly modified. By not
-     * relying on PHP's native implementation, Slim allows middleware the opportunity to massage or
-     * analyze the raw header before the response is ultimately delivered to the HTTP client.
-     *
-     * This method will set a cookie with the given name that has an expiration time in the past; this will
-     * prompt the HTTP client to invalidate and remove the client-side cookie. Optionally, you may
-     * also pass a key/value array as the second argument. If the "domain" key is present in this
-     * array, only the Cookie with the given name AND domain will be removed. The invalidating cookie
-     * sent with this response will adopt all properties of the second argument.
-     *
-     * @param string $name     The name of the cookie
-     * @param array  $settings Properties for cookie including: value, expire, path, domain, secure, httponly
-     */
-    public function deleteCookie($name, $settings = array())
-    {
-        $this->cookies->remove($name, $settings);
-        // Util::deleteCookieHeader($this->header, $name, $value);
-    }
-
-    /**
-     * Redirect
-     *
-     * This method prepares this response to return an HTTP Redirect response
-     * to the HTTP client.
-     *
-     * @param string $url    The redirect destination
-     * @param int    $status The redirect HTTP status code
-     */
-    public function redirect ($url, $status = 302)
-    {
-        $this->setStatus($status);
-        $this->headers->set('Location', $url);
-    }
-
-    /**
-     * Helpers: Empty?
      * @return bool
      */
     public function isEmpty()
     {
-        return in_array($this->status, array(201, 204, 304));
+        return in_array(
+            $this->getStatusCode(),
+            [StatusCode::HTTP_NO_CONTENT, StatusCode::HTTP_RESET_CONTENT, StatusCode::HTTP_NOT_MODIFIED]
+        );
     }
 
     /**
-     * Helpers: Informational?
+     * Is this response informational?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isInformational()
     {
-        return $this->status >= 100 && $this->status < 200;
+        return $this->getStatusCode() >= StatusCode::HTTP_CONTINUE && $this->getStatusCode() < StatusCode::HTTP_OK;
     }
 
     /**
-     * Helpers: OK?
+     * Is this response OK?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isOk()
     {
-        return $this->status === 200;
+        return $this->getStatusCode() === StatusCode::HTTP_OK;
     }
 
     /**
-     * Helpers: Successful?
+     * Is this response successful?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isSuccessful()
     {
-        return $this->status >= 200 && $this->status < 300;
+        return $this->getStatusCode() >= StatusCode::HTTP_OK &&
+            $this->getStatusCode() < StatusCode::HTTP_MULTIPLE_CHOICES;
     }
 
     /**
-     * Helpers: Redirect?
+     * Is this response a redirect?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isRedirect()
     {
-        return in_array($this->status, array(301, 302, 303, 307));
+        return in_array(
+            $this->getStatusCode(),
+            [
+                StatusCode::HTTP_MOVED_PERMANENTLY,
+                StatusCode::HTTP_FOUND,
+                StatusCode::HTTP_SEE_OTHER,
+                StatusCode::HTTP_TEMPORARY_REDIRECT,
+                StatusCode::HTTP_PERMANENT_REDIRECT
+            ]
+        );
     }
 
     /**
-     * Helpers: Redirection?
+     * Is this response a redirection?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isRedirection()
     {
-        return $this->status >= 300 && $this->status < 400;
+        return $this->getStatusCode() >= StatusCode::HTTP_MULTIPLE_CHOICES &&
+            $this->getStatusCode() < StatusCode::HTTP_BAD_REQUEST;
     }
 
     /**
-     * Helpers: Forbidden?
+     * Is this response forbidden?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isForbidden()
     {
-        return $this->status === 403;
+        return $this->getStatusCode() === StatusCode::HTTP_FORBIDDEN;
     }
 
     /**
-     * Helpers: Not Found?
+     * Is this response not Found?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isNotFound()
     {
-        return $this->status === 404;
+        return $this->getStatusCode() === StatusCode::HTTP_NOT_FOUND;
     }
 
     /**
-     * Helpers: Client error?
+     * Is this a bad request?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool
+     */
+    public function isBadRequest()
+    {
+        return $this->getStatusCode() === StatusCode::HTTP_BAD_REQUEST;
+    }
+
+    /**
+     * Is this response a client error?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isClientError()
     {
-        return $this->status >= 400 && $this->status < 500;
+        return $this->getStatusCode() >= StatusCode::HTTP_BAD_REQUEST &&
+            $this->getStatusCode() < StatusCode::HTTP_INTERNAL_SERVER_ERROR;
     }
 
     /**
-     * Helpers: Server Error?
+     * Is this response a server error?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isServerError()
     {
-        return $this->status >= 500 && $this->status < 600;
+        return $this->getStatusCode() >= StatusCode::HTTP_INTERNAL_SERVER_ERROR && $this->getStatusCode() < 600;
     }
 
     /**
-     * DEPRECATION WARNING! ArrayAccess interface will be removed from \Slim\Http\Response.
-     * Iterate `headers` or `cookies` properties directly.
-     */
-
-    /**
-     * Array Access: Offset Exists
-     */
-    public function offsetExists($offset)
-    {
-        return isset($this->headers[$offset]);
-    }
-
-    /**
-     * Array Access: Offset Get
-     */
-    public function offsetGet($offset)
-    {
-        return $this->headers[$offset];
-    }
-
-    /**
-     * Array Access: Offset Set
-     */
-    public function offsetSet($offset, $value)
-    {
-        $this->headers[$offset] = $value;
-    }
-
-    /**
-     * Array Access: Offset Unset
-     */
-    public function offsetUnset($offset)
-    {
-        unset($this->headers[$offset]);
-    }
-
-    /**
-     * DEPRECATION WARNING! Countable interface will be removed from \Slim\Http\Response.
-     * Call `count` on `headers` or `cookies` properties directly.
+     * Convert response to string.
      *
-     * Countable: Count
-     */
-    public function count()
-    {
-        return count($this->headers);
-    }
-
-    /**
-     * DEPRECATION WARNING! IteratorAggregate interface will be removed from \Slim\Http\Response.
-     * Iterate `headers` or `cookies` properties directly.
+     * Note: This method is not part of the PSR-7 standard.
      *
-     * Get Iterator
-     *
-     * This returns the contained `\Slim\Http\Headers` instance which
-     * is itself iterable.
-     *
-     * @return \Slim\Http\Headers
+     * @return string
      */
-    public function getIterator()
+    public function __toString()
     {
-        return $this->headers->getIterator();
-    }
-
-    /**
-     * Get message for HTTP status code
-     * @param  int         $status
-     * @return string|null
-     */
-    public static function getMessageForCode($status)
-    {
-        if (isset(self::$messages[$status])) {
-            return self::$messages[$status];
-        } else {
-            return null;
+        $output = sprintf(
+            'HTTP/%s %s %s',
+            $this->getProtocolVersion(),
+            $this->getStatusCode(),
+            $this->getReasonPhrase()
+        );
+        $output .= Response::EOL;
+        foreach ($this->getHeaders() as $name => $values) {
+            $output .= sprintf('%s: %s', $name, $this->getHeaderLine($name)) . Response::EOL;
         }
+        $output .= Response::EOL;
+        $output .= (string)$this->getBody();
+
+        return $output;
     }
 }

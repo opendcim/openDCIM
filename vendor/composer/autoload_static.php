@@ -7,9 +7,13 @@ namespace Composer\Autoload;
 class ComposerStaticInitae0c1a8752912043eea48eea67adca57
 {
     public static $files = array (
+        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
+        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
+        '253c157292f75eb38082b5acb06f3f01' => __DIR__ . '/..' . '/nikic/fast-route/src/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -25,6 +29,10 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         array (
             'ZipStream\\' => 10,
         ),
+        'S' => 
+        array (
+            'Slim\\' => 5,
+        ),
         'R' => 
         array (
             'RobRichards\\XMLSecLibs\\' => 23,
@@ -35,6 +43,7 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
+            'Psr\\Container\\' => 14,
             'ProxmoxVE\\' => 10,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
             'ParagonIE\\ConstantTime\\' => 23,
@@ -46,13 +55,19 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         ),
         'M' => 
         array (
-            'MyCLabs\\Enum\\' => 13,
+            'Mpdf\\PsrLogAwareTrait\\' => 22,
             'Mpdf\\' => 5,
             'Matrix\\' => 7,
         ),
-        'H' => 
+        'G' => 
         array (
-            'Http\\Message\\' => 13,
+            'GuzzleHttp\\Psr7\\' => 16,
+            'GuzzleHttp\\Promise\\' => 19,
+            'GuzzleHttp\\' => 11,
+        ),
+        'F' => 
+        array (
+            'FastRoute\\' => 10,
         ),
         'D' => 
         array (
@@ -77,6 +92,10 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         array (
             0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
         ),
+        'Slim\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/slim/slim/Slim',
+        ),
         'RobRichards\\XMLSecLibs\\' => 
         array (
             0 => __DIR__ . '/..' . '/robrichards/xmlseclibs/src',
@@ -98,6 +117,10 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
+        'Psr\\Container\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
         'ProxmoxVE\\' => 
         array (
             0 => __DIR__ . '/..' . '/zzantares/proxmoxve/src',
@@ -118,9 +141,9 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         array (
             0 => __DIR__ . '/..' . '/onelogin/php-saml/src',
         ),
-        'MyCLabs\\Enum\\' => 
+        'Mpdf\\PsrLogAwareTrait\\' => 
         array (
-            0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
+            0 => __DIR__ . '/..' . '/mpdf/psr-log-aware-trait/src',
         ),
         'Mpdf\\' => 
         array (
@@ -130,9 +153,21 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         array (
             0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
         ),
-        'Http\\Message\\' => 
+        'GuzzleHttp\\Psr7\\' => 
         array (
-            0 => __DIR__ . '/..' . '/php-http/message-factory/src',
+            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
+        ),
+        'GuzzleHttp\\Promise\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
+        ),
+        'GuzzleHttp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'FastRoute\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nikic/fast-route/src',
         ),
         'DeepCopy\\' => 
         array (
@@ -145,11 +180,11 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
     );
 
     public static $prefixesPsr0 = array (
-        'S' => 
+        'P' => 
         array (
-            'Slim' => 
+            'Pimple' => 
             array (
-                0 => __DIR__ . '/..' . '/slim/slim',
+                0 => __DIR__ . '/..' . '/pimple/pimple/src',
             ),
         ),
         'H' => 
@@ -174,13 +209,13 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         'ColorCoding' => __DIR__ . '/../..' . '/classes/ColorCoding.class.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'ConnectionPath' => __DIR__ . '/../..' . '/classes/ConnectionPath.class.php',
-	'Container' => __DIR__ . '/../..' . '/classes/Container.class.php',
-	'Country' => __DIR__ . '/../..' . '/classes/Country.class.php',
+        'Container' => __DIR__ . '/../..' . '/classes/Container.class.php',
+        'Country' => __DIR__ . '/../..' . '/classes/Country.class.php',
+        'DCIMMail' => __DIR__ . '/../..' . '/classes/DCIMMail.class.php',
         'DataCenter' => __DIR__ . '/../..' . '/classes/DataCenter.class.php',
         'DataMechanism' => __DIR__ . '/../..' . '/classes/DataMechanism.class.php',
         'Department' => __DIR__ . '/../..' . '/classes/Department.class.php',
         'Device' => __DIR__ . '/../..' . '/classes/Device.class.php',
-        'DCIMMail' => __DIR__ . '/../..' . '/classes/DCIMMail.class.php',
         'DeviceCustomAttribute' => __DIR__ . '/../..' . '/classes/DeviceCustomAttribute.class.php',
         'DevicePorts' => __DIR__ . '/../..' . '/classes/DevicePorts.class.php',
         'DeviceStatus' => __DIR__ . '/../..' . '/classes/DeviceStatus.inc.php',
@@ -214,7 +249,6 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         'SensorReadings' => __DIR__ . '/../..' . '/classes/SensorReadings.class.php',
         'SensorTemplate' => __DIR__ . '/../..' . '/classes/SensorTemplate.class.php',
         'Slot' => __DIR__ . '/../..' . '/classes/Slot.class.php',
-        'Stringable' => __DIR__ . '/..' . '/myclabs/php-enum/stubs/Stringable.php',
         'Supplies' => __DIR__ . '/../..' . '/classes/Supplies.class.php',
         'SupplyBin' => __DIR__ . '/../..' . '/classes/SupplyBin.class.php',
         'SwitchInfo' => __DIR__ . '/../..' . '/classes/SwitchInfo.class.php',

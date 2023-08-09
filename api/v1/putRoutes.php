@@ -3,12 +3,10 @@
 	/*	Even though we're including these files in to an upstream index.php that already declares
 		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
 		included file.
-	
-	Framework v3 Specific
+	*/
 
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Message\ResponseInterface as Response;
-	*/
 
 /**
   *
@@ -27,11 +25,11 @@
 // 			only be added by someone with access to do so.
 // 			
 
-$app->put( '/audit', function() {
+$app->put( '/audit', function( Request $request, Response $response ) {
 	$r = array();
 	$error = false;
 
-	$attrList = getParsedBody();
+	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
 	$log = new LogActions();
 
 	if ( isset( $attrList["CabinetID"] ) ) {
@@ -74,7 +72,7 @@ $app->put( '/audit', function() {
 		$r['parameters'] = $attrList;
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -87,7 +85,9 @@ $app->put( '/audit', function() {
 //	Returns: record as created
 //
   
-$app->put('/people/:userid', function($userid) use ($person) {
+$app->put('/people/{userid}', function( Request $request, Response $response, $args ) use ($person) {
+	$userid = $args["userid"];
+
 	$r = array();
 
 	if ( !$person->ContactAdmin ) {
@@ -97,7 +97,7 @@ $app->put('/people/:userid', function($userid) use ($person) {
 	}
 	
 	$p = new People();
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 	$p->UserID = $userid;
 
 	if($p->GetPersonByUserID()){
@@ -126,7 +126,7 @@ $app->put('/people/:userid', function($userid) use ($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 
 });
 
@@ -139,14 +139,14 @@ $app->put('/people/:userid', function($userid) use ($person) {
 //  Returns: record as created
 //  
 
-$app->put( '/cabinet', function() use ($person) {
+$app->put( '/cabinet', function( Request $request, Response $response ) use ($person) {
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
 		$r['message'] = __("Access Denied");
 	} else {
 		$cab = new Cabinet();
-		$vars = getParsedBody();
+		$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 		foreach ($vars as $prop=>$val) {
 			if ( property_exists($cab, $prop)) {
@@ -176,7 +176,7 @@ $app->put( '/cabinet', function() use ($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -188,14 +188,16 @@ $app->put( '/cabinet', function() use ($person) {
 //	Returns: record as created
 //
 
-$app->put( '/colorcode/:colorname', function($colorname) use ($person) {
+$app->put( '/colorcode/{colorname}', function( Request $request, Response $response, $args ) use ($person) {
+	$colorname = $args["colorname"];
+
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
 		$r['message'] = __("Access Denied");
 	} else {
 		$cc=new ColorCoding();
-		$vars = getParsedBody();
+		$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 		foreach( $vars as $prop=>$val ) {
 			if ( property_exists( $cc, $prop )) {
@@ -215,7 +217,7 @@ $app->put( '/colorcode/:colorname', function($colorname) use ($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -226,14 +228,16 @@ $app->put( '/colorcode/:colorname', function($colorname) use ($person) {
 //		Optional: ExecSponsor, SDM, Classification, DeptColor
 //	Returns: record as created
 //
-$app->put( '/department/:departmentname', function($departmentname) use ($person) {
+$app->put( '/department/{departmentname}', function( Request $request, Response $response, $args ) use ($person) {
+	$departmentname = $args["departmentname"];
+
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
 		$r['message'] = __("Access Denied");
 	} else {
 		$dept=new Department();
-		$vars = getParsedBody();
+		$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 		foreach( $vars as $prop=>$val ) {
 			if ( property_exists( $dept, $prop )) {
@@ -254,7 +258,7 @@ $app->put( '/department/:departmentname', function($departmentname) use ($person
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -266,10 +270,12 @@ $app->put( '/department/:departmentname', function($departmentname) use ($person
 //	Returns: record as created 
 //
 
-$app->put( '/device/:devicelabel', function($devicelabel) {
+$app->put( '/device/{devicelabel}', function( Request $request, Response $response, $args ) {
+	$devicelabel = $args["devicelabel"];
+
 	$dev=new Device();
 
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists( $dev, $prop )) {
@@ -325,7 +331,7 @@ $app->put( '/device/:devicelabel', function($devicelabel) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -338,7 +344,10 @@ $app->put( '/device/:devicelabel', function($devicelabel) {
 //	Returns: record as created 
 //
 
-$app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposition) {
+$app->put( '/device/{deviceid}/copyto/{newposition}', function( Request $request, Response $response, $args ) {
+	$deviceid = intval($args["deviceid"]);
+	$newposition = intval($args["newposition"]);
+
 	$dev=new Device();
 	$dev->DeviceID=$deviceid;
 	$dev->GetDevice();
@@ -370,7 +379,7 @@ $app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposi
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 
@@ -382,7 +391,7 @@ $app->put( '/device/:deviceid/copyto/:newposition', function($deviceid, $newposi
 //	Returns: record as created
 //
 
-$app->put( '/deviceport', function() {
+$app->put( '/deviceport', function( Request $request, Response $response ) {
 
 // DevicePort->updatePort() takes care of all this:
 // - verify both devices exist
@@ -407,7 +416,7 @@ $app->put( '/deviceport', function() {
 // It is expected that this would overwrite the entire existing port
 // due to being a PUT instead of POST
 	$dp = new DevicePorts();
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 	foreach($vars as $prop => $val){
 		if ( property_exists($dp, $prop)) {
 			$dp->$prop=$val;
@@ -443,14 +452,16 @@ $app->put( '/deviceport', function() {
 //	Returns: record as created
 //
 
-$app->put( '/devicestatus/:status', function($status) use ($person) {
+$app->put( '/devicestatus/{status}', function( Request $request, Response $response, $args ) use ($person) {
+	$status = $args["status"];
+
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
 		$r['message'] = __("Access Denied");
 	} else {
 		$ds=new DeviceStatus();
-		$vars = getParsedBody();
+		$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 		foreach( $vars as $prop=>$val ) {
 			if ( property_exists( $ds, $prop )) {
@@ -471,7 +482,7 @@ $app->put( '/devicestatus/:status', function($status) use ($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -483,10 +494,12 @@ $app->put( '/devicestatus/:status', function($status) use ($person) {
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/:model', function($model) use ($person) {
+$app->put( '/devicetemplate/{model}', function( Request $request, Response $response, $args ) use ($person) {
+	$model = $args["model"];
+
 	$dt=new DeviceTemplate();
 
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists( $dt, $prop )) {
@@ -516,7 +529,7 @@ $app->put( '/devicetemplate/:model', function($model) use ($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -528,10 +541,13 @@ $app->put( '/devicetemplate/:model', function($model) use ($person) {
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid, $portnum) use($person) {
+$app->put( '/devicetemplate/{templateid}/dataport/{portnum}', function( Request $request, Response $response, $args ) use($person) {
+	$templateid = intval($args["templateid"]);
+	$portnum = intval($args["portnum"]);
+
 	$tp=new TemplatePorts();
 	
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists($tp, $prop)) {
@@ -559,7 +575,7 @@ $app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -571,10 +587,13 @@ $app->put( '/devicetemplate/:templateid/dataport/:portnum', function($templateid
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templateid, $portnum) use ($person) {
+$app->put( '/devicetemplate/{templateid}/powerport/{portnum}', function( Request $request, Response $response, $args ) use ($person) {
+	$templateid = intval($args["templateid"]);
+	$portnum = intval($args["portnum"]);
+
 	$tp=new TemplatePowerPorts();
 
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists($tp, $prop)) {
@@ -602,7 +621,7 @@ $app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templatei
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -614,10 +633,13 @@ $app->put( '/devicetemplate/:templateid/powerport/:portnum', function($templatei
 //	Returns: record as created 
 //
 
-$app->put( '/devicetemplate/:templateid/slot/:slotnum', function($templateid, $slotnum) use($person) {
+$app->put( '/devicetemplate/{templateid}/slot/{slotnum}', function( Request $request, Response $response, $args ) use($person) {
+	$templateid = intval($args["templateid"]);
+	$slotnum = intval($args["slotnum"]);
+
 	$s=new Slot();
 
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 	foreach($vars as $prop => $val){
 		if ( property_exists($s, $prop)) {
 			$s->$prop=$val;
@@ -643,7 +665,7 @@ $app->put( '/devicetemplate/:templateid/slot/:slotnum', function($templateid, $s
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -653,10 +675,12 @@ $app->put( '/devicetemplate/:templateid/slot/:slotnum', function($templateid, $s
 //	Returns: Record as created 
 //
 
-$app->put( '/manufacturer/:name', function($name) use($person) {
+$app->put( '/manufacturer/{name}', function( Request $request, Response $response, $args ) use($person) {
+	$name = $args["name"];
+
 	$man=new Manufacturer();
 
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists( $man, $prop )) {
@@ -682,7 +706,7 @@ $app->put( '/manufacturer/:name', function($name) use($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //	URL:	/api/v1/vminventory/:deviceid/:vmname
@@ -692,7 +716,10 @@ $app->put( '/manufacturer/:name', function($name) use($person) {
 //		Optional: all other
 //	Returns: true/false on update operation
 
-$app->put( '/vminventory/:deviceid/:vmname', function($deviceid,$vmname) use ($person) {
+$app->put( '/vminventory/{deviceid}/{vmname}', function( Request $request, Response $response, $args ) use ($person) {
+	$deviceid = intval($args["deviceid"]);
+	$vmname = $args["vmname"];
+
 	$vm=new VM();
 	$vm->vmName=$vmname;
 	$vm->DeviceID=$deviceid;
@@ -710,7 +737,7 @@ $app->put( '/vminventory/:deviceid/:vmname', function($deviceid,$vmname) use ($p
 			$r['errorcode']=404;
 			$r['message']=__("No Device found with DeviceID ").$deviceid;
 		}else{
-			$vars = getParsedBody();
+			$vars = $request->getQueryParams() ?: $request->getParsedBody();
 			foreach($vars as $prop => $val){
 				if ( property_exists($vm, $prop)) {
 					$vm->$prop=$val;
@@ -727,7 +754,7 @@ $app->put( '/vminventory/:deviceid/:vmname', function($deviceid,$vmname) use ($p
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //	URL:	/api/v1/powerpanel/:panelname
@@ -737,7 +764,9 @@ $app->put( '/vminventory/:deviceid/:vmname', function($deviceid,$vmname) use ($p
 //	Optional: all other
 //	Returns: Record as created
 
-$app->put( '/powerpanel/:panelname', function($panelname) use ($person) {
+$app->put( '/powerpanel/{panelname}', function( Request $request, Response $response, $args ) use ($person) {
+	$panelname = $args["panelname"];
+	
 	$pp=new PowerPanel();
 	$pp->PanelLabel=$panelname;
 
@@ -748,7 +777,7 @@ $app->put( '/powerpanel/:panelname', function($panelname) use ($person) {
 		$r['errorcode']=401;
 		$r['message']=__("Access Denied");
 	}else{
-		$vars = getParsedBody();
+		$vars = $request->getQueryParams() ?: $request->getParsedBody();
 		foreach($vars as $prop => $val){
 			if ( property_exists($pp, $prop)) {
 				$pp->$prop=$val;
@@ -764,7 +793,7 @@ $app->put( '/powerpanel/:panelname', function($panelname) use ($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 

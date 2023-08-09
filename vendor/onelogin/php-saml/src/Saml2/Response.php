@@ -269,7 +269,10 @@ class Response
 
                 // Check destination
                 if ($this->document->documentElement->hasAttribute('Destination')) {
-                    $destination = trim($this->document->documentElement->getAttribute('Destination'));
+                    $destination = $this->document->documentElement->getAttribute('Destination');
+                    if (isset($destination)) {
+                        $destination = trim($destination);
+                    }
                     if (empty($destination)) {
                         if (!$security['relaxDestinationValidation']) {
                             throw new ValidationError(
@@ -308,12 +311,14 @@ class Response
                 // Check the issuers
                 $issuers = $this->getIssuers();
                 foreach ($issuers as $issuer) {
-                    $trimmedIssuer = trim($issuer);
-                    if (empty($trimmedIssuer) || $trimmedIssuer !== $idPEntityId) {
-                        throw new ValidationError(
-                            "Invalid issuer in the Assertion/Response (expected '$idPEntityId', got '$trimmedIssuer')",
-                            ValidationError::WRONG_ISSUER
-                        );
+                    if (isset($issuer)) {
+                        $trimmedIssuer = trim($issuer);
+                        if (empty($trimmedIssuer) || $trimmedIssuer !== $idPEntityId) {
+                            throw new ValidationError(
+                                "Invalid issuer in the Assertion/Response (expected '$idPEntityId', got '$trimmedIssuer')",
+                                ValidationError::WRONG_ISSUER
+                            );
+                        }
                     }
                 }
 
@@ -554,7 +559,10 @@ class Response
 
         $entries = $this->_queryAssertion('/saml:Conditions/saml:AudienceRestriction/saml:Audience');
         foreach ($entries as $entry) {
-            $value = trim($entry->textContent);
+            $value = $entry->textContent;
+            if (isset($value)) {
+                $value = trim($value);
+            }
             if (!empty($value)) {
                 $audiences[] = $value;
             }
@@ -804,6 +812,9 @@ class Response
     {
         $attributes = array();
         $entries = $this->_queryAssertion('/saml:AttributeStatement/saml:Attribute');
+
+        $security = $this->_settings->getSecurityData();
+        $allowRepeatAttributeName = $security['allowRepeatAttributeName'];
         /** @var $entry DOMNode */
         foreach ($entries as $entry) {
             $attributeKeyNode = $entry->attributes->getNamedItem($keyName);
@@ -811,11 +822,13 @@ class Response
                 continue;
             }
             $attributeKeyName = $attributeKeyNode->nodeValue;
-            if (in_array($attributeKeyName, array_keys($attributes))) {
-                throw new ValidationError(
-                    "Found an Attribute element with duplicated ".$keyName,
-                    ValidationError::DUPLICATED_ATTRIBUTE_NAME_FOUND
-                );
+            if (in_array($attributeKeyName, array_keys($attributes), true)) {
+                if (!$allowRepeatAttributeName) {
+                    throw new ValidationError(
+                        "Found an Attribute element with duplicated ".$keyName,
+                        ValidationError::DUPLICATED_ATTRIBUTE_NAME_FOUND
+                    );
+                }
             }
             $attributeValues = array();
             foreach ($entry->childNodes as $childNode) {
@@ -824,7 +837,12 @@ class Response
                     $attributeValues[] = $childNode->nodeValue;
                 }
             }
-            $attributes[$attributeKeyName] = $attributeValues;
+
+            if (in_array($attributeKeyName, array_keys($attributes), true)) {
+                $attributes[$attributeKeyName] = array_merge($attributes[$attributeKeyName], $attributeValues);
+            } else {
+                $attributes[$attributeKeyName] = $attributeValues;
+            }
         }
         return $attributes;
     }

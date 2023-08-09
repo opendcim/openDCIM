@@ -1,15 +1,7 @@
 <?php
 
-	/*	Even though we're including these files in to an upstream index.php that already declares
-		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
-		included file.
-	
-	Framework v3 Specific
-
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Message\ResponseInterface as Response;
-
-	*/
 
 /**
   *
@@ -27,7 +19,7 @@
 //  Returns:	Last audit date of given parameter.
 //
 
-$app->get( '/audit', function() use ($person){
+$app->get( '/audit', function(Request $request, Response $response) use ($person){
 	$r = array();
 	$error = false;
 
@@ -36,11 +28,10 @@ $app->get( '/audit', function() use ($person){
 		$r['errorcode'] = 403;
 		$r['message'] = 'Forbidden';
 
-		echoResponse($r);
-		return;
+		return $response->withJson( $r, $r['errorcode'] );
 	}
 
-	$attrList = getParsedBody();
+	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
 
 	if ( isset( $attrList["DeviceID"] ) ) {
 		$auditList = LogActions::getDeviceAudits( $attrList["DeviceID"] );
@@ -60,11 +51,11 @@ $app->get( '/audit', function() use ($person){
 		$r['audit'] = $auditList;
 	} else {
 		$r['error'] = true;
-		$r['errorcode'] = 403;
+		$r['errorcode'] = 404;
 		$r["input"] = $attrList;
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //	URL:  /api/v1/people
@@ -72,13 +63,14 @@ $app->get( '/audit', function() use ($person){
 //	Params:  none
 //	Returns:  List of all people in the database
 //
-$app->get('/people', function() use($person,$config) {	
+$app->get('/people', function(Request $request, Response $response) use($person,$config) {	
 	$person->GetUserRights();
 
 	$sp=new People();
 	$loose = false;
 	$outputAttr = array();
-	$attrList = getParsedBody();
+	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
+
 	foreach($attrList as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
 			$loose = true;
@@ -97,8 +89,7 @@ $app->get('/people', function() use($person,$config) {
 		$r['error'] = true;
 		$r['errorcode'] = 403;
 		$r['message'] = "Forbidden";
-		echoResponse($r);
-		return;
+		return $response->withJson($r, $r['errorcode']);
 	}
 
 	$r = array();
@@ -106,7 +97,7 @@ $app->get('/people', function() use($person,$config) {
 	$r['errorcode'] = 200;
 	$r['people'] = specifyAttributes( $outputAttr, $sp->Search( false, $loose ));
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -116,14 +107,14 @@ $app->get('/people', function() use($person,$config) {
 //	Returns:  List of all departments in the database
 //
 
-$app->get('/department', function() use($person,$config) {
+$app->get('/department', function(Request $request, Response $response) use($person,$config) {
 	$r = array();
 
 	$dList = array();
 	$dept=new Department();
 	$loose = false;
 	$outputAttr = array();
-	$attrList = getParsedBody();
+	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
 	foreach($attrList as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
 			$loose = true;
@@ -144,7 +135,7 @@ $app->get('/department', function() use($person,$config) {
 		$r['department'] = specifyAttributes( $outputAttr, $dept->Search( false, $loose ));
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode'] );
 });
 
 //
@@ -154,7 +145,7 @@ $app->get('/department', function() use($person,$config) {
 //	Returns: List of all data centers in the database
 //
 
-$app->get('/datacenter', function() use ($person, $config) {
+$app->get('/datacenter', function(Request $request, Response $response) use ($person, $config) {
 	// Don't have to worry about rights, other than basic connection, to get data center list
 	
 	$dc = new DataCenter();
@@ -162,7 +153,7 @@ $app->get('/datacenter', function() use ($person, $config) {
 	$outputAttr = array();
 	$loose = false;
 
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
 		$vars["countryCode"] = $person->countryCode;		
 	}
@@ -182,7 +173,7 @@ $app->get('/datacenter', function() use ($person, $config) {
 	$r['errorcode'] = 200;
 	$r['datacenter'] = specifyAttributes( $outputAttr, $dc->Search( false, $loose ));
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -192,10 +183,10 @@ $app->get('/datacenter', function() use ($person, $config) {
 //	Returns: Details of specified datacenter
 //
 
-$app->get( '/datacenter/:id', function( $id ) use ($config, $person) {
+$app->get( '/datacenter/{id}', function( Request $request, Response $response, $args ) use ($config, $person) {
 	$dc = new DataCenter();
 	$r = array();
-	$dc->DataCenterID = $id;
+	$dc->DataCenterID = $args["id"];
 	if ( ! $dc->GetDataCenter() ) {
 		$r['error'] = true;
 		$r['errorcode'] = 400;
@@ -211,7 +202,7 @@ $app->get( '/datacenter/:id', function( $id ) use ($config, $person) {
 		array_push( $r['datacenter'], $tmp );
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode'] );
 });
 
 //
@@ -221,13 +212,13 @@ $app->get( '/datacenter/:id', function( $id ) use ($config, $person) {
 //	Returns: All cabinet information
 //
 
-$app->get( '/cabinet', function() use ($config,$person) {
+$app->get( '/cabinet', function(Request $request, Response $response) use ($config,$person) {
 	$cab = new Cabinet;
 	$dc = new DataCenter();
 	$loose = false;
 	$outputAttr = array();
 
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 	foreach($vars as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
@@ -277,54 +268,7 @@ $app->get( '/cabinet', function() use ($config,$person) {
 		}
 	}
 	
-	echoResponse( $r );
-});
-
-//
-//	URL:	/api/v1/cabinet/:cabinetid
-//	Method:	GET
-//	Params: cabinetid (passed in URL)
-//	Returns: All cabinet information for given ID
-//
-
-$app->get( '/cabinet/:cabinetid', function( $cabinetid ) use ($config,$person) {
-	$cab = new Cabinet;
-	$dc = new DataCenter();
-
-	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
-		$dcList = array();
-		$tmpDCList = $dc->GetDCListByCountry($person->countryCode);
-		foreach( $tmpDCList as $d ) {
-			$dcList[] = $d->DataCenterID;
-		}
-	}
-
-	if ( ! $cab->CabinetID = intval($cabinetid) ) {
-		$r['error'] = true;
-		$r['errorcode'] = 400;
-		$r['message'] = 'No cabinet found with CabinetID of '. $cabinetid;
-	} else {
-		$r['error'] = false;
-		$r['errorcode'] = 200;
-		$r['cabinet'] = array();
-
-		$cab->GetCabinet();
-
-		if ( in_array( $cab->DataCenterID, $dcList ) ) {		
-			$tmp = array();
-			foreach( $cab as $prop=>$value ) {
-				$tmp[$prop] = $value;
-			}
-			$dc->DataCenterID = $cab->DataCenterID;
-			$dc->GetDataCenter();
-			
-			$tmp['DataCenterName'] = $dc->Name;
-			
-			array_push( $r['cabinet'], $tmp );
-		}
-	}
-
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -334,8 +278,14 @@ $app->get( '/cabinet/:cabinetid', function( $cabinetid ) use ($config,$person) {
 //	Returns:  HTML representation of a device
 //
 
-$app->get( '/cabinet/:cabinetid/getpictures', function( $cabinetid ) use ($config,$person) {
+$app->get( '/cabinet/{cabinetid}/getpictures', function( Request $request, Response $response, array $args ) use ($config,$person) {
 	$dc = new DataCenter();
+
+	if ( array_key_exists( "cabinetid", $args ) ) {
+		$cabinetid = $args["cabinetid"];
+	} else {
+		return $response->withJson(array("message"=>"Cabinet $cabinetid not found."), 404);
+	}
 
 	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
 		$dcList = array();
@@ -365,7 +315,7 @@ $app->get( '/cabinet/:cabinetid/getpictures', function( $cabinetid ) use ($confi
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -375,7 +325,7 @@ $app->get( '/cabinet/:cabinetid/getpictures', function( $cabinetid ) use ($confi
 //	Returns: All cabinet sensor information for the specified cabinet, if any
 //
 
-$app->get( '/cabinet/:cabinetid/sensor', function( $cabinetid ) use ($config,$person) {
+$app->get( '/cabinet/{cabinetid}/sensor', function( Request $request, Response $response, array $args ) use ($config,$person) {
 	$dc = new DataCenter();
 
 	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
@@ -390,7 +340,7 @@ $app->get( '/cabinet/:cabinetid/sensor', function( $cabinetid ) use ($config,$pe
 	}
 
 	$cab = new Cabinet();
-	$cab->CabinetID = $cabinetid;
+	$cab->CabinetID = $args['cabinetid'];
 	$cab->GetCabinet();
 
 	$r = array();
@@ -410,7 +360,7 @@ $app->get( '/cabinet/:cabinetid/sensor', function( $cabinetid ) use ($config,$pe
 	}
 	
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -420,7 +370,7 @@ $app->get( '/cabinet/:cabinetid/sensor', function( $cabinetid ) use ($config,$pe
 //	Returns:  All devices for which the user's rights have access to view
 //
 
-$app->get( '/device', function() {
+$app->get( '/device', function(Request $request, Response $response) {
 	$dev=new Device();
 	
 	$r['error']=false;
@@ -428,7 +378,7 @@ $app->get( '/device', function() {
 	$loose = false;
 	$outputAttr = array();
 
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 	foreach($vars as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
@@ -444,7 +394,7 @@ $app->get( '/device', function() {
 
 	$r['device']=specifyAttributes( $outputAttr, $devList );
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -453,7 +403,7 @@ $app->get( '/device', function() {
 //	Params:	deviceid (passed in URL)
 //	Returns:  All devices for which the user's rights have access to view
 //
-
+/*
 $app->get( '/device/:deviceid', function( $deviceid ) {
 	$dev=new Device();
 	$dev->DeviceID=intval($deviceid);
@@ -468,9 +418,10 @@ $app->get( '/device/:deviceid', function( $deviceid ) {
 		$r['device']=$dev;
 	}
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 
 });
+*/
 
 //
 //	URL:	/api/v1/device/:deviceid/getpicture
@@ -481,8 +432,8 @@ $app->get( '/device/:deviceid', function( $deviceid ) {
 //	Returns:  HTML representation of a device
 //
 
-$app->get( '/device/:deviceid/getpicture', function( $deviceid ) {
-	$dev=new Device($deviceid);
+$app->get( '/device/{deviceid}/getpicture', function( Request $request, Response $response, $args ) {
+	$dev=new Device(intval($args["deviceid"]));
 	
 	$r['error']=true;
 	$r['errorcode']=404;
@@ -500,12 +451,12 @@ $app->get( '/device/:deviceid/getpicture', function( $deviceid ) {
 		$r['picture']=$dev->GetDevicePicture(isset($_GET['rear']));
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
-$app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
+$app->get( '/device/{deviceid}/getsensorreadings', function( Request $request, Response $response, $args ) {
 	$dev=new Device();
-	$dev->DeviceID=intval($deviceid);
+	$dev->DeviceID=intval($args["deviceid"]);
 	
 	if(!$dev->GetDevice(false)){
 		$r['error']=true;
@@ -524,7 +475,7 @@ $app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 // this is messy as all hell and i'm still thinking about how to do it better
@@ -537,15 +488,15 @@ $app->get( '/device/:deviceid/getsensorreadings', function($deviceid) {
 //		Required:  :deviceid - DeviceID for which you wish to retrieve ports
 //	Returns:	All ports for the given device
 
-$app->get('/deviceport/:deviceid', function($deviceid) {
+$app->get('/deviceport/{deviceid}', function( Request $request, Response $response, $args ) {
 	$dp = new DevicePorts();
 	
 	$r['error'] = false;
 	$r['errorcode'] = 200;
-	$dp->DeviceID = $deviceid;
+	$dp->DeviceID = intval($args["deviceid"]);
 	$r['deviceport']=$dp->getPorts();
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -561,9 +512,10 @@ $app->get('/deviceport/:deviceid', function($deviceid) {
 //	Returns:  All devices that this device can connect to
 //
 
-$app->get( '/deviceport/:deviceid/patchcandidates', function($deviceid) {
+$app->get( '/deviceport/{deviceid}/patchcandidates', function( Request $request, Response $response, $args ) {
+	$deviceid = intval($args["deviceid"]);
 	$s=new stdClass();
-	$vars = getParsedBody();
+	$vars = $request->getParsedBody();
 	$s->portnumber=$vars['PortNumber'];
 	$s->connectto=$vars['connectto'];
 	$s->listports=$vars['listports'];
@@ -622,7 +574,7 @@ $app->get( '/deviceport/:deviceid/patchcandidates', function($deviceid) {
 		$r['deviceport']=$list;
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -632,14 +584,14 @@ $app->get( '/deviceport/:deviceid/patchcandidates', function($deviceid) {
 //	Returns:  All devices for which the user's rights have access to view
 //
 
-$app->get( '/device/bydatacenter/:datacenterid', function($datacenterid) {
+$app->get( '/device/bydatacenter/{datacenterid}', function( Request $request, Response $response, $args ) {
 	$dev=new Device();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	$r['device']=$dev->GetDeviceList(intval($datacenterid));
+	$r['device']=$dev->GetDeviceList(intval($args["datacenterid"]));
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -649,12 +601,12 @@ $app->get( '/device/bydatacenter/:datacenterid', function($datacenterid) {
 //	Returns;	All disposition methods within the database
 //
 
-$app->get( '/disposition', function() {
+$app->get( '/disposition', function(Request $request, Response $response) {
 	$r['error'] = false;
 	$r['errorcode'] = 200;
 	$r['disposition'] = Disposition::getDisposition();
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -664,12 +616,13 @@ $app->get( '/disposition', function() {
 //	Returns;	All disposition methods within the database, along with all devices disposed via this method
 //
 
-$app->get( '/disposition/:dispositionid', function($dispositionid) {
+$app->get( '/disposition/{dispositionid}', function( Request $request, Response $response, $args ) {
+	$dispositionid = intval($args["dispositionid"]);
 	$r['error'] = false;
 	$r['errorcode'] = 200;
 	$r['disposition'] = Disposition::getDisposition( $dispositionid );
 	$r['devices'] = DispositionMembership::getDevices( $dispositionid );
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -679,12 +632,12 @@ $app->get( '/disposition/:dispositionid', function($dispositionid) {
 //	Returns;	All DeviceStatus values within the database
 //
 
-$app->get( '/devicestatus', function() {
+$app->get( '/devicestatus', function(Request $request, Response $response) {
 	$r['error'] = false;
 	$r['errorcode'] = 200;
 	$r['devicestatus'] = DeviceStatus::getStatusList();
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -693,7 +646,7 @@ $app->get( '/devicestatus', function() {
 //	Params:	StatusID
 //	Returns;	All device status values within the database
 //
-
+/*
 $app->get( '/devicestatus/:statusid', function($statusid) {
 	$r['error'] = false;
 	$r['errorcode'] = 200;
@@ -707,9 +660,9 @@ $app->get( '/devicestatus/:statusid', function($statusid) {
 		$r['errorcode']=200;
 		$r['devicestatus'][$ds->StatusID]=$ds;
 	}
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
-
+*/
 
 //
 //	URL:	/api/v1/cabinet/byproject/:projectid
@@ -718,12 +671,13 @@ $app->get( '/devicestatus/:statusid', function($statusid) {
 //	Returns:  All cabinets for which the user's rights have access to view
 //
 
-$app->get( '/cabinet/byproject/:projectid', function($projectid) {
+$app->get( '/cabinet/byproject/{projectid}', function( Request $request, Response $response, $args ) {
+	$projectid = intval($args["projectid"]);
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['cabinet']=ProjectMembership::getProjectCabinets( $projectid );
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -733,12 +687,13 @@ $app->get( '/cabinet/byproject/:projectid', function($projectid) {
 //	Returns:  All devices for which the user's rights have access to view
 //
 
-$app->get( '/device/byproject/:projectid', function($projectid) {
+$app->get( '/device/byproject/{projectid}', function( Request $request, Response $response, $args ) {
+	$projectid = intval($args["projectid"]);
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['device']=ProjectMembership::getProjectMembership( $projectid );
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 
@@ -749,12 +704,12 @@ $app->get( '/device/byproject/:projectid', function($projectid) {
 //	Returns:  All project metadata
 //
 
-$app->get( '/project', function() {
+$app->get( '/project', function(Request $request, Response $response) {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['project']=Projects::getProjectList();
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -764,12 +719,13 @@ $app->get( '/project', function() {
 //	Returns:  All project metadata for projects the cabinetid is a member of
 //
 
-$app->get( '/project/bycabinet/:cabinetid', function($cabinetid) {
+$app->get( '/project/bycabinet/{cabinetid}', function( Request $request, Response $response, $args ) {
+	$cabinetid = intval($args["cabinetid"]);
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['project']=ProjectMembership::getCabinetMembership( $cabinetid );
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -779,12 +735,13 @@ $app->get( '/project/bycabinet/:cabinetid', function($cabinetid) {
 //	Returns:  All project metadata for projects the deviceid is a member of
 //
 
-$app->get( '/project/bydevice/:deviceid', function($deviceid) {
+$app->get( '/project/bydevice/{deviceid}', function( Request $request, Response $response, $args ) {
+	$deviceid = intval($args["deviceid"]);
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['project']=ProjectMembership::getDeviceMembership( $deviceid );
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 
@@ -795,14 +752,15 @@ $app->get( '/project/bydevice/:deviceid', function($deviceid) {
 //	Returns:  All power ports for a device or a specific port
 //
 
-$app->get( '/powerport/:deviceid', function($deviceid) {
+$app->get( '/powerport/{deviceid}', function( Request $request, Response $response, $args ) {
+	$deviceid=intval($args["deviceid"]);
 	$pp=new PowerPorts();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
 	$pp->DeviceID=$deviceid;
 
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 	foreach($vars as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
@@ -835,7 +793,7 @@ $app->get( '/powerport/:deviceid', function($deviceid) {
 		$r['powerport']=$pp->getPorts();
 	}
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 
@@ -846,12 +804,12 @@ $app->get( '/powerport/:deviceid', function($deviceid) {
 //	Returns:  All defined color codes 
 //
 
-$app->get( '/colorcode', function() {
+$app->get( '/colorcode', function(Request $request, Response $response) {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['colorcode']=ColorCoding::GetCodeList();;
 		
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -861,7 +819,7 @@ $app->get( '/colorcode', function() {
 //	Returns:  All defined color codes matching :colorid 
 //
 
-$app->get( '/colorcode/:colorid', function($colorid) {
+$app->get( '/colorcode/:colorid', function( Request $request, Response $response, $args ) {
 	$cc=new ColorCoding();
 	$cc->ColorID=$colorid;
 	
@@ -875,7 +833,7 @@ $app->get( '/colorcode/:colorid', function($colorid) {
 		$r['colorcode'][$cc->ColorID]=$cc;
 	}
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -885,12 +843,12 @@ $app->get( '/colorcode/:colorid', function($colorid) {
 //	Returns:  Number of objects using :colorid 
 //
 
-$app->get( '/colorcode/:colorid/timesused', function($colorid) {
+$app->get( '/colorcode/:colorid/timesused', function( Request $request, Response $response, $args ) {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['colorcode']=ColorCoding::TimesUsed($colorid);
 	
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 
@@ -901,14 +859,14 @@ $app->get( '/colorcode/:colorid/timesused', function($colorid) {
 //	Returns: All available device templates
 //
 
-$app->get( '/devicetemplate', function() {
+$app->get( '/devicetemplate', function(Request $request, Response $response) {
 	$dt=new DeviceTemplate();
 	$r['error']=false;
 	$r['errorcode']=200;
 	$loose = false;
 	$outputAttr = array();
 
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 	foreach($vars as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
@@ -924,7 +882,7 @@ $app->get( '/devicetemplate', function() {
 
 	$r['devicetemplate']=specifyAttributes( $outputAttr, $tmpList );
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -938,7 +896,7 @@ $app->get( '/devicetemplate', function() {
 //  path might be revisited.
 //
 
-$app->get( '/devicetemplate/:templateid', function($templateid) {
+$app->get( '/devicetemplate/:templateid', function( Request $request, Response $response, $args ) {
 	if($templateid=='image'){
 		$r['error']=false;
 		$r['errorcode']=200;
@@ -956,7 +914,7 @@ $app->get( '/devicetemplate/:templateid', function($templateid) {
 			$r['template']=$dt;
 		}
 	}
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -966,7 +924,7 @@ $app->get( '/devicetemplate/:templateid', function($templateid) {
 //	Returns: Data ports defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/:templateid/dataport', function($templateid) {
+$app->get( '/devicetemplate/:templateid/dataport', function( Request $request, Response $response, $args ) {
 	$tp=new TemplatePorts();
 	$tp->TemplateID=$templateid;
 	if(!$ports=$tp->getPorts()){
@@ -979,7 +937,7 @@ $app->get( '/devicetemplate/:templateid/dataport', function($templateid) {
 		$r['dataport']=$ports;
 	}
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -989,7 +947,7 @@ $app->get( '/devicetemplate/:templateid/dataport', function($templateid) {
 //	Returns: Single data port defined for device template with templateid and portnum
 //
 
-$app->get( '/devicetemplate/:templateid/dataport/:portnumber', function($templateid, $portnumber) {
+$app->get( '/devicetemplate/:templateid/dataport/:portnumber', function( Request $request, Response $response, $args ) {
 	$tp=new TemplatePorts();
 	$tp->TemplateID=$templateid;
 	$tp->PortNumber=$portnumber;
@@ -1003,7 +961,7 @@ $app->get( '/devicetemplate/:templateid/dataport/:portnumber', function($templat
 		$r['dataport']=$tp;
 	}
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1013,7 +971,7 @@ $app->get( '/devicetemplate/:templateid/dataport/:portnumber', function($templat
 //	Returns: Power ports defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/:templateid/powerport', function($templateid) {
+$app->get( '/devicetemplate/:templateid/powerport', function( Request $request, Response $response, $args ) {
 	$tp=new TemplatePowerPorts();
 	$tp->TemplateID=$templateid;
 	if(!$ports=$tp->getPorts()){
@@ -1026,7 +984,7 @@ $app->get( '/devicetemplate/:templateid/powerport', function($templateid) {
 		$r['powerport']=$ports;
 	}
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1036,7 +994,7 @@ $app->get( '/devicetemplate/:templateid/powerport', function($templateid) {
 //	Returns: Slots defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/:templateid/slot', function($templateid) {
+$app->get( '/devicetemplate/:templateid/slot', function( Request $request, Response $response, $args ) {
 	if(!$slots=Slot::GetAll($templateid)){
 		$r['error']=true;
 		$r['errorcode']=404;
@@ -1047,7 +1005,7 @@ $app->get( '/devicetemplate/:templateid/slot', function($templateid) {
 		$r['slot']=$slots;
 	}
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1057,18 +1015,18 @@ $app->get( '/devicetemplate/:templateid/slot', function($templateid) {
 //	Returns:  All defined manufacturers 
 //
 
-$app->get( '/manufacturer', function() {
+$app->get( '/manufacturer', function(Request $request, Response $response) {
 	$man=new Manufacturer();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 	foreach($vars as $prop => $val){
 		$man->$prop=$val;
 	}
 	$r['manufacturer']=$man->GetManufacturerList();
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1078,18 +1036,18 @@ $app->get( '/manufacturer', function() {
 //	Returns:  All zones for which the user's rights have access to view
 //
 
-$app->get( '/zone', function() {
+$app->get( '/zone', function(Request $request, Response $response) {
 	$zone=new Zone();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 	foreach($vars as $prop => $val){
 		$zone->$prop=$val;
 	}
 	$r['zone']=$zone->Search(true);
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1099,19 +1057,19 @@ $app->get( '/zone', function() {
 //	Returns: Zone identified by :zoneid 
 //
 
-$app->get( '/zone/:zoneid', function($zoneid) {
+$app->get( '/zone/:zoneid', function( Request $request, Response $response, $args ) {
 	$zone=new Zone();
 	$zone->ZoneID=$zoneid;
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 	foreach($vars as $prop => $val){
 		$dev->$prop=$val;
 	}
 	$r['zone']=$zone->GetZone();
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1121,20 +1079,20 @@ $app->get( '/zone/:zoneid', function($zoneid) {
 //	Returns:  All cabinet rows for which the user's rights have access to view
 //
 
-$app->get( '/cabrow', function() {
+$app->get( '/cabrow', function(Request $request, Response $response) {
 	$cabrow=new CabRow();
 	
 	$r['error']=false;
 	$r['errorcode']=200;
 
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 	foreach($vars as $prop => $val){
 		$cabrow->$prop=$val;
 	}
 	$r['cabrow']=$cabrow->Search(true);
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1144,11 +1102,11 @@ $app->get( '/cabrow', function() {
 //	Returns:  All devices in the cabinet row 
 //
 
-$app->get( '/cabrow/:cabrowid/devices', function($cabrowid) {
+$app->get( '/cabrow/:cabrowid/devices', function( Request $request, Response $response, $args ) {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['device']=Device::SearchDevicebyCabRow($cabrowid);
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 
@@ -1158,10 +1116,10 @@ $app->get( '/cabrow/:cabrowid/devices', function($cabrowid) {
 //	Params:	none
 //	Returns:	Sensor readings for all sensors
 
-$app->get( '/sensorreadings', function() {
+$app->get( '/sensorreadings', function(Request $request, Response $response) {
 	$sensorreadings=new SensorReadings();
 	$outputAttr = array();
-	$attrList = getParsedBody();
+	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
 	$loose = false;
 
 	foreach($attrList as $prop => $val){
@@ -1177,7 +1135,7 @@ $app->get( '/sensorreadings', function() {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['sensorreadings']=specifyAttributes($outputAttr, $sensorreadings->Search(false,$loose));
-	echoResponse( $r );	
+	return $response->withJson( $r, $r['errorcode'] );	
 });
 
 //
@@ -1186,7 +1144,7 @@ $app->get( '/sensorreadings', function() {
 //	Params:	none
 //	Returns:	Sensor readings for :sensorid
 
-$app->get( '/sensorreadings/:sensorid', function($sensorid) {
+$app->get( '/sensorreadings/:sensorid', function( Request $request, Response $response, $args ) {
 	$sensorreadings=new SensorReadings();
 	$sensorreadings->SensorID=$sensorid;
 
@@ -1199,7 +1157,7 @@ $app->get( '/sensorreadings/:sensorid', function($sensorid) {
         	$r['errorcode']=200;
 	        $r['sensorreadings']=$sensorreadings;
 	}
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1208,10 +1166,10 @@ $app->get( '/sensorreadings/:sensorid', function($sensorid) {
 //	Params:	none
 //	Returns:	PDU Stats reading for all pdus
 
-$app->get( '/pdustats', function() use ($person) {
+$app->get( '/pdustats', function(Request $request, Response $response) use ($person) {
 	$pdustats=new PDUStats();
 	$outputAttr = array();
-	$attrList = getParsedBody();
+	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
 	$loose = false;
 
 	foreach($attrList as $prop => $val){
@@ -1227,7 +1185,7 @@ $app->get( '/pdustats', function() use ($person) {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['pdustats']=specifyAttributes($outputAttr, $pdustats->Search(false,$loose, $person));
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1236,7 +1194,7 @@ $app->get( '/pdustats', function() use ($person) {
 //	Params:	pduid
 //	Returns:	PDU Stats reading for pduid
 
-$app->get( '/pdustats/:pduid', function($pduid) use ($person) {
+$app->get( '/pdustats/:pduid', function( Request $request, Response $response, $args ) use ($person) {
 	$pdustats=new PDUStats();
 	$pdustats->PDUID=$pduid;
 
@@ -1249,7 +1207,7 @@ $app->get( '/pdustats/:pduid', function($pduid) use ($person) {
 		$r['errorcode']=200;
 		$r['pdustats']=$pdustats;
 	}
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1258,10 +1216,10 @@ $app->get( '/pdustats/:pduid', function($pduid) use ($person) {
 //	Params:	none
 //	Returns:	All VMs info 
 
-$app->get( '/vminventory', function() {
+$app->get( '/vminventory', function(Request $request, Response $response) {
 	$vm = new VM();
 	$outputAttr = array();
-	$attrList = getParsedBody();
+	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
 	$loose = false;
 
 	foreach($attrList as $prop => $val){
@@ -1277,7 +1235,7 @@ $app->get( '/vminventory', function() {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['vminventory']=specifyAttributes($outputAttr, $vm->SearchVM(false,$loose));
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1286,7 +1244,7 @@ $app->get( '/vminventory', function() {
 //	Params:	vmindex
 //	Returns:	VM Inventory data for vmindex
 
-$app->get( '/vminventory/:vmindex', function($vmindex) {
+$app->get( '/vminventory/:vmindex', function( Request $request, Response $response, $args ) {
 	$vm=new VM();
 	$vm->VMIndex=$vmindex;
 
@@ -1299,7 +1257,7 @@ $app->get( '/vminventory/:vmindex', function($vmindex) {
 		$r['errorcode']=200;
 		$r['vminventory']=$vm;
 	}
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1308,10 +1266,10 @@ $app->get( '/vminventory/:vmindex', function($vmindex) {
 //	Params:	none
 //	Returns:	All Powerpanel info
 
-$app->get( '/powerpanel', function() {
+$app->get( '/powerpanel', function(Request $request, Response $response) {
 	$pp = new PowerPanel();
 	$outputAttr = array();
-	$attrList = getParsedBody();
+	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
 	$loose = false;
 
 	foreach($attrList as $prop => $val){
@@ -1327,7 +1285,7 @@ $app->get( '/powerpanel', function() {
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['powerpanel']=specifyAttributes($outputAttr, $pp->Search(false,$loose));
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1336,7 +1294,7 @@ $app->get( '/powerpanel', function() {
 //	Params:	panelid
 //	Returns:	Data for panelid
 
-$app->get( '/powerpanel/:panelid', function($panelid) {
+$app->get( '/powerpanel/:panelid', function( Request $request, Response $response, $args ) {
 	$pp=new PowerPanel();
 	$pp->PanelID=$panelid;
 
@@ -1349,7 +1307,7 @@ $app->get( '/powerpanel/:panelid', function($panelid) {
 		$r['errorcode']=200;
 		$r['powerpanel']=$pp;
 	}
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 });
 
 //
@@ -1357,8 +1315,8 @@ $app->get( '/powerpanel/:panelid', function($panelid) {
 // Method: GET
 // Params: Optionally filter by DataCenterID, ZoneID, RowID, CabinetID
 // Returns: Device information for all polling power/CDU sensors that meet the filter criteria
-$app->get( '/pollers/power', function() {
-	$filters = getParsedBody();
+$app->get( '/pollers/power', function(Request $request, Response $response) {
+	$filters = $request->getQueryParams() ?: $request->getParsedBody();
 
 	$dev = new Device();
 
@@ -1395,7 +1353,7 @@ $app->get( '/pollers/power', function() {
 	$r["DeviceList"] = $devList;
 	$r["TemplateList"] = $dtList;
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 
 });
 
@@ -1404,8 +1362,8 @@ $app->get( '/pollers/power', function() {
 // Method: GET
 // Params: Optionally filter by DataCenterID, ZoneID, RowID, CabinetID
 // Returns: Device information for all polling sensors that meet the filter criteria
-$app->get( '/pollers/sensors', function() {
-	$filters = getParsedBody();
+$app->get( '/pollers/sensors', function(Request $request, Response $response) {
+	$filters = $request->getQueryParams() ?: $request->getParsedBody();
 
 	$dev = new Device();
 
@@ -1442,7 +1400,7 @@ $app->get( '/pollers/sensors', function() {
 	$r["DeviceList"] = $devList;
 	$r["TemplateList"] = $dtList;
 
-	echoResponse( $r );
+	return $response->withJson( $r, $r['errorcode'] );
 
 });
 

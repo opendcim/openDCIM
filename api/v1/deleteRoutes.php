@@ -3,13 +3,11 @@
 	/*	Even though we're including these files in to an upstream index.php that already declares
 		the namespaces, PHP treats it as a difference context, so we have to redeclare in each
 		included file.
-	
-		Framework v3 Specific
+	*/
 
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Message\ResponseInterface as Response;
 
-	*/
 /**
   *
   *		API DELETE Methods go here
@@ -25,7 +23,9 @@
 //     Returns:  true/false on update operation
 //
 
-$app->delete( '/cabinet/:cabinetid', function( $cabinetid ) use($person) {
+$app->delete( '/cabinet/{cabinetid}', function( Request $request, Response $response, $args ) use($person) {
+	$cabinetid = intval($args["cabinetid"]);
+
 	if ( ! $person->SiteAdmin ) {
 			$r['error'] = true;
 			$r['errorcode'] = 401;
@@ -44,7 +44,7 @@ $app->delete( '/cabinet/:cabinetid', function( $cabinetid ) use($person) {
 			}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 
@@ -57,10 +57,12 @@ $app->delete( '/cabinet/:cabinetid', function( $cabinetid ) use($person) {
 //	Returns:  true/false on update operation
 //
 
-$app->delete( '/powerport/:deviceid', function( $deviceid ) use ($app) {
+$app->delete( '/powerport/{deviceid}', function( Request $request, Response $response, $args ) use ($app) {
+	$deviceid = intval($args["deviceid"]);
+
 	$pp=new PowerPorts();
 	$pp->DeviceID=$deviceid;
-	$vars = getParsedBody();
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
 
 	foreach($vars as $prop => $val){
 		if ( property_exists( $pp, $prop )) {
@@ -105,7 +107,7 @@ $app->delete( '/powerport/:deviceid', function( $deviceid ) use ($app) {
 
 	$r['errorcode']=200;
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -115,7 +117,9 @@ $app->delete( '/powerport/:deviceid', function( $deviceid ) use ($app) {
 //	Returns:  true/false on update operation
 //
 
-$app->delete( '/colorcode/:colorid', function( $colorid ) use($person) {
+$app->delete( '/colorcode/{colorid}', function( Request $request, Response $response, $args ) use($person) {
+	$colorid = intval($args["colorid"]);
+
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
@@ -134,7 +138,7 @@ $app->delete( '/colorcode/:colorid', function( $colorid ) use($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -144,7 +148,9 @@ $app->delete( '/colorcode/:colorid', function( $colorid ) use($person) {
 //	Returns:  true/false on update operation
 //
 
-$app->delete( '/device/:deviceid', function( $deviceid ) {
+$app->delete( '/device/{deviceid}', function( Request $request, Response $response, $args ) {
+	$deviceid = intval($args["deviceid"]);
+
 	$dev=new Device();
 	$dev->DeviceID=$deviceid;
 	
@@ -168,7 +174,7 @@ $app->delete( '/device/:deviceid', function( $deviceid ) {
 			}
 		}
 	}
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //
@@ -179,7 +185,9 @@ $app->delete( '/device/:deviceid', function( $deviceid ) {
 //	Returns: true/false on update operations 
 //
 
-$app->delete( '/devicestatus/:statusid', function($statusid) use ($person) {
+$app->delete( '/devicestatus/{statusid}', function( Request $request, Response $response, $args ) use ($person) {
+	$statusid = intval($args["statusid"]);
+
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
@@ -199,7 +207,7 @@ $app->delete( '/devicestatus/:statusid', function($statusid) use ($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //	URL:	/api/v1/sensorreadings/:sensorid
@@ -207,7 +215,9 @@ $app->delete( '/devicestatus/:statusid', function($statusid) use ($person) {
 //	Params:
 //		Required: sensorid
 //	Returns: true/false on delete operation
-$app->delete( '/sensorreadings/:sensorid', function($sensorid) use ($person) {
+$app->delete( '/sensorreadings/{sensorid}', function( Request $request, Response $response, $args ) use ($person) {
+	$sensorid = intval($args["sensorid"]);
+
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
@@ -226,7 +236,7 @@ $app->delete( '/sensorreadings/:sensorid', function($sensorid) use ($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //	URL:	/api/v1/pdustats/:pduid
@@ -234,7 +244,9 @@ $app->delete( '/sensorreadings/:sensorid', function($sensorid) use ($person) {
 //	Params:
 //		Required:	pduid
 //	Returns: true/false on delete operation
-$app->delete( '/pdustats/:pduid', function($pduid) use ($person) {
+$app->delete( '/pdustats/{pduid}', function( Request $request, Response $response, $args ) use ($person) {
+	$pduid = intval($args["pduid"]);
+
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
@@ -252,7 +264,7 @@ $app->delete( '/pdustats/:pduid', function($pduid) use ($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //	URL:	/api/v1/vminventory/:vmindex
@@ -260,7 +272,9 @@ $app->delete( '/pdustats/:pduid', function($pduid) use ($person) {
 //	Params:
 //		Required:	vmindex
 //	Returns: true/false on delete operation
-$app->delete( '/vminventory/:vmindex', function($vmindex) use ($person) {
+$app->delete( '/vminventory/{vmindex}', function( Request $request, Response $response, $args ) use ($person) {
+	$vmindex = intval($args["vmindex"]);
+
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
@@ -278,7 +292,7 @@ $app->delete( '/vminventory/:vmindex', function($vmindex) use ($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //	URL:	/api/v1/vminventory/expirevms/:days
@@ -286,7 +300,9 @@ $app->delete( '/vminventory/:vmindex', function($vmindex) use ($person) {
 //	Params:
 //		Required:	days
 //	Returns: true
-$app->delete( '/vminventory/expirevms/:days', function($days) use ($person) {
+$app->delete( '/vminventory/expirevms/{days}', function( Request $request, Response $response, $args ) use ($person) {
+	$days = intval($args["days"]);
+
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
@@ -304,7 +320,7 @@ $app->delete( '/vminventory/expirevms/:days', function($days) use ($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 //	URL:	/api/v1/powerpanel/:panelid
@@ -312,7 +328,9 @@ $app->delete( '/vminventory/expirevms/:days', function($days) use ($person) {
 //	Params:
 //		Required:	panelid
 //	Returns: true/false on delete operation
-$app->delete( '/powerpanel/:panelid', function($panelid) use ($person) {
+$app->delete( '/powerpanel/{panelid}', function( Request $request, Response $response, $args ) use ($person) {
+	$panelid = intval($args["panelid"]);
+	
 	if ( ! $person->SiteAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
@@ -330,7 +348,7 @@ $app->delete( '/powerpanel/:panelid', function($panelid) use ($person) {
 		}
 	}
 
-	echoResponse( $r );
+	return $response->withJson($r, $r['errorcode']);
 });
 
 ?>

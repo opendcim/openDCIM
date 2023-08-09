@@ -10,11 +10,11 @@ use Mpdf\Css\TextVars;
 use Mpdf\Log\Context as LogContext;
 use Mpdf\Fonts\MetricsGenerator;
 use Mpdf\Output\Destination;
+use Mpdf\PsrLogAwareTrait\MpdfPsrLogAwareTrait;
 use Mpdf\QrCode;
 use Mpdf\Utils\Arrays;
 use Mpdf\Utils\NumericString;
 use Mpdf\Utils\UtfString;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
@@ -30,8 +30,9 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 
 	use Strict;
 	use FpdiTrait;
+	use MpdfPsrLogAwareTrait;
 
-	const VERSION = '8.1.4';
+	const VERSION = '8.1.6';
 
 	const SCALE = 72 / 25.4;
 
@@ -967,11 +968,6 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 	private $scriptToLanguage;
 
 	/**
-	 * @var \Psr\Log\LoggerInterface
-	 */
-	private $logger;
-
-	/**
 	 * @var \Mpdf\Writer\BaseWriter
 	 */
 	private $writer;
@@ -1224,7 +1220,7 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 		$this->breakpoints = []; // used in columnbuffer
 		$this->tableLevel = 0;
 		$this->tbctr = []; // counter for nested tables at each level
-		$this->page_box = [];
+		$this->page_box = new PageBox();
 		$this->show_marks = ''; // crop or cross marks
 		$this->kwt = false;
 		$this->kwt_height = 0;
@@ -1577,24 +1573,6 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 		}
 
 		$this->createdReaders = [];
-	}
-
-	/**
-	 * @param \Psr\Log\LoggerInterface
-	 *
-	 * @return \Mpdf\Mpdf
-	 */
-	public function setLogger(LoggerInterface $logger)
-	{
-		$this->logger = $logger;
-
-		foreach ($this->services as $name) {
-			if ($this->$name && $this->$name instanceof \Psr\Log\LoggerAwareInterface) {
-				$this->$name->setLogger($logger);
-			}
-		}
-
-		return $this;
 	}
 
 	private function initConfig(array $config)
@@ -8247,8 +8225,13 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 						$contentB[count($content) - 1] = preg_replace('/R/', '', $contentB[count($content) - 1]); // ???
 					}
 
-					if ($type == 'hyphen') {
-						$currContent .= '-';
+					if ($type === 'hyphen') {
+						$hyphen = in_array(mb_substr($currContent, -1), ['-', '–', '—'], true);
+						if (!$hyphen) {
+							$currContent .= '-';
+						} else {
+							$savedPreContent[count($savedPreContent) - 1] = '-' . $savedPreContent[count($savedPreContent) - 1];
+						}
 						if (!empty($cOTLdata[(count($cOTLdata) - 1)])) {
 							$cOTLdata[(count($cOTLdata) - 1)]['char_data'][] = ['bidi_class' => 9, 'uni' => 45];
 							$cOTLdata[(count($cOTLdata) - 1)]['group'] .= 'C';
@@ -10155,7 +10138,7 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 
 		/* -- CSS-PAGE -- */
 		// Paged media (page-box)
-		if ($pagesel || (isset($this->page_box['using']) && $this->page_box['using'])) {
+		if ($pagesel || $this->page_box['using']) {
 
 			if ($pagesel || $this->page == 1) {
 				$first = true;
@@ -10307,10 +10290,10 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 		$this->pageDim[$this->page]['w'] = $this->w;
 		$this->pageDim[$this->page]['h'] = $this->h;
 
-		$this->pageDim[$this->page]['outer_width_LR'] = isset($this->page_box['outer_width_LR']) ? $this->page_box['outer_width_LR'] : 0;
-		$this->pageDim[$this->page]['outer_width_TB'] = isset($this->page_box['outer_width_TB']) ? $this->page_box['outer_width_TB'] : 0;
+		$this->pageDim[$this->page]['outer_width_LR'] = $this->page_box['outer_width_LR'] ?: 0;
+		$this->pageDim[$this->page]['outer_width_TB'] = $this->page_box['outer_width_TB'] ?: 0;
 
-		if (!isset($this->page_box['outer_width_LR']) && !isset($this->page_box['outer_width_TB'])) {
+		if (!$this->page_box['outer_width_LR'] && !$this->page_box['outer_width_TB']) {
 			$this->pageDim[$this->page]['bleedMargin'] = 0;
 		} elseif ($this->bleedMargin <= $this->page_box['outer_width_LR'] && $this->bleedMargin <= $this->page_box['outer_width_TB']) {
 			$this->pageDim[$this->page]['bleedMargin'] = $this->bleedMargin;
