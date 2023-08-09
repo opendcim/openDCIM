@@ -875,7 +875,12 @@ if(!function_exists("updateNavTreeHTML")){
 
 if( AUTHENTICATION=="Saml" && !isset($_SESSION['userid']) && php_sapi_name()!="cli" && !isset($loginPage))
 {
-	$savedurl = $_SERVER['SCRIPT_NAME'] . "?" . sanitize($_SERVER['QUERY_STRING']);
+	// Check for query parameters and add them if they exist, but don't leave a dangling question mark
+	if ( sanitize($_SERVER["QUERY_STRING"]) != "" ) {
+		$savedurl = $_SERVER['SCRIPT_NAME'] . "?" . sanitize($_SERVER['QUERY_STRING']);
+	} else {
+		$savedurl = $_SERVER["SCRIPT_NAME"];
+	}
 	$options =  array ( 'expires' => time()+60, 'SameSite' => 'Strict' );
 	setcookie( 'targeturl', $savedurl, $options );
 	header("Location: ".redirect('saml/login.php'));
