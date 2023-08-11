@@ -99,7 +99,7 @@ function applyupdate ($updatefile){
 
 function sanitize($string,$stripall=true){
 	// Trim any leading or trailing whitespace
-	$clean=trim($string);
+	$clean=trim($string ?? '');
 
 	// Convert any special characters to their normal parts
 	$clean=html_entity_decode($clean,ENT_COMPAT,"UTF-8");
