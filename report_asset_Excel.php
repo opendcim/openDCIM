@@ -24,6 +24,15 @@ if( !$person->ReadAccess){
     exit;
 }
 
+// Build list of any DeviceCustomAttributes that are set to 'AllDevices' and include them in the report
+$dcaList = array();
+$tmpList = DeviceCustomAttribute::GetDeviceCustomAttributeList();
+foreach ( $tmpList as $dca ) {
+    if ( $dca->AllDevices == 1 ) {
+        $dcaList[] = $dca;
+    }
+}
+
 global $sessID;
 
 // everyone hates error_log spam
@@ -322,6 +331,11 @@ $DProps = array(
         'ExpStr' => array()
     )
 );
+
+// Now add in the 'All Devices' DCA list
+foreach ( $dcaList as $dca ) {
+    $DProps['DC Inventory']['Columns'][] = array( $dca->Label, '', null, null );
+}
 
 /**
  * Report some runtime statistics if the log file writable and reporting flag set.
@@ -1094,6 +1108,13 @@ function computeDeviceChildren($sheetColumns, $invData, $parentDev, $DCName,
             $devSpec['Tags'] = getTagsString($child);
             $devSpec['Notes'] = html_entity_decode(strip_tags($child->Notes),
                 ENT_COMPAT, 'UTF-8');
+            $dcaList = DeviceCustomAttribute::GetDeviceCustomAttributeList();
+            foreach ( $dcaList as $dca ) {
+                if ( $dca->AllDevices == 1 ) {
+                    $labelVal = $dca->Label;
+                    $devSpec[$labelVal] = $child->$labelVal;
+                }
+            }
             $wattageTotal += $child->NominalWatts;
             $invData[] = $devSpec;
             $idx += $child->Height;
@@ -1306,6 +1327,15 @@ function computeSheetBodyDCInventory($DProps)
                         $devSpec['Tags'] = getTagsString($dev);
                         $devSpec['Notes'] = html_entity_decode(strip_tags($dev->Notes),
                                 ENT_COMPAT, 'UTF-8');
+
+                        // Add in the All Devices dca values
+                        $dcaList = DeviceCustomAttribute::GetDeviceCustomAttributeList(true);
+                        foreach ( $dcaList as $dca ) {
+                            if ( $dca->AllDevices == 1 ) {
+                                $labelVal = $dca->Label;
+                                $devSpec[$labelVal] = $dev->$labelVal;
+                            }
+                        }
                         $invData[] = $devSpec;
                         $dcStats['Watts'] += $dev->NominalWatts;
                         // devices can be installed at the same position and
