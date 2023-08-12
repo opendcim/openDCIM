@@ -1442,8 +1442,8 @@ class Device {
 		global $person;
 
 		// You can't trust that the $filterrights=true was set
-		if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
-			$isolationSQL = "and Cabinet in (select a.CabinetID from fac_Cabinet a, fac_DataCenter b where a.CabinetID=b.CabinetID and a.DataCenterID=b.DataCenterID and b.countryCode='".$person->countryCode."')";
+		if ( !$person->SiteAdmin && $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+			$isolationSQL = "and Cabinet in (select CabinetID from fac_Cabinet a, fac_DataCenter b where a.DataCenterID=b.DataCenterID and b.countryCode='".$person->countryCode."')";
 		} else {
 			$isolationSQL = "";
 		}
