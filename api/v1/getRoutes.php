@@ -371,6 +371,7 @@ $app->get( '/cabinet/{cabinetid}/sensor', function( Request $request, Response $
 //
 
 $app->get( '/device', function(Request $request, Response $response) {
+	// Device class will already filter based on CountryIsolation if enabled, so no checks needed in here
 	$dev=new Device();
 	
 	$r['error']=false;
@@ -390,7 +391,7 @@ $app->get( '/device', function(Request $request, Response $response) {
 		}
 	}
 	
-	$devList = $dev->Search( false, $loose );
+	$devList = $dev->Search( false, $loose, true );
 
 	$r['device']=specifyAttributes( $outputAttr, $devList );
 

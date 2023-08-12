@@ -289,12 +289,18 @@ class Device {
 			$this->Rights=($cab->Rights=="Write")?"Write":$this->Rights; // write because the cabinet is assigned
 		}
 		if ( !$person->SiteAdmin && ($config->ParameterArray["GDPRCountryIsolation"] == "enabled" || $config->ParameterArray["GDPRPIIPrivacy"] == "enabled" )) {
+			error_log( "Isolation or Privacy section entered" );
 			$cab->GetCabinet();
 			$dc = new DataCenter();
 			$dc->DataCenterID=$cab->DataCenterID;
 			$dc->GetDataCenterbyID();
-			if ( $dc->countryCode != $person->countryCode && $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+			if ( !$person->SiteAdmin && $dc->countryCode != $person->countryCode && $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+				error_log( "-> Isolation section entered" );
 				$this->Rights = 'None';
+				foreach($this as $prop=>$val) {
+					$this->$prop=null;
+				}
+				return;
 			} else {
 				// PII Privacy only requires that we anonymize any user information, but they can still see the asset
 				$this->PrimaryContact = 0;
@@ -1045,10 +1051,17 @@ class Device {
 	}
 	
 	function GetDeviceList( $datacenterid=null ) {
+		global $config;
+		global $person;
+
 		if ( $datacenterid == null ) {
 			$dcLimit = "";
 		} else {
 			$dcLimit = "and b.DataCenterID=" . $datacenterid;
+		}
+
+		if ( !$person->SiteAdmin and $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+			$dcLimit .= " and b.countryCode='".$person->countryCode."'";
 		}
 		
 		$sql = "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID $dcLimit order by b.DataCenterID ASC, Label ASC";
@@ -1425,6 +1438,16 @@ class Device {
 	
 	function Search($indexedbyid=false,$loose=false,$filterrights=false){
 		global $dbh;
+		global $config;
+		global $person;
+
+		// You can't trust that the $filterrights=true was set
+		if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+			$isolationSQL = "and Cabinet in (select CabinetID from fac_Cabinet a, fac_DataCenter b where a.DataCenterID=b.DataCenterID and b.countryCode='".$person->countryCode."')";
+		} else {
+			$isolationSQL = "";
+		}
+
 		$o=array();
 		// Store any values that have been added before we make them safe 
 		foreach($this as $prop => $val){
@@ -1460,7 +1483,7 @@ class Device {
 		if($customSQL!=""){
 			$customSQL="AND DeviceID IN (SELECT DeviceID FROM fac_DeviceCustomValue $customSQL)";
 		}
-		$sql="SELECT * FROM fac_Device $sqlextend $customSQL ORDER BY Label ASC;";
+		$sql="SELECT * FROM fac_Device $sqlextend $customSQL $isolationSQL ORDER BY Label ASC;";
 
 		$deviceList=array();
 
