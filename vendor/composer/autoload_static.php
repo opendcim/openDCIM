@@ -12,8 +12,8 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
-        'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
         '253c157292f75eb38082b5acb06f3f01' => __DIR__ . '/..' . '/nikic/fast-route/src/functions.php',
+        'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -55,6 +55,7 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         ),
         'M' => 
         array (
+            'MyCLabs\\Enum\\' => 13,
             'Mpdf\\PsrLogAwareTrait\\' => 22,
             'Mpdf\\' => 5,
             'Matrix\\' => 7,
@@ -140,6 +141,10 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         'OneLogin\\' => 
         array (
             0 => __DIR__ . '/..' . '/onelogin/php-saml/src',
+        ),
+        'MyCLabs\\Enum\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
         ),
         'Mpdf\\PsrLogAwareTrait\\' => 
         array (
@@ -249,6 +254,7 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         'SensorReadings' => __DIR__ . '/../..' . '/classes/SensorReadings.class.php',
         'SensorTemplate' => __DIR__ . '/../..' . '/classes/SensorTemplate.class.php',
         'Slot' => __DIR__ . '/../..' . '/classes/Slot.class.php',
+        'Stringable' => __DIR__ . '/..' . '/myclabs/php-enum/stubs/Stringable.php',
         'Supplies' => __DIR__ . '/../..' . '/classes/Supplies.class.php',
         'SupplyBin' => __DIR__ . '/../..' . '/classes/SupplyBin.class.php',
         'SwitchInfo' => __DIR__ . '/../..' . '/classes/SwitchInfo.class.php',

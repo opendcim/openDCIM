@@ -58,6 +58,7 @@ return array(
     'SensorReadings' => $baseDir . '/classes/SensorReadings.class.php',
     'SensorTemplate' => $baseDir . '/classes/SensorTemplate.class.php',
     'Slot' => $baseDir . '/classes/Slot.class.php',
+    'Stringable' => $vendorDir . '/myclabs/php-enum/stubs/Stringable.php',
     'Supplies' => $baseDir . '/classes/Supplies.class.php',
     'SupplyBin' => $baseDir . '/classes/SupplyBin.class.php',
     'SwitchInfo' => $baseDir . '/classes/SwitchInfo.class.php',

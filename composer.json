@@ -15,10 +15,16 @@
     "require": {
 	"slim/slim": "3.*",
         "zzantares/proxmoxve": "^4.1",
+	"maennchen/zipstream-php": "^2.1",
         "phpoffice/phpspreadsheet": "^1.29",
         "jumbojett/openid-connect-php": "^0.9.10",
         "phpmailer/phpmailer": "^6.8",
         "onelogin/php-saml": "^4.1",
         "mpdf/mpdf": "^8.1"
+    },
+    "config": {
+	"platform": {
+	    "php": "8.0.1"
+	}
     }
 }

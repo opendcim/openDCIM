@@ -12,10 +12,7 @@ Example
 ---------------
 
 .. code-block:: php
-
+    
     $stream = $response->getBody();
     // add a file named 'streamfile.txt' from the content of the stream
-    $zip->addFileFromPsr7Stream(
-        fileName: 'streamfile.txt',
-        stream: $stream,
-    );
+    $zip->addFileFromPsr7Stream('streamfile.txt', $stream);
