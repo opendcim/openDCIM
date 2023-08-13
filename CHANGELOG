@@ -6,6 +6,15 @@ GitHub, at http://github.com/opendcim/openDCIM/issues, where you can also downlo
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 23.03
+----------------
+* Resolved error in bulk_network.php
+* Upgraded Slim Framework from v2 (deprecated, not technically PHP 8 compatible) to v3
+* Cleaned up an issue where an emtpy query string was sent to an IdP with SAML login
+* Created API routes to allow for scripting your own remote agent pollers
+* Updated the agent polling scripts to allow you to filter based upon Container/Zone/Row/etc for geodiversity
+* Added features for GDPR Compliance.   See https://github.com/opendcim/openDCIM/wiki/GDPRIsolation for details.
+
 Changes in 23.02
 ----------------
 * UI Bug Fixes related to jquery upgrades in 23.01
