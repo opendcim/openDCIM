@@ -143,6 +143,10 @@ function redirect($target = null) {
 	$installURL=rtrim($installURL,"/");
 	// Check if our $installURL value is blank
 	if($installURL!=""){
+		// since we need the full path for the reporting to be able to use installURL it causes 
+		// issues for the redirect function.  str_replace will remove the repeated string from 
+		// the baseURL so that we don't end up doubling up to a path that doesn't exist
+		$installURL=str_replace(path(),"",$installURL);
 		// $installURL isn't blank so combine it with the target to get a valid redirect target
 		$url = $installURL.$target;
 	}else{
