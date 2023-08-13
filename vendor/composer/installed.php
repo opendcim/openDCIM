@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'cbad5fbd0465ccff387fde3503b0ce90fa2bfd05',
+        'reference' => 'c2dea0454a6c14bb56b4b5c388044da4cd305476',
         'name' => 'opendcim/opendcim',
         'dev' => true,
     ),
@@ -142,7 +142,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'cbad5fbd0465ccff387fde3503b0ce90fa2bfd05',
+            'reference' => 'c2dea0454a6c14bb56b4b5c388044da4cd305476',
             'dev_requirement' => false,
         ),
         'paragonie/constant_time_encoding' => array(
