@@ -105,7 +105,7 @@ class People {
 		$person->FirstName=$row["FirstName"];
 		$person->Phone1=$row["Phone1"];
 		$person->Phone2=$row["Phone2"];
-		$person->countryCode=$row["countryCode"];
+		$person->countryCode=@$row["countryCode"];
 		$person->Email=$row["Email"];
 		$person->AdminOwnDevices=$row["AdminOwnDevices"];
 		$person->ReadAccess=$row["ReadAccess"];
@@ -242,7 +242,9 @@ class People {
 			$cperson->GetUserRights();
 		}
 
-		$dbh->exec("update fac_People set LastActivity=NOW() where PersonID=".$cperson->PersonID);
+		if ( intval($cperson->PersonID)>0 ) {
+			$dbh->exec("update fac_People set LastActivity=NOW() where PersonID=".$cperson->PersonID);
+		}
 		
 		return $cperson;
 	}

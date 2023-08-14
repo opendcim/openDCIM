@@ -231,11 +231,11 @@ function upgrade(){
 		$config->rebuild();		
 	}
 	if($version=="23.02"){
-                error_log("Applying database update from 23.02 to 23.03");
-                $results[]=applyupdate("db-23.02-to-23.03.sql");
+        error_log("Applying database update from 23.02 to 23.03");
+        $results[]=applyupdate("db-23.02-to-23.03.sql");
 
-                $config->rebuild();
-        }
+        $config->rebuild();
+    }
 }
 
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.

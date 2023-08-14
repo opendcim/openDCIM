@@ -265,6 +265,9 @@ if(isset($results)){
 		}
 	}
 	print "<p>Anything shown here is just a notice.  It is not necessarily an error.  We will occasionally have to repeat database modifications that will fail and will show here. <b>This is behavior is to be expected</b>. Take note of any errors displayed in red then press F5 to reload this page until it goes to the configuration screen.</p>";
+	if ( array_key_exists( "Version", $config->ParameterArray )) {
+		" <h3>Current Version: ".$config->ParameterArray["Version"]."</h3>";
+	}
 }else{
 	echo '<meta http-equiv="refresh" content="0; url=index.php">';
 }
