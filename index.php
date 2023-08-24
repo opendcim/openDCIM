@@ -147,8 +147,8 @@ echo '
 </div> <!-- END div.table -->
 	<div>';
 
-if( file_exists("sitecontact.html") ) {
-	include( "sitecontact.html" );
+if( file_exists("assets/sitecontact.html") ) {
+	include( "assets/sitecontact.html" );
 }
 echo '	</div>
 </div>
