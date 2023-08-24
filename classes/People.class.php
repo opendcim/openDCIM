@@ -76,6 +76,8 @@ class People {
 	}
 	
 	function MakeDisplay(){
+		global $locale;
+
 		$this->PersonID=intval($this->PersonID);
 		$this->UserID=sanitize($this->UserID);
 		$this->LastName=stripslashes($this->LastName);
@@ -94,7 +96,6 @@ class People {
 		$this->BulkOperations=intval($this->BulkOperations);
 		$this->SiteAdmin=intval($this->SiteAdmin);
 		$this->Disabled=intval($this->Disabled);
-		$this->ExpirationDate=stripslashes($this->ExpirationDate);
 	}
 
 	static function RowToObject($row){
@@ -433,7 +434,12 @@ class People {
 	
 	function UpdatePerson() {
 		$this->MakeSafe();
-		
+		if ( $this->ExpirationDate != "" ) {
+			$formattedDate = date("Y-m-d", strtotime($this->ExpirationDate));
+		} else {
+			$formattedDate = null;
+		}
+
 		$sql="UPDATE fac_People SET UserID=\"$this->UserID\", LastName=\"$this->LastName\", 
 			FirstName=\"$this->FirstName\", Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", 
 			countryCode=\"$this->countryCode\", Email=\"$this->Email\", 
@@ -441,7 +447,7 @@ class People {
 			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
 			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
 			RackAdmin=$this->RackAdmin, BulkOperations=$this->BulkOperations, SiteAdmin=$this->SiteAdmin,
-			APIKey=\"$this->APIKey\", Disabled=$this->Disabled
+			APIKey=\"$this->APIKey\", ExpirationDate=\"$formattedDate\", Disabled=$this->Disabled
 			WHERE PersonID=$this->PersonID;";
 			
 		if ( $this->query( $sql ) ) {
