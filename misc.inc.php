@@ -1239,7 +1239,7 @@ function pdo_debugParams($stmt) {
 }
 
 function myThoughts() {
-	return __("Putin khulyo!");
+	return __("Putin khuylo!");
 }
 
 class JobQueue {
