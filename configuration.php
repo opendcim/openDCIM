@@ -579,9 +579,9 @@
 		$("#imageselection span.image").each(function(){
 			var preview=$('#imageselection #preview');
 			var dirpath=$('#imageselection #directoryselectionvalue');
-			$(this).click(function(){
+			$(this).click(function(e){
 				preview.html('<img src="'+dirpath.val()+$(this).text()+'" alt="preview">').attr('image',$(this).text()).css('border-width', '5px');
-				preview.children('img').load(function(){
+				preview.children('img').on('load',function(){
 					var topmargin=0;
 					var leftmargin=0;
 					if($(this).height()<$(this).width()){
