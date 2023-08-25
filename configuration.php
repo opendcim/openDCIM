@@ -807,7 +807,7 @@
 					modal: true,
 					buttons: {
 	<?php echo '					',__("Select"),': function() {'; ?>
-							input.value=$('#directoryselectionvalue').val();
+							input.value=$('#directoryselection #directoryselectionvalue').val();
 							$(input).trigger('change');
 							$(this).dialog("destroy");
 						}
