@@ -152,7 +152,7 @@
 				$(this).click(function(){
 					preview.css({'border-width': '5px', 'width': '380px', 'height': '380px'});
 					preview.html("<img src=\"<?php echo $config->ParameterArray["drawingpath"]; ?>"+$(this).text()+'" alt="preview">').attr('image',$(this).text());
-					preview.children('img').load(function(){
+					preview.children('img').on('load', function(){
 						var topmargin=0;
 						var leftmargin=0;
 						if($(this).height()<$(this).width()){

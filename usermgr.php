@@ -336,7 +336,7 @@ echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact 
 </div> <!-- END div.main -->
 </div> <!-- END div.page -->
 <script type="text/javascript">
-$('iframe').load(function() {
+$('iframe').on('load', function() {
     this.style.height =
     this.contentWindow.document.body.offsetHeight + 'px';
 }).attr({frameborder:0,scrolling:'no'});

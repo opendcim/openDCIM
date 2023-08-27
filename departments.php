@@ -248,7 +248,7 @@
 </div> <!-- END div.page -->
 </body>
 <script type="text/javascript">
-$('iframe').load(function() {
+$('iframe').on('load', function() {
     this.style.height =
     this.contentWindow.document.body.offsetHeight + 'px';
 });
