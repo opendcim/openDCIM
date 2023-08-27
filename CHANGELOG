@@ -9,6 +9,8 @@ are simply testing, as some functionality can break between releases.
 Changes in 23.03
 ----------------
 * Resolved error in bulk_network.php
+* Fixed the Data Center Asset Report (Excel) and also added any Device Custom Attributes that are applied to all devices
+* Fixed the issue with trying to remove the last item from a Project
 * Upgraded Slim Framework from v2 (deprecated, not technically PHP 8 compatible) to v3
 * Cleaned up an issue where an emtpy query string was sent to an IdP with SAML login
 * Created API routes to allow for scripting your own remote agent pollers
