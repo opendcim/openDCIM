@@ -1455,7 +1455,7 @@ $(document).ready(function() {
 					}).then(refreshdevice($('#DeviceType').val(),$('#DeviceID').val(),true));
 				});
 			});
-		}).error(function(data){
+		}).fail(function(data){
 			$('#messages').text('data.message');
 		});
 

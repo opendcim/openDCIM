@@ -1670,7 +1670,7 @@
 								window.picturepathupdated=false;
 							}
 						}
-					}).error(function(){
+					}).fail(function(){
 						$('#messages').text('Something is broken');
 					});
 			}

@@ -486,15 +486,15 @@ function convertImgToBase64(url, imgobj) {
 
 							// Create ports
 							for(var i in row.data("globaldataports")){
-								$.ajax({type: postorput,url: 'api/v1/devicetemplate/'+data.devicetemplate.TemplateID+'/dataport/'+(parseInt(i)+1),async: false,data: row.data("globaldataports")[i]}).complete(function(data){});
+								$.ajax({type: postorput,url: 'api/v1/devicetemplate/'+data.devicetemplate.TemplateID+'/dataport/'+(parseInt(i)+1),async: false,data: row.data("globaldataports")[i]}).always(function(data){});
 							}
 							for(var i in row.data("globalpowerports")){
-								$.ajax({type: postorput,url: 'api/v1/devicetemplate/'+data.devicetemplate.TemplateID+'/powerport/'+(parseInt(i)+1),async: false,data: row.data("globalpowerports")[i]}).complete(function(data){});
+								$.ajax({type: postorput,url: 'api/v1/devicetemplate/'+data.devicetemplate.TemplateID+'/powerport/'+(parseInt(i)+1),async: false,data: row.data("globalpowerports")[i]}).always(function(data){});
 							}
 
 							// Create slots
 							for(var i in row.data("globalslots")){
-								$.ajax({type: postorput,url: 'api/v1/devicetemplate/'+data.devicetemplate.TemplateID+'/slot/'+(parseInt(i)+1),async: false,data: row.data("globalslots")[i]}).complete(function(data){});
+								$.ajax({type: postorput,url: 'api/v1/devicetemplate/'+data.devicetemplate.TemplateID+'/slot/'+(parseInt(i)+1),async: false,data: row.data("globalslots")[i]}).always(function(data){});
 							}
 						}else{
 							row.removeClass('change');
