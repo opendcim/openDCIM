@@ -1053,7 +1053,7 @@ $write=($dev->Rights=="Write")?true:$write;
   <script type="text/javascript" src="scripts/mdetect.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
-  <script type="text/javascript" src="scripts/jquery-te-1.4.0.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery-te-1.4.0.js"></script>
   <script type="text/javascript" src="scripts/jquery.textext.js"></script>
   <script type="text/javascript" src="scripts/common.js?v<?php echo filemtime('scripts/common.js');?>"></script>
 
