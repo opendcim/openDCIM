@@ -610,7 +610,9 @@ class Device {
 		global $dbh;
 		if($this->GetDevice() && $new->GetDevice()) {
 			$sql="INSERT INTO fac_DeviceCustomValue(DeviceID, AttributeID, Value) 
-				SELECT $new->DeviceID, dcv.AttributeID, dcv.Value FROM fac_DeviceCustomValue dcv WHERE dcv.DeviceID=$this->DeviceID;";
+				SELECT $new->DeviceID, dcv.AttributeID, dcv.Value 
+				FROM fac_DeviceCustomValue, dcv WHERE dcv.DeviceID=$this->DeviceID
+				ON DUPLICATE KEY UPDATE Value=dcv.Value;";
 
 			if(!$dbh->query($sql)){
 				$info=$dbh->errorInfo();
