@@ -820,7 +820,8 @@ $app->get( '/colorcode', function(Request $request, Response $response) {
 //	Returns:  All defined color codes matching :colorid 
 //
 
-$app->get( '/colorcode/:colorid', function( Request $request, Response $response, $args ) {
+$app->get( '/colorcode/{colorid}', function( Request $request, Response $response, $args ) {
+	$colorid = intval($args["colorid"]);
 	$cc=new ColorCoding();
 	$cc->ColorID=$colorid;
 	
@@ -844,7 +845,8 @@ $app->get( '/colorcode/:colorid', function( Request $request, Response $response
 //	Returns:  Number of objects using :colorid 
 //
 
-$app->get( '/colorcode/:colorid/timesused', function( Request $request, Response $response, $args ) {
+$app->get( '/colorcode/{colorid}/timesused', function( Request $request, Response $response, $args ) {
+	$colorid = intval($args["colorid"]);
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['colorcode']=ColorCoding::TimesUsed($colorid);
@@ -897,7 +899,9 @@ $app->get( '/devicetemplate', function(Request $request, Response $response) {
 //  path might be revisited.
 //
 
-$app->get( '/devicetemplate/:templateid', function( Request $request, Response $response, $args ) {
+$app->get( '/devicetemplate/{templateid}', function( Request $request, Response $response, $args ) {
+	$templateid = $args["templateid"];
+
 	if($templateid=='image'){
 		$r['error']=false;
 		$r['errorcode']=200;
@@ -925,7 +929,9 @@ $app->get( '/devicetemplate/:templateid', function( Request $request, Response $
 //	Returns: Data ports defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/:templateid/dataport', function( Request $request, Response $response, $args ) {
+$app->get( '/devicetemplate/{templateid}/dataport', function( Request $request, Response $response, $args ) {
+	$templateid = $args["templateid"];
+
 	$tp=new TemplatePorts();
 	$tp->TemplateID=$templateid;
 	if(!$ports=$tp->getPorts()){
@@ -948,7 +954,10 @@ $app->get( '/devicetemplate/:templateid/dataport', function( Request $request, R
 //	Returns: Single data port defined for device template with templateid and portnum
 //
 
-$app->get( '/devicetemplate/:templateid/dataport/:portnumber', function( Request $request, Response $response, $args ) {
+$app->get( '/devicetemplate/{templateid}/dataport/{portnumber}', function( Request $request, Response $response, $args ) {
+	$templateid = $args["templateid"];
+	$portnumber = $args["portnumber"];
+
 	$tp=new TemplatePorts();
 	$tp->TemplateID=$templateid;
 	$tp->PortNumber=$portnumber;
@@ -972,7 +981,9 @@ $app->get( '/devicetemplate/:templateid/dataport/:portnumber', function( Request
 //	Returns: Power ports defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/:templateid/powerport', function( Request $request, Response $response, $args ) {
+$app->get( '/devicetemplate/{templateid}/powerport', function( Request $request, Response $response, $args ) {
+	$templateid = intval($args["templateid"]);
+
 	$tp=new TemplatePowerPorts();
 	$tp->TemplateID=$templateid;
 	if(!$ports=$tp->getPorts()){
@@ -995,7 +1006,9 @@ $app->get( '/devicetemplate/:templateid/powerport', function( Request $request, 
 //	Returns: Slots defined for device template with templateid
 //
 
-$app->get( '/devicetemplate/:templateid/slot', function( Request $request, Response $response, $args ) {
+$app->get( '/devicetemplate/{templateid}/slot', function( Request $request, Response $response, $args ) {
+	$templateid = intval($args["templateid"]);
+
 	if(!$slots=Slot::GetAll($templateid)){
 		$r['error']=true;
 		$r['errorcode']=404;
@@ -1058,7 +1071,9 @@ $app->get( '/zone', function(Request $request, Response $response) {
 //	Returns: Zone identified by :zoneid 
 //
 
-$app->get( '/zone/:zoneid', function( Request $request, Response $response, $args ) {
+$app->get( '/zone/{zoneid}', function( Request $request, Response $response, $args ) {
+	$zoneid = intval($args["zoneid"]);
+
 	$zone=new Zone();
 	$zone->ZoneID=$zoneid;
 	
@@ -1103,7 +1118,9 @@ $app->get( '/cabrow', function(Request $request, Response $response) {
 //	Returns:  All devices in the cabinet row 
 //
 
-$app->get( '/cabrow/:cabrowid/devices', function( Request $request, Response $response, $args ) {
+$app->get( '/cabrow/{cabrowid}/devices', function( Request $request, Response $response, $args ) {
+	$cabrowid = intval($args["cabrowid"]);
+
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['device']=Device::SearchDevicebyCabRow($cabrowid);
@@ -1145,7 +1162,9 @@ $app->get( '/sensorreadings', function(Request $request, Response $response) {
 //	Params:	none
 //	Returns:	Sensor readings for :sensorid
 
-$app->get( '/sensorreadings/:sensorid', function( Request $request, Response $response, $args ) {
+$app->get( '/sensorreadings/{sensorid}', function( Request $request, Response $response, $args ) {
+	$sensorid = intval($args["sensorid"]);
+
 	$sensorreadings=new SensorReadings();
 	$sensorreadings->SensorID=$sensorid;
 
@@ -1195,7 +1214,9 @@ $app->get( '/pdustats', function(Request $request, Response $response) use ($per
 //	Params:	pduid
 //	Returns:	PDU Stats reading for pduid
 
-$app->get( '/pdustats/:pduid', function( Request $request, Response $response, $args ) use ($person) {
+$app->get( '/pdustats/{pduid}', function( Request $request, Response $response, $args ) use ($person) {
+	$pduid = intval($args["pduid"]);
+
 	$pdustats=new PDUStats();
 	$pdustats->PDUID=$pduid;
 
@@ -1245,7 +1266,9 @@ $app->get( '/vminventory', function(Request $request, Response $response) {
 //	Params:	vmindex
 //	Returns:	VM Inventory data for vmindex
 
-$app->get( '/vminventory/:vmindex', function( Request $request, Response $response, $args ) {
+$app->get( '/vminventory/{vmindex}', function( Request $request, Response $response, $args ) {
+	$vmindex = intval($args["vmindex"]);
+
 	$vm=new VM();
 	$vm->VMIndex=$vmindex;
 
@@ -1295,7 +1318,9 @@ $app->get( '/powerpanel', function(Request $request, Response $response) {
 //	Params:	panelid
 //	Returns:	Data for panelid
 
-$app->get( '/powerpanel/:panelid', function( Request $request, Response $response, $args ) {
+$app->get( '/powerpanel/{panelid}', function( Request $request, Response $response, $args ) {
+	$panelid = intval($args["panelid"]);
+	
 	$pp=new PowerPanel();
 	$pp->PanelID=$panelid;
 

@@ -338,6 +338,22 @@ class DeviceTemplate {
 			return false;
 		}
 	}
+
+	function GetTemplateByMfgModel() {
+		global $dbh;
+
+		$sql = "select * from fac_DeviceTemplate where ManufacturerID=:mfgID and ucase(Model)=ucase(:model)";
+		$stmt = $dbh->prepare( $sql );
+		$result = $stmt->execute(array( ":mfgID"=>$this->ManufacturerID, ":model"=>$this->Model ));
+		if ( $row = $stmt->fetch() ) {
+			foreach( $row as $prop=>$val ) {
+				$this->$prop = $val;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
   
 	static function GetTemplateList( $indexed=false ){
 		global $dbh;
