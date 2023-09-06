@@ -163,7 +163,7 @@ if (!isset($_REQUEST['action'])){
 		}
 	}
 	
-	if ( @count( $srcArray ) > 0 ) {
+	if ( isset( $srcArray ) && count( $srcArray ) > 0 ) {
 		// Build an array of the Panels affected when the entire source goes down.
 		// This will allow us to use one section of code to calculate effects of panels going down and use it for both cases.
 		
