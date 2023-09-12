@@ -840,21 +840,20 @@
 		});
 		$('<button type="button">').attr({
 				id: 'btn_tzmenu'
-		}).appendTo("#general");
+		}).appendTo($('#timezone').parent('div'));
 		$('#btn_tzmenu').each(function(){
 			var input=$("#timezone");
-			var offset=input.position();
 			var height=input.outerHeight();
 			$(this).css({
 				'height': height+'px',
 				'width': height+'px',
 				'position': 'absolute',
-				'left': offset.left+input.width()-height-((input.outerHeight()-input.height())/2)+'px',
-				'top': offset.top+'px'
+				'right': '-0.5em',
+				'top': '0.25em'
 			}).click(function(){
 				$("#tzmenu").toggle();
 				$("#tzmenu").focus().click();
-			});
+			}).parent('div').css({'position':'relative'});
 			offset=$(this).position();
 			$("#tzmenu").css({
 				'position': 'absolute',
@@ -1804,7 +1803,8 @@ echo '<div class="main">
 			<div class="table" id="timeandmeasurements">
 				<div>
 					<div><label for="timezone">',__("Time Zone"),'</label></div>
-					<div><input type="text" readonly="readonly" id="timezone" defaultvalue="',$config->defaults["timezone"],'" name="timezone" value="',$config->ParameterArray["timezone"],'"></div>
+					<div><input type="text" readonly="readonly" id="timezone" defaultvalue="',$config->defaults["timezone"],'" name="timezone" value="',$config->ParameterArray["timezone"],'">
+			',$tzmenu,'</div>
 				</div>
 				<div>
 					<div><label for="logretention">',__("Log Retention (Days)"),'</label></div>
@@ -1926,7 +1926,6 @@ echo '<div class="main">
 					<div><input type="text" defaultValue="',$config->defaults["ReservationExpiration"],'" name="ReservationExpiration" value="',$config->ParameterArray["ReservationExpiration"],'"></div>
 				</div>
 			</div> <!-- end table -->
-			',$tzmenu,'
 		</div>
 		<div id="workflow">
 			<div class="table">

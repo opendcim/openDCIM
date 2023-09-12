@@ -144,8 +144,13 @@ div#imageselection { display: none;}
 #imageselection #preview { position: absolute; top: 30px; right: 0; height: 340px; width: 340px; margin: 0.1em 0 0 0; padding: 0; border: 0px solid black;}
 #imageselection #filelist { position: absolute; top: 30px; left: 1em; height: 380px; width: 245px; overflow-y: scroll; overflow-x: hidden; white-space: nowrap;}
 
-#configtabs .ui-menu-item ul { max-height: 200px; overflow: auto; }
+#configtabs .ui-menu-item ul { max-height: 200px; /* overflow: auto; */ }
 #tzmenu {display: none;}
+#tzmenu li > a {display: block; width: 100%; line-height: 1.25; color: #aaaaaa !important;}
+#tzmenu li > a.ui-state-active {color: black !important; line-height: 1.5 !important; background: url(images/ui-bg_glass_55_fbf9ee_1x400.png) 50% 50% repeat-x !important;}
+#tzmenu li > ul { overflow-x: hidden; }
+#tzmenu li > ul { -ms-overflow-style: none; scrollbar-width: none; }
+#tzmenu li > ul::-webkit-scrollbar { display: none; }
 
 #tooltip, #cdutooltip { min-height: 300px; min-width: 550px; }
 
