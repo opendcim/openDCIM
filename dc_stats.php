@@ -103,7 +103,7 @@
 				}else{
 					list($width, $height, $type, $attr)=getimagesize($mapfile);
 				}
-				$mapHTML="<div class=\"canvas\" style=\"background-image: url('".urlencode($mapfile)."')\">
+				$mapHTML="<div class=\"canvas\" style=\"background-image: url('".$mapfile."')\">
 	<img src=\"css/blank.gif\" usemap=\"#datacenter\" width=\"$width\" height=\"$height\" alt=\"clearmap over canvas\">
 	<map name=\"datacenter\" data-dc=$dc->DataCenterID data-zoom=1 data-x1=0 data-y1=0>
 	</map>
