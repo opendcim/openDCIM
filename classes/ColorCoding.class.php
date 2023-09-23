@@ -96,7 +96,7 @@ class ColorCoding {
 	function GetCodeByName() {
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_ColorCoding WHERE Name='".transform($this->Name)."';";
+		$sql="SELECT * FROM fac_ColorCoding WHERE ucase(Name)=ucase('".transform($this->Name)."');";
 
 		if($row=$dbh->query($sql)->fetch()){
 			$this->ColorID=$row["ColorID"];

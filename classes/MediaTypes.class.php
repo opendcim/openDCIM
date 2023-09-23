@@ -89,7 +89,7 @@ class MediaTypes {
 	function GetTypeByName() {
 		global $dbh;
 		
-		$sql="SELECT * FROM fac_MediaTypes WHERE MediaType='".sanitize($this->MediaType)."';";
+		$sql="SELECT * FROM fac_MediaTypes WHERE UCASE(MediaType)=UCASE('".sanitize($this->MediaType)."')";
 		
 		if(!$row=$dbh->query($sql)->fetch()){
 			return false;
