@@ -149,6 +149,7 @@ while ( $row = $childStmt->fetch() ) {
 			$targetTP->MediaID = $mediaMap[$tpRow["MediaID"]];
 			$targetTP->ColorID = $colorMap[$tpRow["ColorID"]];
 			$targetTP->Notes = $tpRow["Notes"];
+			$targetTP->createPort();
 		}
 
 		$targetPP = new TemplatePowerPorts;
@@ -160,6 +161,7 @@ while ( $row = $childStmt->fetch() ) {
 			$targetTP->PortNumber = $tpRow["PortNumber"];
 			$targetTP->Label = $tpRow["Label"];
 			$targetTP->PortNotes = $tpRow["PortNotes"];
+			$targetTP->createPort();
 		}
 
 		error_log( "Created new DeviceTemplate ID of ".$targetDT->TemplateID." for ".$targetDT->Model );
@@ -173,4 +175,4 @@ $pContainer->Name = $childPrefix;
 $pContainer->countryCode = $childCountryCode;
 $pContainer->CreateContainer();
 
-
+# Now start creating all of the subsequent containers, data centers, zones, and rows
