@@ -14,6 +14,7 @@
 
 	$c = new Country();
 	$countryList = $c->CountryList();
+	$forceCountry = '00'; // set a default to stop some spam
 
 	$dc=new DataCenter();
 	
@@ -279,23 +280,23 @@ echo '	</select></div>
    <div><input class="validate[optional,minSize[1],maxSize[200]]" type="text" name="deliveryaddress" id="deliveryaddress" size="60" maxlength="200" value="',$dc->DeliveryAddress,'"></div>
 </div>
 <div>
-	<div><label for="Country">',__("Country"),'</label></div>
+   <div><label for="Country">',__("Country"),'</label></div>
    <div>';
-   	if ( $forceCountry == "" ) {
-   		print '<select name="countryCode" id="countryCode">';
-   	} else {
-   		print '<select name="countryCode" id="countryCode" disabled>';
-   	}
-   	print '<option value="">None</option>';
-   	foreach($countryList as $countryRow ) {
-   		if (($forceCountry != "" && $forceCountry == $countryRow->countryCode ) || ($dc->countryCode == $countryRow->countryCode) ) {
-   			$selected = 'selected';
-   		} else {
-   			$selected = '';
-   		}
-   		print "<option value=$countryRow->countryCode $selected>" . $countryRow->countryCode . " - " . $countryRow->countryName . "</option>\n";
-   	}
-   	echo '		</select>&nbsp;
+	if ( $forceCountry == "" ) {
+		print '<select name="countryCode" id="countryCode">';
+	} else {
+		print '<select name="countryCode" id="countryCode" disabled>';
+	}
+	print '<option value="">None</option>';
+	foreach($countryList as $countryRow ) {
+		if (($forceCountry != "" && $forceCountry == $countryRow->countryCode ) || ($dc->countryCode == $countryRow->countryCode) ) {
+			$selected = 'selected';
+		} else {
+			$selected = '';
+		}
+		print "<option value={$countryRow->countryCode} {$selected}>{$countryRow->countryCode} - {$countryRow->countryName}</option>\n";
+	}
+echo '		</select>&nbsp;
    </div>
 </div>
 <div>
