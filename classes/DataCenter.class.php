@@ -152,7 +152,7 @@ class DataCenter {
 		// countryCode sanity check if there is a defined country for a defined ContainerID
 		if ( intval($this->ContainerID)>0 ) {
 			$cont = new Container();
-			$cont->ContainerID=$this->ContainerID();
+			$cont->ContainerID=$this->ContainerID;
 			$cont->GetContainer();
 
 			if ( $cont->countryCode != "" ) {
