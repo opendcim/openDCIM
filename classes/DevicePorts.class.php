@@ -57,12 +57,12 @@ class DevicePorts {
 	static function RowToObject($dbRow){
 		$dp=new DevicePorts();
 		$dp->DeviceID=$dbRow['DeviceID'];
-		$dp->PortNumber=$dbRow['PortNumber'];
+		$dp->PortNumber=(int)$dbRow['PortNumber'];
 		$dp->Label=$dbRow['Label'];
 		$dp->MediaID=$dbRow['MediaID'];
 		$dp->ColorID=$dbRow['ColorID'];
-		$dp->ConnectedDeviceID=$dbRow['ConnectedDeviceID'];
-		$dp->ConnectedPort=$dbRow['ConnectedPort'];
+		$dp->ConnectedDeviceID=(int)$dbRow['ConnectedDeviceID'];
+		$dp->ConnectedPort=(int)$dbRow['ConnectedPort'];
 		$dp->Notes=$dbRow['Notes'];
 
 		$dp->MakeDisplay();
@@ -75,7 +75,6 @@ class DevicePorts {
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
-
 		if(!$row=$dbh->query($sql)->fetch()){
 			return false;
 		}else{
@@ -350,13 +349,11 @@ class DevicePorts {
 		$path[$n]->getPort();
 		
 		// Follow the trail until you get no more connections
-		while ( $path[$n]->ConnectedDeviceID > 0 ) {
+		while ( $path[$n]->ConnectedDeviceID > 0 && $path[$n]->ConnectedDeviceID != 'NULL') {
 			$path[++$n] = new DevicePorts();
 			$path[$n]->DeviceID = $path[$n-1]->ConnectedDeviceID;
 			// Patch panels have +/- port numbers to designate front/rear, so as you
 			// traverse the path, you have to flip
-			var_dump($path[$n-1]);
-			var_dump($path[$n]);
 			$path[$n]->PortNumber = -($path[$n-1]->ConnectedPort);
 			$path[$n]->getPort();
 		}
