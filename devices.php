@@ -405,6 +405,7 @@
 			$dp=new DevicePorts();
 			$dp->DeviceID=$_POST['thisdev'];
 			$list=$dp->getPorts();
+
 			if($config->ParameterArray["MediaEnforce"]=='enabled'){
 				$dp->DeviceID=$_POST['swdev'];
 				$dp->PortNumber=$_POST['pn'];
@@ -416,7 +417,7 @@
 				}
 			}
 			foreach($list as $key => $port){
-				if(!is_null($port->ConnectedDeviceID)){
+				if(!is_null($port->ConnectedDeviceID) && $port->ConnectedDeviceID > 0){
 					if($port->ConnectedDeviceID==$_POST['swdev'] && $port->ConnectedPort==$_POST['pn']){
 						// This is what is currently connected so leave it in the list
 					}else{
@@ -446,7 +447,6 @@
 			// Positive and negative numbers have different sorts to make sure that 1 is on top of the list
 			ksort($front);
 			krsort($rear);
-
 			$list=array_replace($front,$rear);
 		}else{
 			$patchpanels=(isset($_POST['rear']))?"true":null;
