@@ -492,7 +492,7 @@ CREATE TABLE fac_People (
   FirstName varchar(40) NOT NULL,
   Phone1 varchar(20) NOT NULL,
   Phone2 varchar(20) NOT NULL,
-  Country char(2) NOT NULL,
+  countryCode char(2) NOT NULL,
   Email varchar(80) NOT NULL,
   APIKey varchar(80) NOT NULL,
   AdminOwnDevices tinyint(1) NOT NULL,
