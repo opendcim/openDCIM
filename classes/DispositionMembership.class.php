@@ -36,7 +36,8 @@ class DispositionMembership {
 	}
 
 	function addDevice() {
-		$st = $this->prepare( "insert into fac_DispositionMembership set DispositionID=:DispositionID, DeviceID=:DeviceID, DispositionDate=NOW(), DisposedBy=:DisposedBy" );
+		// If a device gets disposed accidentally and then moved back into the main table, the ghost record still exists here.  Rather than cause an error 500, just update
+		$st = $this->prepare( "insert into fac_DispositionMembership set DispositionID=:DispositionID, DeviceID=:DeviceID, DispositionDate=NOW(), DisposedBy=:DisposedBy on duplicate key update fac_DispositionMembership set DispositionID=:DispositionID, DispositionDate=NOW(), DisposedBy=:DisposedBy where DeviceID=:DeviceID" );
 		return $st->execute( array( ":DispositionID"=>$this->DispositionID, ":DeviceID"=>$this->DeviceID, ":DisposedBy"=>$this->DisposedBy ));
 	}
 
