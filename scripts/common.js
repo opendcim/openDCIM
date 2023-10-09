@@ -2718,7 +2718,7 @@ function LameLogDisplay(){
 
 					// Add the port to the list of options
 					portlist.append('<option value='+port.PortNumber+'>'+port.Label+'</option>');
-					portlist.data(port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
+					portlist.data('p'+port.PortNumber, {MediaID: port.MediaID, ColorID: port.ColorID});
 				});
 				portlist.change(function(){
 					// If the local port has a media type or color set then honor it first before
@@ -2727,12 +2727,12 @@ function LameLogDisplay(){
 					// hack hack hack hack hack hack. tl;dr I'm too lazy to fix this correctly
 					if(!row.porttype.children('select').val()){
 						row.porttype.children('select').combobox('destroy');
-						row.porttype.children('select').val($(this).data($(this).val()).MediaID);
+						row.porttype.children('select').val($(this).data('p'+$(this).val()).MediaID);
 						row.porttype.children('select').combobox();
 					}
 					if(!row.portcolor.children('select').val()){
 						row.portcolor.children('select').combobox('destroy');
-						row.portcolor.children('select').val($(this).data($(this).val()).ColorID);
+						row.portcolor.children('select').val($(this).data('p'+$(this).val()).ColorID);
 						row.portcolor.children('select').combobox();
 					}
 				});
