@@ -395,7 +395,7 @@
 			$dp->ConnectedDeviceType=$dev->DeviceType;
 			$dp->ConnectedPort=(!is_null($cd->DeviceID) && $dp->ConnectedPort==0)?'':$dp->ConnectedPort;
 			$dp->ConnectedPortLabel=(!is_null($cd->Label) && $cd->Label!='')?$cd->Label:$dp->ConnectedPort;
-			($dp->ConnectedPort<0)?$dp->ConnectedPortLabel.=' ('.__("Rear").')':'';
+			($dp->ConnectedPort<0 && $dp->ConnectedPort!='')?$dp->ConnectedPortLabel.=' ('.__("Rear").')':'';
 			header('Content-Type: application/json');
 			echo json_encode($dp);
 			exit;

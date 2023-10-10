@@ -2750,6 +2750,10 @@ function LameLogDisplay(){
 		delete: function(e) {
 			var row=this;
 			var rear=$(e.target.parentElement).data('rear');
+			// SUT updating the mediatype or color while deleting a connection was saving the new state
+			// set the media type and color values back to whatever they were at the start of the edit
+			row.porttype.find('select').val(row.porttype.data('default'));
+			row.portcolor.find('select').val(row.portcolor.data('default'));
 			if(rear){
 				$(row.rdevice).find('input').val('');
 				row.rdevice.children('select').val(0).trigger('change');
