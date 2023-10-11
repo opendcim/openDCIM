@@ -199,6 +199,8 @@ function resize(){
 			main,cw=$('.main > .center').outerWidth();
 		widesttab+=58;
 
+		mw=(isNaN(mw))?0:mw;
+
 		// find widths
 		width=(cw>mw)?cw:mw;
 		main=(pnw>width)?pnw:width; // Find the largest width of possible content in maindiv
