@@ -220,6 +220,7 @@
 			$cdutemplate->OutletCountOID=$_POST['OutletCountOID'];
 			$cdutemplate->OutletStatusOID=$_POST['OutletStatusOID'];
 			$cdutemplate->OutletStatusOn=$_POST['OutletStatusOn'];
+			$cdutemplate->WattPerOutlet=$_POST['WattPerOutlet'];
 			$cdutemplate->Multiplier=$_POST['Multiplier'];
 			$cdutemplate->OID1=$_POST['OID1'];
 			$cdutemplate->OID2=$_POST['OID2'];
@@ -1006,6 +1007,10 @@ if ( $template->TemplateID > 0 && isset( $deviceList ) ) {
 		<div>
 			<div><label for="OutletStatusOn">',__("Outlet State (On)"),'</label></div>
 			<div><input type="text" name="OutletStatusOn" id="OutletStatusOn" size=40></div>
+		</div>
+		  <div>
+		    <div><label for="WattPerOutlet">',__("Watt per Outlet OID"),'</label></div>
+		    <div><input type="text" name="WattPerOutlet" id="WattPerOutlet" size=40></div>
 		</div>
 		<div>
 		   <div><label for="Multiplier">',__("Multiplier"),'</label></div>
