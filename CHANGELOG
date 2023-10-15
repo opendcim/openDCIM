@@ -6,6 +6,16 @@ GitHub, at http://github.com/opendcim/openDCIM/issues, where you can also downlo
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 23.04
+----------------
+* Resolved UI issue with patch panel entry deletions
+* Resolved UI issue with patch panel editing
+* Corrected SQL in in new installs where admin user was not being created
+* Resolved issue where items that were disposed, then moved back to production, they could not be disposed again
+* Resolved UI issue where image could not be selected for template
+* Resolved some missed API routes causing images to not display in cabinets
+* Resolved issue with Outage Simulator Report when selecting subpanels
+
 Changes in 23.03
 ----------------
 * Resolved error in bulk_network.php
