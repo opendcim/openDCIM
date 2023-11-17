@@ -262,6 +262,23 @@ $(document).ready(function(){
 ?>
 });
 
+function ImageExists(url)
+{
+    var http = new XMLHttpRequest();
+    http.open('HEAD', url, false);
+    http.send();
+    return http.status==404;
+}
+
+if (ImageExists('images%2Fallowencodedslashes.jpg')){
+	$('<div>').attr('title','AllowEncodedSlashes not enabled').html('<img src=images/allowencodedslashes.jpg><br><br>Read the <a href="https://github.com/opendcim/openDCIM/wiki/FAQ#getting-404-trying-to-access-some-linksimages">FAQ</a>').dialog({
+		width: 'auto',
+		height: 'auto',
+		modal: true
+	});
+	console.log('image did not load');
+} 
+
 </script>
 
 </div>
