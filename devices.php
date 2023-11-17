@@ -1307,8 +1307,8 @@ $(document).ready(function() {
 	// Device image previews
 	$('#deviceimages > div > img').
 		on('error',function(){$(this).hide();toggledeviceimages();}).
-		on('load',function(){
-			if($(this).context.width < $(this).context.height){
+		on('load',function(e){
+			if($(this).width < $(this).height){
 				$(this).css({'height':'275px','width':'auto'});
 			}else{
 				$(this).css({'height':'','width':''});
@@ -1323,6 +1323,11 @@ $(document).ready(function() {
 				});
 			});
 			toggledeviceimages();
+		}).
+		each(function(e){
+			if(this.complete){
+				$(this).trigger('load');
+			}
 		});
 
 	function toggledeviceimages(){
