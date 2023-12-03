@@ -98,6 +98,26 @@ while ( $row = $childStmt->fetch() )  {
 
 error_log( "Merged in ".sizeof($mediaMap)." Media Types." );
 
+# Tags
+$sql = "select * from fac_Tags";
+$childStmt = $childDBH->prepare( $sql );
+$childStmt->execute();
+
+$targetTag = new Tags;
+$tagMap = array();
+
+while ( $row = $childStmt->fetch() ) {
+	if ( ! $ttag = $targetTag->FindID( $row["Name"] )) {
+		$targetTag->Name = $row["Name"];
+		$targetTag->CreateTag();
+		$tagMap[$TagID] = $targetTag->TagID
+	} else {
+		$tagMap[$TagID] = $ttag;
+	}
+}
+
+error_log( "Merged in ".sizeof($tagMap)." Tags." );
+
 # Add in the Manufacturer Names along with the mapping to the old db
 $sql = "select * from fac_Manufacturer";
 $childStmt = $childDBH->prepare( $sql );
@@ -171,6 +191,56 @@ while ( $row = $childStmt->fetch() ) {
 	}
 	$dtMap[$row["TemplateID"]] = $targetDT->TemplateID;
 }
+
+# People
+
+$pplMap = array();
+$childPerson = new People();
+$pplSQL = "select * from fac_People";
+$pplStmt = $childDBH->prepare( $pplSQL );
+$pplStmt->execute();
+
+while ( $row = $pplStmt->fetch() ) {
+	foreach( $row as $prop=>$value ) {
+		$childPerson->$prop = $value;
+	}
+
+	// Set the default country for the imported person
+	$childPerson->countryCode = $childCountryCode;
+
+	$childPerson->CreatePerson();
+
+	$pplMap[$row["PersonID"]] = $childPerson->PersonID;
+}
+
+error_log( "Imported ".sizeof($pplMap)." People records." );
+
+# Departments and their Memberships
+$depMap = array();
+$depSQL = "select * from fac_Department";
+$depStmt = $childDBH->prepare( $depSQL );
+$depStmt->execute();
+$childDept = new Department();
+
+while ( $row = $depStmt->fetch() ) {
+	foreach( $row as $prop=>$value ) {
+		$childDept->$prop = $value;
+	}
+	$childDept->DeptID = 0;
+	$childDept->CreateDepartment();
+	$depMap[$row["DeptID"]] = $childDept->DeptID;
+}
+
+$SQL = "select from fac_DeptContacts";
+$stmt = $childDBH->prepare( $SQL );
+$dmSQL = "insert into fac_DeptContacts set DeptID=:deptid, ContactID=:personid";
+$dmStmt = $dbh->prepare( $dmSQL );
+
+while ( $row = $stmt->fetch() ) {
+	$dmStmt->execute( array( ":deptid"=>$depMap[$row["DeptID"]], ":personid"=>$pplMap[$row["ContactID"]] ) );
+}
+
+error_log( "Merged in ".sizeof($depMap)." Departments and their memberships." );
 
 # Create the new top level container that everything else will fit into
 $pContainer = new Container();
@@ -305,10 +375,41 @@ foreach( $ppMap as $oldVal=>$newVal ) {
 
 # Cabinets
 
-# People
+$cabMap = array();
+$cabSQL = "select * from fac_Cabinet";
+$cabStmt = $childDBH->prepare( $cabSQL );
+$cabStmt->execute();
 
-# Departments and their Memberships
+while ( $row = $cabStmt->fetch() ) {
+	$targetCab = new Cabinet;
+	foreach( $row as $prop=>$value ) {
+		if ( ! in_array( $prop, array( "DataCenterID", "ZoneID", "CabRowID" )) ) {
+			$targetCab->$prop = $value;
+		}
+	}
+	$targetCab->DataCenterID = $dcMap[$row["DataCenterID"]];
+	$targetCab->ZoneID = $zMap[$row["ZoneID"]];
+	$targetCab->CabRowID = $cabrowMap[$row["CabRowID"]];
 
+	$targetCab->CreateCabinet();
+
+	$cabMap[$row["CabinetID"]] = $targetCab->CabinetID;
+}
+
+error_log( "Merged in ".sizeof($cabMap)." Cabinets." );
+
+# CabinetTags
+
+$cabTagSQL = "select * from fac_CabinetTags";
+$cabTagStmt = $childDBH->prepare( $cabTagSQL );
+$cabTagStmt->execute();
+
+$newCabTagSQL = "insert into fac_CabinetTags set CabinetID=:cabinetid and TagID=:tagid";
+$newCabStmt = $dbh->prepare( $newCabTagSQL );
+
+while ( $row = $cabStmt->fetch() ) {
+	$newCabStmt->execute( array( ":cabinetid"=>$cabMap[$row["CabinetID"]], ":tagid"=>$tagMap[$row["TagID"]] ));
+}
 
 # Now the nasty stuff...  Devices
 $devMap = array();

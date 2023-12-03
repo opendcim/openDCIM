@@ -196,6 +196,10 @@ class People {
 		global $dbh;
 		
 		$this->MakeSafe();
+
+		if ( $config->ParameterArray["GDPRCountryIsolation"] && $this->countryCode == "" ) {
+			$this->countryCode = $config->ParameterArray["DefaultCountry"];
+		}
 		
 		$sql="INSERT INTO fac_People SET UserID=\"$this->UserID\", LastName=\"$this->LastName\", 
 			FirstName=\"$this->FirstName\", Phone1=\"$this->Phone1\", Phone2=\"$this->Phone2\", 
