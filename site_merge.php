@@ -33,7 +33,7 @@ global $config;
 $config = new Config();
 
 # Set these variables to the correct values
-$childDBServer = "db.opendcim.org";
+$childDBServer = "localhost";
 $childDBName = "dcimchild";
 $childDBPort = 3306;
 $childDBUser = "dcim";
@@ -72,7 +72,8 @@ $colorMap[0] = 0;
 
 while ( $row = $childStmt->fetch() ) {
 	$targetC = new ColorCoding;
-	if ( ! $targetC->GetCodeByName($row["Name"]) ) {
+	$targetC->Name = $row["Name"];
+	if ( ! $targetC->GetCodeByName() ) {
 		$targetC->Name = $row["Name"];
 		$targetC->DefaultNote = $row["DefaultNote"];
 		$targetC->CreateCode();
@@ -92,7 +93,8 @@ $mediaMap[0] = 0;
 
 while ( $row = $childStmt->fetch() )  {
 	$targetM = new MediaTypes;
-	if ( ! $targetM->GetTypeByName($row["MediaType"])) {
+	$targetM->MediaType = $row["MediaType"];
+	if ( ! $targetM->GetTypeByName() ) {
 		$targetM->MediaType = $row["MediaType"];
 		$targetM->ColorID = $colorMap[$row["ColorID"]];
 		$targetM->CreateType();
