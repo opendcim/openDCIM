@@ -194,6 +194,7 @@ class People {
 
 	function CreatePerson() {
 		global $dbh;
+		global $config;
 		
 		$this->MakeSafe();
 
