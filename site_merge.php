@@ -325,6 +325,7 @@ while ( $row = $dcStmt->fetch() ) {
 # Now Zones
 
 $zMap = array();
+$zMap[0] = 0;
 $zSQL = "select * from fac_Zone";
 $zStmt = $childDBH->prepare( $zSQL );
 $zStmt->execute();
@@ -347,6 +348,7 @@ while ( $row = $zStmt->fetch() ) {
 # CabinetRows
 
 $cabrowMap = array();
+$cabRowMap[0] = 0;
 $cSQL = "select * from fac_CabRow";
 $cStmt = $childDBH->prepare( $cSQL );
 $cStmt->execute();
