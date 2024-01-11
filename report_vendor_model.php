@@ -87,9 +87,6 @@
             $mfgName = "All";
         }
 
-        $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_in_memory_serialized;
-        $retcode = \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod);
-
         $workBook = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
     	$workBook->getProperties()->setCreator("openDCIM");
