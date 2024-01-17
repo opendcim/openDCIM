@@ -108,7 +108,7 @@ class ConnectionPath {
 		$port->DeviceID=$this->DeviceID;
 		$port->PortNumber=$this->PortNumber;
 		if ($port->getPort()){
-			if (is_null($port->ConnectedDeviceID) || is_null($port->ConnectedPort)){
+			if (is_null($port->ConnectedDeviceID) || is_null($port->ConnectedPort) || $port->ConnectedDeviceID==0 || $port->ConnectedPort==0){
 				return false;
 			} else {
 				$this->DeviceID=$port->ConnectedDeviceID;

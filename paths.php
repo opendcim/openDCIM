@@ -64,8 +64,7 @@
 	
 	if(isset($_POST['action']) || isset($_REQUEST['pathid']) || (isset($_REQUEST['deviceid']) && isset($_REQUEST['portnumber']))){
 		//Search by deviceid/port
-		if(isset($_REQUEST['deviceid']) && $_REQUEST['deviceid']!=''
-			&& isset($_REQUEST['portnumber']) && $_REQUEST['portnumber']!=''){
+		if(isset($_REQUEST['deviceid']) && $_REQUEST['deviceid']!='' && isset($_REQUEST['portnumber']) && $_REQUEST['portnumber']!=''){
 			
 			$cp=new ConnectionPath();
 			$dev=new Device();
@@ -79,14 +78,11 @@
 			$cp->PortNumber=intval($_REQUEST['portnumber']);
 			$cp->DeviceType=$dev->DeviceType;
 			$cp->Front=true;
-				
 			if (!$cp->GotoHeadDevice()){
 				$status="<blink>".__("There is a loop in this port")."</blink>";
 			} 
 		//Search by label/port
-		}elseif(isset($_POST['label']) && $_POST['label']!=''
-			&& isset($_POST['port']) && $_POST['port']!=''
-			&& $_POST['action']=="DevicePortSearch"){
+		}elseif(isset($_POST['label']) && $_POST['label']!='' && isset($_POST['port']) && $_POST['port']!='' && $_POST['action']=="DevicePortSearch"){
 
 			//Remove control characters tab, enter, etc
 			$label=preg_replace("/[[:cntrl:]]/","",$_POST['label']);
@@ -98,8 +94,7 @@
 			$dev->Label=$label;
 			$devList=$dev->SearchDevicebyLabel();
 			
-			if (isset($_POST['devid']) && $_POST['devid']!=0 &&
-				isset($_POST['label_ant']) && $_POST['label_ant']==$_POST['label']){
+			if (isset($_POST['devid']) && $_POST['devid']!=0 && isset($_POST['label_ant']) && $_POST['label_ant']==$_POST['label']){
 				//by ID1
 				$cp=new ConnectionPath();
 				$cp->DeviceID=intval($_POST['devid']);
@@ -135,11 +130,8 @@
 			}
 				
 			$pathid=$label."[".__("Port").": ".intval($_POST['port'])."]";
-		}
-		
 		//Search by path identifier (in "notes" field)
-		elseif(isset($_POST['pathid']) && $_POST['pathid']!='' && $_POST['action']=="PathIdSearch" 
-			|| isset($_GET['pathid']) && $_GET['pathid']!=''){
+		}elseif(isset($_POST['pathid']) && $_POST['pathid']!='' && $_POST['action']=="PathIdSearch" || isset($_GET['pathid']) && $_GET['pathid']!=''){
 			$status="";
 			if (isset($_GET['pathid'])) {
 				$pathid=$_GET['pathid'];
@@ -168,8 +160,7 @@
 					$status="<blink>".__("There is a loop in this port")."</blink>";
 				} 
 			}
-		}
-		else{
+		}else{
 			$status="<blink>".__("Error")."</blink>";
 		}
 		
@@ -276,7 +267,7 @@
 					//connection for next row
 					$conex="\t\t<td class=\"connection-$tipo_con-3\">&nbsp;</td>\n";
 					$conex.="\t\t<td class=\"connection-$tipo_con-2\">&nbsp;</td>\n\t<td></td></tr>\n";
-					if ($cp->GotoNextDevice()) {
+					if ($cp->GotoNextDevice()){
 						$tipo_con=($cp->PortNumber>0)?"r":"f";  //In connection type
 
 						//row separation between patch rows: draw the connection between panels
@@ -284,12 +275,12 @@
 						$path.="\t\t<td class=\"connection-$tipo_con-3\">&nbsp;</td>\n";
 						$path.=$conex;
 						$path.="\n<tr>\n\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t\t<td>";
-					} else {
+					}else{
 						//End of path
 						$end=true;
 					}
 					
-				} else {
+				}else{
 				//A row with two devices
 					//I get device Lineage (for multi level chassis)
 					$devList=array();
@@ -370,8 +361,7 @@
 							// I prepare row separation between patch rows
 							$conex="\t\t<td class=\"connection-$tipo_con-3\">&nbsp;</td>\n";
 							$conex.="\t\t<td class=\"connection-$tipo_con-2\">&nbsp;</td>\n\t<td></td></tr>\n";
-						}
-						else{
+						}else{
 							$conex="\t\t<td></td>\t\t<td></td>\n\t<td></td></tr>";
 							$path.="\n\t\t<td>";
 						}
@@ -441,14 +431,14 @@
 							$path.="\t\t<td class=\"connection-$tipo_con-3\">&nbsp;</td>\n";
 							$path.=$conex;
 							$path.="\n<tr>\n\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t\t<td>";
-						} else {
+						}else{
 							//End of path
 							$path.="\t<tr>\n\t\t<td></td><td>&nbsp;</td>\n";
 							$path.="\t\t<td>&nbsp;</td>\n";
 							$path.=$conex;
 							$end=true;
 						}
-					}else {
+					}else{
 						//End of path
 						$path.="\n\t\t<td></td>\n\t\t<td></td>\n\t\t<td>&nbsp;&nbsp;&nbsp;</td>\n\t</tr>\n";
 						$end=true;

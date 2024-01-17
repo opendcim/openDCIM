@@ -1,5 +1,24 @@
 <?php
 
+#https://stackoverflow.com/a/43699922
+function get_base_url() {
+	$protocol = filter_input(INPUT_SERVER, 'REQUEST_SCHEME');
+	if (empty($protocol)) {
+		$protocol = "http";
+	}
+	$host = filter_input(INPUT_SERVER, 'HTTP_HOST');
+	$request_uri_full = filter_input(INPUT_SERVER, 'REQUEST_URI');
+	$last_slash_pos = strrpos($request_uri_full, "/");
+	if ($last_slash_pos === FALSE) {
+		$request_uri_sub = $request_uri_full;
+	}else{
+		$request_uri_sub = substr($request_uri_full, 0, $last_slash_pos + 1);
+	}
+
+	return $protocol . "://" . $host . $request_uri_sub;
+}
+
+
 // Pre-Flight check
 	$tests=array();
 	$errors=0;
@@ -269,6 +288,18 @@
 		$tests['web_server']['message']="Did not detect a supported web server. Server Detected: <b> {$_SERVER['SERVER_SOFTWARE']}</b>";
 		$errors++;
 	}
+
+	$url = get_base_url().'images%2Fallowencodedslashes.jpg';
+	$array = get_headers($url);
+	if(strpos($array[0],"404")){
+		$tests['EncodedSlashes']['state']="warning";
+		$tests['EncodedSlashes']['message']='Apache does not appear to be rewriting URLs correctly. Check your AllowEncodedSlashes directive and change to "AllowEncodedSlashes On"<br><br><b>READ THE FAQ</b> <a href="https://github.com/opendcim/openDCIM/wiki/FAQ#getting-404-trying-to-access-some-linksimages" target="_blank">https://github.com/opendcim/openDCIM/wiki/FAQ#getting-404-trying-to-access-some-linksimages</a>';
+	}else{
+		$tests['EncodedSlashes']['state']="good";
+	}
+
+
+
 
 	if ($errors >0 || !isset($_GET['preflight-ok'])) {
         echo '<!doctype html><html><head><title>openDCIM :: pre-flight environment sanity check</title><script type="text/javascript" src="scripts/jquery.min.js"></script><style type="text/css">table{width:80%;border-collapse:collapse;border:3px solid black;}th{text-align:left;text-transform:uppercase;border-right: 1px solid black;}th,td{padding:5px;}tr:nth-child(even){background-color:#d1e1f1;}td:last-child{text-align:center;text-transform:uppercase;border:2px solid;background-color:green;}.fail td:last-child{font-weight: bold;background-color: red;}.warning td:last-child{font-weight: bold;background-color: yellow;}.hide{display: none;}</style></head><body><span id="sped"><a href="https://wiki.opendcim.org/wiki/index.php/System_Requirements" target="_blank">System Requirements</a> | <a href="https://wiki.opendcim.org/wiki/index.php/Installation" target="_blank">Installation Guide</a></span><table>';

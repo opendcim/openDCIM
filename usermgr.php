@@ -112,6 +112,19 @@
 	$(document).ready(function(){
 		$('.main form').validationEngine();
 
+		function DataValidationIsDumb(e){
+			if(this.checked){
+				$(this).attr('checked','checked');
+			}else{
+				$(this).removeAttr('checked');
+			}
+			$('.main form').validationEngine('detach');
+			$('.main form').validationEngine('attach');
+		}
+
+		$('#RackRequest').on('change',DataValidationIsDumb)
+
+
 		$('#PersonID').change(function(e){
 			location.href='?PersonID='+this.value;
 		});

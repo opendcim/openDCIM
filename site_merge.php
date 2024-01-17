@@ -29,14 +29,17 @@ if ( php_sapi_name() != "cli" ) {
 require_once('db.inc.php');
 require_once('facilities.inc.php');
 
+global $config;
+$config = new Config();
+
 # Set these variables to the correct values
-$childDBServer = "mysql.opendcim.org";
-$childDBName = "dcim2";
+$childDBServer = "localhost";
+$childDBName = "dcimchild";
 $childDBPort = 3306;
 $childDBUser = "dcim";
 $childDBPassword = "dcim";
-$childCountryCode = "US";
-$childPrefix = "site2";
+$childCountryCode = "CA";
+$childPrefix = "Canada";
 
 $pdo_options=array(
 	PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
@@ -64,11 +67,13 @@ $sql = "select * from fac_ColorCoding";
 $childStmt = $childDBH->prepare( $sql );
 $childStmt->execute();
 
-$targetC = new ColorCoding;
 $colorMap = array();
+$colorMap[0] = 0;
 
 while ( $row = $childStmt->fetch() ) {
-	if ( ! $targetC->GetCodeByName($row["Name"]) ) {
+	$targetC = new ColorCoding;
+	$targetC->Name = $row["Name"];
+	if ( ! $targetC->GetCodeByName() ) {
 		$targetC->Name = $row["Name"];
 		$targetC->DefaultNote = $row["DefaultNote"];
 		$targetC->CreateCode();
@@ -83,11 +88,13 @@ $sql = "select * from fac_MediaTypes";
 $childStmt = $childDBH->prepare($sql);
 $childStmt->execute();
 
-$targetM = new MediaTypes;
 $mediaMap = array();
+$mediaMap[0] = 0;
 
 while ( $row = $childStmt->fetch() )  {
-	if ( ! $targetM->GetTypeByName($row["MediaType"])) {
+	$targetM = new MediaTypes;
+	$targetM->MediaType = $row["MediaType"];
+	if ( ! $targetM->GetTypeByName() ) {
 		$targetM->MediaType = $row["MediaType"];
 		$targetM->ColorID = $colorMap[$row["ColorID"]];
 		$targetM->CreateType();
@@ -98,17 +105,38 @@ while ( $row = $childStmt->fetch() )  {
 
 error_log( "Merged in ".sizeof($mediaMap)." Media Types." );
 
+# Tags
+$sql = "select * from fac_Tags";
+$childStmt = $childDBH->prepare( $sql );
+$childStmt->execute();
+
+$tagMap = array();
+
+while ( $row = $childStmt->fetch() ) {
+	$targetTag = new Tags;
+	if ( ! $ttag = $targetTag->FindID( $row["Name"] )) {
+		$targetTag->Name = $row["Name"];
+		$targetTag->CreateTag();
+		$tagMap[$row["TagID"]] = $targetTag->TagID;
+	} else {
+		$tagMap[$row["TagID"]] = $ttag;
+	}
+}
+
+error_log( "Merged in ".sizeof($tagMap)." Tags." );
+
 # Add in the Manufacturer Names along with the mapping to the old db
 $sql = "select * from fac_Manufacturer";
 $childStmt = $childDBH->prepare( $sql );
 $childStmt->execute();
 
-$targetM = new Manufacturer;
 $mfgMap = array();
 
 while ( $row = $childStmt->fetch() ) {
+	$targetM = new Manufacturer;
 	# Search for the exact spelling of this one in the existing db, if not, add it
 	$targetM->Name = $row["Name"];
+	error_log( "Searching for Manufacturer Name: ".$targetM->Name );
 	if ( ! $targetM->GetManufacturerByName() ) {
 		$targetM->GlobalID = null;
 		$targetM->SubscribeToUpdates = null;
@@ -126,10 +154,10 @@ $sql = "select * from fac_DeviceTemplate";
 $childStmt = $childDBH->prepare( $sql );
 $childStmt->execute();
 
-$targetDT = new DeviceTemplate;
 $dtMap = array();
 
 while ( $row = $childStmt->fetch() ) {
+	$targetDT = new DeviceTemplate;
 	$targetDT->ManufacturerID = $mfgMap[$row["ManufacturerID"]];
 	$targetDT->Model = $row["Model"];
 	if ( ! $targetDT->GetTemplateByMfgModel() ) {
@@ -160,17 +188,78 @@ while ( $row = $childStmt->fetch() ) {
 		$tpStmt = $childDBH->prepare( $tpSQL );
 		$tpStmt->execute( array( ":templateid"=>$row["TemplateID"]));
 		while ($tpRow = $tpStmt->fetch() ) {
-			$targetTP->TemplateID = $targetDT->TemplateID;
-			$targetTP->PortNumber = $tpRow["PortNumber"];
-			$targetTP->Label = $tpRow["Label"];
-			$targetTP->PortNotes = $tpRow["PortNotes"];
-			$targetTP->createPort();
+			$targetPP->TemplateID = $targetDT->TemplateID;
+			$targetPP->PortNumber = $tpRow["PortNumber"];
+			$targetPP->Label = $tpRow["Label"];
+			$targetPP->PortNotes = $tpRow["PortNotes"];
+			$targetPP->createPort();
 		}
 
 		error_log( "Created new DeviceTemplate ID of ".$targetDT->TemplateID." for ".$targetDT->Model );
 	}
 	$dtMap[$row["TemplateID"]] = $targetDT->TemplateID;
 }
+
+# People
+
+$pplMap = array();
+$pplMap[0] = 0;
+$childPerson = new People();
+$pplSQL = "select * from fac_People";
+$pplStmt = $childDBH->prepare( $pplSQL );
+$pplStmt->execute();
+
+while ( $row = $pplStmt->fetch() ) {
+	foreach( $row as $prop=>$value ) {
+		$childPerson->$prop = $value;
+	}
+
+	if ( $childPerson->GetPersonByUserID() ) {
+		error_log( "WARNING:  UserID ".$childPerson->UserID. " exists in target database already.  Skipped importing." );
+	} else {
+		// Set the default country for the imported person
+		$childPerson->countryCode = $childCountryCode;
+		$childPerson->CreatePerson();
+	}
+
+	$pplMap[$row["PersonID"]] = $childPerson->PersonID;
+}
+
+error_log( "Final total of ".sizeof($pplMap)." People records." );
+
+# Departments and their Memberships
+$depMap = array();
+$depSQL = "select * from fac_Department";
+$depStmt = $childDBH->prepare( $depSQL );
+$depStmt->execute();
+
+while ( $row = $depStmt->fetch() ) {
+	$childDept = new Department();
+	$childDept->Name = $row["Name"];
+
+	if ( $childDept->GetDeptByName() ) {
+		error_log( "WARNING:  Department name ".$childDept->Name." already exists.  Skipping import." );
+	} else {
+		foreach( $row as $prop=>$value ) {
+			$childDept->$prop = $value;
+		}
+		$childDept->DeptID = 0;
+		error_log( "Adding Department ".$childDept->Name." to database." );
+		$childDept->CreateDepartment();
+	}
+	$depMap[$row["DeptID"]] = $childDept->DeptID;
+}
+
+$SQL = "select from fac_DeptContacts";
+$stmt = $childDBH->prepare( $SQL );
+$dmSQL = "insert into fac_DeptContacts set DeptID=:deptid, ContactID=:personid";
+$dmStmt = $dbh->prepare( $dmSQL );
+
+while ( $row = $stmt->fetch() ) {
+	$dmStmt->execute( array( ":deptid"=>$depMap[$row["DeptID"]], ":personid"=>$pplMap[$row["ContactID"]] ) );
+}
+
+error_log( "Merged in ".sizeof($depMap)." Departments and their memberships." );
 
 # Create the new top level container that everything else will fit into
 $pContainer = new Container();
@@ -187,6 +276,9 @@ $containerMap[0] = $pContainer->ContainerID;
 $cSQL = "select * from fac_Container";
 $cStmt = $childDBH->prepare( $cSQL );
 $cStmt->execute();
+
+// In case there are no containers in the child, go ahead and initialize
+$targetC = new Container;
 
 while ( $row = $cStmt->fetch() ) {
 	$targetC = new Container;
@@ -233,20 +325,22 @@ while ( $row = $dcStmt->fetch() ) {
 # Now Zones
 
 $zMap = array();
+$zMap[0] = 0;
 $zSQL = "select * from fac_Zone";
 $zStmt = $childDBH->prepare( $zSQL );
 $zStmt->execute();
 
 while ( $row = $zStmt->fetch() ) {
-	$targetZone = new Zone;
+	$targetZ = new Zone;
 	foreach( $row as $prop=>$value ) {
 		if ( ! in_array( $prop, array( "ZoneID", "DataCenterID" )) ) {
-			$targetZone->$prop = $value;
+			$targetZ->$prop = $value;
 		}
 	}
 	$targetZ->DataCenterID = $dcMap[$row["DataCenterID"]];
+
 	$targetZ->CreateZone();
-	error_log( "Created new Zone ID of ".$targetZ->ZoneID." for Zone ".$targetZ->Name );
+	error_log( "Created new Zone ID of ".$targetZ->ZoneID." for Zone ".$targetZ->Description );
 
 	$zMap[$row["ZoneID"]] = $targetZ->ZoneID;
 }
@@ -254,6 +348,7 @@ while ( $row = $zStmt->fetch() ) {
 # CabinetRows
 
 $cabrowMap = array();
+$cabRowMap[0] = 0;
 $cSQL = "select * from fac_CabRow";
 $cStmt = $childDBH->prepare( $cSQL );
 $cStmt->execute();
@@ -272,6 +367,7 @@ while ( $row = $cStmt->fetch() ) {
 # Power Panels
 
 $ppMap = array();
+$ppMap[0] = 0;
 $ppSQL = "select * from fac_PowerPanel";
 $ppStmt = $childDBH->prepare( $ppSQL );
 $ppStmt->execute();
@@ -290,7 +386,7 @@ while ( $row = $ppStmt->fetch() ) {
 	$targetPP->PanelLabel = $childPrefix.$row["PanelLabel"];
 
 	$targetPP->createPanel();
-	error_log( "Created new Power Panel ID of ".$targetPP->PanelID." for Panel ".$targetPP->Name );
+	error_log( "Created new Power Panel ID of ".$targetPP->PanelID." for Panel ".$targetPP->PanelLabel );
 
 	$ppMap[$row["PanelID"]] = $targetPP->PanelID;
 }
@@ -300,20 +396,52 @@ foreach( $ppMap as $oldVal=>$newVal ) {
 	$targetPP->PanelID = $newVal;
 	$targetPP->getPanel();
 	$targetPP->ParentPanelID = $ppMap[$targetPP->ParentPanelID];
-	$targetC->updatePanel();
+	$targetPP->updatePanel();
 }
 
 # Cabinets
 
-# People
+$cabMap = array();
+$cabSQL = "select * from fac_Cabinet";
+$cabStmt = $childDBH->prepare( $cabSQL );
+$cabStmt->execute();
 
-# Departments and their Memberships
+while ( $row = $cabStmt->fetch() ) {
+	$targetCab = new Cabinet;
+	foreach( $row as $prop=>$value ) {
+		if ( ! in_array( $prop, array( "DataCenterID", "ZoneID", "CabRowID" )) ) {
+			$targetCab->$prop = $value;
+		}
+	}
+	$targetCab->DataCenterID = $dcMap[$row["DataCenterID"]];
+	$targetCab->ZoneID = $zMap[$row["ZoneID"]];
+	$targetCab->CabRowID = $cabrowMap[$row["CabRowID"]];
 
+	$targetCab->CreateCabinet();
 
+	$cabMap[$row["CabinetID"]] = $targetCab->CabinetID;
+}
+
+error_log( "Merged in ".sizeof($cabMap)." Cabinets." );
+
+# CabinetTags
+
+$cabTagSQL = "select * from fac_CabinetTags";
+$cabTagStmt = $childDBH->prepare( $cabTagSQL );
+$cabTagStmt->execute();
+
+$newCabTagSQL = "insert into fac_CabinetTags set CabinetID=:cabinetid and TagID=:tagid";
+$newCabStmt = $dbh->prepare( $newCabTagSQL );
+
+while ( $row = $cabStmt->fetch() ) {
+	$newCabStmt->execute( array( ":cabinetid"=>$cabMap[$row["CabinetID"]], ":tagid"=>$tagMap[$row["TagID"]] ));
+}
+ 
 # Now the nasty stuff...  Devices
 $devMap = array();
+$devMap[0] = 0;
 $devSQL = "select * from fac_Device";
-$devStmt = $childDBH->preopare( $devSQL );
+$devStmt = $childDBH->prepare( $devSQL );
 $devStmt->execute();
 
 # Port Connections will have to be reconciled after ALL of the devices are created
@@ -325,8 +453,8 @@ while ( $row = $devStmt->fetch() ) {
 			$targetDev->$prop = $value;
 		}
 	}
-	$targetDev->Owner = $deptMap[$row["Owner"]];
-	$targetDev->PrimaryContact = $peopleMap[$row["PrimaryContact"]];
+	$targetDev->Owner = $depMap[$row["Owner"]];
+	$targetDev->PrimaryContact = $pplMap[$row["PrimaryContact"]];
 	$targetDev->Cabinet = $cabMap[$row["Cabinet"]];
 	$targetDev->TemplateID = $dtMap[$row["TemplateID"]];
 	$targetDev->CreateDevice();
@@ -341,10 +469,45 @@ error_log( "Beginning device reconciliation process, this could take some time."
 foreach( $devMap as $oldVal=>$newVal ) {
 	$targetDev->DeviceID = $newVal;
 	$targetDev->GetDevice();
-	if ( $targetDev->ParentID > 0 ) {
-		$targetDev->ParentID = $devMap[$targetDev->ParentID];
+	if ( $targetDev->ParentDevice > 0 ) {
+		$targetDev->ParentDevice = $devMap[$targetDev->ParentDevice];
 	}
 	$targetDev->UpdateDevice();
+}
 
-	# Now map the Device Port and Power Port connections
+# Now map the Device Port and Power Port connections
+$sql = "select * from fac_Ports";
+$stmt = $childDBH->prepare( $sql );
+$stmt->execute();
+
+$devPortSQL = "insert into fac_Ports set DeviceID=:DeviceID, PortNumber=:PortNumber, Label=:Label, MediaID=:MediaID, ColorID=:ColorID, ConnectedDeviceID=:ConnectedDeviceID, ConnectedPort=:ConnectedPort, Notes=:Notes on duplicate key update DeviceID=:DeviceID, PortNumber=:PortNumber, Label=:Label, MediaID=:MediaID, ColorID=:ColorID, ConnectedDeviceID=:ConnectedDeviceID, ConnectedPort=:ConnectedPort, Notes=:Notes";
+$devPortStmt = $dbh->prepare( $devPortSQL );
+
+while ( $row = $stmt->fetch() ) {
+	$params = array( ":DeviceID"=>$devMap[$row["DeviceID"]],
+					":PortNumber"=>$row["PortNumber"],
+					":Label"=>$row["Label"],
+					":MediaID"=>$mediaMap[$row["MediaID"]],
+					":ColorID"=>$colorMap[$row["ColorID"]],
+					":ConnectedDeviceID"=>$devMap[intval($row["ConnectedDeviceID"])],
+					":ConnectedPort"=>$row["ConnectedPort"],
+					":Notes"=>$row["Notes"] );
+	$devPortStmt->execute( $params );
+}
+
+$sql = "select * from fac_PowerPorts";
+$stmt = $childDBH->prepare( $sql );
+$stmt->execute();
+
+$pwrPortSQL = "insert into fac_PowerPorts set DeviceID=:DeviceID, PortNumber=:PortNumber, Label=:Label, ConnectedDeviceID=:ConnectedDeviceID, ConnectedPort=:ConnectedPort, Notes=:Notes on duplicate key update DeviceID=:DeviceID, PortNumber=:PortNumber, Label=:Label, ConnectedDeviceID=:ConnectedDeviceID, ConnectedPort=:ConnectedPort, Notes=:Notes";
+$pwrPortStmt = $dbh->prepare( $pwrPortSQL );
+
+while ( $row = $stmt->fetch() ) {
+	$params = array( ":DeviceID"=>$devMap[$row["DeviceID"]],
+					":PortNumber"=>$row["PortNumber"],
+					":Label"=>$row["Label"],
+					":ConnectedDeviceID"=>$devMap[intval($row["ConnectedDeviceID"])],
+					":ConnectedPort"=>$row["ConnectedPort"],
+					":Notes"=>$row["Notes"] );
+	$pwrPortStmt->execute( $params );
 }

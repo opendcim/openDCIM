@@ -314,7 +314,7 @@
 		if(!$skip){
 			//In case of VMHost missing from inventory, this shouldn't ever happen
 			if($row['label']=='' || is_null($row['label'])){$row['label']='VM Host Missing From Inventory';}
-			if($row['rights']=="Write"){
+			if($row['rights']!="None"){
 				print "\t\t\t\t\t<li><a href=\"devices.php?DeviceID={$row['devid']}\">{$row['label']}</a>\n";
 			}else{
 				print "\t\t\t\t\t<li>{$row['label']}\n";
