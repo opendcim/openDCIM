@@ -1,9 +1,6 @@
 ---
 name: Bug report
-about: |
-  Create a report to help us improve<br><br>
-
-  Test
+about: Create a report to help us improve. If you have a question please check if it has been asked under discussions, first.
 title: ''
 labels: ''
 assignees: ''
@@ -19,10 +16,6 @@ Steps to reproduce the behavior:
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
-
-**Were you able to reproduce this on the dev or demo sites?**
-* https://demo.opendcim.org
-* https://dev.opendcim.org
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
@@ -43,3 +36,13 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+body:
+- type: checkboxes
+  id: demo-reproduced
+  attributes:
+    label: Were you able to reproduce this on the dev or demo sites?
+    description: You may select more than one.
+    options:
+      - label: [https://demo.opendcim.org](https://demo.opendcim.org)
+      - label: [https://dev.opendcim.org](https://dev.opendcim.org)
