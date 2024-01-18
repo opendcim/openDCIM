@@ -1,7 +1,7 @@
 ---
 name: Bug report
 about: |
-  Create a report to help us improve
+  Create a report to help us improve<br><br>
 
   Test
 title: ''
