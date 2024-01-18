@@ -17,6 +17,10 @@ Steps to reproduce the behavior:
 3. Scroll down to '....'
 4. See error
 
+**Were you able to reproduce this on the dev or demo sites?**
+* https://demo.opendcim.org
+* https://dev.opendcim.org
+
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
