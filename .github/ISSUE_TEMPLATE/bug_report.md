@@ -17,6 +17,11 @@ Steps to reproduce the behavior:
 3. Scroll down to '....'
 4. See error
 
+**Were you able to reproduce this on the dev or demo sites?**
+* https://demo.opendcim.org
+* https://dev.opendcim.org
+
+
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
@@ -36,13 +41,3 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
-
-body:
-- type: checkboxes
-  id: demo-reproduced
-  attributes:
-    label: Were you able to reproduce this on the dev or demo sites?
-    description: You may select more than one.
-    options:
-      - label: [https://demo.opendcim.org](https://demo.opendcim.org)
-      - label: [https://dev.opendcim.org](https://dev.opendcim.org)
