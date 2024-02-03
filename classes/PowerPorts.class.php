@@ -102,11 +102,11 @@ class PowerPorts {
 			PortNumber=$this->PortNumber, Label=\"$this->Label\", 
 			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort, 
 			Notes=\"$this->Notes\";";
-			
-		if(!$dbh->query($sql) && !$ignore_errors){
-			$info=$dbh->errorInfo();
 
-			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
+		try{
+			$dbh->query($sql);
+		}catch(PDOException $e){
+			error_log("createPort::PDO Error: {$e->getMessage()}");
 			return false;
 		}
 
