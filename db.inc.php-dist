@@ -1,4 +1,86 @@
 <?php
+	require __DIR__ . '/vendor/autoload.php';
+
+	use Vault\AuthenticationStrategies\TokenAuthenticationStrategy;
+	use Vault\Client;
+	use Laminas\Diactoros\RequestFactory;
+	use Laminas\Diactoros\StreamFactory;
+	use Laminas\Diactoros\Uri;
+
+	$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+	$dotenv->load();
+	$vault_enabled = (array_key_exists('VAULT_ENABLED', $_SERVER) and
+		($_SERVER['VAULT_ENABLED'] == 1)) ? true : false;
+
+	// Should all of the functionality go in the vault_enabled...
+	// Maybe...
+	if ($vault_enabled == true) {
+		try {
+			$dotenv->required([
+				'VAULT_URL',
+				'VAULT_TOKEN',
+				'VAULT_SECRET_PATH',
+			]);
+		} catch (Exception $e) {
+			echo $e->GetMessage(), "\n";
+		}
+	}
+
+	$verify_vault_ssl = $_SERVER['VAULT_VERIFY_SSL'] == 0 ? false : true;
+	// Creating the client
+	$client = new Client(
+		new Uri($_SERVER['VAULT_URL']),
+		new \AlexTartan\GuzzlePsr18Adapter\Client(['verify' => $verify_vault_ssl ]),
+		new RequestFactory(),
+		new StreamFactory()
+	); // Using alextartan/guzzle-psr18-adapter and laminas/laminas-diactoros
+
+	// Authenticating using token auth backend.
+	try {
+		$authenticated = $client
+		->setAuthenticationStrategy(new TokenAuthenticationStrategy( $_SERVER['VAULT_TOKEN']))
+		->authenticate();
+	}
+	catch (Exception $e) {
+		$vault_url = $_SERVER['VAULT_URL'];
+		echo "<H1>Vault Connection Error</H1>\n";
+		echo "<p>Unable to connect to the vault at: $vault_url</p>\n";
+		echo "<p>Likely causes:</p>\n";
+		echo "<ol>\n";
+		echo "<li>Incorrect vault url or incorrect protocol (http vs https)</li>\n";
+		echo "<li>The vault token is incorrect or does not have access to the secret</li>\n";
+		echo "<li>The SSL certificate for the vault is untrusted</li>\n";
+		echo "<li>You don't have the correct values set in .env</li>\n";
+		echo "<ul>\n";
+		echo "<li>VAULT_ENABLED=1 # 1 = true</li>\n";
+		echo "<li>VAULT_TOKEN='hvs.rest_of_token_here'</li>\n";
+		echo "<li>VAULT_URL='https://127.0.0.1:8200'</li>\n";
+		echo "<li>VAULT_VERIFY_VAULT_SSL=0 # 0 = false</li>\n";
+		echo "<ul\n>";
+		echo "</ol>\n";
+		die;
+	}
+
+	// not sure it is necessary to have here...
+	if (!$authenticated) {
+		// Throw an exception or handle authentication failure.
+		die;
+	}
+
+	try {
+		$response = $client->read($_SERVER['VAULT_SECRET_PATH']);
+	} catch (Exception $e) {
+		echo "<H1>Vault secret read error</H1>\n";
+		echo "<p>Ensure that your secret is available</p>\n";
+		echo "<p>Likely causes:</p>\n";
+		echo "<ol>\n";
+		echo "<li>You may not have the correct value set in .env</li>\n";
+		echo "<li>VAULT_SECRET_PATH='/secret/data/opendcim'</li>\n";
+		echo "<li>The vault secret may not be setup in the vault'</li>\n";
+		echo "</ol>\n";
+		die;
+	}
+	$secret = $response->getData(); // Raw array with secret's content.
 
 	// Not everyone will have the ability to (or, let's face it, attention span) set the PHP directive session.auto_start = 1
 	// so we will simply start a session here (which will not cause any issues if auto_start is already set to 1) unless
@@ -23,7 +105,12 @@
 	$dbhost = getenv('OPENDCIM_DB_HOST') ? getenv('OPENDCIM_DB_HOST'):'localhost';
 	$dbname = getenv('OPENDCIM_DB_NAME') ? getenv('OPENDCIM_DB_NAME'):'dcim';
 	$dbuser = getenv('OPENDCIM_DB_USER') ? getenv('OPENDCIM_DB_USER'):'dcim';
-	$dbpass = getenv('OPENDCIM_DB_PASS') ? getenv('OPENDCIM_DB_PASS'):'dcim';
+	if ($vault_enabled) {
+		// Possibly should allow "dcim" value to be custom
+		$dbpass = $secret["data"]["dcim"] ? $secret["data"]["dcim"] :'dcim';
+	} else {
+		$dbpass = getenv('OPENDCIM_DB_PASS') ? getenv('OPENDCIM_DB_PASS'):'dcim';
+	}
 	$dbport = getenv('OPENDCIM_DB_PORT') ? getenv('OPENDCIM_DB_PORT'):'3306';
 	$initialAdminUser = getenv('OPENDCIM_ADMIN_USER') ? getenv('OPENDCIM_ADMIN_USER'):'dcim';
 
