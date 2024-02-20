@@ -14,13 +14,11 @@
 
 	/* Version 1.0 of this report has no selectable parameters - you just get a complete dump */
 	
-	$mpdf=new mPDF('win-1252','A4','','',20,15,48,25,10,10); 
-	$mpdf->useOnlyCoreFonts = false;    // false is default
-	//$mpdf->SetProtection(array('print'));
-	$mpdf->SetTitle($config->ParameterArray["OrgName"] . " " . __("Supply Status Report"));
+	$mpdf=new \Mpdf\Mpdf(['tempDir'=>sys_get_temp_dir(),'mode'=>'s']);
 	$mpdf->SetAuthor($config->ParameterArray["OrgName"]);
 	$mpdf->SetDisplayMode('fullpage');
-    $mpdf->useActiveForms = true;
+	$mpdf->useActiveForms = true;
+	$mpdf->SetTitle($config->ParameterArray["OrgName"] . " " . __("Supply Status Report"));
 
 	$sup = new Supplies();
 	$bin = new SupplyBin();
