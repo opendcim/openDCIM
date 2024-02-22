@@ -1,7 +1,6 @@
 <?php
-
 /*
-    Copyright (c) 2012, Open Source Solutions Limited, Dublin, Ireland
+    Copyright (c) 2012 - 2015, Open Source Solutions Limited, Dublin, Ireland
     All rights reserved.
 
     Contact: Barry O'Donovan - barry (at) opensolutions (dot) ie
@@ -67,13 +66,20 @@ class SNMP
     protected $_host;
 
     /**
+     * Wraps the host in [] which forces IPv6
+     * @var bool Wraps the host in [] which forces IPv6
+     */
+    protected $_forceIPv6 = false;
+
+
+    /**
      * The SNMP host to query. Defaults to v2
      * @var string The SNMP host to query. Defaults to v2 by the constructor.
      */
     protected $_version;
 
     /**
-     * Essentially the same thing as the community for v1 and v2 
+     * Essentially the same thing as the community for v1 and v2
      */
     protected $_secName;
 
@@ -84,26 +90,26 @@ class SNMP
     protected $_secLevel;
 
     /**
-     * The authentication encryption picked on the device. 
+     * The authentication encryption picked on the device.
      * Defaults to MD5 by the constructor.
      * valid strings: (MD5|SHA)
      */
     protected $_authProtocol;
 
     /**
-     * The password for the secName. Defaults to None by the constructor. 
+     * The password for the secName. Defaults to None by the constructor.
      */
     protected $_authPassphrase;
 
     /**
-     * The communication encryption picked on the device. 
+     * The communication encryption picked on the device.
      * Defaults to DES by the constructor.
      * valid strings: (DES|AES)
      */
     protected $_privProtocol;
 
     /**
-     * The password for the secName. Defaults to None by the constructor. 
+     * The password for the secName. Defaults to None by the constructor.
      */
     protected $_privPassphrase;
 
@@ -138,6 +144,16 @@ class SNMP
      */
     protected $_cache = null;
 
+
+    /**
+     * Test / dummy mode to help phpunit testing (yeah, hacky)
+     *
+     * Initiate this by using host and community: phpunit.test.example.com  /  mXPOSpC52cSFg1qN
+     *
+     * @var bool
+     */
+    protected $_dummy = false;
+
     /**
      * Set to true to disable local cache lookup and force SNMP queries
      *
@@ -155,13 +171,13 @@ class SNMP
      * SNMP output constants to mirror those of PHP
      * @var SNMP output constants to mirror those of PHP
      */
-    const OID_OUTPUT_FULL    = SNMP_OID_OUTPUT_FULL;
+    const OID_OUTPUT_FULL    = 3; //SNMP_OID_OUTPUT_FULL;
 
     /**
      * SNMP output constants to mirror those of PHP
      * @var SNMP output constants to mirror those of PHP
      */
-    const OID_OUTPUT_NUMERIC = SNMP_OID_OUTPUT_NUMERIC;
+    const OID_OUTPUT_NUMERIC = 4; //SNMP_OID_OUTPUT_NUMERIC;
 
 
     /**
@@ -194,6 +210,19 @@ class SNMP
      */
     public function __construct( $host = '127.0.0.1', $community = 'public' , $version = '2c' , $seclevel = 'noAuthNoPriv' , $authprotocol = 'MD5' , $authpassphrase = 'None' , $privprotocol = 'DES' , $privpassphrase = 'None' )
     {
+        if( $host === 'phpunit.test.example.com' && $community === 'mXPOSpC52cSFg1qN' ) {
+            $this->_dummy = true;
+        } else {
+
+            // make sure SNMP is installed!
+            if( !function_exists( 'snmp2_get' ) ) {
+                die( "It looks like the PHP SNMP package is not installed. This is required!\n" );
+            }
+
+            $this->setOidOutputFormat( self::OID_OUTPUT_NUMERIC );
+
+        }
+
         return $this->setHost( $host )
                     ->setCommunity( $community )
                     ->setVersion( $version)
@@ -202,8 +231,7 @@ class SNMP
                     ->setAuthProtocol( $authprotocol )
                     ->setAuthPassphrase( $authpassphrase )
                     ->setPrivProtocol( $privprotocol )
-                    ->setPrivPassphrase( $privpassphrase )
-                    ->setOidOutputFormat( self::OID_OUTPUT_NUMERIC );
+                    ->setPrivPassphrase( $privpassphrase );
     }
 
 
@@ -215,13 +243,12 @@ class SNMP
      */
     public function realWalk( $oid )
     {
-        $v1='snmprealwalk';
-        $v2c='snmp2_real_walk';
-
         switch( $this->getVersion() ) {
             case 1:
+                return $this->_lastResult = @snmprealwalk( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
+                break;
             case '2c':
-                return $this->_lastResult = @${"v".$this->getVersion()}( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
+                return $this->_lastResult = @snmp2_real_walk( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
                 break;
             case '3':
                 return $this->_lastResult = @snmp3_real_walk( $this->getHost(), $this->getSecName(), $this->getSecLevel(),
@@ -247,13 +274,12 @@ class SNMP
         if( $this->cache() && ( $rtn = $this->getCache()->load( $oid ) ) !== null )
             return $rtn;
 
-        $v1='snmpget';
-        $v2c='snmp2_get';
-
         switch( $this->getVersion() ) {
             case 1:
+                $this->_lastResult = @snmpget( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
+                break;
             case '2c':
-                $this->_lastResult = @${"v".$this->getVersion()}( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
+                $this->_lastResult = @snmp2_get( $this->getHost(), $this->getCommunity(), $oid, $this->getTimeout(), $this->getRetry() );
                 break;
             case '3':
                 $this->_lastResult = @snmp3_get( $this->getHost(), $this->getSecName(), $this->getSecLevel(),
@@ -341,12 +367,28 @@ class SNMP
      *      10105 => Hex-STRING: 00 00 00 01
      *      10108 => Hex-STRING: 00 00 00 01
      *
+     * subOidWalk( '.1.3.6.1.2.1.17.4.3.1.1', 15, -1 )
+     *
+     * 		.1.3.6.1.2.1.17.4.3.1.1.0.0.136.54.152.12 = Hex-STRING: 00 00 75 33 4E 92
+     * 		.1.3.6.1.2.1.17.4.3.1.1.8.3.134.58.182.16 = Hex-STRING: 00 00 75 33 4E 93
+     * 		.1.3.6.1.2.1.17.4.3.1.1.0.4.121.22.55.8 = Hex-STRING: 00 00 75 33 4E 94
+     *
+     * would yield an array:
+     *		[54.152.12] => Hex-STRING: 00 00 75 33 4E 92
+     * 		[58.182.16] => Hex-STRING: 00 00 75 33 4E 93
+     * 		[22.55.8]   => Hex-STRING: 00 00 75 33 4E 94
+     *
      * @throws \OSS_SNMP\Exception On *any* SNMP error, warnings are supressed and a generic exception is thrown
      * @param string $oid The OID to walk
      * @param int $position The position of the OID to use as the key
+     * @param int $elements Number of additional elements to include in the returned array keys after $position.
+     *                      This defaults to 1 meaning just the requested OID element (see examples above).
+     *                      With -1, retrieves ALL to the end.
+     *                      If there is less elements than $elements, return all availables (no error).
+     *
      * @return array The resultant values
      */
-    public function subOidWalk( $oid, $position )
+    public function subOidWalk( $oid, $position, $elements = 1)
     {
         if( $this->cache() && ( $rtn = $this->getCache()->load( $oid ) ) !== null )
             return $rtn;
@@ -362,7 +404,12 @@ class SNMP
         {
             $oids = explode( '.', $_oid );
 
-            $result[ $oids[ $position] ] = $this->parseSnmpValue( $value );
+            $index = $oids[ $position];
+            for( $pos = $position + 1; $pos < sizeof($oids) && ( $elements == -1 || $pos < $position+$elements ); $pos++ ) {
+                $index .= '.' . $oids[ $pos ];
+            }
+
+            $result[ $index ] = $this->parseSnmpValue( $value );
         }
 
         return $this->getCache()->save( $oid, $result );
@@ -438,7 +485,7 @@ class SNMP
         {
             case 'STRING':
                 if( substr( $value, 0, 1 ) == '"' )
-                    $rtn = (string)trim( substr( substr( $value, 1 ), 0, -1 ) );
+                    $rtn = (string)substr( substr( $value, 1 ), 0, -1 );
                 else
                     $rtn = (string)$value;
                 break;
@@ -451,7 +498,7 @@ class SNMP
                     $rtn = (int)substr( $value, $m[0][1] );
                 }else{
                     $rtn = (int)$value;
-				}
+                }
                 break;
 
             case 'Counter32':
@@ -497,11 +544,13 @@ class SNMP
      */
     public static function ppTruthValue( $value )
     {
-        if( is_array( $value ) )
-            foreach( $value as $k => $v )
-                $value[$k] = self::$SNMP_TRUTHVALUES[ $v ];
-        else
-            $value = self::$SNMP_TRUTHVALUES[ $value ];
+        if( is_array( $value ) ) {
+            foreach( $value as $k => $v ) {
+                $value[$k] = isset(self::$SNMP_TRUTHVALUES[$v]) ? self::$SNMP_TRUTHVALUES[$v] : false;
+            }
+        } else {
+            $value = isset(self::$SNMP_TRUTHVALUES[$value]) ? self::$SNMP_TRUTHVALUES[$value] : false;
+        }
 
         return $value;
     }
@@ -514,24 +563,24 @@ class SNMP
       *
       * @see ppHexStringFlags()
       */
-    public static $HEX_STRING_WORDS_AS_ARRAY = array(
-        '0' => array( false, false, false, false ),
-        '1' => array( false, false, false, true  ),
-        '2' => array( false, false, true,  false ),
-        '3' => array( false, false, true,  true  ),
-        '4' => array( false, true,  false, false ),
-        '5' => array( false, true,  false, true  ),
-        '6' => array( false, true,  true,  false ),
-        '7' => array( false, true,  true,  true  ),
-        '8' => array( true,  false, false, false ),
-        '9' => array( true,  false, false, true  ),
-        'a' => array( true,  false, true,  false ),
-        'b' => array( true,  false, true,  true  ),
-        'c' => array( true,  true,  false, false ),
-        'd' => array( true,  true,  false, true  ),
-        'e' => array( true,  true,  true,  false ),
-        'f' => array( true,  true,  true,  true  ),
-    );
+    public static $HEX_STRING_WORDS_AS_ARRAY = [
+        '0' => [ false, false, false, false ],
+        '1' => [ false, false, false, true  ],
+        '2' => [ false, false, true,  false ],
+        '3' => [ false, false, true,  true  ],
+        '4' => [ false, true,  false, false ],
+        '5' => [ false, true,  false, true  ],
+        '6' => [ false, true,  true,  false ],
+        '7' => [ false, true,  true,  true  ],
+        '8' => [ true,  false, false, false ],
+        '9' => [ true,  false, false, true  ],
+        'a' => [ true,  false, true,  false ],
+        'b' => [ true,  false, true,  true  ],
+        'c' => [ true,  true,  false, false ],
+        'd' => [ true,  true,  false, true  ],
+        'e' => [ true,  true,  true,  false ],
+        'f' => [ true,  true,  true,  true  ],
+    ];
 
     /**
      * Takes a HEX-String of true / false - on / off - set / unset flags
@@ -554,7 +603,7 @@ class SNMP
     {
         $str = strtolower( $str );  // ensure all hex digits are lower case
 
-        $values = array ( 0 => 'dummy' );
+        $values = [ 0 => 'dummy' ];
 
         for( $i = 0; $i < strlen( $str ); $i++ )
             $values = array_merge( $values, self::$HEX_STRING_WORDS_AS_ARRAY[ $str[$i] ] );
@@ -698,6 +747,7 @@ class SNMP
         return $this->_version;
     }
 
+
     /**
      * Sets the target host for SNMP queries.
      *
@@ -706,7 +756,12 @@ class SNMP
      */
     public function setHost( $h )
     {
-        $this->_host = $h;
+        // need to be careful with IPv6 addresses
+        if( strpos( $h, ':' ) !== false || $this->getForceIPv6() ) {
+            $this->_host = '[' . $h . ']';
+        } else {
+            $this->_host = $h;
+        }
 
         // clear the temporary result cache and last result
         $this->_lastResult = null;
@@ -724,6 +779,28 @@ class SNMP
     public function getHost()
     {
         return $this->_host;
+    }
+
+    /**
+     * Forces use of IPv6
+     *
+     * @param bool $b Set to true to force IPv4, false for default behavior
+     * @return \OSS_SNMP\SNMP An instance of $this (for fluent interfaces)
+     */
+    public function setForceIPv6( $b )
+    {
+        $this->_forceIPv6 = $b;
+        return $this;
+    }
+
+    /**
+     * Is IPv6 forced?
+     *
+     * @return bool True to force IPv4, false for default behavior
+     */
+    public function getForceIPv6()
+    {
+        return $this->_forceIPv6;
     }
 
     /**
@@ -921,6 +998,89 @@ class SNMP
             $this->_platform = new Platform( $this );
 
         return $this->_platform;
+    }
+
+
+    /**
+     * Get indexed SNMP values where the array key is spread over a number of OID positions
+     *
+     * @throws \OSS_SNMP\Exception On *any* SNMP error, warnings are supressed and a generic exception is thrown
+     * @param string $oid The OID to walk
+     * @param int $positionS The start position of the OID to use as the key
+     * @param int $positionE The end position of the OID to use as the key
+     * @return array The resultant values
+     */
+    public function subOidWalkLong( $oid, $positionS, $positionE )
+    {
+        if( $this->cache() && ( $rtn = $this->getCache()->load( $oid ) ) !== null )
+            return $rtn;
+
+        $this->_lastResult = $this->realWalk( $oid );
+
+        if( $this->_lastResult === false )
+            throw new Exception( 'Could not perform walk for OID ' . $oid );
+
+        $result = array();
+
+        foreach( $this->_lastResult as $_oid => $value )
+        {
+            $oids = explode( '.', $_oid );
+
+            $oidKey = '';
+            for($i = $positionS; $i <= $positionE; $i++)
+            {
+                $oidKey .= $oids[$i] .'.';
+            }
+
+            $result[ $oidKey ] = $this->parseSnmpValue( $value );
+        }
+
+        return $this->getCache()->save( $oid, $result );
+    }
+
+    /**
+     * Set the value of an SNMP object
+     *
+     * @param string $oid The OID to set
+     * @param string $type The MIB defines the type of each object id
+     * @param mixed $value The new value
+     * @return boolean
+     */
+    public function set($oid, $type, $value)
+    {
+        switch( $this->getVersion() ) {
+            case 1:
+                $this->_lastResult = @snmpset( $this->getHost(), $this->getCommunity(), $oid, $type, $value, $this->getTimeout(), $this->getRetry() );
+                break;
+            case '2c':
+                $this->_lastResult = @snmp2_set( $this->getHost(), $this->getCommunity(), $oid, $type, $value, $this->getTimeout(), $this->getRetry() );
+                break;
+            case '3':
+                $this->_lastResult = @snmp3_set( $this->getHost(), $this->getSecName(), $this->getSecLevel(),
+                        $this->getAuthProtocol(), $this->getAuthPassphrase(), $this->getPrivProtocol(), $this->getPrivPassphrase(),
+                        $oid, $type, $value, $this->getTimeout(), $this->getRetry()
+                    );
+                break;
+            default:
+                throw new Exception( 'Invalid SNMP version: ' . $this->getVersion() );
+        }
+
+        if( $this->_lastResult === false )
+            throw new Exception( 'Could not add variable ' . $value . ' for OID ' . $oid );
+
+       $this->getCache()->clear( $oid );
+
+       return $this->_lastResult;
+    }
+
+
+    /**
+     * Indicate if we are in dummy mode or not
+     * @return bool
+     */
+    public function iAmADummy()
+    {
+        return $this->_dummy === true;
     }
 
 }
