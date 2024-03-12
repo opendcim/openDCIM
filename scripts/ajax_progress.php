@@ -3,7 +3,9 @@
         require_once( "../facilities.inc.php" );
 
         class Response {
+                var $SessionID;
                 var $Percentage;
+                var $Status;
         }
 
         $resp = new Response();
