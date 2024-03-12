@@ -1,4 +1,5 @@
 <?php
+do {
     require_once "db.inc.php";
     require_once "facilities.inc.php";
 
@@ -266,6 +267,10 @@ overlap = scale;
                 $n_dev_label .= "}}";
                 $devList[$deviceType][$devid] = $n_dev_label;
             }
+        }
+        if(count($portList)==0) {
+            $body = "No ports found as connected. Please connect ports before generating a network map";
+            break;
         }
         # create a lookup table for colors on the fly. This helps make sure that
         # the random colors we select (for colors we can't match) stay consistent
@@ -581,6 +586,7 @@ overlap = scale;
             exit;
         }
     }
+} while(false);
 ?>
 <!doctype html>
 <html>

@@ -354,7 +354,7 @@ $(function(){
 		$pdf->Cell( $cellWidths[0], 6, $period, $borders, 0, 'L', $fill );
 		$pdf->Cell( $cellWidths[1], 6, $value, $borders, 0, 'C', $fill );
 		// Silencing the next line because i'm too lazy to validate the data properly
-		@$pdf->Cell( $cellWidths[2], 6, sprintf( "%.2f%%", $value / $totalAudits * 100 ), $borders, 0, 'C', $fill );
+		@$pdf->Cell( $cellWidths[2], 6, sprintf( "%.2f%%", ($totalAudits==0)?0:($value / $totalAudits * 100) ), $borders, 0, 'C', $fill );
 		$pdf->Ln();
 		
 		$fill =! $fill;

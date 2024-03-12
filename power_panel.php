@@ -36,7 +36,7 @@
   
 	if(isset($_POST["action"])&&(($_POST["action"]=="Create")||($_POST["action"]=="Update")||($_POST["action"]=="Map"))){
 		foreach($panel as $prop => $val){
-			$panel->$prop=trim($_POST[$prop]);
+			$panel->$prop=isset($_POST[$prop])?trim($_POST[$prop]):'';
 		}
 		// Coordinates aren't displayed on this page and the loop above is looking 
 		// for every attribute on the panel model.  This will load the original object 
@@ -76,7 +76,7 @@
 				$panelCap=1;
 			}
 			for ( $i = 0; ($i - $panelCap) < 1; $i+=( $panelCap / 10 ) ) {
-				$tick = sprintf( "%.0${decimalplaces}lf ", $i / 1000 );
+				$tick = sprintf( "%.0{$decimalplaces}lf ", $i / 1000 );
 				if(preg_match("/$tick/",$dataMajorTicks)){
 					$err=true;
 					break;
@@ -90,16 +90,16 @@
 			$dataMajorTicks = "";
 		}
 		
-		$dataMaxValue = sprintf( "%.0${decimalplaces}lf", $panelCap / 1000 );
+		$dataMaxValue = sprintf( "%.0{$decimalplaces}lf", $panelCap / 1000 );
 		
 		$dataHighlights = sprintf( "0 %d #eee, %d %d #fffacd, %d %d #eaa", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 
 		$mtarray=implode(",",explode(" ",$dataMajorTicks));
-		$hilights = sprintf( "{from: 0, to: %.0${decimalplaces}lf, color: '#eee'}, {from: %.0${decimalplaces}lf, to: %.0${decimalplaces}lf, color: '#fffacd'}, {from: %.0${decimalplaces}lf, to: %.0${decimalplaces}lf, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
+		$hilights = sprintf( "{from: 0, to: %.0{$decimalplaces}lf, color: '#eee'}, {from: %.0{$decimalplaces}lf, to: %.0{$decimalplaces}lf, color: '#fffacd'}, {from: %.0{$decimalplaces}lf, to: %.0{$decimalplaces}lf, color: '#eaa'}", $panelCap / 1000 * .6, $panelCap / 1000 * .6, $panelCap / 1000 * .8, $panelCap / 1000 * .8, $panelCap / 1000);
 		
-		$panelLoad = sprintf( "%.0${decimalplaces}lf", PowerPanel::getInheritedLoad($panel->PanelID) / 1000 );
-		$msrLoad = sprintf( "%.0${decimalplaces}lf", $panel->getPanelLoad() / 1000 );
-		$estLoad = sprintf( "%.0${decimalplaces}lf", PowerPanel::getEstimatedLoad($panel->PanelID) / 1000 );
+		$panelLoad = sprintf( "%.0{$decimalplaces}lf", PowerPanel::getInheritedLoad($panel->PanelID) / 1000 );
+		$msrLoad = sprintf( "%.0{$decimalplaces}lf", $panel->getPanelLoad() / 1000 );
+		$estLoad = sprintf( "%.0{$decimalplaces}lf", PowerPanel::getEstimatedLoad($panel->PanelID) / 1000 );
 
 		// Generate JS for load display
 

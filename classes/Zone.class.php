@@ -279,13 +279,13 @@ class Zone {
 			fac_Device b, fac_Cabinet c WHERE a.DeviceID=b.DeviceID AND b.BackSide=0 and
 			b.Cabinet=c.CabinetID AND a.DeviceID IN (SELECT b.DeviceID FROM fac_Device 
 			WHERE ZoneID=$this->ZoneID);";
-		$zoneStats["AvgTemp"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
+		$zoneStats["AvgTemp"]=round($test=($this->query($sql)->fetchColumn())?$test:0);
 
 		$sql="SELECT AVG(NULLIF(Humidity, 0)) AS AvgHumdity FROM fac_SensorReadings a, 
 			fac_Device b, fac_Cabinet c WHERE a.DeviceID=b.DeviceID AND b.BackSide=0 and
 			b.Cabinet=c.CabinetID AND a.DeviceID IN (SELECT b.DeviceID FROM fac_Device 
 			WHERE ZoneID=$this->ZoneID);";
-		$zoneStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
+		$zoneStats["AvgHumidity"]=round($test=($this->query($sql)->fetchColumn())?$test:0);
 
 		$sql = "select count(*) from fac_Cabinet where ZoneID=" . intval($this->ZoneID);
 		$zoneStats["TotalCabinets"]=($test=$this->query($sql)->fetchColumn())?$test:0;

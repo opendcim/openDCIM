@@ -635,12 +635,12 @@ class DataCenter {
 		$sql="SELECT AVG(NULLIF(a.Temperature, 0)) as AvgTemp FROM fac_SensorReadings a, fac_Cabinet b, fac_Device c
 			WHERE a.DeviceID=c.DeviceID and c.Cabinet=b.CabinetID AND c.BackSide=0 AND
 			b.DataCenterID=$this->DataCenterID;";
-		$dcStats["AvgTemp"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
+		$dcStats["AvgTemp"]=round($test=($this->query($sql)->fetchColumn())?$test:0);
 		
 		$sql="SELECT AVG(NULLIF(a.Humidity, 0)) as AvgHumidity FROM fac_SensorReadings a, fac_Cabinet b, fac_Device c
 			WHERE a.DeviceID=c.DeviceID and c.BackSide=0 and c.Cabinet=b.CabinetID AND
 			b.DataCenterID=$this->DataCenterID;";
-		$dcStats["AvgHumidity"]=($test=round($this->query($sql)->fetchColumn()))?$test:0;
+		$dcStats["AvgHumidity"]=round($test=($this->query($sql)->fetchColumn())?$test:0);
 		
 		$pdu=new PowerDistribution();
 		$dcStats["MeasuredWatts"]=$pdu->GetWattageByDC($this->DataCenterID);

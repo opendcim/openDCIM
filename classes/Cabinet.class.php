@@ -23,6 +23,7 @@
 	For further details on the license, see http://www.gnu.org/licenses
 */
 
+#[AllowDynamicProperties]
 class Cabinet {
 	/* Cabinet:		The workhorse logical container for DCIM.  This can be a 2-post rack, a 4-post open rack,
 					or an enclosed cabinet.  The height is variable.  Devices are attached to cabinets, and
@@ -65,7 +66,7 @@ class Cabinet {
 		$this->Keylock=sanitize($this->Keylock);
 		$this->MaxKW=float_sqlsafe(floatval($this->MaxKW));
 		$this->MaxWeight=intval($this->MaxWeight);
-		$this->InstallationDate=date("Y-m-d", strtotime($this->InstallationDate));
+		$this->InstallationDate=($test=$this->InstallationDate)?date("Y-m-d", strtotime($test)):"";
 		$this->MapX1=abs((is_numeric($this->MapX1)?$this->MapX1:0));
 		$this->MapY1=abs((is_numeric($this->MapY1)?$this->MapY1:0));
 		$this->MapX2=abs((is_numeric($this->MapX2)?$this->MapX2:0));
@@ -110,7 +111,7 @@ class Cabinet {
 		$cab->Notes=$dbRow["Notes"];
 		$cab->U1Position=$dbRow["U1Position"];
 
-		switch($config->ParameterArray["AssignCabinetLabels"]){
+		switch(($test=$config->ParameterArray["AssignCabinetLabels"])?$test:""){
 			case "OwnerName":
 				$dept=new Department($cab->AssignedTo);
 				$dept->GetDeptByID();

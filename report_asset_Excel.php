@@ -775,7 +775,8 @@ function formatWSColumns($worksheet, $columns)
  */
 function cmpDevPos($a, $b)
 {
-    return (intval($a->Position) > intval($b->Position));
+    if($a == $b) return 0
+    return (intval($a->Position) > intval($b->Position))?1:-1;
 }
 
 /**

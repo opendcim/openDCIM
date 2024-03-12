@@ -218,6 +218,7 @@ class Uri implements UriInterface
         if ($queryString === '') {
             $queryString = parse_url('http://example.com' . $env->get('REQUEST_URI'), PHP_URL_QUERY);
         }
+        if ($queryString === null) $queryString = '';
 
         // Fragment
         $fragment = '';

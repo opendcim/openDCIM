@@ -138,12 +138,22 @@ function __construct($orientation='P', $unit='mm', $size='A4')
 		$this->DefOrientation = 'P';
 		$this->w = $size[0];
 		$this->h = $size[1];
+		if($this->w > $this->h) { // Ensure the page is portrait
+			$temp = $this->w;
+			$this->w = $this->h
+			$this->h = $temp;
+		}
 	}
 	elseif($orientation=='l' || $orientation=='landscape')
 	{
 		$this->DefOrientation = 'L';
 		$this->w = $size[1];
 		$this->h = $size[0];
+		if($this->w < $this->h) { // Ensure the page is landscape
+			$temp = $this->w;
+			$this->w = $this->h
+			$this->h = $temp;
+		}
 	}
 	else
 		$this->Error('Incorrect orientation: '.$orientation);
@@ -575,8 +585,9 @@ function AcceptPageBreak()
 
 function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='')
 {
-	$txt=utf8_decode($txt); // Comment this line and uncomment the next line to use TrueType fonts from loadfonts.php
-	// $txt=iconv("UTF-8","Windows-1251",$txt);
+	if($txt === null) $txt = "";
+	$txt=iconv("UTF-8","Windows-1251",$txt);  // Comment this line and uncomment the next line to not use TrueType fonts from loadfonts.php
+	//$txt=utf8_decode($txt);
 	// Output a cell
 	$k = $this->k;
 	if($this->y+$h>$this->PageBreakTrigger && !$this->InHeader && !$this->InFooter && $this->AcceptPageBreak())
