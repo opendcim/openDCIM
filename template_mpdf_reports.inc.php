@@ -76,7 +76,7 @@ EOT;
 
     $html .= '<td width="50%"><img src="'.$config->ParameterArray['PDFLogoFile'].'">';
     $html .= '<td width="50%" style="text-align: right;"><h4>'.$header.'<br>';
-    $html .= __("Date").': '.strftime("%x").'</h4></td>';
+    $html .= __("Date").': '.date('Y-m-d H:i:s').'</h4></td>';
 
     $html .= <<<EOT
 </tr></table>
