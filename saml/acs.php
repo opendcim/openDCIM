@@ -74,8 +74,8 @@ if ($samlResponse->isValid($saml_reqID)) {
 		if ( $config->ParameterArray["AttrPhone2"] != "" )
 			$person->Phone2 = $attributes[$config->ParameterArray["AttrPhone2"]][0];
 
-		if ( $config->ParameterArray["AttrPhone3"] != "" )
-			$person->Phone3 = $attributes[$config->ParameterArray["AttrPhone3"]][0];
+		if ( $config->ParameterArray["AttrCountry"] != "" )
+			$person->countryCode = $attributes[$config->ParameterArray["AttrCountry"]][0];
 
 		if ( $config->ParameterArray["SAMLGroupAttribute"] != "" ) {
 			$person->revokeAll();
