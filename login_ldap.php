@@ -162,12 +162,12 @@
 						// GetPersonByUserID just populated our person object, update it with the 
 						// info we just pulled from ldap, if they are a valid user we'll update the
 						// db version of their name below, suppress any errors for missing attributes
-						@$person->FirstName=$ldapResults[0][$config->ParameterArray['AttrFirstName']][0];
-						@$person->LastName =$ldapResults[0][$config->ParameterArray['AttrLastName']][0];
-						@$person->Email    =$ldapResults[0][$config->ParameterArray['AttrEmail']][0];
-						@$person->Phone1   =$ldapResults[0][$config->ParameterArray['AttrPhone1']][0];
-						@$person->Phone2   =$ldapResults[0][$config->ParameterArray['AttrPhone2']][0];
-						@$person->Phone3   =$ldapResults[0][$config->ParameterArray['AttrPhone3']][0];
+						@$person->FirstName	=$ldapResults[0][$config->ParameterArray['AttrFirstName']][0];
+						@$person->LastName 	=$ldapResults[0][$config->ParameterArray['AttrLastName']][0];
+						@$person->Email    	=$ldapResults[0][$config->ParameterArray['AttrEmail']][0];
+						@$person->Phone1   	=$ldapResults[0][$config->ParameterArray['AttrPhone1']][0];
+						@$person->Phone2   	=$ldapResults[0][$config->ParameterArray['AttrPhone2']][0];
+						@$person->countryCode   =$ldapResults[0][$config->ParameterArray['AttrCountry']][0];
 	
 						if($config->ParameterArray['LDAPSiteAccess']=="" || isUserInLDAPGroup($config, $ldapConn, $config->ParameterArray['LDAPSiteAccess'], $ldapUser)){
 							// No specific group membership required to access openDCIM or they have a match to the group required
