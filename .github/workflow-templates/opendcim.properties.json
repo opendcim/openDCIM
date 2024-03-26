@@ -1,0 +1,9 @@
+{
+    "name": "openDCIM Workflow",
+    "description": "openDCIM starter workflow.",
+    "iconName": "log",
+    "categories": [
+        "Automation"
+    ]
+}
+

@@ -1,0 +1,15 @@
+name: openDCIM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Update translations
+        run: /home/runner/update
+
