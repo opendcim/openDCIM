@@ -121,3 +121,4 @@ Translation - i18n
 We do not accept any po files directly.  Please use the very simple, user friendly web interface at POEditor.
 
 https://poeditor.com/join/project?hash=zBX5TaqBhv
+
