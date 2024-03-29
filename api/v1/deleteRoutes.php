@@ -79,7 +79,8 @@ $app->delete( '/powerport/{deviceid}', function( Request $request, Response $res
 	}
 
 	// If this port isn't the last port then we're gonna shuffle ports to keep the ids in orderish
-	$lastport=end($pp->getPorts());
+	$portlist=$pp->getPorts();
+	$lastport=end($portlist);
 	if($lastport->PortNumber!=$pp->PortNumber){
 		foreach($lastport as $prop=>$value){
 			if($prop!="PortNumber"){
