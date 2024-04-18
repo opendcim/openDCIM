@@ -2431,7 +2431,7 @@ function LameLogDisplay(){
 				type: 'DELETE',
 				success: function(data) {
 					if(!data.error){
-						if($(document).data('powersupplycount')>$('#powersupplycount').val()){
+						if($(document).data('PowerSupplyCount')>$('#PowerSupplyCount').val()){
 							// if this is the last port just remove it
 							if(row.element[0]==lastrow[0]){
 								row.element.remove();
@@ -2441,10 +2441,10 @@ function LameLogDisplay(){
 								lastrow.remove();
 							}
 							// decrease counter
-							$(document).data('powersupplycount',$(document).data('powersupplycount')-1);
-							if($(document).data('powersupplycount')==$('#powersupplycount').val()){$('#powersupplycount').change();}
+							$(document).data('PowerSupplyCount',$(document).data('PowerSupplyCount')-1);
+							if($(document).data('PowerSupplyCount')==$('#PowerSupplyCount').val()){$('#PowerSupplyCount').change();}
 						}else{
-							$('#powersupplycount').change();
+							$('#PowerSupplyCount').change();
 						}
 					}
 				}

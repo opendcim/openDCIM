@@ -1,0 +1,16 @@
+name: openDCIM
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Update translations
+        run: /home/runner/update
+
