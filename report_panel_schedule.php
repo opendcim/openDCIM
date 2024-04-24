@@ -194,7 +194,7 @@
 			for($count=1; $count<=$panel->NumberOfPoles; $count++) {
 				$reportHTML .= '<tr id="itemRow"><td align="center">'.$count.'</td>';
 				$reportHTML .= $panel->getPanelScheduleLabelHtml($panelSchedule["panelSchedule"], $count, "panelleft", true);
-				$reportHTML .- '</tr>';
+				$reportHTML .= '</tr>';
 			}
 		}
 

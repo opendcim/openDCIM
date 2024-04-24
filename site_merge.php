@@ -416,6 +416,7 @@ while ( $row = $cabStmt->fetch() ) {
 	$targetCab->DataCenterID = $dcMap[$row["DataCenterID"]];
 	$targetCab->ZoneID = $zMap[$row["ZoneID"]];
 	$targetCab->CabRowID = $cabrowMap[$row["CabRowID"]];
+	$targetCab->AssignedTo = $depMap[$row["AssignedTo"]];
 
 	$targetCab->CreateCabinet();
 

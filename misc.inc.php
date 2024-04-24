@@ -1222,8 +1222,15 @@ function mangleDate($dateString) {
 	if ( $dateString == null || $dateString == "0000-00-00" || $dateString == "0") {
 		return "";
 	}
-	
+
+	// date function needs a timestamp to convert to the requested format
+	if ( gettype($dateString) == 'string' ) {
+		$dateString = strtotime($dateString);
+	}
+
 	if ( date( "Y-m-d", $dateString ) == "1969-12-31" ) {
+		return "";
+	} elseif ( date( "Y-m-d", $dateString ) == "1970-01-31" ) {
 		return "";
 	} else {
 		return date( "Y-m-d", $dateString );

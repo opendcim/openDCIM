@@ -631,7 +631,7 @@ class PowerDistribution {
 				if($panel->NumberScheme=="Odd/Even") {
 						$adder = $i*2;
 				}
-				$next = $this->PanelPole+$adder;
+				$next = intval($this->PanelPole)+$adder;
 				$ret = $ret . "-$next";
 			}
 			return $ret;
