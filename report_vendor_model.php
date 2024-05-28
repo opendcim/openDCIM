@@ -204,8 +204,9 @@
             $templateList = $dt->Search();
 
             if ( sizeof($templateList) > 0 ) {
-            	$sheet = $workBook->createSheet(null);
-            	$sheet->setTitle( $mfg->Name );
+                $sheet = $workBook->createSheet(null);
+                // Some of the printable ASCII characters are invalid:  * : / \ ? [ ]
+                $sheet->setTitle( preg_replace("/[*:\\/\\\\?[\\]]+/","_",$mfg->Name) );
 
                 foreach( $columnList as $fieldName=>$columnName ) {
                     $cellAddr = $columnName."1";
@@ -237,13 +238,13 @@
 
                         if ( $d->Cabinet == -1 ) {
                             $sheet->setCellValue( $columnList["Cabinet"].$currRow, "Storage" );
-                            $sheet->setCellValue( $columnList["DataCenter"].$currRow, $dcList[$d->Position]->Name);
+                            $sheet->setCellValue( $columnList["DataCenter"].$currRow, isset($dcList[$d->Position])?$dcList[$d->Position]->Name:"");
                         } else {
                             $thisCab = $cabList[$d->Cabinet];
                             $sheet->setCellValue( $columnList["Cabinet"].$currRow, $thisCab->Location);
-                            $sheet->setCellValue( $columnList["DataCenter"].$currRow, $dcList[$thisCab->DataCenterID]->Name);
+                            $sheet->setCellValue( $columnList["DataCenter"].$currRow, isset($dcList[$thisCab->DataCenterID])?$dcList[$thisCab->DataCenterID]->Name:"");
                         }
-                        $sheet->setCellValue( $columnList["Department"].$currRow, $depList[$d->Owner]->Name );
+                        $sheet->setCellValue( $columnList["Department"].$currRow, isset($depList[$d->Owner])?$depList[$d->Owner]->Name:"" );
 
                         $currRow++;
                     }
