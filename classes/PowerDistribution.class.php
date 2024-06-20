@@ -63,7 +63,7 @@ class PowerDistribution {
 		$this->InputAmperage=intval($this->InputAmperage);
 		$this->FailSafe=intval($this->FailSafe);
 		$this->PanelID2=intval($this->PanelID2);
-		$this->PanelPole2=intval($this->PanelPole2);
+		$this->PanelPole2=sanitize($this->PanelPole2);
 	}
 
 	function MakeDisplay(){
