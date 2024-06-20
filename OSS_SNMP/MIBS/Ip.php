@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Copyright (c) 2013, Open Source Solutions Limited, Dublin, Ireland
+    Copyright (c) 2012 - 2016, Open Source Solutions Limited, Dublin, Ireland
     All rights reserved.
 
     Contact: Barry O'Donovan - barry (at) opensolutions (dot) ie
@@ -33,50 +33,36 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-namespace OSS_SNMP\MIBS\SNMP;
+namespace OSS_SNMP\MIBS;
 
 /**
- * A class for performing SNMP V2 queries
+ * A class for performing SNMP V2 queries on generic devices
  *
- * @copyright Copyright (c) 2013, Open Source Solutions Limited, Dublin, Ireland
- * @author Barry O'Donovan <barry@opensolutions.ie>
+ * @copyright Copyright (c) 2012 - 2016, Open Source Solutions Limited, Dublin, Ireland
+ * @author Luis Alberto Herrero <laherre@unizar.es>
  */
-class Engine extends \OSS_SNMP\MIB
+class Ip extends \OSS_SNMP\MIB
 {
-    const OID_BOOTS         = '.1.3.6.1.6.3.10.2.1.2.0';
-    const OID_TIME          = '.1.3.6.1.6.3.10.2.1.3.0';
-
-    /**
-     * Get the SNMP engine boots
+    const OID_IP_NET_TO_MEDIA_PHY_ADDRESS                = '.1.3.6.1.2.1.4.22.1.2';
+    const OID_IP_ADDRESS                                 = '.1.3.6.1.2.1.4.20.1.1';
+    
+    /** Returns an associative array of IpAddresses of device
      *
+     * e.g.	[10.0.0.1] => 10.0.0.1
      *
-     * > "The number of times that the SNMP engine has (re-)initialized itself since snmpEngineID was last configured."
-     *
-     * @see http://tools.cisco.com/Support/SNMP/do/BrowseOID.do?local=en&translate=Translate&objectInput=1.3.6.1.6.3.10.2.1.2#oidContent
-     *
-     * @return int The SNMP engine boots
+     * @return array Associative of IP ADDRESS (value) to ip address (key)
      */
-    public function boots()
-    {
-        return $this->getSNMP()->get( self::OID_BOOTS );
+    public function ipAddressList() {
+        return $this->getSNMP()->subOidWalk(self::OID_IP_ADDRESS, 11, -1 );
     }
-
+    
     /**
-     * Get the SNMP engine time
-     *
-     *
-     * > "The number of seconds since the value of the snmpEngineBoots object last changed.
-     * > When incrementing this objects value would cause it to exceed its maximum, snmpEngineBoots
-     * > is incremented as if a re-initialization had occurred, and this objects value consequently
-     * > reverts to zero."
-     *
-     * @see http://tools.cisco.com/Support/SNMP/do/BrowseOID.do?local=en&translate=Translate&objectInput=1.3.6.1.6.3.10.2.1.2#oidContent
-     *
-     * @return int The SNMP engine time
-     */
-    public function time()
-    {
-        return $this->getSNMP()->get( self::OID_TIME );
+     * IP Addresses listen by this device and mac associated to the ip
+     *   also the interface index (if) where listen. Usually interface could
+     *   by virtual interface (VLAN)
+     * @return array [ 'if.ip' => 'mac' ]
+      */
+    public function ipMacIf() {
+        return $this->getSNMP()->subOidWalk(self::OID_IP_NET_TO_MEDIA_PHY_ADDRESS, 11, -1 );
     }
-
 }
