@@ -288,6 +288,7 @@ overlap = scale;
                         $color = $safeDeviceColors[array_rand($safeDeviceColors)];
                     }
 
+                    $baseURI = rtrim($config->ParameterArray["InstallURL"], '/') . '/'; // control if InstallURL with "/"
                     $graphstr .= "\t".$tkeypair[0]." [shape=Mrecord,URL=\"".$baseURI
                             .'devices.php?DeviceID='.$tkeypair[0]."\",label=\""
                             .$devList[$dt][$tkeypair[0]]."\",color=".$color."];\n";
