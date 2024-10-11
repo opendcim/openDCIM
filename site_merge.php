@@ -512,3 +512,9 @@ while ( $row = $stmt->fetch() ) {
 					":Notes"=>$row["Notes"] );
 	$pwrPortStmt->execute( $params );
 }
+
+# null values are being translated to 0, so run a quick SQL statement to reset those on the PowerPorts
+
+$sql = "update fac_PowerPorts set ConnectedDeviceID=null, ConnectedPort=null where ConnectedDeviceID=0";
+$stmt = $childDBH->prepare( $sql );
+$stmt->execute();
