@@ -559,7 +559,7 @@
 			$cab->GetCabinet();
 			if($person->canWrite($cab->AssignedTo)){
 				$wattage=$pdu->LogManualWattage($_POST["currwatts"]);
-				$wattage->LastRead=strftime("%c",strtotime($wattage->LastRead));
+				$wattage->LastRead=date("Y-m-d H:i:s",strtotime($wattage->LastRead));
 			}
 		}
 		header('Content-Type: application/json');
@@ -825,7 +825,7 @@
 
 					$lastreading=$pdu->GetLastReading();
 					$LastWattage=($lastreading)?$lastreading->Wattage:0;
-					$LastRead=($lastreading)?strftime("%c",strtotime($lastreading->LastRead)):"Never";
+					$LastRead=($lastreading)?date("Y-m-d H:i:s",strtotime($lastreading->LastRead)):"Never";
 				}
 			}
 

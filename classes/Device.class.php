@@ -23,6 +23,7 @@
 	For further details on the license, see http://www.gnu.org/licenses
 */
 
+#[AllowDynamicProperties]
 class Device {
 	/*	Device:		Assets within the data center, at the most granular level.  There are three basic
 					groupings of information kept about a device:  asset tracking, virtualization
