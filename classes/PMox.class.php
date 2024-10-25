@@ -36,12 +36,16 @@ class PMox {
 		$vmList=array();
 
 		// Establish credentials for this particular device
+		$credentials = [
+			'hostname' => $d->PrimaryIP,
+			'username' => $d->APIUsername,
+			'password' => $d->APIPassword,
+			'realm' => $d->ProxMoxRealm,
+			'port' => $d->APIPort,
+		];
 
-		$credentials = new Credentials( $d->PrimaryIP,
-			$d->APIUsername,
-			$d->APIPassword,
-			$d->ProxMoxRealm,
-			$d->APIPort );
+		// Turn credentials array into an object
+		$credentials = new Credentials($credentials);
 
 		try {
 			$proxmox = new Proxmox($credentials);
