@@ -1430,4 +1430,41 @@ $app->get( '/pollers/sensors', function(Request $request, Response $response) {
 
 });
 
+// URL: /api/v1/rackrequest
+// Method: GET
+// Params: None
+// Returns: List of all rack requests in the database
+
+$app->get('/rackrequest', function(Request $request, Response $response) use($person) {
+    $rackRequest = new RackRequest();
+    $loose = false;
+    $outputAttr = array();
+    $attrList = $request->getQueryParams() ?: $request->getParsedBody();
+
+    foreach ($attrList as $prop => $val) {
+        if (strtoupper($prop) == "WILDCARDS") {
+            $loose = true;
+        } elseif (strtoupper($prop) == "ATTRIBUTES") {
+            $outputAttr = explode(",", $val);
+        } elseif (property_exists($rackRequest, $prop)) {
+            $rackRequest->$prop = $val;
+        }
+    }
+
+    $r = array();
+    $rackRequests = $rackRequest->Search(false, $loose);
+
+    if ($rackRequests) {
+        $r['error'] = false;
+        $r['errorcode'] = 200;
+        $r['rackrequest'] = specifyAttributes($outputAttr, $rackRequests);
+    } else {
+        $r['error'] = true;
+        $r['errorcode'] = 404;
+        $r['message'] = 'No rack requests found';
+    }
+
+    return $response->withJson($r, $r['errorcode']);
+});
+
 ?>
