@@ -796,5 +796,57 @@ $app->put( '/powerpanel/{panelname}', function( Request $request, Response $resp
 	return $response->withJson($r, $r['errorcode']);
 });
 
+// URL: /api/v1/rackrequest
+// Method: PUT
+// Params: Required: RequestorID, CabinetID, RackPosition, RequestedDate
+// Optional: All other fields, including CompleteTime to close the request
+// Returns: Record as created or updated
+
+$app->put('/rackrequest', function(Request $request, Response $response) use ($person) {
+    $rackRequest = new RackRequest();
+
+    $r = array();
+    $vars = $request->getQueryParams() ?: $request->getParsedBody();
+
+    // Vérifier si les paramètres obligatoires sont présents
+    if (!isset($vars['RequestorID']) || !isset($vars['CabinetID']) || !isset($vars['RackPosition']) || !isset($vars['RequestedDate'])) {
+        $r['error'] = true;
+        $r['errorcode'] = 400;
+        $r['message'] = __("Missing required parameters: RequestorID, CabinetID, RackPosition, RequestedDate.");
+        return $response->withJson($r, $r['errorcode']);
+    }
+
+    // Affecter les valeurs des paramètres à l'objet RackRequest
+    foreach ($vars as $prop => $val) {
+        if (property_exists($rackRequest, $prop)) {
+            $rackRequest->$prop = $val;
+        }
+    }
+
+    // Si CompleteTime est fourni, marquer la requête comme complète
+    if (!is_null($rackRequest->CompleteTime)) {
+        // Ici, nous considérons que si `CompleteTime` est fourni, cela signifie que la requête est clôturée
+        $rackRequest->CompleteTime = $vars['CompleteTime'];
+        $rackRequest->Status = 'Closed';  // On peut également ajouter un statut spécifique si le modèle le supporte
+    }
+
+    // Créer ou mettre à jour la requête de rack
+    if (!$rackRequest->CreateRackRequest()) {
+        $r['error'] = true;
+        $r['errorcode'] = 400;
+        $r['message'] = __("Unable to create or update rack request with the given parameters.");
+    } else {
+        $r['error'] = false;
+        $r['errorcode'] = 200;
+        if (!is_null($rackRequest->CompleteTime)) {
+            $r['message'] = __("Rack request has been successfully completed and closed.");
+        } else {
+            $r['message'] = __("Rack request created successfully.");
+        }
+        $r['rackrequest'] = $rackRequest;
+    }
+
+    return $response->withJson($r, $r['errorcode']);
+});
 
 ?>
