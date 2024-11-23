@@ -819,5 +819,59 @@ $app->post( '/powerpanel/{panelid}', function( Request $request, Response $respo
 	return $response->withJson($r, $r['errorcode']);
 });
 
+// URL: /api/v1/rackrequest/{requestid}
+// Method: POST
+// Params: Required: RequestID
+// Optional: All fields of the RackRequest class
+// Returns: Record as updated
+
+$app->post('/rackrequest/{requestid}', function(Request $request, Response $response, $args) use ($person) {
+    $requestid = intval($args["requestid"]);
+
+    $rackRequest = new RackRequest();
+    $rackRequest->RequestID = $requestid;
+
+    $r = array();
+
+    // Vérifier si la requête existe
+    if (!$rackRequest->GetRackRequest()) {
+        $r['error'] = true;
+        $r['errorcode'] = 404;
+        $r['message'] = __("RackRequest with RequestID=$requestid not found.");
+        return $response->withJson($r, $r['errorcode']);
+    }
+
+    // Slim Framework assignera null pour les variables non fournies, donc c'est sécurisé de les mettre à jour sans tout écraser
+    $vars = $request->getQueryParams() ?: $request->getParsedBody();
+    foreach ($rackRequest as $prop => $val) {
+        if (isset($vars[$prop])) {
+            $rackRequest->$prop = $vars[$prop];
+        }
+    }
+
+    // Si `CompleteTime` est fourni, marquer la requête comme complète
+    if (!is_null($rackRequest->CompleteTime)) {
+        // Ici, nous considérons que si `CompleteTime` est fourni, la requête est clôturée
+        $rackRequest->Status = 'Closed';  // Si `Status` est pris en charge par `RackRequest`, on le met à jour pour indiquer la clôture
+    }
+
+    // Mise à jour de la requête de rack
+    if (!$rackRequest->UpdateRackRequest()) {
+        $r['error'] = true;
+        $r['errorcode'] = 400;
+        $r['message'] = __("Unable to update rack request with the given parameters.");
+    } else {
+        $r['error'] = false;
+        $r['errorcode'] = 200;
+        if (!is_null($rackRequest->CompleteTime)) {
+            $r['message'] = __("Rack request has been successfully completed and closed.");
+        } else {
+            $r['message'] = __("Rack request updated successfully.");
+        }
+        $r['rackrequest'] = $rackRequest;
+    }
+
+    return $response->withJson($r, $r['errorcode']);
+});
 
 ?>
