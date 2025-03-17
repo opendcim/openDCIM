@@ -338,7 +338,7 @@ function ticksToTime($ticks) {
  *
  */
 if(isset($_COOKIE["lang"])){
-	$locale=$_COOKIE["lang"];
+	$locale=sanitize($_COOKIE["lang"]);
 }else{
 	$locale=$config->ParameterArray['Locale'];
 }
