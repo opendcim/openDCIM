@@ -85,9 +85,9 @@ if($object>0){
 			$curOutTemp=$outtemps["Temperature"];
 			$curOutHum=$outtemps["Humidity"];
 			$curRealPower=$wattage["RealPower"];
-			$lastInRead=(!is_null($intemps["LastRead"]))?strftime('%c',strtotime(($intemps["LastRead"]))):0;
-			$lastOutRead=(!is_null($outtemps["LastRead"]))?strftime('%c',strtotime(($outtemps["LastRead"]))):0;
-			$RPlastRead=(!is_null($wattage["RPLastRead"]))?strftime('%c',strtotime(($wattage["RPLastRead"]))):0;
+			$lastInRead=(!is_null($intemps["LastRead"]))?date('Y-m-d H:i:s',strtotime(($intemps["LastRead"]))):0;
+			$lastOutRead=(!is_null($outtemps["LastRead"]))?date('Y-m-d H:i:s',strtotime(($outtemps["LastRead"]))):0;
+			$RPlastRead=(!is_null($wattage["RPLastRead"]))?date('Y-m-d H:i:s',strtotime(($wattage["RPLastRead"]))):0;
 			$rs='red';
 			$ys='yellow';
 			$gs='green';

@@ -105,13 +105,21 @@ $tableheader="\t<thead>
 <?php
 print ("$tableheader");
 foreach( $devList as $d ) {
+	$Temperature = "n/a";
+	$Humidity = "n/a";
+	$LastRead = "n/a";
+	if isset($sensorReadings[$d->DeviceID]) {
+		$Temperature = $sensorReadings[$d->DeviceID]->Temperature;
+		$Humidity = $sensorReadings[$d->DeviceID]->Humidity;
+		$LastRead = $sensorReadings[$d->DeviceID]->LastRead;
+	}
 	print ("\t\t<tr>
 			<td>{$dcList[$cabList[$d->Cabinet]->DataCenterID]->Name}</td>
 			<td>{$cabList[$d->Cabinet]->Location}</td>
 			<td>{$d->Label}</td>
-			<td>{$sensorReadings[$d->DeviceID]->Temperature}</td>
-			<td>{$sensorReadings[$d->DeviceID]->Humidity}</td>
-			<td>{$sensorReadings[$d->DeviceID]->LastRead}</td>
+			<td>$Temperature</td>
+			<td>$Humidity</td>
+			<td>$LastRead</td>
 		</tr>\n");
 }
 ?>

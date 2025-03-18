@@ -3,8 +3,8 @@
 	require_once('facilities.inc.php');
 
 	if ( !( $person->SiteAdmin || $person->ReadAccess ) ) {
-		echo "This report requires global read access.";
 		header("Refresh: 5; url=".redirect());
+		echo "This report requires global read access.";
 		exit;
 	}
 
