@@ -29,6 +29,9 @@ if ( php_sapi_name() != "cli" ) {
 require_once('db.inc.php');
 require_once('facilities.inc.php');
 
+# Disable warnings, notices, and deprecations - only true errors
+error_reporting(E_ERROR);
+
 global $config;
 $config = new Config();
 
@@ -458,8 +461,15 @@ while ( $row = $devStmt->fetch() ) {
 	$targetDev->PrimaryContact = $pplMap[$row["PrimaryContact"]];
 	$targetDev->Cabinet = $cabMap[$row["Cabinet"]];
 	$targetDev->TemplateID = $dtMap[$row["TemplateID"]];
-	$targetDev->CreateDevice();
-	error_log( "Created new DeviceID of ".$targetDev->DeviceID." for Device ".$targetDev->Label );
+	if ( @int($targetDev->DeviceID) > 0 ) {
+		try {
+			$targetDev->CreateDevice();
+		} catch Exception($e) {
+			# Log it and move on
+			error_log( "Error in Device Creation.   Values: ".print_r($targetDev, true));
+		}
+		error_log( "Created new DeviceID of ".$targetDev->DeviceID." for Device ".$targetDev->Label );
+	}
 
 	$devMap[$row["DeviceID"]] = $targetDev->DeviceID;
 }
