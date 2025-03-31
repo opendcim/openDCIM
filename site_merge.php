@@ -495,7 +495,7 @@ $devPortSQL = "insert into fac_Ports set DeviceID=:DeviceID, PortNumber=:PortNum
 $devPortStmt = $dbh->prepare( $devPortSQL );
 
 while ( $row = $stmt->fetch() ) {
-	$params = array( ":DeviceID"=>$devMap[$row["DeviceID"]],
+	$params = array( ":DeviceID"=>@intval($devMap[$row["DeviceID"]]),
 					":PortNumber"=>$row["PortNumber"],
 					":Label"=>$row["Label"],
 					":MediaID"=>$mediaMap[$row["MediaID"]],
@@ -514,7 +514,7 @@ $pwrPortSQL = "insert into fac_PowerPorts set DeviceID=:DeviceID, PortNumber=:Po
 $pwrPortStmt = $dbh->prepare( $pwrPortSQL );
 
 while ( $row = $stmt->fetch() ) {
-	$params = array( ":DeviceID"=>$devMap[$row["DeviceID"]],
+	$params = array( ":DeviceID"=>@intval($devMap[$row["DeviceID"]]),
 					":PortNumber"=>$row["PortNumber"],
 					":Label"=>$row["Label"],
 					":ConnectedDeviceID"=>$devMap[intval($row["ConnectedDeviceID"])],
