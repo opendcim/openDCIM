@@ -461,15 +461,13 @@ while ( $row = $devStmt->fetch() ) {
 	$targetDev->PrimaryContact = $pplMap[$row["PrimaryContact"]];
 	$targetDev->Cabinet = $cabMap[$row["Cabinet"]];
 	$targetDev->TemplateID = $dtMap[$row["TemplateID"]];
-	if ( @intval($targetDev->DeviceID) > 0 ) {
-		try {
-			$targetDev->CreateDevice();
-		} catch (Exception $e) {
-			# Log it and move on
-			error_log( "Error in Device Creation.   Values: ".print_r($targetDev, true));
-		}
-		error_log( "Created new DeviceID of ".$targetDev->DeviceID." for Device ".$targetDev->Label );
+	try {
+		$targetDev->CreateDevice();
+	} catch (Exception $e) {
+		# Log it and move on
+		error_log( "Error in Device Creation.   Values: ".print_r($targetDev, true));
 	}
+	error_log( "Created new DeviceID of ".$targetDev->DeviceID." for Device ".$targetDev->Label );
 
 	$devMap[$row["DeviceID"]] = $targetDev->DeviceID;
 }
