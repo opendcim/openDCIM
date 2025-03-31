@@ -464,7 +464,7 @@ while ( $row = $devStmt->fetch() ) {
 	if ( @int($targetDev->DeviceID) > 0 ) {
 		try {
 			$targetDev->CreateDevice();
-		} catch Exception($e) {
+		} catch (Exception $e) {
 			# Log it and move on
 			error_log( "Error in Device Creation.   Values: ".print_r($targetDev, true));
 		}
