@@ -461,7 +461,7 @@ while ( $row = $devStmt->fetch() ) {
 	$targetDev->PrimaryContact = $pplMap[$row["PrimaryContact"]];
 	$targetDev->Cabinet = $cabMap[$row["Cabinet"]];
 	$targetDev->TemplateID = $dtMap[$row["TemplateID"]];
-	if ( @int($targetDev->DeviceID) > 0 ) {
+	if ( @intval($targetDev->DeviceID) > 0 ) {
 		try {
 			$targetDev->CreateDevice();
 		} catch (Exception $e) {
