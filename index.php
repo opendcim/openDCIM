@@ -28,7 +28,7 @@
 
 	$StatsDevices=number_format($row['Devices']);
 	$StatsServers=number_format($row['Servers']);
-	$StatsSize=number_format($row['Size']);
+	$StatsSize=number_format($row['Size'] ? $row['Size'] : 0);
 	$StatsVM=number_format($row['VMcount']);
 	$StatsHost=number_format($row["VMhosts"]);
 	$StatsCabinet=number_format($row["CabinetCount"]);
