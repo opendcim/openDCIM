@@ -29,6 +29,9 @@ if ( php_sapi_name() != "cli" ) {
 require_once('db.inc.php');
 require_once('facilities.inc.php');
 
+# Disable warnings, notices, and deprecations - only true errors
+error_reporting(E_ERROR);
+
 global $config;
 $config = new Config();
 
@@ -458,7 +461,12 @@ while ( $row = $devStmt->fetch() ) {
 	$targetDev->PrimaryContact = $pplMap[$row["PrimaryContact"]];
 	$targetDev->Cabinet = $cabMap[$row["Cabinet"]];
 	$targetDev->TemplateID = $dtMap[$row["TemplateID"]];
-	$targetDev->CreateDevice();
+	try {
+		$targetDev->CreateDevice();
+	} catch (Exception $e) {
+		# Log it and move on
+		error_log( "Error in Device Creation.   Values: ".print_r($targetDev, true));
+	}
 	error_log( "Created new DeviceID of ".$targetDev->DeviceID." for Device ".$targetDev->Label );
 
 	$devMap[$row["DeviceID"]] = $targetDev->DeviceID;
@@ -485,7 +493,7 @@ $devPortSQL = "insert into fac_Ports set DeviceID=:DeviceID, PortNumber=:PortNum
 $devPortStmt = $dbh->prepare( $devPortSQL );
 
 while ( $row = $stmt->fetch() ) {
-	$params = array( ":DeviceID"=>$devMap[$row["DeviceID"]],
+	$params = array( ":DeviceID"=>@intval($devMap[$row["DeviceID"]]),
 					":PortNumber"=>$row["PortNumber"],
 					":Label"=>$row["Label"],
 					":MediaID"=>$mediaMap[$row["MediaID"]],
@@ -504,7 +512,7 @@ $pwrPortSQL = "insert into fac_PowerPorts set DeviceID=:DeviceID, PortNumber=:Po
 $pwrPortStmt = $dbh->prepare( $pwrPortSQL );
 
 while ( $row = $stmt->fetch() ) {
-	$params = array( ":DeviceID"=>$devMap[$row["DeviceID"]],
+	$params = array( ":DeviceID"=>@intval($devMap[$row["DeviceID"]]),
 					":PortNumber"=>$row["PortNumber"],
 					":Label"=>$row["Label"],
 					":ConnectedDeviceID"=>$devMap[intval($row["ConnectedDeviceID"])],
