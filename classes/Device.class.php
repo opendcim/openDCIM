@@ -1526,6 +1526,24 @@ class Device {
 		return $deviceList;
 	}
 
+	function SearchDevicebySerialNoExact(){
+		global $dbh;
+		
+		$this->MakeSafe();
+		
+		$sql = "SELECT * FROM fac_Device WHERE SerialNo = :serial LIMIT 1;";
+		$stmt = $dbh->prepare($sql);
+		$stmt->execute([':serial' => $this->SerialNo]);
+		
+		$deviceList = array();
+		
+		while ($deviceRow = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		$deviceList[$deviceRow["DeviceID"]] = Device::RowToObject($deviceRow);
+		}
+		
+		return $deviceList;
+	}
+
 	function SearchDevicebyAssetTag(){
 		global $dbh;
 
