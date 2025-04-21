@@ -1,5 +1,5 @@
 <?php
-// vérifie si une requête AJAX est envoyée pour vérifier l'existance d'un numéro de série déclenché par le button serialexist
+// checks if an AJAX request is sent to check for the existence of a serial number triggered by the serialexist button
 if (isset($_POST['action']) && $_POST['action'] === 'checkserial' && isset($_POST['serial'])) {
 	require_once 'db.inc.php';
 	require_once 'facilities.inc.php';
@@ -17,13 +17,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'checkserial' && isset($_POS
 	}
 	exit;
 }
-?>
-<?php
-
+// 
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
-	
-	//Logique find serial number in database
 
 	$subheader=__("Data Center Device Detail");
 
