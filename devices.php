@@ -1,7 +1,7 @@
 <?php
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
-	
+
 	$subheader=__("Data Center Device Detail");
 
 	$dev=new Device();
@@ -1325,7 +1325,7 @@ $(document).ready(function() {
 	// Device image previews
 	$('#deviceimages > div > img').
 		on('error',function(){$(this).hide();toggledeviceimages();}).
-		on('load',function(){
+		on('load',function(e){
 			if($(this).width < $(this).height){
 				$(this).css({'height':'275px','width':'auto'});
 			}else{
@@ -1334,7 +1334,7 @@ $(document).ready(function() {
 			$(this).show().on('click',function(){
 				var pop=$(this).clone();
 				pop.attr('style','');
-				$('<div>').html(pop.css({'max-width':'680px','max-height':'680px'})).dialog({
+				$('<div>').html(pop.css({'max-width':'600px','max-height':'600px'})).dialog({
 					width: 'auto',
 					height: 'auto',
 					modal: true
@@ -1345,9 +1345,9 @@ $(document).ready(function() {
 		each(function(e){
 			if(this.complete){
 				$(this).trigger('load');
-			}	
+			}
 		});
-		
+
 	function toggledeviceimages(){
 		$('#deviceimages').show();
 		var n=0;
@@ -1976,7 +1976,7 @@ echo '
 	<legend>',__("Physical Infrastructure"),'</legend>
 	<div class="table">
 		<div>
-			<div><label for="CabinetID"><a href=cabnavigator.php?cabinetid=',$cab->CabinetID,'">',__("Cabinet"),'</a></label></div>';
+			<div><label for="CabinetID">',__("Cabinet"),'</label></div>';
 
 		if($dev->ParentDevice==0){
 			print "\t\t\t<div>".$cab->GetCabinetSelectList()."</div>\n";
@@ -1984,7 +1984,7 @@ echo '
 			print "\t\t\t<div>$cab->Location<input type=\"hidden\" name=\"CabinetID\" value=$cab->CabinetID></div>
 		</div>
 		<div>
-			<div><label for=\"ParentDevice\"><a href=\"devices.php?DeviceID={$dev->ParentDevice}\">".__("Parent Device")."</a></label></div>
+			<div><label for=\"ParentDevice\">".__("Parent Device")."</label></div>
 			<div><select name=\"ParentDevice\">\n";
 
 			foreach($parentList as $parDev){
@@ -1996,7 +1996,7 @@ echo '
 
 echo '		</div>
 		<div>
-			<div><label for="TemplateID"><a href=device_templates.php?TemplateID=',$dev->TemplateID,'">',__("Device Class"),'</a></label></div>
+			<div><label for="TemplateID">',__("Device Class"),'</label></div>
 			<div><select name="TemplateID" id="TemplateID">
 				<option value=0>',__("Select a template..."),'</option>';
 
