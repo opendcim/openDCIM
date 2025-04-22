@@ -1,26 +1,8 @@
 <?php
-// checks if an AJAX request is sent to check for the existence of a serial number triggered by the serialexist button
-if (isset($_POST['action']) && $_POST['action'] === 'checkserial' && isset($_POST['serial'])) {
-	require_once 'db.inc.php';
-	require_once 'facilities.inc.php';
 
-	$dev = new Device();
-	$dev->SerialNo = $_POST['serial'];
-	$devList = $dev->SearchDevicebySerialNoExact();
-
-	if (count($devList) > 0) {
-		$device = reset($devList);
-		echo '<a href="devices.php?DeviceID=' . $device->DeviceID . '" target="_blank">'
-		   .__('Already used') . ' : ' . htmlspecialchars($device->SerialNo) . '</a>';
-	} else {
-		echo __('No duplicate found');
-	}
-	exit;
-}
-// 
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
-
+	
 	$subheader=__("Data Center Device Detail");
 
 	$dev=new Device();
@@ -47,6 +29,23 @@ if (isset($_POST['action']) && $_POST['action'] === 'checkserial' && isset($_POS
 	$taginsert="";
 
 	// Ajax functions
+	// vérifie si une requête AJAX est envoyée pour vérifier l'existance d'un numéro de série déclenché par le button serialexist
+	if (isset($_POST['action']) && $_POST['action'] === 'checkserial' && isset($_POST['serial'])) {
+
+		$dev = new Device();
+		$dev->SerialNo = $_POST['serial'];
+		$devList = $dev->SearchDevicebySerialNoExact();
+
+		if (count($devList) > 0) {
+			$device = reset($devList);
+			echo '<a href="devices.php?DeviceID=' . $device->DeviceID . '" target="_blank">'
+			.__('Already used') . ' : ' . htmlspecialchars($device->SerialNo) . '</a>';
+		} else {
+			echo __('No duplicate found');
+		}
+		exit;
+	}
+
 	// SNMP Test
 	if(isset($_POST['snmptest'])){
 		// Parse through the post data and pull in site defaults if necessary
