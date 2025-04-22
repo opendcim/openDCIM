@@ -2875,7 +2875,7 @@ const langStrings = {
  * Vérifie en AJAX si le numéro de serie saisie existe deja dans la base
  */
 	function checkSerialExist() {
-		console.log("Bouton cliqué");
+		console.log("ButtonClicked");
 
 		const serial = document.getElementById('SerialNo').value.trim();
 		const result = document.getElementById('serialCheckResult');
