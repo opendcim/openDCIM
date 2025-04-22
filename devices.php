@@ -33,7 +33,7 @@
 
 		$dev = new Device();
 		$dev->SerialNo = $_POST['serial'];
-		$devList = $dev->SearchDevicebySerialNoExact();
+		$devList = $dev->SearchDevicebySerialNo(true);
 
 		if (count($devList) > 0) {
 			$device = reset($devList);
