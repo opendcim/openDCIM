@@ -1104,7 +1104,7 @@ function getHash(){
 		changingHash=false;
 	}
 }
-windows.addEventListener("hashchange",getHash,false);
+
 </SCRIPT>
 
 <script type="text/javascript">
