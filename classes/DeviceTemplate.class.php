@@ -40,6 +40,9 @@ class DeviceTemplate {
 	var $SNMPVersion;
 	var $CustomValues;
 	var $GlobalID;
+	//for feature management hdd at the bottom of the page
+	public $EnableHDDFeature = 0;
+	public $HDDCount = 0;
     
 	public function __construct($dtid=false){
 		if($dtid){
@@ -748,6 +751,70 @@ class DeviceTemplate {
 		}
 		return $array;
 	}
+
+	// method for feature management hdd 
+	//HDD data is a logical complement to the equipment model. It depends directly on the TemplateID.
+	public function UpdateTemplateHDD() {
+		global $dbh;
+	
+		$EnableHDDFeature = isset($_POST['EnableHDDFeature']) ? intval($_POST['EnableHDDFeature']) : 0;
+		$HDDCount = isset($_POST['HDDCount']) ? intval($_POST['HDDCount']) : 0;
+	
+		$check = $dbh->prepare("SELECT COUNT(*) FROM fac_DeviceTemplateHdd WHERE TemplateID = ?");
+		$check->execute([$this->TemplateID]);
+	
+		if ($check->fetchColumn() > 0) {
+			$sql = "UPDATE fac_DeviceTemplateHdd SET EnableHDDFeature = ?, HDDCount = ? WHERE TemplateID = ?";
+			$dbh->prepare($sql)->execute([$EnableHDDFeature, $HDDCount, $this->TemplateID]);
+		} else {
+			$sql = "INSERT INTO fac_DeviceTemplateHdd (TemplateID, EnableHDDFeature, HDDCount) VALUES (?, ?, ?)";
+			$dbh->prepare($sql)->execute([$this->TemplateID, $EnableHDDFeature, $HDDCount]);
+		}
+	}
+	
+	public function LoadHDDConfig() {
+		global $dbh;
+	
+		$this->EnableHDDFeature = 0;
+		$this->HDDCount = 0;
+	
+		if ($this->TemplateID > 0) {
+			$sql = "SELECT EnableHDDFeature, HDDCount FROM fac_DeviceTemplateHdd WHERE TemplateID = ?";
+			$stmt = $dbh->prepare($sql);
+			$stmt->execute([$this->TemplateID]);
+			if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$this->EnableHDDFeature = $row['EnableHDDFeature'];
+				$this->HDDCount = $row['HDDCount'];
+			}
+		}
+	}
+	
+	public function DeleteTemplateHDD() {
+		global $dbh;
+	
+		if ($this->TemplateID > 0) {
+			$sql = "DELETE FROM fac_DeviceTemplateHdd WHERE TemplateID = ?";
+			$stmt = $dbh->prepare($sql);
+			return $stmt->execute([$this->TemplateID]);
+		}
+		return false;
+	}
+	
+	public function ExportTemplateHDD($asJSON = false) {
+		global $dbh;
+	
+		$sql = "SELECT EnableHDDFeature, HDDCount FROM fac_DeviceTemplateHdd WHERE TemplateID = ?";
+		$stmt = $dbh->prepare($sql);
+		$stmt->execute([$this->TemplateID]);
+	
+		if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			return $asJSON ? json_encode($row) : $row;
+		} else {
+			$data = ['EnableHDDFeature' => 0, 'HDDCount' => 0];
+			return $asJSON ? json_encode($data) : $data;
+		}
+	}
+	
 }
 
 ?>

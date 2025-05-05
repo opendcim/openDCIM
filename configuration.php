@@ -1930,6 +1930,16 @@ echo '<div class="main">
 		<div id="workflow">
 			<div class="table">
 				<div>
+					<div><label for="feature_hdd">',__("Enable HDD Feature"),'</label></div>
+					<div><select id="feature_hdd" name="feature_hdd" defaultvalue="',$config->defaults["feature_hdd"],'" data="',$config->ParameterArray["feature_hdd"],'">
+							<option value="disabled">',__("Disabled"),'"</option>
+							<option value="enabled">',__("Enabled"),'"</option>
+						</select>
+					</div>
+				</div>
+			</div> <!-- end table -->
+			<div class="table">
+				<div>
 					<div><label for="WorkOrderBuilder">',__("Work Order Builder"),'</label></div>
 					<div><select id="WorkOrderBuilder" name="WorkOrderBuilder" defaultvalue="',$config->defaults["WorkOrderBuilder"],'" data="',$config->ParameterArray["WorkOrderBuilder"],'">
 							<option value="disabled">',__("Disabled"),'</option>

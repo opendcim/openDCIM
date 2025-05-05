@@ -31,27 +31,28 @@ class People {
 					things greatly.
 	*/
 
-	var $PersonID;
-	var $UserID;
-	var $LastName;
-	var $FirstName;
-	var $Phone1;
-	var $Phone2;
-	var $countryCode;
-	var $Email;
-	var $AdminOwnDevices;
-	var $ReadAccess;
-	var $WriteAccess;
-	var $DeleteAccess;
-	var $ContactAdmin;
-	var $RackRequest;
-	var $RackAdmin;
-	var $BulkOperations;
-	var $SiteAdmin;
-	var $APIKey;
-	var $Disabled;
-	var $LastActivity;
-	var $ExpirationDate;
+	public $PersonID;
+	public $UserID;
+	public $LastName;
+	public $FirstName;
+	public $Phone1;
+	public $Phone2;
+	public $countryCode;
+	public $Email;
+	public $AdminOwnDevices;
+	public $ReadAccess;
+	public $WriteAccess;
+	public $DeleteAccess;
+	public $ContactAdmin;
+	public $RackRequest;
+	public $RackAdmin;
+	public $BulkOperations;
+	public $SiteAdmin;
+	public $APIKey;
+	public $Disabled;
+	public $LastActivity;
+	public $ExpirationDate;
+	public $ManageHDD;
 
 	function MakeSafe(){
 		$this->PersonID=intval($this->PersonID);
@@ -71,6 +72,7 @@ class People {
 		$this->RackAdmin=intval($this->RackAdmin);
 		$this->BulkOperations=intval($this->BulkOperations);
 		$this->SiteAdmin=intval($this->SiteAdmin);
+		$this->ManageHDD=intval($this->ManageHDD);
 		$this->Disabled=intval($this->Disabled);
 		$this->ExpirationDate=sanitize($this->ExpirationDate);
 	}
@@ -95,6 +97,7 @@ class People {
 		$this->RackAdmin=intval($this->RackAdmin);
 		$this->BulkOperations=intval($this->BulkOperations);
 		$this->SiteAdmin=intval($this->SiteAdmin);
+		$this->ManageHDD=intval($this->ManageHDD);
 		$this->Disabled=intval($this->Disabled);
 	}
 
@@ -117,6 +120,7 @@ class People {
 		$person->RackAdmin=$row["RackAdmin"];
 		$person->BulkOperations=$row["BulkOperations"];
 		$person->SiteAdmin=$row["SiteAdmin"];
+		$person->ManageHDD=$row["ManageHDD"];
 		$person->APIKey=$row["APIKey"];
 		$person->Disabled=$row["Disabled"];
 		$person->LastActivity=$row["LastActivity"];
@@ -164,6 +168,7 @@ class People {
 		$this->ContactAdmin = false;
 		$this->BulkOperations = false;
 		$this->SiteAdmin = false;
+		$this->ManageHDD = false;
 	}
 
 	function canRead( $Owner ) {
@@ -208,7 +213,7 @@ class People {
 			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess, 
 			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
 			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
-			RackAdmin=$this->RackAdmin, BulkOperations=$this->BulkOperations, SiteAdmin=$this->SiteAdmin,
+			RackAdmin=$this->RackAdmin, BulkOperations=$this->BulkOperations, SiteAdmin=$this->SiteAdmin,ManageHDD=$this->ManageHDD,
 			APIKey=\"$this->APIKey\", Disabled=$this->Disabled, ExpirationDate=\"$this->ExpirationDate\";";
 
 		if(!$this->query($sql)){
@@ -233,6 +238,7 @@ class People {
 			$cperson->ReadAccess=true;
 			$cperson->WriteAccess=true;
 			$cperson->SiteAdmin=true;
+			$cperson->ManageHDD=true;
 			$cperson->Disabled=false;
 		}elseif(AUTHENTICATION=="Apache"){
 			if(!isset($_SERVER["REMOTE_USER"])){
@@ -451,7 +457,7 @@ class People {
 			AdminOwnDevices=$this->AdminOwnDevices, ReadAccess=$this->ReadAccess, 
 			WriteAccess=$this->WriteAccess, DeleteAccess=$this->DeleteAccess, 
 			ContactAdmin=$this->ContactAdmin, RackRequest=$this->RackRequest, 
-			RackAdmin=$this->RackAdmin, BulkOperations=$this->BulkOperations, SiteAdmin=$this->SiteAdmin,
+			RackAdmin=$this->RackAdmin, BulkOperations=$this->BulkOperations, SiteAdmin=$this->SiteAdmin,ManageHDD=$this->ManageHDD,
 			APIKey=\"$this->APIKey\", ExpirationDate=\"$formattedDate\", Disabled=$this->Disabled
 			WHERE PersonID=$this->PersonID;";
 			
