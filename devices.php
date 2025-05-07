@@ -2052,10 +2052,24 @@ echo '		<div>
 			if($devType==$dev->DeviceType){$selected=" selected";}else{$selected="";}
 			print "\t\t\t<option value=\"$devType\"$selected>$translation</option>\n";
 		}
-echo '
+		echo '
 		   </select></div>
-		</div>
-	</div> <!-- END div.table -->
+		</div>';
+		//feature management hdd
+		if(
+			$config->ParameterArray['feature_hdd'] == 'enabled' &&
+			$template->EnableHDDFeature == 1 &&
+			$dev->DeviceID > 0 &&
+			$person->ManageHDD == 1
+		){
+		echo '
+           </select></div></div>
+           <div>
+           <div><label>',__("Manage HDD"),'</label></div>
+           <div><a class="button" href="managementhdd.php?DeviceID=',$dev->DeviceID,'">',__("Manage HDDs"),'</a></div>
+           </div>';
+		}
+	echo' </div> <!-- END div.table -->
 </fieldset>';
 
 		if ($dev->DeviceType=='Sensor'){
@@ -2065,21 +2079,7 @@ echo '<fieldset id="sensorreadings">
 		   </div>
 		</fieldset>';
 		}
-		//feature management hdd
-		if(
-			$config->ParameterArray['feature_hdd'] == 'enabled' &&
-			$template->EnableHDDFeature == 1 &&
-			$dev->DeviceID > 0 &&
-			$person->ManageHDD == 1
-		){
-			echo '<fieldset id="Managementhdd">
-		   <legend>',__("Manage HDD"),'</legend>
-		   <div>',__("This device supports HDD management."),'</div>
-		   <div>
-		   <a class="button" href="managementhdd.php?DeviceID=', $dev->DeviceID, '">', __("Manage HDDs"),'</a>
-		   </div>
-		   </fieldset>';
-		}
+		
 		//device images
 echo '<fieldset id="deviceimages">
 	<legend>'.__("Device Images").'</legend>
