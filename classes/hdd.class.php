@@ -1,205 +1,214 @@
 <?php
 class HDD {
-    public $HDDID;
-    public $DeviceID;
-    public $Label;
-    public $SerialNo;
-    public $Status;
-    public $Size;
-    public $TypeMedia;
-    public $DateAdd;
-    public $DateWithdrawn;
-    public $DateDestruction;
-    public $StatusDestruction;
-    public $Note;
+	public $HDDID;
+	public $DeviceID;
+	public $Label;
+	public $SerialNo;
+	public $Status;
+	public $Size;
+	public $TypeMedia;
+	public $DateAdd;
+	public $DateWithdrawn;
+	public $DateDestruction;
+	public $StatusDestruction;
+	public $Note;
 
-    function MakeSafe() {
-        $this->HDDID = intval($this->HDDID);
-        $this->DeviceID = intval($this->DeviceID);
-        $this->Label = sanitize($this->Label);
-        $this->SerialNo = sanitize($this->SerialNo);
-        $this->Status = sanitize($this->Status);
-        $this->Size = intval($this->Size);
-        $this->TypeMedia = sanitize($this->TypeMedia);
-        $this->Note = sanitize($this->Note);
-    }
+	function MakeSafe() {
+		$this->HDDID = intval($this->HDDID);
+		$this->DeviceID = intval($this->DeviceID);
+		$this->Label = sanitize($this->Label);
+		$this->SerialNo = sanitize($this->SerialNo);
+		$this->Status = sanitize($this->Status);
+		$this->Size = intval($this->Size);
+		$this->TypeMedia = sanitize($this->TypeMedia);
+		$this->Note = sanitize($this->Note);
+	}
 
-    function MakeDisplay() {
-        // Si besoin d'afficher des données formatées
-    }
+	function MakeDisplay() {
+		// Placeholder pour formatage si nécessaire
+	}
 
-    static function RowToObject($row){
-        $hdd = new HDD();
-        foreach($row as $prop => $val){
-            $hdd->$prop = $val;
-        }
-        $hdd->MakeDisplay();
-        return $hdd;
-    }
+	static function RowToObject($row) {
+		$hdd = new HDD();
+		foreach ($row as $prop => $val) {
+			$hdd->$prop = $val;
+		}
+		$hdd->MakeDisplay();
+		return $hdd;
+	}
 
-    function CreateHDD() {
-        global $dbh;
+	public static function GetHDDByID($id) {
+		global $dbh;
+		$id = intval($id);
+		$sql = "SELECT * FROM fac_HDD WHERE HDDID = ?";
+		$stmt = $dbh->prepare($sql);
+		$stmt->execute([$id]);
+		if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			return self::RowToObject($row);
+		}
+		return null;
+	}
 
-        $this->MakeSafe();
+	function Create() {
+		global $dbh;
+		$this->MakeSafe();
 
-        $sql = "INSERT INTO fac_HDD (DeviceID, Label, SerialNo, Status, Size, TypeMedia, DateAdd, StatusDestruction, Note)
-                VALUES (:DeviceID, :Label, :SerialNo, :Status, :Size, :TypeMedia, NOW(), 'none', :Note)";
+		$sql = "INSERT INTO fac_HDD (DeviceID, Label, SerialNo, Status, Size, TypeMedia, DateAdd, StatusDestruction, Note)
+				VALUES (:DeviceID, :Label, :SerialNo, :Status, :Size, :TypeMedia, NOW(), 'none', :Note)";
 
-        $stmt = $dbh->prepare($sql);
-        $stmt->execute([
-            ":DeviceID" => $this->DeviceID,
-            ":Label" => $this->Label,
-            ":SerialNo" => $this->SerialNo,
-            ":Status" => $this->Status,
-            ":Size" => $this->Size,
-            ":TypeMedia" => $this->TypeMedia,
-            ":Note" => $this->Note
-        ]);
+		$stmt = $dbh->prepare($sql);
+		$stmt->execute([
+			":DeviceID" => $this->DeviceID,
+			":Label" => $this->Label,
+			":SerialNo" => $this->SerialNo,
+			":Status" => $this->Status,
+			":Size" => $this->Size,
+			":TypeMedia" => $this->TypeMedia,
+			":Note" => $this->Note
+		]);
 
-        $this->HDDID = $dbh->lastInsertId();
-    }
+		$this->HDDID = $dbh->lastInsertId();
+		self::logAction("Created", $this->HDDID);
+	}
 
-    function UpdateHDD() {
-        global $dbh;
+	function Update() {
+		global $dbh;
+		$this->MakeSafe();
 
-        $this->MakeSafe();
+		$sql = "UPDATE fac_HDD SET
+			DeviceID = :DeviceID,
+			Label = :Label,
+			SerialNo = :SerialNo,
+			Status = :Status,
+			Size = :Size,
+			TypeMedia = :TypeMedia,
+			Note = :Note
+			WHERE HDDID = :HDDID";
 
-        $sql = "UPDATE fac_HDD SET
-                    DeviceID = :DeviceID,
-                    Label = :Label,
-                    SerialNo = :SerialNo,
-                    Status = :Status,
-                    Size = :Size,
-                    TypeMedia = :TypeMedia,
-                    Note = :Note
-                WHERE HDDID = :HDDID";
+		$stmt = $dbh->prepare($sql);
+		$result = $stmt->execute([
+			":DeviceID" => $this->DeviceID,
+			":Label" => $this->Label,
+			":SerialNo" => $this->SerialNo,
+			":Status" => $this->Status,
+			":Size" => $this->Size,
+			":TypeMedia" => $this->TypeMedia,
+			":Note" => $this->Note,
+			":HDDID" => $this->HDDID
+		]);
 
-        $stmt = $dbh->prepare($sql);
-        return $stmt->execute([
-            ":DeviceID" => $this->DeviceID,
-            ":Label" => $this->Label,
-            ":SerialNo" => $this->SerialNo,
-            ":Status" => $this->Status,
-            ":Size" => $this->Size,
-            ":TypeMedia" => $this->TypeMedia,
-            ":Note" => $this->Note,
-            ":HDDID" => $this->HDDID
-        ]);
-    }
+		if ($result) {
+			self::logAction("Updated", $this->HDDID);
+		}
+		return $result;
+	}
 
-    function DeleteHDD() {
-        global $dbh;
+	function Delete() {
+		global $dbh;
+		$this->MakeSafe();
 
-        $this->MakeSafe();
+		$sql = "DELETE FROM fac_HDD WHERE HDDID = :HDDID";
+		$stmt = $dbh->prepare($sql);
+		$result = $stmt->execute([":HDDID" => $this->HDDID]);
+		if ($result) {
+			self::logAction("Deleted", $this->HDDID);
+		}
+		return $result;
+	}
 
-        $sql = "DELETE FROM fac_HDD WHERE HDDID = :HDDID";
+	function SendForDestruction($note = '') {
+		global $dbh;
+		$this->MakeSafe();
+		$note = sanitize($note);
 
-        $stmt = $dbh->prepare($sql);
-        return $stmt->execute([":HDDID" => $this->HDDID]);
-    }
+		$sql = "UPDATE fac_HDD SET
+			Status = 'pending_destruction',
+			StatusDestruction = 'pending',
+			DateWithdrawn = NOW(),
+			Note = CONCAT(Note, ' ', :Note)
+			WHERE HDDID = :HDDID";
 
-    function SendForDestruction($note = '') {
-        global $dbh;
+		$stmt = $dbh->prepare($sql);
+		return $stmt->execute([
+			":HDDID" => $this->HDDID,
+			":Note" => $note
+		]);
+	}
 
-        $this->MakeSafe();
-        $note = sanitize($note);
+	function MarkAsDestroyed($note = '') {
+		global $dbh;
+		$this->MakeSafe();
+		$note = sanitize($note);
 
-        $sql = "UPDATE fac_HDD SET
-                    Status = 'pending_destruction',
-                    StatusDestruction = 'pending',
-                    DateWithdrawn = NOW(),
-                    Note = CONCAT(Note, ' ', :Note)
-                WHERE HDDID = :HDDID";
+		$sql = "UPDATE fac_HDD SET
+			Status = 'destroyed_h2',
+			StatusDestruction = 'destroyed',
+			DateDestruction = NOW(),
+			Note = CONCAT(Note, ' ', :Note)
+			WHERE HDDID = :HDDID";
 
-        $stmt = $dbh->prepare($sql);
-        return $stmt->execute([
-            ":HDDID" => $this->HDDID,
-            ":Note" => $note
-        ]);
-    }
+		$stmt = $dbh->prepare($sql);
+		return $stmt->execute([
+			":HDDID" => $this->HDDID,
+			":Note" => $note
+		]);
+	}
 
-    function MarkAsDestroyed($note = '') {
-        global $dbh;
+	static function GetHDDByDevice($DeviceID) {
+		global $dbh;
+		$DeviceID = intval($DeviceID);
 
-        $this->MakeSafe();
-        $note = sanitize($note);
+		$sql = "SELECT * FROM fac_HDD WHERE DeviceID = :DeviceID ORDER BY Label ASC";
+		$stmt = $dbh->prepare($sql);
+		$stmt->execute([":DeviceID" => $DeviceID]);
 
-        $sql = "UPDATE fac_HDD SET
-                    Status = 'destroyed_h2',
-                    StatusDestruction = 'destroyed',
-                    DateDestruction = NOW(),
-                    Note = CONCAT(Note, ' ', :Note)
-                WHERE HDDID = :HDDID";
+		$list = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			$list[] = self::RowToObject($row);
+		}
+		return $list;
+	}
 
-        $stmt = $dbh->prepare($sql);
-        return $stmt->execute([
-            ":HDDID" => $this->HDDID,
-            ":Note" => $note
-        ]);
-    }
+	static function SearchBySerial($SerialNo) {
+		global $dbh;
+		$SerialNo = "%" . sanitize($SerialNo) . "%";
 
-    static function GetHDDByDevice($DeviceID) {
-        global $dbh;
+		$sql = "SELECT * FROM fac_HDD WHERE SerialNo LIKE :SerialNo";
+		$stmt = $dbh->prepare($sql);
+		$stmt->execute([":SerialNo" => $SerialNo]);
 
-        $DeviceID = intval($DeviceID);
+		$list = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			$list[] = self::RowToObject($row);
+		}
+		return $list;
+	}
 
-        $sql = "SELECT * FROM fac_HDD WHERE DeviceID = :DeviceID ORDER BY Label ASC";
+	static function GetPendingDestruction() {
+		global $dbh;
+		$sql = "SELECT * FROM fac_HDD WHERE StatusDestruction = 'pending'";
+		$stmt = $dbh->query($sql);
 
-        $stmt = $dbh->prepare($sql);
-        $stmt->execute([":DeviceID" => $DeviceID]);
+		$list = [];
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			$list[] = self::RowToObject($row);
+		}
+		return $list;
+	}
 
-        $hddList = array();
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-            $hddList[] = self::RowToObject($row);
-        }
-
-        return $hddList;
-    }
-
-    static function SearchBySerial($SerialNo) {
-        global $dbh;
-
-        $SerialNo = "%".sanitize($SerialNo)."%";
-
-        $sql = "SELECT * FROM fac_HDD WHERE SerialNo LIKE :SerialNo";
-
-        $stmt = $dbh->prepare($sql);
-        $stmt->execute([":SerialNo" => $SerialNo]);
-
-        $hddList = array();
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-            $hddList[] = self::RowToObject($row);
-        }
-
-        return $hddList;
-    }
-
-    static function GetPendingDestruction() {
-        global $dbh;
-
-        $sql = "SELECT * FROM fac_HDD WHERE StatusDestruction = 'pending'";
-
-        $stmt = $dbh->query($sql);
-
-        $hddList = array();
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-            $hddList[] = self::RowToObject($row);
-        }
-
-        return $hddList;
-    }
-}
-
+	// LOGGING
 	private static function logAction($action, $HDDID) {
 		global $person, $dbh;
-		$sql = "INSERT INTO fac_GenericLog (UserID, Time, ItemType, ItemID, LogText) VALUES (?, NOW(), 'HDD', ?, ?)";
+		$sql = "INSERT INTO fac_GenericLog (UserID, Time, ItemType, ItemID, LogText)
+		        VALUES (?, NOW(), 'HDD', ?, ?)";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$person->UserID, $HDDID, $action]);
 	}
 
+	// STATIC ACTIONS UTILITAIRES
 	public static function WithdrawByID($id) {
 		global $dbh;
-		$sql = "UPDATE fac_HDD SET Status='pending_destruction', dateWithdrawn=NOW() WHERE HDDID=?";
+		$sql = "UPDATE fac_HDD SET Status='pending_destruction', DateWithdrawn=NOW() WHERE HDDID=?";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$id]);
 		self::logAction("Withdrawn (pending destruction)", $id);
@@ -215,7 +224,7 @@ class HDD {
 
 	public static function MarkDestroyed($id) {
 		global $dbh;
-		$sql = "UPDATE fac_HDD SET StatusDestruction='destroyed', dateDestruction=NOW() WHERE HDDID=?";
+		$sql = "UPDATE fac_HDD SET StatusDestruction='destroyed', DateDestruction=NOW() WHERE HDDID=?";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$id]);
 		self::logAction("Marked as destroyed", $id);
@@ -223,7 +232,7 @@ class HDD {
 
 	public static function ReassignToDevice($id, $deviceID) {
 		global $dbh;
-		$sql = "UPDATE fac_HDD SET Status='on', DeviceID=?, dateWithdrawn=NULL, dateDestruction=NULL, StatusDestruction=NULL WHERE HDDID=?";
+		$sql = "UPDATE fac_HDD SET Status='on', DeviceID=?, DateWithdrawn=NULL, DateDestruction=NULL, StatusDestruction=NULL WHERE HDDID=?";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$deviceID, $id]);
 		self::logAction("Reassigned to DeviceID $deviceID", $id);
@@ -239,7 +248,8 @@ class HDD {
 
 	public static function CreateEmpty($deviceID) {
 		global $dbh;
-		$sql = "INSERT INTO fac_HDD (DeviceID, Label, SerialNo, Status, TypeMedia, Size, dateAdd) VALUES (?, '', '', 'on', 'SATA', 0, NOW())";
+		$sql = "INSERT INTO fac_HDD (DeviceID, Label, SerialNo, Status, TypeMedia, Size, DateAdd)
+		        VALUES (?, '', '', 'on', 'SATA', 0, NOW())";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$deviceID]);
 		$id = $dbh->lastInsertId();
@@ -248,20 +258,22 @@ class HDD {
 
 	public static function DuplicateToEmptySlots($sourceHDDID) {
 		global $dbh;
+
 		$sql = "SELECT * FROM fac_HDD WHERE HDDID=?";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$sourceHDDID]);
 		if (!$hdd = $stmt->fetch(PDO::FETCH_ASSOC)) return;
 
-		$sql = "SELECT DeviceID FROM fac_HDD WHERE HDDID=?";
-		$devID = $dbh->prepare($sql);
-		$devID->execute([$sourceHDDID]);
-		$DeviceID = $devID->fetchColumn();
+		$DeviceID = $hdd['DeviceID'];
 
-		$sql = "SELECT HDDCount FROM fac_DeviceTemplateHdd dt INNER JOIN fac_Device d ON d.TemplateID=dt.TemplateID WHERE d.DeviceID=?";
+		$sql = "SELECT dt.HDDCount FROM fac_DeviceTemplateHdd dt
+		        INNER JOIN fac_Device d ON d.TemplateID = dt.TemplateID
+		        WHERE d.DeviceID = ?";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$DeviceID]);
 		$max = $stmt->fetchColumn();
+
+		if (!$max || !$DeviceID) return;
 
 		$sql = "SELECT COUNT(*) FROM fac_HDD WHERE DeviceID=?";
 		$stmt = $dbh->prepare($sql);
@@ -271,7 +283,8 @@ class HDD {
 		$remaining = $max - $current;
 		if ($remaining <= 0) return;
 
-		$sql = "INSERT INTO fac_HDD (DeviceID, Label, SerialNo, Status, TypeMedia, Size, dateAdd) VALUES (?, ?, '', ?, ?, ?, NOW())";
+		$sql = "INSERT INTO fac_HDD (DeviceID, Label, SerialNo, Status, TypeMedia, Size, DateAdd)
+		        VALUES (?, ?, '', ?, ?, ?, NOW())";
 		$stmt = $dbh->prepare($sql);
 		for ($i = 0; $i < $remaining; $i++) {
 			$stmt->execute([$DeviceID, $hdd['Label'], $hdd['Status'], $hdd['TypeMedia'], $hdd['Size']]);
@@ -282,13 +295,14 @@ class HDD {
 
 	public static function ExportPendingDestruction($deviceID) {
 		global $dbh;
-		$sql = "SELECT Label, SerialNo, dateWithdrawn FROM fac_HDD WHERE DeviceID=? AND Status='pending_destruction'";
+		$sql = "SELECT Label, SerialNo, DateWithdrawn FROM fac_HDD
+		        WHERE DeviceID = ? AND Status = 'pending_destruction'";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$deviceID]);
 
 		echo "Label\tSerial Number\tDate Withdrawn\n";
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-			echo "{$row['Label']}\t{$row['SerialNo']}\t{$row['dateWithdrawn']}\n";
+			echo "{$row['Label']}\t{$row['SerialNo']}\t{$row['DateWithdrawn']}\n";
 		}
 	}
 }

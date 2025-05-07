@@ -103,6 +103,7 @@ class DeviceTemplate {
 		$Template->GlobalID = $row["GlobalID"];
         $Template->MakeDisplay();
 		$Template->GetCustomValues();
+		$Template->LoadHDDConfig();
 
 		if($extendmodel){
 			// Extend our device model
@@ -254,6 +255,7 @@ class DeviceTemplate {
 		// If we're removing the template clean up the children
 		$this->DeleteSlots();
 		$this->DeletePorts();
+		$this->DeleteTemplateHDD(); //feature managementHdd
 
 		$sql="DELETE FROM fac_DeviceTemplate WHERE TemplateID=$this->TemplateID;";
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
