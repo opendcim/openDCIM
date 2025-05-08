@@ -40,9 +40,9 @@ class DeviceTemplate {
 	var $SNMPVersion;
 	var $CustomValues;
 	var $GlobalID;
-	//for feature management hdd at the bottom of the page
 	public $EnableHDDFeature = 0;
 	public $HDDCount = 0;
+
     
 	public function __construct($dtid=false){
 		if($dtid){
@@ -245,6 +245,8 @@ class DeviceTemplate {
 
 			(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
 			$this->MakeDisplay();
+			$this->UpdateTemplateHDD(); // manageHDD
+
 			return true;
 		}
 	}
@@ -255,7 +257,8 @@ class DeviceTemplate {
 		// If we're removing the template clean up the children
 		$this->DeleteSlots();
 		$this->DeletePorts();
-		$this->DeleteTemplateHDD(); //feature managementHdd
+		$this->DeleteTemplateHDD();
+
 
 		$sql="DELETE FROM fac_DeviceTemplate WHERE TemplateID=$this->TemplateID;";
 		(class_exists('LogActions'))?LogActions::LogThis($this):'';
@@ -753,12 +756,10 @@ class DeviceTemplate {
 		}
 		return $array;
 	}
-
-	// method for feature management hdd 
-	//HDD data is a logical complement to the equipment model. It depends directly on the TemplateID.
+	//feature manager for HDD
 	public function UpdateTemplateHDD() {
 		global $dbh;
-	
+				
 		$EnableHDDFeature = isset($_POST['EnableHDDFeature']) ? intval($_POST['EnableHDDFeature']) : 0;
 		$HDDCount = isset($_POST['HDDCount']) ? intval($_POST['HDDCount']) : 0;
 	
@@ -772,11 +773,14 @@ class DeviceTemplate {
 			$sql = "INSERT INTO fac_DeviceTemplateHdd (TemplateID, EnableHDDFeature, HDDCount) VALUES (?, ?, ?)";
 			$dbh->prepare($sql)->execute([$this->TemplateID, $EnableHDDFeature, $HDDCount]);
 		}
+		$this->EnableHDDFeature = $EnableHDDFeature; // update data in the object
+		$this->HDDCount = $HDDCount; // update HDD count in the object
 	}
 	
 	public function LoadHDDConfig() {
 		global $dbh;
-	
+		error_log("LoadHDDConfig called for TemplateID: " . $this->TemplateID);
+
 		$this->EnableHDDFeature = 0;
 		$this->HDDCount = 0;
 	
@@ -818,5 +822,4 @@ class DeviceTemplate {
 	}
 	
 }
-
 ?>

@@ -2058,17 +2058,23 @@ echo '		<div>
 		//feature management hdd
 		if(
 			$config->ParameterArray['feature_hdd'] == 'enabled' &&
-			$template->EnableHDDFeature == 1 &&
 			$dev->DeviceID > 0 &&
 			$person->ManageHDD == 1
 		){
-		echo '
-           </select></div></div>
-           <div>
-           <div><label>',__("Manage HDD"),'</label></div>
-           <div><a class="button" href="managementhdd.php?DeviceID=',$dev->DeviceID,'">',__("Manage HDDs"),'</a></div>
-           </div>';
-		}
+			$template = new DeviceTemplate($dev->TemplateID);
+			$template->GetTemplateByID();
+			$template->LoadHDDConfig();
+			if(
+				$template->EnableHDDFeature == 1
+				){
+				echo '
+				<div>
+				<div><label>',__("Manage HDD"),'</label></div>
+				<div><a class="button" href="managementhdd.php?DeviceID=',$dev->DeviceID,'">',__("Manage HDDs"),'</a></div>
+				</div>';
+				}
+			}
+		
 	echo' </div> <!-- END div.table -->
 </fieldset>';
 

@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 	require_once('db.inc.php');
 	require_once('facilities.inc.php');
 
@@ -83,7 +87,7 @@
 		$template->TemplateID=$_REQUEST['TemplateID'];
 		$template->GetTemplateByID();
 		$deviceList = Device::GetDevicesByTemplate( $template->TemplateID );
-		$Template->LoadHDDConfig(); // feature management hdd: Load
+		$template->LoadHDDConfig(); // feature management hdd: Load
 	}
 	
 	if(isset($_POST['action'])){
@@ -243,6 +247,7 @@
 					$oldstatus=$status;
 					$status=UpdateSlotsPorts($template,$status);
 					$template->UpdateTemplateHDD(); // feature management hdd
+					//$template->LoadHDDConfig(); // load data from hdd
 					if($oldstatus==$status){
 						$status=UpdateCustomValues($template,$status);
 					}
@@ -835,21 +840,17 @@ echo '</select>
 // feature management hdd
 if($config->ParameterArray['feature_hdd'] == 'enabled'){
 	echo '
-<div id="DivEnableHDDFeature">
 	<div>
 		<div><label for="EnableHDDFeature">',__("Enable HDD Feature for this model"),'</label></div>
-		<div>
-			<select id="EnableHDDFeature" name="EnableHDDFeature" defaultvalue="',$template->EnableHDDFeature,'" data="',$template->EnableHDDFeature,'">
-				<option value="0">',__("Disabled"),'</option>
-				<option value="1">',__("Enabled"),'</option>
-			</select>
-		</div>
+		<div><select id="EnableHDDFeature" name="EnableHDDFeature">
+			<option value="0" '.($template->EnableHDDFeature==0 ? 'selected="selected"' : '').'>'.__("Disabled").'</option>
+			<option value="1" '.($template->EnableHDDFeature==1 ? 'selected="selected"' : '').'>'.__("Enabled").'</option>
+		</select></div>
 	</div>
 	<div>
 		<div><label for="HDDCount">',__("Number of HDD Slots"),'</label></div>
 		<div><input type="number" id="HDDCount" name="HDDCount" value="',$template->HDDCount,'" min="0" style="width:80px;"></div>
-	</div>
-</div>';
+	</div>';
 }
 
 foreach($dcaList as $dca) {

@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require_once("db.inc.php");
 require_once("facilities.inc.php");
 require_once("classes/hdd.class.php");
@@ -81,27 +84,27 @@ $hddWaitList = HDD::GetRetiredHDDByDevice($device->DeviceID);
 $i = 1;
 foreach ($hddList as $hdd) {
 	echo "<tr>
-		<td><input type='checkbox' name='select_active[]' value='{$hdd->hddID}'></td>
+		<td><input type='checkbox' name='select_active[]' value='{$hdd->HDDID}'></td>
 		<td>$i</td>
-		<td><input type='text' name='Label[{$hdd->hddID}]' value='" . htmlentities($hdd->Label) . "'></td>
-		<td><input type='text' name='SerialNo[{$hdd->hddID}]' value='" . htmlentities($hdd->SerialNo) . "'></td>
-		<td><select name='Status[{$hdd->hddID}]'>
+		<td><input type='text' name='Label[{$hdd->HDDID}]' value='" . htmlentities($hdd->Label) . "'></td>
+		<td><input type='text' name='SerialNo[{$hdd->HDDID}]' value='" . htmlentities($hdd->SerialNo) . "'></td>
+		<td><select name='Status[{$hdd->HDDID}]'>
 			<option value='on'" . ($hdd->Status == "on" ? " selected" : "") . ">On</option>
 			<option value='off'" . ($hdd->Status == "off" ? " selected" : "") . ">Off</option>
 			<option value='replace'" . ($hdd->Status == "replace" ? " selected" : "") . ">Replace</option>
 			<option value='pending_destruction'" . ($hdd->Status == "pending_destruction" ? " selected" : "") . ">Pending Destruction</option>
 		</select></td>
-		<td><select name='TypeMedia[{$hdd->hddID}]'>
+		<td><select name='TypeMedia[{$hdd->HDDID}]'>
 			<option value='SATA'" . ($hdd->TypeMedia == "SATA" ? " selected" : "") . ">SATA</option>
 			<option value='SCSI'" . ($hdd->TypeMedia == "SCSI" ? " selected" : "") . ">SCSI</option>
 			<option value='SD'" . ($hdd->TypeMedia == "SD" ? " selected" : "") . ">SD</option>
 		</select></td>
-		<td><input type='number' name='Size[{$hdd->hddID}]' value='" . intval($hdd->Size) . "'></td>
+		<td><input type='number' name='Size[{$hdd->HDDID}]' value='" . intval($hdd->Size) . "'></td>
 		<td>
-			<button type='submit' name='action' value='update_{$hdd->hddID}'>✏️</button>
-			<button type='submit' name='action' value='remove_{$hdd->hddID}'>➖</button>
-			<button type='submit' name='action' value='delete_{$hdd->hddID}' onclick='return confirmDelete();'>🗑️</button>
-			<button type='submit' name='action' value='duplicate_{$hdd->hddID}'>📑</button>
+			<button type='submit' name='action' value='update_{$hdd->HDDID}'>✏️</button>
+			<button type='submit' name='action' value='remove_{$hdd->HDDID}'>➖</button>
+			<button type='submit' name='action' value='delete_{$hdd->HDDID}' onclick='return confirmDelete();'>🗑️</button>
+			<button type='submit' name='action' value='duplicate_{$hdd->HDDID}'>📑</button>
 		</td>
 	</tr>";
 	$i++;
@@ -130,14 +133,14 @@ foreach ($hddList as $hdd) {
 <?php
 foreach ($hddWaitList as $hdd) {
 	echo "<tr>
-		<td><input type='checkbox' name='select_pending[]' value='{$hdd->hddID}'></td>
+		<td><input type='checkbox' name='select_pending[]' value='{$hdd->HDDID}'></td>
 		<td>" . htmlentities($hdd->Label) . "</td>
 		<td>" . htmlentities($hdd->SerialNo) . "</td>
 		<td>{$hdd->dateWithdrawn}</td>
 		<td>
-			<button type='submit' name='action' value='destroy_{$hdd->hddID}'>⚠️</button>
-			<button type='submit' name='action' value='reassign_{$hdd->hddID}'>♻️</button>
-			<button type='submit' name='action' value='spare_{$hdd->hddID}'>🔧</button>
+			<button type='submit' name='action' value='destroy_{$hdd->HDDID}'>⚠️</button>
+			<button type='submit' name='action' value='reassign_{$hdd->HDDID}'>♻️</button>
+			<button type='submit' name='action' value='spare_{$hdd->HDDID}'>🔧</button>
 		</td>
 	</tr>";
 }
@@ -146,18 +149,17 @@ foreach ($hddWaitList as $hdd) {
 			</table>
 			<p>
 				<button type="submit" name="action" value="bulk_destroy">⚠️ <?php echo __("Destroy Selected"); ?></button>
-				<button type="submit" name="action" value="print_list">🖨️ <?php echo __("Print List"); ?></button>
+				<button type="submit" name="action" value="Export_list">🖨️ <?php echo __("Export List"); ?></button>
 			</p>
 		</form>
-		
-	</div>
-</div>
-<div style="margin-top: 20px; text-align: right;">
+		<div style="margin-top: 20px; text-align: right;">
 	<a class="button" href="hdd_log_view.php?DeviceID=<?php echo $device->DeviceID; ?>">
 		<?php echo __("View HDD Activity Log"); ?>
 	</a>
 </div>
-<?php include("foot.inc.php"); ?>
+	</div>
+</div>
+
 </div>
 </body>
 </html>

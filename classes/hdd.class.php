@@ -1,4 +1,6 @@
 <?php
+
+use Psr\Log\NullLogger;
 class HDD {
 	public $HDDID;
 	public $DeviceID;
@@ -122,8 +124,8 @@ class HDD {
 		$note = sanitize($note);
 
 		$sql = "UPDATE fac_HDD SET
-			Status = 'pending_destruction',
-			StatusDestruction = 'pending',
+			Status = 'Pending_destruction',
+			StatusDestruction = 'Pending',
 			DateWithdrawn = NOW(),
 			Note = CONCAT(Note, ' ', :Note)
 			WHERE HDDID = :HDDID";
@@ -141,8 +143,8 @@ class HDD {
 		$note = sanitize($note);
 
 		$sql = "UPDATE fac_HDD SET
-			Status = 'destroyed_h2',
-			StatusDestruction = 'destroyed',
+			Status = 'Destroyed_h2',
+			StatusDestruction = 'Destroyed',
 			DateDestruction = NOW(),
 			Note = CONCAT(Note, ' ', :Note)
 			WHERE HDDID = :HDDID";
@@ -186,7 +188,7 @@ class HDD {
 
 	static function GetPendingDestruction() {
 		global $dbh;
-		$sql = "SELECT * FROM fac_HDD WHERE StatusDestruction = 'pending'";
+		$sql = "SELECT * FROM fac_HDD WHERE StatusDestruction = 'Pending'";
 		$stmt = $dbh->query($sql);
 
 		$list = [];
@@ -199,19 +201,27 @@ class HDD {
 	// LOGGING
 	private static function logAction($action, $HDDID) {
 		global $person, $dbh;
-		$sql = "INSERT INTO fac_GenericLog (UserID, Time, ItemType, ItemID, LogText)
-		        VALUES (?, NOW(), 'HDD', ?, ?)";
+		$sql = "INSERT INTO fac_GenericLog (UserID, Class, ObjectID, ChildID, Property, Action, OldVal, NewVal, Time)
+		        VALUES (:UserID, 'HDD', :ObjectID, :ChildID, :Property, :Action, :OldVal, :NewVal, CURRENT_TIMESTAMP)";
 		$stmt = $dbh->prepare($sql);
-		$stmt->execute([$person->UserID, $HDDID, $action]);
+		$stmt->execute([
+			':UserID' => $person->UserID,
+			':ObjectID' => $HDDID,
+			':ChildID' => null,
+			':Property' => null,
+			':Action' => $action,
+			':OldVal' => null,
+			':NewVal' => null
+		]);
 	}
 
 	// STATIC ACTIONS UTILITAIRES
 	public static function WithdrawByID($id) {
 		global $dbh;
-		$sql = "UPDATE fac_HDD SET Status='pending_destruction', DateWithdrawn=NOW() WHERE HDDID=?";
+		$sql = "UPDATE fac_HDD SET Status='Pending_destruction', DateWithdrawn=NOW() WHERE HDDID=?";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$id]);
-		self::logAction("Withdrawn (pending destruction)", $id);
+		self::logAction("Withdrawn (Pending destruction)", $id);
 	}
 
 	public static function DeleteByID($id) {
@@ -224,7 +234,7 @@ class HDD {
 
 	public static function MarkDestroyed($id) {
 		global $dbh;
-		$sql = "UPDATE fac_HDD SET StatusDestruction='destroyed', DateDestruction=NOW() WHERE HDDID=?";
+		$sql = "UPDATE fac_HDD SET StatusDestruction='Destroyed', DateDestruction=NOW() WHERE HDDID=?";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$id]);
 		self::logAction("Marked as destroyed", $id);
@@ -232,7 +242,7 @@ class HDD {
 
 	public static function ReassignToDevice($id, $deviceID) {
 		global $dbh;
-		$sql = "UPDATE fac_HDD SET Status='on', DeviceID=?, DateWithdrawn=NULL, DateDestruction=NULL, StatusDestruction=NULL WHERE HDDID=?";
+		$sql = "UPDATE fac_HDD SET Status='On', DeviceID=?, DateWithdrawn=NULL, DateDestruction=NULL, StatusDestruction=NULL WHERE HDDID=?";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$deviceID, $id]);
 		self::logAction("Reassigned to DeviceID $deviceID", $id);
@@ -240,21 +250,28 @@ class HDD {
 
 	public static function MarkAsSpare($id) {
 		global $dbh;
-		$sql = "UPDATE fac_HDD SET Status='spare' WHERE HDDID=?";
+		$sql = "UPDATE fac_HDD SET Status='Spare' WHERE HDDID=?";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$id]);
-		self::logAction("Marked as spare", $id);
+		self::logAction("Marked as Spare", $id);
 	}
 
 	public static function CreateEmpty($deviceID) {
 		global $dbh;
+	
+		$SerialNo = uniqid('HDD_', true); // Génère un identifiant unique
 		$sql = "INSERT INTO fac_HDD (DeviceID, Label, SerialNo, Status, TypeMedia, Size, DateAdd)
-		        VALUES (?, '', '', 'on', 'SATA', 0, NOW())";
+				VALUES (:DeviceID, '', :SerialNo, 'On', 'SATA', 0, NOW())";
 		$stmt = $dbh->prepare($sql);
-		$stmt->execute([$deviceID]);
+		$stmt->execute([
+			':DeviceID' => intval($deviceID),
+			':SerialNo' => $SerialNo
+		]);
 		$id = $dbh->lastInsertId();
 		self::logAction("Created new empty HDD", $id);
+		return $id;
 	}
+	
 
 	public static function DuplicateToEmptySlots($sourceHDDID) {
 		global $dbh;
@@ -296,7 +313,7 @@ class HDD {
 	public static function ExportPendingDestruction($deviceID) {
 		global $dbh;
 		$sql = "SELECT Label, SerialNo, DateWithdrawn FROM fac_HDD
-		        WHERE DeviceID = ? AND Status = 'pending_destruction'";
+		        WHERE DeviceID = ? AND Status = 'Pending_destruction'";
 		$stmt = $dbh->prepare($sql);
 		$stmt->execute([$deviceID]);
 
@@ -304,6 +321,23 @@ class HDD {
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 			echo "{$row['Label']}\t{$row['SerialNo']}\t{$row['DateWithdrawn']}\n";
 		}
+	}
+	public static function GetRetiredHDDByDevice($DeviceID) {
+	global $dbh;
+	$DeviceID = intval($DeviceID);
+	$sql = "SELECT * FROM fac_HDD WHERE DeviceID = :DeviceID AND Status = 'Retired'";
+	$stmt = $dbh->prepare($sql);
+	$stmt->execute([':DeviceID' => $DeviceID]);
+	
+	$hddList = array();
+	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		$hdd = new HDD();
+		foreach ($row as $key => $value) {
+			$hdd->$key = $value;
+		}
+		$hddList[] = $hdd;
+	}
+	return $hddList;
 	}
 }
 ?>
