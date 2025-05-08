@@ -53,7 +53,32 @@ $hddWaitList = HDD::GetRetiredHDDByDevice($device->DeviceID);
 	function confirmDelete() {
 		return confirm("<?php echo __('This action is permanent and cannot be undone. Are you sure?'); ?>");
 	}
+
+	function toggleAddHDDForm() {
+		document.getElementById("addHDDModal").style.display = "block";
+	}
+
+	function closeAddHDDForm() {
+		document.getElementById("addHDDModal").style.display = "none";
+	}
   </script>
+<style>
+  #addHDDModal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+  }
+  #addHDDModal .modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 400px;
+    border-radius: 8px;
+  }
+</style>
 </head>
 <body>
 <?php include("header.inc.php"); ?>
@@ -113,7 +138,7 @@ foreach ($hddList as $hdd) {
 				</tbody>
 			</table>
 			<p>
-				<button type="submit" name="action" value="add_hdd">➕ <?php echo __("Add New HDD"); ?></button>
+				<button type="button" onclick="openModal()">➕ <?php echo __("Add New HDD"); ?></button>
 				<button type="submit" name="action" value="bulk_remove">➖ <?php echo __("Remove Selected"); ?></button>
 				<button type="submit" name="action" value="bulk_delete" onclick="return confirmDelete();">🗑️ <?php echo __("Delete Selected"); ?></button>
 			</p>
@@ -153,10 +178,58 @@ foreach ($hddWaitList as $hdd) {
 			</p>
 		</form>
 		<div style="margin-top: 20px; text-align: right;">
-	<a class="button" href="hdd_log_view.php?DeviceID=<?php echo $device->DeviceID; ?>">
-		<?php echo __("View HDD Activity Log"); ?>
-	</a>
+			<a class="button" href="hdd_log_view.php?DeviceID=<?php echo $device->DeviceID; ?>">
+				<?php echo __("View HDD Activity Log"); ?>
+			</a>
+		</div>
+
+<!-- Modal Add HDD -->
+<div id="hddModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.4);">
+  <div style="background-color:#fff; margin:10% auto; padding:20px; border:1px solid #888; width:300px; position:relative;">
+    <span onclick="closeModal()" style="position:absolute; right:10px; top:10px; cursor:pointer;">&times;</span>
+    <h3><?php echo __("Add New HDD"); ?></h3>
+    <form method="POST" action="savehdd.php">
+      <input type="hidden" name="DeviceID" value="<?php echo $device->DeviceID; ?>">
+      <input type="hidden" name="action" value="create_hdd_form">
+
+      <label for="Label"><?php echo __("Label"); ?></label><br>
+      <input type="text" name="Label" id="Label" required><br><br>
+
+      <label for="SerialNo"><?php echo __("Serial No"); ?></label><br>
+      <input type="text" name="SerialNo" id="SerialNo" required><br><br>
+
+      <label for="TypeMedia"><?php echo __("Type"); ?></label><br>
+      <select name="TypeMedia" id="TypeMedia">
+        <option value="SATA">SATA</option>
+        <option value="SCSI">SCSI</option>
+        <option value="SD">SD</option>
+      </select><br><br>
+
+      <label for="Size"><?php echo __("Size (GB)"); ?></label><br>
+      <input type="number" name="Size" id="Size" value="0" min="0"><br><br>
+
+      <button type="submit"><?php echo __("Add HDD"); ?></button>
+      <button type="button" onclick="closeModal()"><?php echo __("Cancel"); ?></button>
+    </form>
+  </div>
 </div>
+	<script type="text/javascript">
+	function openModal() {
+		document.getElementById('hddModal').style.display = 'block';
+	}
+
+	function closeModal() {
+		document.getElementById('hddModal').style.display = 'none';
+	}
+
+	window.onclick = function(event) {
+		var modal = document.getElementById('hddModal');
+		if (event.target == modal) modal.style.display = "none";
+	}
+	</script>
+
+</div>
+
 	</div>
 </div>
 

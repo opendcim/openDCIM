@@ -73,6 +73,23 @@ class HDD {
 		self::logAction("Created", $this->HDDID);
 	}
 
+	public static function CreateFromForm($deviceID, $label, $serialNo, $typeMedia, $size) {
+		global $dbh;
+		$sql = "INSERT INTO fac_HDD (DeviceID, Label, SerialNo, Status, TypeMedia, Size, DateAdd)
+				VALUES (:DeviceID, :Label, :SerialNo, 'On', :TypeMedia, :Size, NOW())";
+		$stmt = $dbh->prepare($sql);
+		$stmt->execute([
+			':DeviceID' => intval($deviceID),
+			':Label' => sanitize($label),
+			':SerialNo' => sanitize($serialNo),
+			':TypeMedia' => sanitize($typeMedia),
+			':Size' => intval($size)
+		]);
+		$id = $dbh->lastInsertId();
+		self::logAction("Created from form", $id);
+		return $id;
+	}
+
 	function Update() {
 		global $dbh;
 		$this->MakeSafe();
@@ -200,10 +217,10 @@ class HDD {
 
 	// LOGGING
 	private static function logAction($action, $HDDID) {
-		global $person, $dbh;
-		$sql = "INSERT INTO fac_GenericLog (UserID, Class, ObjectID, ChildID, Property, Action, OldVal, NewVal, Time)
-		        VALUES (:UserID, 'HDD', :ObjectID, :ChildID, :Property, :Action, :OldVal, :NewVal, CURRENT_TIMESTAMP)";
-		$stmt = $dbh->prepare($sql);
+		//global $person, $dbh;
+		//$sql = "INSERT INTO fac_GenericLog (UserID, Class, ObjectID, ChildID, Property, Action, OldVal, NewVal, Time)
+		//        VALUES (:UserID, 'HDD', :ObjectID, :ChildID, :Property, :Action, :OldVal, :NewVal, CURRENT_TIMESTAMP)";
+		//$stmt = $dbh->prepare($sql);
 		$stmt->execute([
 			':UserID' => $person->UserID,
 			':ObjectID' => $HDDID,

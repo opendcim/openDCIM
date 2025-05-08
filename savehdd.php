@@ -1,4 +1,4 @@
-<?php
+<?php 
 require_once("db.inc.php");
 require_once("facilities.inc.php");
 require_once("classes/hdd.class.php");
@@ -58,7 +58,20 @@ switch (true) {
 		break;
 
 	case $action === "add_hdd":
+		// This action is now handled via JS modal, fallback kept for legacy
 		HDD::CreateEmpty($deviceID);
+		break;
+	
+	case $action === "create_hdd_form":
+		$hdd = new HDD();
+		$hdd->DeviceID = $deviceID;
+		$hdd->Label = $_POST['Label_new'] ?? '';
+		$hdd->SerialNo = $_POST['SerialNo_new'] ?? '';
+		$hdd->Status = 'On';
+		$hdd->TypeMedia = $_POST['TypeMedia_new'] ?? 'SATA';
+		$hdd->Size = intval($_POST['Size_new'] ?? 0);
+		$hdd->Note = $_POST['Note_new'] ?? '';
+		$hdd->Create();
 		break;
 
 	case $action === "bulk_remove":
