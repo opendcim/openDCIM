@@ -17,9 +17,9 @@ CREATE TABLE fac_HDD (
     DeviceID INT NOT NULL,
     Label VARCHAR(100),
     SerialNo VARCHAR(100) UNIQUE,
-    Status ENUM('on','off','replace','pending_destruction','destroyed_h2') DEFAULT 'on',
+    Status ENUM('On','Off','Replace','Pending_destruction','Destroyed_h2','Spare') DEFAULT 'On',
     Size INT, -- en Go
-    TypeMedia ENUM('SATA', 'SCSI', 'SD'),
+    TypeMedia ENUM('HDD', 'SSD', 'MVME'),
     DateAdd DATETIME DEFAULT CURRENT_TIMESTAMP,
     DateWithdrawn DATETIME,
     DateDestruction DATETIME,
