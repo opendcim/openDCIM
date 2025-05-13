@@ -2,8 +2,6 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-// test de validation du parse
-echo "Si vous voyez ce message, PHP parse bien le fichier.<br>";
 
 require_once("db.inc.php");
 require_once("facilities.inc.php");
@@ -22,11 +20,6 @@ if (!$deviceID) {
 }
 
 $action   = $_POST['action']   ?? '';
-$deviceID = intval($_POST['DeviceID'] ?? 0);
-	if (!$deviceID) {
-		echo "Erreur : DeviceID manquant ou invalide.";
-		exit;
-	}
 
 try {
 	switch (true) 
@@ -53,82 +46,79 @@ try {
 			break;
 		
 		case preg_match('/^update_(\d+)$/', $action, $m) === 1:
-			$hdd = new HDD();
-			$hdd->HDDID = $m[1];
-			$hdd->Label = $_POST['Label'][$hdd->HDDID];
-			$hdd->SerialNo = $_POST['SerialNo'][$hdd->HDDID];
-			$hdd->Status = $_POST['Status'][$hdd->HDDID];
-			$hdd->TypeMedia = $_POST['TypeMedia'][$hdd->HDDID];
-			$hdd->Size = $_POST['Size'][$hdd->HDDID];
+			$id = intval((int)$m[1]);
+			// Récupère l’objet complet (avec tous les champs)
+			$hdd = HDD::GetHDDByID($id);
+			if (!$hdd) {
+				throw new Exception("HDDID {$id} introuvable.");
+			}
+			// Ne mettez à jour QUE ce qui vient du formulaire
+			$hdd->Label     = $_POST['Label'][$id]    ?? $hdd->Label;
+			$hdd->SerialNo  = $_POST['SerialNo'][$id] ?? $hdd->SerialNo;
+			$hdd->Status    = $_POST['Status'][$id]   ?? $hdd->Status;
+			$hdd->TypeMedia = $_POST['TypeMedia'][$id]?? $hdd->TypeMedia;
+			$hdd->Size      = intval($_POST['Size'][$id] ?? $hdd->Size);
+			// Maintenant vous avez déjà StatusDestruction, Note, DateAdd, etc.
 			$hdd->MakeSafe();
 			$hdd->Update();
-			echo "Je suis dans le case update";
 			break;
 
 		case preg_match('/^remove_(\d+)$/', $action, $m) === 1:
-			$hdd = HDD::GetHDDByID(intval($m[1]));
+			$hdd = HDD::GetHDDByID(intval((int)$m[1]));
 			if ($hdd) {
 			$hdd->SendForDestruction();
 			}
-			echo "Je suis dans le case remove";
 			break;
 
 		case preg_match('/^delete_(\d+)$/', $action, $m) === 1:
-			$hdd = new HDD();
-			$hdd->HDDID = $m[1];
-			$hdd->Delete();
-			echo "Je suis dans le case delete";
+			HDD::DeleteByID((int)$m[1]);
 			break;
 
 		case preg_match('/^duplicate_(\d+)$/', $action, $m) === 1:
-			HDD::DuplicateToEmptySlots($m[1]);
-			echo "Je suis dans le case duplicate pour HDDID {$m[1]}";
-			exit;
+			HDD::DuplicateToEmptySlots((int)$m[1]);
 			break;
 
 		case preg_match('/^destroy_(\d+)$/', $action, $m) === 1:
-			HDD::MarkDestroyed($m[1]);
-			echo "destroy";
+			HDD::MarkDestroyed((int)$m[1]);
 			break;
 
 		case preg_match('/^reassign_(\d+)$/', $action, $m) === 1:
-			HDD::ReassignToDevice($m[1], $deviceID);
+			HDD::ReassignToDevice((int)$m[1], $deviceID);
 			break;
 
 		case preg_match('/^spare_(\d+)$/', $action, $m) === 1:
-			HDD::MarkAsSpare($m[1]);
-			break;
-
-		case $action === "add_hdd":
-			// This action is now handled via JS modal, fallback kept for legacy
-			HDD::CreateEmpty($deviceID);
+			HDD::MarkAsSpare((int)$m[1]);
 			break;
 		
 		case $action === "bulk_remove":
-			foreach ($_POST['select_active'] ?? [] as $id) {
-				HDD::WithdrawByID($id);
+			  // $_POST['select_active'] contient un tableau d’IDs cochés
+			  foreach ($_POST['select_active'] ?? [] as $id) {
+				$id = intval($id);
+				// Récupère l’objet complet pour préserver ses autres propriétés
+				if ($hdd = HDD::GetHDDByID($id)) {
+					$hdd->SendForDestruction();
+				}
 			}
 			break;
 
 		case $action === "bulk_delete":
 			foreach ($_POST['select_active'] ?? [] as $id) {
-				HDD::DeleteByID($id);
+				HDD::DeleteByID(intval($id));
 			}
 			break;
 
 		case $action === "bulk_destroy":
 			foreach ($_POST['select_pending'] ?? [] as $id) {
-				HDD::MarkDestroyed((intval)$id);
+				HDD::MarkDestroyed(intval($id));
 			}
 			break;
 
 		case $action === "print_list":
-			header('Content-Type: application/vnd.ms-excel');
-			header('Content-Disposition: attachment; filename="HDD_List_Device_' . $deviceID . '.xls"');
-			HDD::ExportPendingDestruction($deviceID);
-			exit;
+			 // Export XLS complet en 3 feuilles
+			 HDD::ExportAllToXls($deviceID);
+			 // (la méthode se termine par exit())
 			break;
-		// Pour d’autres actions (update_, delete_, etc.), ajoutez vos cases ici
+		
         default:
             throw new Exception("Action inconnue : “{$action}”.");
     }

@@ -2,6 +2,8 @@
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
 
 class HDD {
     // Properties
@@ -12,10 +14,10 @@ class HDD {
     public string   $Status;
     public int      $Size;
     public string   $TypeMedia;
-    public DateTimeImmutable $DateAdd;
-    public DateTimeImmutable $DateWithdrawn;
-    public DateTimeImmutable  $DateDestruction;
-    public string   $StatusDestruction;
+    public string	$DateAdd;
+    public ?string	$DateWithdrawn;
+    public ?string	$DateDestruction;
+    public string	$StatusDestruction;
     public ?string  $Note;
 
     private LoggerInterface $logger;
@@ -38,12 +40,11 @@ class HDD {
         $this->Note              = sanitize($this->Note);
     }
 
-    // Format fields for display if needed
-    public function MakeDisplay(): void {
-        // e.g. $this->DateAdd = date('Y-m-d H:i:s', strtotime($this->DateAdd));
-    }
-
-    // Convert a PDO row into an HDD object
+	public function MakeDisplay(): void {
+		// ex. $this->DateAdd = date('d/m/Y', strtotime($this->DateAdd));
+	}
+	
+	// Convert a PDO row into an HDD object
     public static function RowToObject(array $row): self {
         $hdd = new self();
         foreach ($row as $prop => $val) {
@@ -327,6 +328,69 @@ class HDD {
         }
         return $list;
     }
+
+	//Export all HDDs of a device into a 3-sheet XLS
+	//- sheet "hdd en prod" for StatusDestruction = 'none'
+	//- sheet "pending"   for StatusDestruction = 'pending'
+	//- sheet "destroyed" for StatusDestruction = 'destroyed'
+
+	
+	public static function ExportAllToXls(int $deviceID): void {
+        global $dbh;
+        // Crée le classeur
+        $spreadsheet = new Spreadsheet();
+
+        $statuses = [
+            'none'      => 'hdd en prod',
+            'pending'   => 'pending',
+            'destroyed' => 'destroyed',
+        ];
+
+        $first = true;
+        foreach ($statuses as $status => $title) {
+            // Feuille active ou création
+            $sheet = $first
+                ? $spreadsheet->getActiveSheet()
+                : $spreadsheet->createSheet();
+            $first = false;
+            $sheet->setTitle($title);
+
+            // En-têtes colonnes
+            $headers = ['HDDID','Label','SerialNo','Status','TypeMedia','Size','DateAdd','DateWithdrawn','DateDestruction','StatusDestruction','Note'];
+            $sheet->fromArray($headers, null, 'A1');
+
+            // Récupère les HDDs pour ce statut
+            $stmt = $dbh->prepare(
+                "SELECT HDDID, Label, SerialNo, Status, TypeMedia, Size,
+                        DateAdd, DateWithdrawn, DateDestruction, StatusDestruction, Note
+                   FROM fac_HDD
+                  WHERE DeviceID = :DeviceID
+                    AND StatusDestruction = :StatusDestruction
+                  ORDER BY Label ASC"
+            );
+            $stmt->execute([
+                ':DeviceID'          => $deviceID,
+                ':StatusDestruction' => $status,
+            ]);
+
+            // Remplit les lignes
+            $row = 2;
+            while ($h = $stmt->fetch(PDO::FETCH_NUM)) {
+                // $h est un array indexé de 0 à 10, dans le même ordre que les headers
+                $sheet->fromArray($h, null, "A{$row}");
+                $row++;
+            }
+        }
+
+        // En-têtes HTTP & envoi du fichier
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment; filename="HDD_List_Device_' . $deviceID . '.xls"');
+
+        $writer = new Xls($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
 
     // Generic logging to fac_GenericLog
     private static function logAction(string $action, int $HDDID): void {
