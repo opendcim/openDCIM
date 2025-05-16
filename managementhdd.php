@@ -1,31 +1,27 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-require_once("db.inc.php");
-require_once("facilities.inc.php");
-require_once("classes/hdd.class.php");
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
+foreach (['db.inc.php','facilities.inc.php','classes/hdd.class.php'] as $f) {
+    require_once __DIR__ . "/{$f}";
+}
 
 $subheader = __("HDD Management");
 
 if (!$person->ManageHDD) {
-    header("Location: index.php");
-    exit;
+    header("Location: index.php"); exit;
 }
 
-$device = new Device();
-
-if (isset($_GET['DeviceID']) && is_numeric($_GET['DeviceID'])) {
-    $device->DeviceID = intval($_GET['DeviceID']);
-    if (!$device->GetDevice()) {
-        echo __("Invalid DeviceID");
-        exit;
-    }
-} else {
-    echo __("DeviceID is required");
-    exit;
+// 4. Récupère DeviceID
+$deviceID = filter_input(INPUT_GET, 'DeviceID', FILTER_VALIDATE_INT);
+if (!$deviceID) {
+    echo __('DeviceID is required'); exit;
 }
-
+$device = new Device(); $device->DeviceID = $deviceID;
+if (!$device->GetDevice()) {
+    echo __('Invalid DeviceID'); exit;
+}
+// Load Template
 $template = new DeviceTemplate();
 $template->TemplateID = $device->TemplateID;
 $template->GetTemplateByID();
@@ -35,7 +31,7 @@ if (!$template->EnableHDDFeature) {
     echo '<div class="error">'.__("This equipment does not support HDD management.").'</div>';
     exit;
 }
-
+// Get lists
 $hddList     = HDD::GetHDDByDevice($device->DeviceID);
 $hddWaitList = HDD::GetPendingByDevice($device->DeviceID);
 
@@ -48,21 +44,8 @@ $hddWaitList = HDD::GetPendingByDevice($device->DeviceID);
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
-  <script type="text/javascript" src="scripts/jquery.min.js"></script>
-  <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
-  <script type="text/javascript">
-    function confirmDelete() {
-      return confirm("<?php echo __('This action is permanent and cannot be undone. Are you sure?'); ?>");
-    }
-
-    function toggleAddHDDForm() {
-      document.getElementById("addHDDModal").style.display = "block";
-    }
-
-    function closeAddHDDForm() {
-      document.getElementById("addHDDModal").style.display = "none";
-    }
-  </script>
+ <script type="text/javascript" src="scripts/jquery.min.js"></script>
+<script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <style>
    #addHDDModal {
     display: none;
@@ -79,6 +62,32 @@ $hddWaitList = HDD::GetPendingByDevice($device->DeviceID);
     width: 400px;
     border-radius: 8px;
   }
+
+ .responsive-table {
+overflow-x: auto;
+align: center;
+}
+.table2{
+    table {
+      border-collapse: collapse;
+      border: 1px;
+      align: center;
+      }
+    th, td {
+      padding: 1px;
+      text-align: left;
+      vertical-align: middle;
+      table-layout: fixed;
+      }
+    th {
+      background-color:rgba(242, 242, 242, 0.86);
+      text-align: center;
+  }
+}
+input[type="text"]{
+
+  }
+
   </style>
 </head>
 <body>
@@ -90,12 +99,12 @@ $hddWaitList = HDD::GetPendingByDevice($device->DeviceID);
     <h2><?php echo htmlspecialchars(__("Manage HDDs for Device") . ": " . $device->Label, ENT_QUOTES, 'UTF-8'); ?></h2>
     <form method="POST" action="savehdd.php">
       <input type="hidden" name="DeviceID" value="<?php echo (int)$device->DeviceID; ?>">
-
       <h3><?php echo htmlspecialchars(__("Active HDDs"), ENT_QUOTES, 'UTF-8'); ?></h3>
-      <table class="border">
+    
+    <table class="table2" style="margin: 0 auto;">
         <thead>
           <tr>
-            <th><input type="checkbox" onclick="$('input[name=select_active\[\]]').prop('checked', this.checked);"></th>
+            <th><input type="checkbox" id="select_all_active" onclick="$('input[name=select_active\[\]]').prop('checked', this.checked);"></th>
             <th>#</th>
             <th><?php echo htmlspecialchars(__("Label"), ENT_QUOTES, 'UTF-8'); ?></th>
             <th><?php echo htmlspecialchars(__("Serial No"), ENT_QUOTES, 'UTF-8'); ?></th>
@@ -110,37 +119,38 @@ $hddWaitList = HDD::GetPendingByDevice($device->DeviceID);
 $i = 1;
 foreach ($hddList as $hdd) {
     $id = (int)$hdd->HDDID;
-    echo '<tr>' .
-         '<td><input type="checkbox" name="select_active[]" value="' . $id . '"></td>' .
-         '<td>' . $i . '</td>' .
-         '<td><input type="text" name="Label[' . $id . ']" value="' . htmlspecialchars($hdd->Label, ENT_QUOTES, 'UTF-8') . '"></td>' .
-         '<td><input type="text" name="SerialNo[' . $id . ']" value="' . htmlspecialchars($hdd->SerialNo, ENT_QUOTES, 'UTF-8') . '"></td>' .
-         '<td><select name="Status[' . $id . ']">' .
-           '<option value="On"' . ($hdd->Status === 'On' ? ' selected' : '') . '>On</option>' .
-           '<option value="Off"' . ($hdd->Status === 'Off' ? ' selected' : '') . '>Off</option>' .
-           '<option value="Replace"' . ($hdd->Status === 'Replace' ? ' selected' : '') . '>Replace</option>' .
-           '<option value="Pending_destruction"' . ($hdd->Status === 'Pending_destruction' ? ' selected' : '') . '>Pending_destruction</option>' .
-           '<option value="Destroyed_h2"' . ($hdd->Status === 'Destroyed_h2' ? ' selected' : '') . '>Destroyed_h2</option>' .
-           '<option value="Spare"' . ($hdd->Status === 'Spare' ? ' selected' : '') . '>Spare</option>' .
-         '</select></td>' .
-         '<td><select name="TypeMedia[' . $id . ']">' .
-           '<option value="HDD"' . ($hdd->TypeMedia === 'HDD' ? ' selected' : '') . '>HDD</option>' .
-           '<option value="SSD"' . ($hdd->TypeMedia === 'SSD' ? ' selected' : '') . '>SSD</option>' .
-           '<option value="MVME"' . ($hdd->TypeMedia === 'MVME' ? ' selected' : '') . '>MVME</option>' .
-         '</select></td>' .
-         '<td><input type="number" name="Size[' . $id . ']" value="' . (int)$hdd->Size . '"></td>' .
-         '<td>' .
-           '<button type="submit" name="action" value="update_' . $id . '">✏️</button>' .
-           '<button type="submit" name="action" value="remove_' . $id . '">➖</button>' .
-           '<button type="submit" name="action" value="delete_' . $id . '" onclick="return confirmDelete();">🗑️</button>' .
-           '<button type="submit" name="action" value="duplicate_' . $id . '">📑</button>' .
-         '</td>' .
+    echo '<tr>'.
+         '<td><input type="checkbox" class="select_active" name="select_active[]" value="'.$id.'"></td>'.
+         '<td>'.$i.'</td>'.
+         '<td><input type="text" name="Label['.$id.']" value="'.htmlspecialchars($hdd->Label, ENT_QUOTES, 'UTF-8').'"></td>'.
+         '<td style="width: 150px;"><input type="text" name="SerialNo['.$id.']" value="'.htmlspecialchars($hdd->SerialNo, ENT_QUOTES, 'UTF-8').'"></td>'.
+         '<td><select name="Status['.$id.']">'.
+           '<option value="On"'.($hdd->Status === 'On' ? ' selected' : '').'>On</option>'.
+           '<option value="Off"'.($hdd->Status === 'Off' ? ' selected' : '').'>Off</option>' .
+           '<option value="Replace"'.($hdd->Status === 'Replace' ? ' selected' : '').'>Replace</option>'.
+           '<option value="Pending_destruction"'.($hdd->Status === 'Pending_destruction' ? ' selected' : '').'>Pending_destruction</option>'.
+           '<option value="Destroyed_h2"'.($hdd->Status === 'Destroyed_h2' ? ' selected' : '').'>Destroyed_h2</option>'.
+           '<option value="Spare"'.($hdd->Status === 'Spare' ? ' selected' : '').'>Spare</option>'.
+         '</select></td>'.
+         '<td><select name="TypeMedia['.$id.']">'.
+           '<option value="HDD"'.($hdd->TypeMedia === 'HDD' ? ' selected' : '').'>HDD</option>'.
+           '<option value="SSD"'.($hdd->TypeMedia === 'SSD' ? ' selected' : '').'>SSD</option>'.
+           '<option value="MVME"'.($hdd->TypeMedia === 'MVME' ? ' selected' : '').'>MVME</option>'.
+         '</select></td>'.
+         '<td><input type="number" name="Size['.$id.']" value="'.(int)$hdd->Size.'"></td>'.
+         '<td>'.
+           '<button type="submit" name="action" value="update_'.$id.'" title="'.__("Update").'">✏️</button>'.
+           '<button type="submit" name="action" value="remove_'.$id.'" title="'.__("Remove").'">➖</button>'.
+           '<button type="submit" name="action" value="delete_'.$id.'" title="'.__("Delete").'" onclick="return confirmDelete();">🗑️</button>'.
+           '<button type="submit" name="action" value="duplicate_'.$id.'" title="'.__("Duplicate all slot").'">📑</button>'.
+         '</td>'.
          '</tr>';
     $i++;
 }
 ?>
         </tbody>
       </table>
+
       <p>
         <button type="button" onclick="openModal()">➕ <?php echo htmlspecialchars(__("Add New HDD"), ENT_QUOTES, 'UTF-8'); ?></button>
         <button type="submit" name="action" value="bulk_remove">➖ <?php echo htmlspecialchars(__("Remove Selected"), ENT_QUOTES, 'UTF-8'); ?></button>
@@ -148,46 +158,117 @@ foreach ($hddList as $hdd) {
       </p>
 
       <h3><?php echo htmlspecialchars(__("Pending Destruction / Reuse"), ENT_QUOTES, 'UTF-8'); ?></h3>
-      <table class="border">
+      
+    <table class="table2" style="margin: 0 auto; width: 820px;">
         <thead>
           <tr>
-            <th><input type="checkbox" onclick="$('input[name=select_pending\[\]]').prop('checked', this.checked);"></th>
+            <th><input type="checkbox" id="select_all_pending" onclick="$('input[name=select_pending\[\]]').prop('checked', this.checked);"></th>
+            <th>#</th>
             <th><?php echo htmlspecialchars(__("Label"), ENT_QUOTES, 'UTF-8'); ?></th>
             <th><?php echo htmlspecialchars(__("Serial No"), ENT_QUOTES, 'UTF-8'); ?></th>
+            <th><?php echo htmlspecialchars(__("Status"), ENT_QUOTES, 'UTF-8'); ?></th>
             <th><?php echo htmlspecialchars(__("Date Withdrawn"), ENT_QUOTES, 'UTF-8'); ?></th>
             <th><?php echo htmlspecialchars(__("Actions"), ENT_QUOTES, 'UTF-8'); ?></th>
           </tr>
         </thead>
         <tbody>
 <?php
+$i = 1;
 foreach ($hddWaitList as $hdd) {
     $id = (int)$hdd->HDDID;
-    echo '<tr>' .
-         '<td><input type="checkbox" name="select_pending[]" value="' . $id . '"></td>' .
-         '<td>' . htmlspecialchars($hdd->Label, ENT_QUOTES, 'UTF-8') . '</td>' .
-         '<td>' . htmlspecialchars($hdd->SerialNo, ENT_QUOTES, 'UTF-8') . '</td>' .
-         '<td>' . htmlspecialchars($hdd->DateWithdrawn, ENT_QUOTES, 'UTF-8') . '</td>' .
-         '<td>' .
-           '<button type="submit" name="action" value="destroy_' . $id . '">⚠️</button>' .
-           '<button type="submit" name="action" value="reassign_' . $id . '">♻️</button>' .
-           '<button type="submit" name="action" value="spare_' . $id . '">🔧</button>' .
-         '</td>' .
-         '</tr>';
+    echo '<tr>
+         <td><input type="checkbox" class="select_pending" name="select_pending[]" value="'.$id.'"></td>
+         <td>'.$i.'</td>
+         <td><div> '.htmlspecialchars($hdd->Label, ENT_QUOTES, "UTF-8").'</div></td>
+         <td> '.htmlspecialchars($hdd->SerialNo, ENT_QUOTES, "UTF-8").'</td>
+         <td> '.htmlspecialchars($hdd->StatusDestruction, ENT_QUOTES, "UTF-8").'</td>
+         <td> '.htmlspecialchars($hdd->DateWithdrawn, ENT_QUOTES, "UTF-8").'</td>
+         <td> 
+           <button type="submit" title="'.__("Destroy Selected Permanently").'" name="action" value="destroy_'.$id.'">⚠️</button>
+           <button type="submit" title="'.__("Reasign in slot").'" name="action" value="reassign_'.$id.'">↩️</button>
+           <button type="submit" title="'.__("Spare").'" name="action" value="spare_'.$id.'">🔧</button>
+           <button type="submit" title="'.__("Assign other device").'" name="action" value="assignOtherDevice_'.$id.'">♻️</button>
+         </td>
+         </tr>';
+    $i++;
 }
 ?>
         </tbody>
       </table>
+  
       <p>
         <button type="submit" name="action" value="bulk_destroy">⚠️ <?php echo htmlspecialchars(__("Destroy Selected"), ENT_QUOTES, 'UTF-8'); ?></button>
-        <button type="submit" name="action" value="print_list">🖨️ <?php echo htmlspecialchars(__("Export List"), ENT_QUOTES, 'UTF-8'); ?></button>
+        <button type="submit" name="action" value="export_list">🖨️ <?php echo htmlspecialchars(__("Export List"), ENT_QUOTES, 'UTF-8'); ?></button>
       </p>
+      <!-- Spacer --><div><div>&nbsp;</div><div></div></div><!-- END Spacer -->
+       <h3><?php echo htmlspecialchars(__("Destroyed"), ENT_QUOTES, 'UTF-8'); ?></h3>
+
+      <table class="table2" style="margin: 0 auto; width: 820px;">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" id="select_all_destroyed" onclick="$('input[name=select_destroyed\[\]]').prop('checked', this.checked);"></th>
+                  <th>#</th>
+                  <th><?php echo htmlspecialchars(__("Label"), ENT_QUOTES, 'UTF-8'); ?></th>
+                  <th><?php echo htmlspecialchars(__("Serial No"), ENT_QUOTES, 'UTF-8'); ?></th>
+                  <th><?php echo htmlspecialchars(__("Status"), ENT_QUOTES, 'UTF-8'); ?></th>
+                  <th><?php echo htmlspecialchars(__("Date Withdrawn"), ENT_QUOTES, 'UTF-8'); ?></th>
+                  <th><?php echo htmlspecialchars(__("Date Destroyed"), ENT_QUOTES, 'UTF-8'); ?></th>
+                  <th><?php echo htmlspecialchars(__("Actions"), ENT_QUOTES, 'UTF-8'); ?></th>
+                </tr>
+              </thead>
+              <tbody>
+                  <?php
+                  $i = 1;
+                  foreach ($hdddestroyedList as $hdd) {
+                      $id = (int)$hdd->HDDID;
+                      echo '<tr>
+                          <td><input type="checkbox" class="select_pending" name="select_pending[]" value="'.$id.'"></td>
+                          <td>'.$i.'</td>
+                          <td><div> '.htmlspecialchars($hdd->Label, ENT_QUOTES, "UTF-8").'</div></td>
+                          <td> '.htmlspecialchars($hdd->SerialNo, ENT_QUOTES, "UTF-8").'</td>
+                          <td> '.htmlspecialchars($hdd->StatusDestruction, ENT_QUOTES, "UTF-8").'</td>
+                          <td> '.htmlspecialchars($hdd->DateWithdrawn, ENT_QUOTES, "UTF-8").'</td>
+                          <td> '.htmlspecialchars($hdd->DateDestroyed, ENT_QUOTES, "UTF-8").'</td>
+                          <td> 
+                            <button type="submit" title="'.__("Destroy Selected Permanently").'" name="action" value="destroy_'.$id.'">⚠️</button>
+                            <button type="submit" title="'.__("Reasign").'" name="action" value="reassign_'.$id.'">♻️</button>
+                            <button type="submit" title="'.__("Spare").'" name="action" value="spare_'.$id.'">🔧</button>
+                          </td>
+                          </tr>';
+                      $i++;
+                  }
+                  ?>
+              </tbody>
+      </table>
+
     </form>
     <div style="margin-top: 20px; text-align: right;">
       <a class="button" href="hdd_log_view.php?DeviceID=<?php echo (int)$device->DeviceID; ?>">
         <?php echo htmlspecialchars(__("View HDD Activity Log"), ENT_QUOTES, 'UTF-8'); ?>
+      </a></div>
+    <div style="margin-top: 20px; text-align: right;">
+      <?php
+        if($deviceID >0){
+            echo '<button type="button" name="auditHDD">',__("Certify Audit HDD"),'</button>';
+          }
+          ?>
       </a>
+
+      
     </div>
   </div>
+      <div>
+       <?php
+          if($deviceID>0){
+            print "   <a href=\"devices.php?DeviceID=$deviceID\">[ ".__("Return to Parent Device")." ]</a><br>\n";
+            print "   <a href=\"cabnavigator.php?cabinetid=".$deviceID->GetDeviceCabinetID()."\">[ ".__("Return to Navigator")." ]</a>";
+          }else{
+            print "   <div><a href=\"index.php\">[ ".__("Return index")." ]</a></div>";
+            }
+            
+        ?>
+        </div>
+
 </div> <!-- End of main content -->
 
 <!-- Modal Add HDD -->
@@ -222,24 +303,45 @@ foreach ($hddWaitList as $hdd) {
       <button type="button" onclick="closeModal()"><?php echo htmlspecialchars(__("Cancel"), ENT_QUOTES, 'UTF-8'); ?></button>
     </form>
   </div>
-</div>
-<!-- End Modal Add HDD -->
+</div> <!-- End Modal Add HDD -->
+</div> <!-- End of page -->
 
 <script type="text/javascript">
-function openModal() {
+  // Modal
+  function openModal() {
   document.getElementById('hddModal').style.display = 'block';
-}
-function closeModal() {
+  }
+  function closeModal() {
   document.getElementById('hddModal').style.display = 'none';
-}
-window.onclick = function(event) {
+  }
+  window.onclick = function(event) {
   if (event.target == document.getElementById('hddModal')) {
     closeModal();
   }
-}
+  }
+
+  // Message confirm delete
+    function confirmDelete() {
+      return confirm("<?php echo __('This action is permanent and cannot be undone. Are you sure?'); ?>");
+    }
+  
+  // Select all toggles
+    function toggleAddHDDForm() {
+      document.getElementById("addHDDModal").style.display = "block";
+    }
+    function closeAddHDDForm() {
+      document.getElementById("addHDDModal").style.display = "none";
+    }
+  // Quand on change la case "select all" des actifs
+    $('#select_all_active').on('change', function() {
+    // coche ou décoche toutes les cases de classe .select_active
+    $('.select_active').prop('checked', this.checked);
+    });
+  // Pareil pour les pending
+    $('#select_all_pending').on('change', function() {
+      $('.select_pending').prop('checked', this.checked);
+    });
+
 </script>
-
-</div> <!-- End of page -->
-
 </body>
 </html>

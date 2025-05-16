@@ -5,6 +5,8 @@
 UPDATE fac_Config set Value="24.01" WHERE Parameter="Version";
 INSERT INTO fac_Config (Parameter, Value) VALUES ('feature_hdd', 'disabled')
 ON DUPLICATE KEY UPDATE Value = Value;
+INSERT INTO fac_Config (Parameter, Value) VALUES ('Log_for_user_hdd', 'disabled')
+ON DUPLICATE KEY UPDATE Value = Value;
 ALTER TABLE fac_People ADD COLUMN ManageHDD TINYINT(1) DEFAULT 0;
 CREATE TABLE fac_DeviceTemplateHdd (
     TemplateID INT NOT NULL,

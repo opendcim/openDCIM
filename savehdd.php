@@ -113,7 +113,7 @@ try {
 			}
 			break;
 
-		case $action === "print_list":
+		case $action === "export_list":
 			 // Export XLS complet en 3 feuilles
 			 HDD::ExportAllToXls($deviceID);
 			 // (la méthode se termine par exit())
