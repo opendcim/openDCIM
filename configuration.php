@@ -1928,37 +1928,33 @@ echo '<div class="main">
 			</div> <!-- end table -->
 		</div>
 		<div id="workflow">
-			<h3>',__("Features Options"),'</h3>
-			<div class="table">
-				<div>
-					<div><label for="feature_hdd">',__("Enable HDD Feature"),'</label></div>
-					<div><select id="feature_hdd" name="feature_hdd" defaultvalue="',$config->defaults["feature_hdd"],'" data="',$config->ParameterArray["feature_hdd"],'">
-							<option value="disabled">',__("Disabled"),'"</option>
-							<option value="enabled">',__("Enabled"),'"</option>
-						</select>
-					</div>
-				</div>
-			</div> <!-- end table -->
-			<div class="table"><!-- New user log option -->
-				<div>
-					<div><label for="Log_for_user_hdd">',__("Enable Log user HDD Feature"),'</label></div>
-					<div><select id="Log_for_user_hdd" name="Log_for_user_hdd" defaultvalue="',$config->defaults["Log_for_user_hdd"],'" data="',$config->ParameterArray["Log_for_user_hdd"],'">
-							<option value="disabled">',__("Disabled"),'"</option>
-							<option value="enabled">',__("Enabled"),'"</option>
-						</select>
-					</div>
-				</div>
-			</div> <!-- end table -->
-				<div class="table">
-				<div>
-					<div><label for="WorkOrderBuilder">',__("Work Order Builder"),'</label></div>
-					<div><select id="WorkOrderBuilder" name="WorkOrderBuilder" defaultvalue="',$config->defaults["WorkOrderBuilder"],'" data="',$config->ParameterArray["WorkOrderBuilder"],'">
-							<option value="disabled">',__("Disabled"),'</option>
-							<option value="enabled">',__("Enabled"),'</option>
-						</select>
-					</div>
-				</div>
-			</div> <!-- end table -->
+            <h3>',__("Features Options"),'</h3>
+            <div class="table">
+                <div>
+                    <div><label for="feature_hdd">',__("Enable HDD Feature"),'</label></div>
+                    <div><select id="feature_hdd" name="feature_hdd" defaultvalue="',$config->defaults["feature_hdd"],'" data="',$config->ParameterArray["feature_hdd"],'">
+                            <option value="disabled">',__("Disabled"),'"</option>
+                            <option value="enabled">',__("Enabled"),'"</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <div><label for="Log_for_user_hdd">',__("Enable Log user HDD Feature"),'</label></div>
+                    <div><select id="Log_for_user_hdd" name="Log_for_user_hdd" defaultvalue="',$config->defaults["Log_for_user_hdd"],'" data="',$config->ParameterArray["Log_for_user_hdd"],'">
+                            <option value="disabled">',__("Disabled"),'"</option>
+                            <option value="enabled">',__("Enabled"),'"</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <div><label for="WorkOrderBuilder">',__("Work Order Builder"),'</label></div>
+                    <div><select id="WorkOrderBuilder" name="WorkOrderBuilder" defaultvalue="',$config->defaults["WorkOrderBuilder"],'" data="',$config->ParameterArray["WorkOrderBuilder"],'">
+                            <option value="disabled">',__("Disabled"),'</option>
+                            <option value="enabled">',__("Enabled"),'</option>
+                        </select>
+                    </div>
+                </div>
+            </div> <!-- end table -->
 			<h3>',__("Site Level Security Options"),'</h3>
 			<div class="table">
 				<div>
