@@ -16,8 +16,7 @@ class HDD {
     public string   $TypeMedia;
     public string	$DateAdd;
     public ?string	$DateWithdrawn;
-    public ?string	$DateDestruction;
-    public string	$StatusDestruction;
+    public ?string	$DateDestroyed;
     public ?string  $Note;
 
     private LoggerInterface $logger;
@@ -36,7 +35,6 @@ class HDD {
         $this->Status            = sanitize($this->Status);
         $this->Size              = intval($this->Size);
         $this->TypeMedia         = sanitize($this->TypeMedia);
-        $this->StatusDestruction = sanitize($this->StatusDestruction);
         $this->Note              = sanitize($this->Note);
     }
 
@@ -72,9 +70,9 @@ class HDD {
         global $dbh;
         $this->MakeSafe();
         $sql = "INSERT INTO fac_HDD
-                  (DeviceID, Label, SerialNo, Status, Size, TypeMedia, DateAdd, StatusDestruction, Note)
+                  (DeviceID, Label, SerialNo, Status, Size, TypeMedia, DateAdd, Note)
                 VALUES
-                  (:DeviceID, :Label, :SerialNo, :Status, :Size, :TypeMedia, NOW(), :StatusDestruction, :Note)";
+                  (:DeviceID, :Label, :SerialNo, :Status, :Size, :TypeMedia, NOW(), :Note)";
         $stmt = $dbh->prepare($sql);
         $stmt->execute([
             ":DeviceID"          => $this->DeviceID,
@@ -83,7 +81,6 @@ class HDD {
             ":Status"            => $this->Status,
             ":Size"              => $this->Size,
             ":TypeMedia"         => $this->TypeMedia,
-            ":StatusDestruction" => $this->StatusDestruction,
             ":Note"              => $this->Note
         ]);
         $this->HDDID = intval($dbh->lastInsertId());
@@ -95,9 +92,9 @@ class HDD {
         global $dbh;
         $stmt = $dbh->prepare(
             "INSERT INTO fac_HDD
-                (DeviceID, Label, SerialNo, Status, TypeMedia, Size, DateAdd, StatusDestruction)
+                (DeviceID, Label, SerialNo, Status, TypeMedia, Size, DateAdd)
              VALUES
-                (:DeviceID, :Label, :SerialNo, 'On', :TypeMedia, :Size, NOW(), 'none')"
+                (:DeviceID, :Label, :SerialNo, 'On', :TypeMedia, :Size, NOW())"
         );
         $stmt->execute([
             ':DeviceID'  => $deviceID,
@@ -174,7 +171,7 @@ class HDD {
 		if ($max <= 0) {
 			return;
 		}// Combien sont déjà présents ?
-		$stmt = $dbh->prepare("SELECT COUNT(*) FROM fac_HDD WHERE DeviceID = ?");
+		$stmt = $dbh->prepare("SELECT COUNT(*) FROM fac_HDD WHERE DeviceID = ? AND (Status = 'On' OR Status = 'Off')");
 		$stmt->execute([$deviceID]);
 		$current = intval($stmt->fetchColumn());
 	
@@ -209,7 +206,6 @@ class HDD {
         $stmt = $dbh->prepare(
             "UPDATE fac_HDD SET
                Status            = 'Pending_destruction',
-               StatusDestruction = 'pending',
                DateWithdrawn     = NOW(),
                Note              = CONCAT(Note, ' ', :Note)
              WHERE HDDID = :HDDID"
@@ -225,8 +221,8 @@ class HDD {
 		global $dbh;
 		$stmt = $dbh->prepare(
 			"UPDATE fac_HDD SET
-			   StatusDestruction = 'destroyed',
-			   DateDestruction   = NOW()
+			   Status = 'Destroyed',
+			   DateDestroyed   = NOW()
 			 WHERE HDDID = ?"
 		);
 		$res = $stmt->execute([$id]);
@@ -244,8 +240,7 @@ class HDD {
 			DeviceID = ?,
 			Status    = 'On',
 			DateWithdrawn   = NULL,
-			DateDestruction = NULL,
-			StatusDestruction = 'none'
+			DateDestroyed = NULL
 			WHERE HDDID = ?"
 		);
 		$res = $stmt->execute([$deviceID, $id]);
@@ -273,7 +268,7 @@ class HDD {
     // List active HDDs for a device
     public static function GetHDDByDevice(int $DeviceID): array {
         global $dbh;
-        $stmt = $dbh->prepare("SELECT * FROM fac_HDD WHERE DeviceID = :DeviceID AND StatusDestruction = 'none' ORDER BY Label ASC");
+        $stmt = $dbh->prepare("SELECT * FROM fac_HDD WHERE DeviceID = :DeviceID AND (Status = 'On' OR Status = 'Off') ORDER BY Label ASC");
         $stmt->execute([":DeviceID" => $DeviceID]);
         $list = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -288,7 +283,7 @@ class HDD {
         $stmt = $dbh->prepare(
             "SELECT * FROM fac_HDD
              WHERE DeviceID = :DeviceID
-               AND StatusDestruction = 'pending'
+               AND Status = 'Pending_destruction'
              ORDER BY DateWithdrawn DESC"
         );
         $stmt->execute([':DeviceID' => $DeviceID]);
@@ -300,14 +295,14 @@ class HDD {
         return $list;
     }
 
-    // List retired HDDs (destruction completed)
-    public static function GetRetiredHDDByDevice(int $DeviceID): array {
+    // List destroyed HDDs (destruction completed)
+    public static function GetDestroyedHDDByDevice(int $DeviceID): array {
         global $dbh;
         $stmt = $dbh->prepare(
             "SELECT * FROM fac_HDD
              WHERE DeviceID = :DeviceID
-               AND StatusDestruction = 'destroyed'
-             ORDER BY DateDestruction DESC"
+               AND Status = 'Destroyed'
+             ORDER BY DateDestroyed DESC"
         );
         $stmt->execute([":DeviceID" => $DeviceID]);
         $list = [];
@@ -330,10 +325,11 @@ class HDD {
     }
 
 	//Export all HDDs of a device into a 3-sheet XLS
-	//- sheet "hdd en prod" for StatusDestruction = 'none'
-	//- sheet "pending"   for StatusDestruction = 'pending'
-	//- sheet "destroyed" for StatusDestruction = 'destroyed'
-
+	//- sheet "hdd in prod" for Status = 'On'
+    //- sheet "hdd out prod" for Status = 'Off'
+	//- sheet "Pending_destruction"   for Status = 'Pending_destruction'
+	//- sheet "Destroyed" for Status = 'Destroyed'
+    //- sheet "Spare" for Status = 'Spare'
 	
 	public static function ExportAllToXls(int $deviceID): void {
         global $dbh;
@@ -341,9 +337,11 @@ class HDD {
         $spreadsheet = new Spreadsheet();
 
         $statuses = [
-            'none'      => 'hdd en prod',
-            'pending'   => 'pending',
-            'destroyed' => 'destroyed',
+            'On'      => 'hdd in prod',
+            'Off'     => 'hdd out prod',
+            'Pending_destruction' => 'Pending_destruction',
+            'Destroyed' => 'Destroyed',
+            'Spare' => 'Spare'
         ];
 
         $first = true;
@@ -356,21 +354,21 @@ class HDD {
             $sheet->setTitle($title);
 
             // En-têtes colonnes
-            $headers = ['HDDID','Label','SerialNo','Status','TypeMedia','Size','DateAdd','DateWithdrawn','DateDestruction','StatusDestruction','Note'];
+            $headers = ['HDDID','Label','SerialNo','Status','TypeMedia','Size','DateAdd','DateWithdrawn','DateDestroyed','Note'];
             $sheet->fromArray($headers, null, 'A1');
 
             // Récupère les HDDs pour ce statut
             $stmt = $dbh->prepare(
                 "SELECT HDDID, Label, SerialNo, Status, TypeMedia, Size,
-                        DateAdd, DateWithdrawn, DateDestruction, StatusDestruction, Note
+                        DateAdd, DateWithdrawn, DateDestroyed, Note
                    FROM fac_HDD
                   WHERE DeviceID = :DeviceID
-                    AND StatusDestruction = :StatusDestruction
+                    AND Status = :Status
                   ORDER BY Label ASC"
             );
             $stmt->execute([
                 ':DeviceID'          => $deviceID,
-                ':StatusDestruction' => $status,
+                ':Status'            => $status,
             ]);
 
             // Remplit les lignes

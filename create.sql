@@ -1084,28 +1084,27 @@ INSERT INTO `fac_Country` VALUES ('AD','Andorra'),('AE','United Arab Emirates'),
 --
 --  Table for fac_HDD feature managementHDD
 --
-
-CREATE TABLE `fac_HDD` (
-  HDDID int(11) NOT NULL AUTO_INCREMENT,
-  DeviceID int(11) NOT NULL,
-  Label varchar(100) DEFAULT NULL,
-  SerialNo varchar(100) DEFAULT NULL,
-  Status enum('On','Off','Retired','Pending_destruction','Destroyed_h2','Spare') DEFAULT 'On',
-  Size int(11) DEFAULT NULL,
-  TypeMedia enum('HDD','SSD','MVME') DEFAULT NULL,
-  DateAdd datetime DEFAULT current_timestamp(),
-  DateWithdrawn datetime DEFAULT NULL,
-  DateDestruction datetime DEFAULT NULL,
-  StatusDestruction enum('none','pending','destroyed') DEFAULT NULL,
-  Note text DEFAULT NULL,
+CREATE TABLE fac_HDD (
+  HDDID           INT(11) NOT NULL AUTO_INCREMENT,
+  DeviceID        INT(11) NOT NULL,
+  Label           VARCHAR(100),
+  SerialNo        VARCHAR(100),
+  Status          ENUM('On','Off','Pending_destruction','Destroyed','Spare')
+                  DEFAULT 'On',
+  Size            INT(11) DEFAULT NULL,          -- en Go
+  TypeMedia       ENUM('HDD','SSD','MVME'),
+  DateAdd         DATETIME      DEFAULT CURRENT_TIMESTAMP,
+  DateWithdrawn   DATETIME DEFAULT NULL,
+  DateDestroyed   DATETIME DEFAULT NULL,
+  Note            TEXT DEFAULT NULL,
   PRIMARY KEY (HDDID)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 --  Table for fac_DeviceTemplateHdd feature managementHDD
 --
 
- CREATE TABLE `fac_DeviceTemplateHdd` (
+ CREATE TABLE fac_DeviceTemplateHdd (
   TemplateID int(11) NOT NULL,
   EnableHDDFeature tinyint(1) DEFAULT 0,
   HDDCount int(11) DEFAULT 0,

@@ -40,7 +40,6 @@ try {
 			$hdd->Status            = 'On';
 			$hdd->TypeMedia         = $typeMedia;
 			$hdd->Size              = $size;
-			$hdd->StatusDestruction = 'none';
 			$hdd->Note              = $note;
 			$hdd->Create();
 			break;
@@ -58,6 +57,7 @@ try {
 			$hdd->Status    = $_POST['Status'][$id]   ?? $hdd->Status;
 			$hdd->TypeMedia = $_POST['TypeMedia'][$id]?? $hdd->TypeMedia;
 			$hdd->Size      = intval($_POST['Size'][$id] ?? $hdd->Size);
+			$hdd->Note      = $_POST['Note'][$id] ?? $hdd->Note;
 			// Maintenant vous avez déjà StatusDestruction, Note, DateAdd, etc.
 			$hdd->MakeSafe();
 			$hdd->Update();
