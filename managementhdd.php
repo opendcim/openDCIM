@@ -256,17 +256,14 @@ foreach ($hddWaitList as $hdd) {
       </table>
 
     </form>
-    <div style="margin-top: 20px; text-align: right;">
-      <a class="button" href="hdd_log_view.php?DeviceID=<?php echo (int)$device->DeviceID; ?>">
-        <?php echo htmlspecialchars(__("View HDD Activity Log"), ENT_QUOTES, 'UTF-8'); ?>
-      </a></div>
-    <div style="margin-top: 20px; text-align: right;">
+    
       <?php
         if($deviceID >0){
-            echo '<button type="button" name="auditHDD">',__("Certify Audit HDD"),'</button>';
-            echo '<button type="button" onclick="window.location.href=\'report_hdd.php\';">'.__('Rapport de disque dur').'</button>';
+            echo '<div style="margin-top: 20px; text-align: right;"><button type="button" name="auditHDD">',__("Certify Audit HDD"),'</button></div>';
+            echo '<div style="margin-top: 20px; text-align: right;"><button type="button" onclick="window.location.href=\'report_hdd.php\';">'.__('Rapport de disque dur').'</button></div>';
+            echo '<div style="margin-top: 20px; text-align: right;"><button type="button" onclick="window.location.href=\'hdd_log_view.php?DeviceID='.$deviceID.'\';">'.__('View HDD Activity Log').'</button></div>';
           }
-          ?></div>
+          ?>
 
   </div> <!-- End of center div -->
       <div>
