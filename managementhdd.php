@@ -35,6 +35,7 @@ if (!$template->EnableHDDFeature) {
 $hddList     = HDD::GetHDDByDevice($device->DeviceID);
 $hddWaitList = HDD::GetPendingByDevice($device->DeviceID);
 $hdddestroyedList = HDD::GetDestroyedHDDByDevice($device->DeviceID);
+$hddSpareList = HDD::GetSpareHDDByDevice($device->DeviceID);
 
 ?>
 <!doctype html>
@@ -85,9 +86,29 @@ align: center;
       text-align: center;
   }
 }
-input[type="text"]{
+#assignModal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+#assignModal .modal-dialog {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  width: 400px;
+  border-radius: 8px;
+  position: relative;
+}
+#assignModal .btn-close {
+  position: absolute;
+  top: 10px; right: 10px;
+  cursor: pointer;
+  font-size: 1.2em;
+}
 
-  }
 
   </style>
 </head>
@@ -157,14 +178,14 @@ foreach ($hddList as $hdd) {
         <button type="button" onclick="openModal()">➕ <?php echo htmlspecialchars(__("Add New HDD"), ENT_QUOTES, 'UTF-8'); ?></button>
         <button type="submit" name="action" value="bulk_remove">➖ <?php echo htmlspecialchars(__("Remove Selected"), ENT_QUOTES, 'UTF-8'); ?></button>
         <button type="submit" name="action" value="bulk_delete" onclick="return confirmDelete();">🗑️ <?php echo htmlspecialchars(__("Delete Selected"), ENT_QUOTES, 'UTF-8'); ?></button>
-        <button type="button" onclick="openModal2()">➕ <?php echo htmlspecialchars(__("Fast Add New HDD with scan S/N"), ENT_QUOTES, 'UTF-8'); ?></button>
       </p>
 
-      <h3><?php echo htmlspecialchars(__("Pending Destruction / Reuse"), ENT_QUOTES, 'UTF-8'); ?></h3>
+      <h3><?php echo htmlspecialchars(__("Pending Destroyed / Reuse"), ENT_QUOTES, 'UTF-8'); ?></h3>
       
     <table class="table2" style="margin: 0 auto; width: 820px;">
         <thead>
           <tr>
+            <th><input type="checkbox" id="select_all_pending_destroyed" onclick="$('input[name=select_pending_destroyed\[\]]').prop('checked', this.checked);"></th>
             <th>#</th>
             <th><?php echo htmlspecialchars(__("Label"), ENT_QUOTES, 'UTF-8'); ?></th>
             <th><?php echo htmlspecialchars(__("Serial No"), ENT_QUOTES, 'UTF-8'); ?></th>
@@ -179,6 +200,7 @@ $i = 1;
 foreach ($hddWaitList as $hdd) {
     $id = (int)$hdd->HDDID;
     echo '<tr>
+         <td><input type="checkbox" class="select_pending_destroyed" name="select_pending_destroyed[]" value="'.$id.'"></td>
          <td>'.$i.'</td>
          <td> '.htmlspecialchars($hdd->Label, ENT_QUOTES, "UTF-8").'</td>
          <td> '.htmlspecialchars($hdd->SerialNo, ENT_QUOTES, "UTF-8").'</td>
@@ -188,7 +210,7 @@ foreach ($hddWaitList as $hdd) {
            <button type="submit" title="'.__("Destroy Selected Permanently").'" name="action" value="destroy_'.$id.'">⚠️</button>
            <button type="submit" title="'.__("Reasign in slot").'" name="action" value="reassign_'.$id.'">↩️</button>
            <button type="submit" title="'.__("Spare").'" name="action" value="spare_'.$id.'">🔧</button>
-           <button type="button" class="btn-assign-device" data-hddid="'.$id.'" data-bs-toggle="modal" data-bs-target="#assignModal" title="'.__("Assign other device").'">♻️ '.htmlspecialchars(__("Assign other device"), ENT_QUOTES, "UTF-8").'</button>
+           <button type="button" class="btn-assign-device" data-hddid="'.$id.'" onclick="openAssignModal(this)" title="'.__("Assign other device").'">♻️</button>
          </td>
          </tr>';
     $i++;
@@ -207,12 +229,12 @@ foreach ($hddWaitList as $hdd) {
       <table class="table2" style="margin: 0 auto; width: 820px;">
               <thead>
                 <tr>
-                  <th><input type="checkbox" id="select_all_destroyed" onclick="$('input[name=select_destroyed\[\]]').prop('checked', this.checked);"></th>
                   <th>#</th>
                   <th><?php echo htmlspecialchars(__("Label"), ENT_QUOTES, 'UTF-8'); ?></th>
                   <th><?php echo htmlspecialchars(__("Serial No"), ENT_QUOTES, 'UTF-8'); ?></th>
                   <th><?php echo htmlspecialchars(__("Status"), ENT_QUOTES, 'UTF-8'); ?></th>
                   <th><?php echo htmlspecialchars(__("Date Destroyed"), ENT_QUOTES, 'UTF-8'); ?></th>
+                  <th><?php echo htmlspecialchars(__("Proof of destruction"), ENT_QUOTES, 'UTF-8'); ?></th>
                 </tr>
               </thead>
               <tbody>
@@ -221,7 +243,6 @@ foreach ($hddWaitList as $hdd) {
                   foreach ($hdddestroyedList as $hdd) {
                       $id = (int)$hdd->HDDID;
                       echo '<tr>
-                          <td><input type="checkbox" class="select_pending" name="select_pending[]" value="'.$id.'"></td>
                           <td>'.$i.'</td>
                           <td> '.htmlspecialchars($hdd->Label, ENT_QUOTES, "UTF-8").'</td>
                           <td> '.htmlspecialchars($hdd->SerialNo, ENT_QUOTES, "UTF-8").'</td>
@@ -243,30 +264,27 @@ foreach ($hddWaitList as $hdd) {
       <?php
         if($deviceID >0){
             echo '<button type="button" name="auditHDD">',__("Certify Audit HDD"),'</button>';
+            echo '<button type="button" onclick="window.location.href=\'report_hdd.php\';">'.__('Rapport de disque dur').'</button>';
           }
           ?></div>
-    <div style="margin-top: 20px; text-align: right;">
-      <a class="button" href="report_hdd.php">
-        <?php echo htmlspecialchars(__("HDD report"), ENT_QUOTES, 'UTF-8'); ?>
-      </a></div>
 
   </div> <!-- End of center div -->
       <div>
        <?php
           if($deviceID>0){
             print "   <a href=\"devices.php?DeviceID=$deviceID\">[ ".__("Return to Parent Device")." ]</a><br>\n";
-            print "   <a href=\"cabnavigator.php?cabinetid=".$deviceID->GetDeviceCabinetID()."\">[ ".__("Return to Navigator")." ]</a>";
+            print "   <a href=\"cabnavigator.php?cabinetid=".$device->GetDeviceCabinetID()."\">[ ".__("Return to Navigator")." ]</a>";
+            print "   <a href=\"dc_stats.php?dc=".$device->GetDeviceDCID()."\">[ ".__("Return to Navigator")." ]</a>";
           }else{
             print "   <div><a href=\"index.php\">[ ".__("Return index")." ]</a></div>";
             }
-            
-        ?>
+            ?>
         </div>
 
 </div> <!-- End of main content -->
 
 <!-- Modal Add HDD -->
-<div id="hddModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.4);">
+<div id="addHDDModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.4);">
   <div style="background-color:#fff; margin:10% auto; padding:20px; border:1px solid #888; width:400px; position:relative;">
     <span onclick="closeModal()" style="position:absolute; right:10px; top:10px; cursor:pointer;">&times;</span>
     <h3><?php echo htmlspecialchars(__("Add New HDD"), ENT_QUOTES, 'UTF-8'); ?></h3>
@@ -298,9 +316,11 @@ foreach ($hddWaitList as $hdd) {
     </form>
   </div>
 </div> <!-- End Modal Add HDD -->
+
 <!-- Assign Modal -->
-<div class="modal fade" id="assignModal" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true">
+<div id="assignModal">
   <div class="modal-dialog">
+    <span class="btn-close">&times;</span>
     <form id="assignForm">
       <input type="hidden" name="hddid" id="assign_hddid" value="">
       <div class="modal-content">
@@ -330,13 +350,13 @@ foreach ($hddWaitList as $hdd) {
 <script type="text/javascript">
   // Modal
   function openModal() {
-  document.getElementById('hddModal').style.display = 'block';
+  document.getElementById('addHDDModal').style.display = 'block';
   }
   function closeModal() {
-  document.getElementById('hddModal').style.display = 'none';
+  document.getElementById('addHDDModal').style.display = 'none';
   }
   window.onclick = function(event) {
-  if (event.target == document.getElementById('hddModal')) {
+  if (event.target == document.getElementById('addHDDModal')) {
     closeModal();
   }
   }
@@ -359,8 +379,8 @@ foreach ($hddWaitList as $hdd) {
     $('.select_active').prop('checked', this.checked);
     });
   // Pareil pour les pending
-    $('#select_all_pending').on('change', function() {
-      $('.select_pending').prop('checked', this.checked);
+    $('#select_all_pending_destroyed').on('change', function() {
+      $('.select_pending_destroyed').prop('checked', this.checked);
     });
 
 </script>
@@ -419,6 +439,42 @@ $(function(){
         alert('<?= addslashes(__("Error:")) ?> ' + resp.error);
       }
     }, 'json');
+  });
+});
+</script>
+
+<script>
+// 1) Ouvre la modale « assignModal » et renseigne le hddid caché
+function openAssignModal(btn) {
+  // Récupère l’ID du HDD depuis l’attribut data-hddid
+  const hddid = btn.getAttribute('data-hddid');
+
+  // Injecte cet ID dans l’input hidden du formulaire
+  document.getElementById('assign_hddid').value = hddid;
+
+  // Affiche la modale
+  const modal = document.getElementById('assignModal');
+  modal.style.display = 'block';
+}
+
+// 2) Ferme la modale si on clique sur la croix ou en dehors
+function closeAssignModal(event) {
+  const modal = document.getElementById('assignModal');
+  // Si on clique sur l’arrière-plan (target == modal) ou sur un bouton avec classe .btn-close
+  if (event.target === modal || event.target.classList.contains('btn-close')) {
+    modal.style.display = 'none';
+  }
+}
+
+// Install handlers une fois le DOM chargé
+document.addEventListener('DOMContentLoaded', () => {
+  // Clic en-dehors ou sur la croix
+  const modal = document.getElementById('assignModal');
+  modal.addEventListener('click', closeAssignModal);
+
+  // Si vous avez un bouton « annuler » interne, reliez-le aussi
+  document.querySelectorAll('#assignModal .btn-close').forEach(btn => {
+    btn.addEventListener('click', closeAssignModal);
   });
 });
 </script>

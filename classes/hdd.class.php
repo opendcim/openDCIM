@@ -311,7 +311,23 @@ class HDD {
         }
         return $list;
     }
+// List HDDs Spare destruction
+	public static function GetSpareHDDByDevice(int $DeviceID): array {
+        global $dbh;
+        $stmt = $dbh->prepare(
+            "SELECT * FROM fac_HDD
+             WHERE DeviceID = :DeviceID
+               AND Status = 'Spare'
+             ORDER BY DateWithdrawn DESC"
+        );
+        $stmt->execute([':DeviceID' => $DeviceID]);
 
+        $list = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $list[] = self::RowToObject($row);
+        }
+        return $list;
+    }
     // Search HDDs by serial number
     public static function SearchBySerial(string $SerialNo): array {
         global $dbh;
