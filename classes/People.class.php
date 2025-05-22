@@ -153,6 +153,7 @@ class People {
 		$this->exec( $sql );
 		
 		foreach ( $DeptList as $DeptID ) {
+			$DeptID = intval( $DeptID );
 			$sql = "insert into fac_DeptContacts set ContactID=" . $this->PersonID . ", DeptID=$DeptID";
 			$this->exec( $sql );
 		}
