@@ -26,21 +26,17 @@ try {
 	{	// Création d’un nouveau HDD depuis le modal
     	case $action === 'create_hdd_form':
 			// Récupération et sanitation des champs
-			$label     = $_POST['Label']    ?? '';
 			$serialNo  = $_POST['SerialNo'] ?? '';
 			$typeMedia = $_POST['TypeMedia']?? '';
 			$size      = intval($_POST['Size'] ?? 0);
-			$note      = $_POST['Note']     ?? '';
 
 			// Création via instance pour inclure le champ Note
 			$hdd = new HDD();
 			$hdd->DeviceID          = $deviceID;
-			$hdd->Label             = $label;
 			$hdd->SerialNo          = $serialNo;
 			$hdd->Status            = 'On';
 			$hdd->TypeMedia         = $typeMedia;
 			$hdd->Size              = $size;
-			$hdd->Note              = $note;
 			$hdd->Create();
 			break;
 		
@@ -52,12 +48,10 @@ try {
 				throw new Exception("HDDID {$id} introuvable.");
 			}
 			// Ne mettez à jour QUE ce qui vient du formulaire
-			$hdd->Label     = $_POST['Label'][$id]    ?? $hdd->Label;
 			$hdd->SerialNo  = $_POST['SerialNo'][$id] ?? $hdd->SerialNo;
 			$hdd->Status    = $_POST['Status'][$id]   ?? $hdd->Status;
 			$hdd->TypeMedia = $_POST['TypeMedia'][$id]?? $hdd->TypeMedia;
 			$hdd->Size      = intval($_POST['Size'][$id] ?? $hdd->Size);
-			$hdd->Note      = $_POST['Note'][$id] ?? $hdd->Note;
 			// Maintenant vous avez déjà StatusDestruction, Note, DateAdd, etc.
 			$hdd->MakeSafe();
 			$hdd->Update();
@@ -109,6 +103,12 @@ try {
 
 		case $action === "bulk_destroy":
 			foreach ($_POST['select_pending'] ?? [] as $id) {
+				HDD::MarkDestroyed(intval($id));
+			}
+			break;
+					
+		case $action === "bulk_destroyFromActive":
+			foreach ($_POST['select_active'] ?? [] as $id) {
 				HDD::MarkDestroyed(intval($id));
 			}
 			break;

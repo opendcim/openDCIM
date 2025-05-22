@@ -9,7 +9,6 @@ class HDD {
     // Properties
     public int      $HDDID = 0;
     public int      $DeviceID = 0;
-    public string   $Label;
     public string   $SerialNo;
     public string   $Status;
     public int      $Size;
@@ -17,7 +16,6 @@ class HDD {
     public string	$DateAdd;
     public ?string	$DateWithdrawn;
     public ?string	$DateDestroyed;
-    public ?string  $Note;
 
     private LoggerInterface $logger;
 
@@ -30,12 +28,10 @@ class HDD {
     public function MakeSafe(): void {
         //$this->HDDID             = intval($this->HDDID);
         $this->DeviceID          = intval($this->DeviceID);
-        $this->Label             = sanitize($this->Label);
         $this->SerialNo          = sanitize($this->SerialNo);
         $this->Status            = sanitize($this->Status);
         $this->Size              = intval($this->Size);
         $this->TypeMedia         = sanitize($this->TypeMedia);
-        $this->Note              = sanitize($this->Note);
     }
 
 	public function MakeDisplay(): void {
@@ -70,35 +66,32 @@ class HDD {
         global $dbh;
         $this->MakeSafe();
         $sql = "INSERT INTO fac_HDD
-                  (DeviceID, Label, SerialNo, Status, Size, TypeMedia, DateAdd, Note)
+                  (DeviceID, SerialNo, Status, Size, TypeMedia, DateAdd)
                 VALUES
-                  (:DeviceID, :Label, :SerialNo, :Status, :Size, :TypeMedia, NOW(), :Note)";
+                  (:DeviceID, :SerialNo, :Status, :Size, :TypeMedia, NOW())";
         $stmt = $dbh->prepare($sql);
         $stmt->execute([
             ":DeviceID"          => $this->DeviceID,
-            ":Label"             => $this->Label,
             ":SerialNo"          => $this->SerialNo,
             ":Status"            => $this->Status,
             ":Size"              => $this->Size,
             ":TypeMedia"         => $this->TypeMedia,
-            ":Note"              => $this->Note
         ]);
         $this->HDDID = intval($dbh->lastInsertId());
         self::logAction("Created", $this->HDDID);
     }
 
     // Quick creation from form data
-    public static function CreateFromForm(int $deviceID, string $label, string $serialNo, string $typeMedia, int $size): int {
+    public static function CreateFromForm(int $deviceID, string $serialNo, string $typeMedia, int $size): int {
         global $dbh;
         $stmt = $dbh->prepare(
             "INSERT INTO fac_HDD
-                (DeviceID, Label, SerialNo, Status, TypeMedia, Size, DateAdd)
+                (DeviceID, SerialNo, Status, TypeMedia, Size, DateAdd)
              VALUES
-                (:DeviceID, :Label, :SerialNo, 'On', :TypeMedia, :Size, NOW())"
+                (:DeviceID, :SerialNo, 'On', :TypeMedia, :Size, NOW())"
         );
         $stmt->execute([
             ':DeviceID'  => $deviceID,
-            ':Label'     => sanitize($label),
             ':SerialNo'  => sanitize($serialNo),
             ':TypeMedia' => sanitize($typeMedia),
             ':Size'      => $size
@@ -115,22 +108,18 @@ class HDD {
         $stmt = $dbh->prepare(
             "UPDATE fac_HDD SET
                DeviceID   = :DeviceID,
-               Label      = :Label,
                SerialNo   = :SerialNo,
                Status     = :Status,
                Size       = :Size,
-               TypeMedia  = :TypeMedia,
-               Note       = :Note
+               TypeMedia  = :TypeMedia
              WHERE HDDID = :HDDID"
         );
         $res = $stmt->execute([
             ":DeviceID"  => $this->DeviceID,
-            ":Label"     => $this->Label,
             ":SerialNo"  => $this->SerialNo,
             ":Status"    => $this->Status,
             ":Size"      => $this->Size,
             ":TypeMedia" => $this->TypeMedia,
-            ":Note"      => $this->Note,
             ":HDDID"     => $this->HDDID
         ]);
         if ($res) self::logAction("Updated", $this->HDDID);
@@ -181,14 +170,13 @@ class HDD {
 		} // Insère les duplicata
 		$stmt = $dbh->prepare(
 			"INSERT INTO fac_HDD
-			 (DeviceID, Label, SerialNo, Status, TypeMedia, Size, DateAdd)
+			 (DeviceID, SerialNo, Status, TypeMedia, Size, DateAdd)
 			 VALUES
-			 (?, ?, ?, ?, ?, ?, NOW())"
+			 (?, ?, ?, ?, ?, NOW())"
 		);
 		for ($i = 0; $i < $remaining; $i++) {
 			$stmt->execute([
 				$deviceID,
-				$hdd['Label'],
 				uniqid('HDD_', true),
 				$hdd['Status'],
 				$hdd['TypeMedia'],
@@ -206,13 +194,11 @@ class HDD {
         $stmt = $dbh->prepare(
             "UPDATE fac_HDD SET
                Status            = 'Pending_destruction',
-               DateWithdrawn     = NOW(),
-               Note              = CONCAT(Note, ' ', :Note)
+               DateWithdrawn     = NOW()
              WHERE HDDID = :HDDID"
         );
         return $stmt->execute([
             ":HDDID" => $this->HDDID,
-            ":Note"  => sanitize($note)
         ]);
     }
 
@@ -268,7 +254,7 @@ class HDD {
     // List active HDDs for a device
     public static function GetHDDByDevice(int $DeviceID): array {
         global $dbh;
-        $stmt = $dbh->prepare("SELECT * FROM fac_HDD WHERE DeviceID = :DeviceID AND (Status = 'On' OR Status = 'Off') ORDER BY Label ASC");
+        $stmt = $dbh->prepare("SELECT * FROM fac_HDD WHERE DeviceID = :DeviceID AND (Status = 'On' OR Status = 'Off') ORDER BY SerialNo ASC");
         $stmt->execute([":DeviceID" => $DeviceID]);
         $list = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -370,17 +356,17 @@ class HDD {
             $sheet->setTitle($title);
 
             // En-têtes colonnes
-            $headers = ['HDDID','Label','SerialNo','Status','TypeMedia','Size','DateAdd','DateWithdrawn','DateDestroyed','Note'];
+            $headers = ['HDDID','SerialNo','Status','TypeMedia','Size','DateAdd','DateWithdrawn','DateDestroyed'];
             $sheet->fromArray($headers, null, 'A1');
 
             // Récupère les HDDs pour ce statut
             $stmt = $dbh->prepare(
-                "SELECT HDDID, Label, SerialNo, Status, TypeMedia, Size,
-                        DateAdd, DateWithdrawn, DateDestroyed, Note
+                "SELECT HDDID, SerialNo, Status, TypeMedia, Size,
+                        DateAdd, DateWithdrawn, DateDestroyed
                    FROM fac_HDD
                   WHERE DeviceID = :DeviceID
                     AND Status = :Status
-                  ORDER BY Label ASC"
+                  ORDER BY SerialNo ASC"
             );
             $stmt->execute([
                 ':DeviceID'          => $deviceID,

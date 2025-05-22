@@ -5,7 +5,7 @@ require 'db.inc.php';              // Initialise $db (mysqli)
 date_default_timezone_set('Europe/Paris');
 
 // Répertoire d’uploads
-$uploadDir = __DIR__ . '/uploads';
+$uploadDir = __DIR__ . '/assets/uploads';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
 }
@@ -91,7 +91,6 @@ if (isset($_GET['export']) && $_GET['export'] === 'xls') {
         h.HDDID,
         h.DeviceID,
         d.Label AS DeviceLabel,
-        h.Label,
         h.SerialNo,
         h.Status,
         h.Size,
@@ -99,7 +98,6 @@ if (isset($_GET['export']) && $_GET['export'] === 'xls') {
         h.DateAdd,
         h.DateWithdrawn,
         h.DateDestroyed,
-        h.Note
       FROM fac_HDD h
       LEFT JOIN fac_Device d ON h.DeviceID = d.DeviceID
       " . ($where ? "WHERE " . implode(' AND ', $where) : "") . "
@@ -121,7 +119,6 @@ if (isset($_GET['export']) && $_GET['export'] === 'xls') {
             $r['HDDID'],
             $r['DeviceID'],
             $r['DeviceLabel'],
-            $r['Label'],
             $r['SerialNo'],
             $r['Status'],
             $r['Size'],
@@ -129,7 +126,6 @@ if (isset($_GET['export']) && $_GET['export'] === 'xls') {
             $r['DateAdd'],
             $r['DateWithdrawn'],
             $r['DateDestroyed'],
-            $r['Note']
         ];
         $escaped = array_map(function($v){
             return str_replace(["\t","\r\n","\n"], [' ', ' ', ' '], $v);
@@ -239,7 +235,6 @@ $hdds = $res->fetch_all(MYSQLI_ASSOC);
             <th>HDDID</th>
             <th>DeviceID</th>
             <th>Device Label</th>
-            <th>Label</th>
             <th>SerialNo</th>
             <th>Status</th>
             <th>Size</th>
@@ -247,7 +242,6 @@ $hdds = $res->fetch_all(MYSQLI_ASSOC);
             <th>DateAdd</th>
             <th>DateWithdrawn</th>
             <th>DateDestroyed</th>
-            <th>Note</th>
             <th>Preuve</th>
             <th>Sélection</th>
           </tr>
@@ -276,7 +270,6 @@ $hdds = $res->fetch_all(MYSQLI_ASSOC);
             <td><?= $h['HDDID'] ?></td>
             <td><?= $h['DeviceID'] ?></td>
             <td><?= htmlspecialchars($h['DeviceLabel'] ?? '') ?></td>
-            <td><?= htmlspecialchars($h['Label'],        ENT_QUOTES) ?></td>
             <td><?= htmlspecialchars($h['SerialNo'],     ENT_QUOTES) ?></td>
             <td><?= $h['Status'] ?></td>
             <td><?= $h['Size'] ?></td>
@@ -284,7 +277,6 @@ $hdds = $res->fetch_all(MYSQLI_ASSOC);
             <td><?= $h['DateAdd'] ?></td>
             <td><?= $h['DateWithdrawn'] ?></td>
             <td><?= $h['DateDestroyed'] ?></td>
-            <td><?= htmlspecialchars($h['Note'], ENT_QUOTES) ?></td>
             <td>
               <?php if (!empty($h['ProofDocument'])): ?>
                 <a href="uploads/<?= rawurlencode($h['ProofDocument']) ?>" target="_blank">Voir</a>

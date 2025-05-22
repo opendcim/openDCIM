@@ -22,7 +22,6 @@ CREATE TABLE fac_DeviceTemplateHdd (
 CREATE TABLE fac_HDD (
   HDDID           INT NOT NULL AUTO_INCREMENT,
   DeviceID        INT NOT NULL,
-  Label           VARCHAR(100),
   SerialNo        VARCHAR(100),
   Status          ENUM('On','Off','Pending_destruction','Destroyed','Spare')
                   DEFAULT 'On',
@@ -31,6 +30,5 @@ CREATE TABLE fac_HDD (
   DateAdd         DATETIME      DEFAULT CURRENT_TIMESTAMP,
   DateWithdrawn   DATETIME DEFAULT NULL,
   DateDestroyed DATETIME DEFAULT NULL,
-  Note            TEXT DEFAULT NULL,
   PRIMARY KEY (HDDID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
