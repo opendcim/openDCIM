@@ -2052,10 +2052,30 @@ echo '		<div>
 			if($devType==$dev->DeviceType){$selected=" selected";}else{$selected="";}
 			print "\t\t\t<option value=\"$devType\"$selected>$translation</option>\n";
 		}
-echo '
+		echo '
 		   </select></div>
-		</div>
-	</div> <!-- END div.table -->
+		</div>';
+		//feature management hdd
+		if(
+			$config->ParameterArray['feature_hdd'] == 'enabled' &&
+			$dev->DeviceID > 0 &&
+			$person->ManageHDD == 1
+		){
+			$template = new DeviceTemplate($dev->TemplateID);
+			$template->GetTemplateByID();
+			$template->LoadHDDConfig();
+			if(
+				$template->EnableHDDFeature == 1
+				){
+				echo '
+				<div>
+				<div><label>',__("Manage HDD"),'</label></div>
+				<div><a class="button" href="managementhdd.php?DeviceID=',$dev->DeviceID,'">',__("Manage HDDs"),'</a></div>
+				</div>';
+				}
+			}
+		
+	echo' </div> <!-- END div.table -->
 </fieldset>';
 
 		if ($dev->DeviceType=='Sensor'){
@@ -2065,7 +2085,8 @@ echo '<fieldset id="sensorreadings">
 		   </div>
 		</fieldset>';
 		}
-
+		
+		//device images
 echo '<fieldset id="deviceimages">
 	<legend>'.__("Device Images").'</legend>
 	<div>';

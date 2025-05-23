@@ -47,6 +47,7 @@
 			$userRights->RackAdmin=(isset($_POST['RackAdmin']))?1:0;
 			$userRights->BulkOperations=(isset($_POST['BulkOperations']))?1:0;
 			$userRights->SiteAdmin=(isset($_POST['SiteAdmin']))?1:0;
+			$userRights->ManageHDD=(isset($_POST['ManageHDD']))?1:0;
 			$userRights->Disabled=(isset($_POST['Disabled']))?1:0;
 
 			if($_POST['action']=='Create'){
@@ -87,6 +88,7 @@
 	$RackAdmin=($userRights->RackAdmin)?"checked":"";
 	$BulkOperations=($userRights->BulkOperations)?"checked":"";
 	$admin=($userRights->SiteAdmin)?"checked":"";
+	$ManageHDD=($userRights->ManageHDD)?"checked":"";
 	$Disabled=($userRights->Disabled)?"checked":"";
 
 ?>
@@ -328,6 +330,7 @@ echo '	</select>&nbsp;&nbsp;<span title="',__("This user is the primary contact 
 	<input name="RackAdmin" id="RackAdmin" type="checkbox" ',$RackAdmin,'><label for="RackAdmin">',__("Complete Rack Requests"),'</label><br>
 	<input name="BulkOperations" id="BulkOperations" type="checkbox" ',$BulkOperations,'><label for="BulkOperations">',__("Perform Bulk Operations"),'</label><br>
 	<input name="SiteAdmin" id="SiteAdmin" type="checkbox" ',$admin,'><label for="SiteAdmin">',__("Manage Site and Users"),'</label><br>
+	<input name="ManageHDD" id="ManageHDD" type="checkbox" ',$ManageHDD,'><label for="ManageHDD">',__("Management HDD"),'</label><br>
 	<input name="Disabled" id="Disabled" type="checkbox" ',$Disabled,'><label for="Disabled">',__("Disabled"),'</label><br>	
    </div>
 </div>
