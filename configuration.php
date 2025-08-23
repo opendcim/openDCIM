@@ -32,7 +32,7 @@
 		    "private_key_bits" => 4096,
 		    "private_key_type" => OPENSSL_KEYTYPE_RSA,
 		);
-		   
+
 		// Create the private and public key
 		$res = openssl_pkey_new($keyConfig);
 
@@ -74,18 +74,18 @@
 		$retVal["SAMLidpx509cert"] = $IdPSettings['idp']['x509cert'];
 		$retVal["SAMLidpslsURL"] = $IdPSettings['idp']['singleLogoutService']['url'];
 		$retVal["SAMLidpssoURL"] = $IdPSettings['idp']['singleSignOnService']['url'];
-		
+
 		echo json_encode($retVal);
 		exit;
 	}
 
 
 	function BuildDirectoryList($returnjson=false,$path="."){
-		$path=trim($path);
+		$path=sanitize(trim($path));
 		# Make sure we don't have any path shenanigans going on
 		$path=str_replace(array("..","./"),"",$path);
 		# we don't need trailing slashes, and leading slashes are going to be invalid paths
-		$path=trim($path,"/");
+		$path=sanitize(trim($path,"/"));
 		# if path is empty revert to the current directory
 		$path=($path)?$path:'.';
 		$here=@end(explode(DIRECTORY_SEPARATOR,getcwd()));
@@ -123,7 +123,7 @@
 		# Make sure we don't have any path shenanigans going on
 		$path=str_replace(array("..","./"),"",$path);
 		# we don't need trailing slashes, and leading slashes are going to be invalid paths
-		$path=trim($path,"/");
+		$path=sanitize(trim($path,"/"));
 		# if path is empty revert to the current directory
 		$path=($path)?$path:'.';
 		$here=@end(explode(DIRECTORY_SEPARATOR,getcwd()));
@@ -218,7 +218,7 @@
 			}else{
 				echo 'f';
 			}
-			
+
 		}
 		exit;
 	}
@@ -239,7 +239,7 @@
 			$output.="<option value=\"$mt->MediaID\">$mt->MediaType</option>";
 		}
 		echo $output;
-		exit;		
+		exit;
 	}
 
 	if(isset($_POST['dcal'])){
@@ -288,7 +288,7 @@
 					echo 'f';
 				}
 				exit;
-			} 
+			}
 			if($dca->UpdateDeviceCustomAttribute()){
 				echo 'u';
 			}else{
@@ -385,7 +385,7 @@
 			if ($hour == 0 AND $minutes == 0) {
 				$sign = ' ';
 			}
-			return 'GMT' . $sign . str_pad($hour, 2, '0', STR_PAD_LEFT) 
+			return 'GMT' . $sign . str_pad($hour, 2, '0', STR_PAD_LEFT)
 					.':'. str_pad($minutes,2, '0');
 
 	}
@@ -470,8 +470,8 @@
 			if($dca->AllDevices) { $customattrs.=' checked'; }
 			$currinputtype="text";
 			$currchecked="";
-			if($dca->AttributeType=="checkbox") { 
-				$currinputtype="checkbox"; 
+			if($dca->AttributeType=="checkbox") {
+				$currinputtype="checkbox";
 				if($dca->DefaultValue) {
 					$currchecked=" checked";
 				}
@@ -535,7 +535,7 @@
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <title>openDCIM Data Center Inventory</title>
   <link rel="stylesheet" href="css/inventory.php" type="text/css">
   <link rel="stylesheet" href="css/jquery.miniColors.css" type="text/css">
@@ -546,7 +546,7 @@
   <!--[if lt IE 9]>
   <link rel="stylesheet"  href="css/ie.css" type="text/css">
   <![endif]-->
-  
+
   <script type="text/javascript" src="scripts/jquery.min.js"></script>
   <script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
   <script type="text/javascript" src="scripts/jquery.uploadifive.js"></script>
@@ -636,7 +636,7 @@
 			}
 		});
 	};
-	
+
 	$(document).ready(function(){
 		// ToolTips
 		$('#tooltip, #cdutooltip').multiselect();
@@ -710,7 +710,7 @@
 		$("#configtabs button").each(function(){
 			var a = $(this).parent().prev().find('input,select');
 			$(this).click(function(){
-				
+
 				var value_to_set = $(this).parent().next().children('span').text();
 
 				// Only for selects, try to assign an existing option, so to avoid to default to an empty value that cannot be saved
@@ -927,7 +927,7 @@
 							}
 						});
 						modal.find($('#replaceme')).replaceWith(choices);
-						
+
 					});
 				}
 			});
@@ -1038,7 +1038,7 @@
 			});
 		}
 
-		
+
 
 
 
@@ -1087,7 +1087,7 @@
 										rowobject.effect('explode', {}, 500, function(){
 											$(this).remove();
 										});
-										// Need to trigger a reload of any of the media types that had this 
+										// Need to trigger a reload of any of the media types that had this
 										// color so they will display the new color
 										$('#mediatypes > div ~ div:not(:last-child) input').val('').change();
 									}else{ // failed to delete
@@ -1284,7 +1284,7 @@
 
 			function update(e){
 				if(e.currentTarget.tagName=="SELECT"){
-					function processChange() { 
+					function processChange() {
 						if(e.currentTarget.value == "checkbox") {
 							row.DefaultValue.attr('type', 'checkbox');
 							row.DefaultValue.prop('checked', false);
@@ -1299,8 +1299,8 @@
 							row.DefaultValue.change();
 						}
 					}
-					
-					if(row.addrem.attr('id')=='newline') { 
+
+					if(row.addrem.attr('id')=='newline') {
 						processChange();
 					} else {
 						$.post('',{dcaused: row.Label.attr('data')}).done(function(data){
@@ -1354,7 +1354,7 @@
 					var dcavtosend=row.DefaultValue.val();
 					if(row.AttributeType.val()=='checkbox'){
 						dcavtosend=row.DefaultValue.prop('checked');
-					}	
+					}
 					if(row.Label.val().trim()=='' && row.addrem.prop('id')!='newline'){
 						//reset to previous value
 						revertdefault(row,true);
@@ -1388,7 +1388,7 @@
 										dcav.val('');
 									} else {
 										row.remove();
-									}	
+									}
 								}
 							});
 						}
@@ -1798,7 +1798,7 @@ echo '<div class="main">
 					<div><input type="text" id="reportspath" defaultvalue="',$config->defaults["reportspath"],'" name="reportspath" value="',$config->ParameterArray["reportspath"],'" class="validate[required,custom[endWithSlashConfigurationPage]]">
 					</div>
 				</div>
-			</div> <!-- end table -->			
+			</div> <!-- end table -->
 			<h3>',__("Time and Measurements"),'</h3>
 			<div class="table" id="timeandmeasurements">
 				<div>
@@ -1948,7 +1948,7 @@ echo '<div class="main">
 						</select>
 					</div>
 				</div>
-			</div> <!-- end table -->			
+			</div> <!-- end table -->
 			<h3>',__("Rack Requests"),'</h3>
 			<div class="table">
 				<div>
@@ -2083,11 +2083,11 @@ echo '<div class="main">
 							<option value="Location">',__("Location"),'</option>
 							<option value="OwnerName">',__("Owner Name"),'</option>
 							<option value="KeyLockInformation">',__("Key Lock Information"),'</option>
-							<option value="ModelNo">',__("Model No"),'</option> 
+							<option value="ModelNo">',__("Model No"),'</option>
 						</select>
 					</div>
 				</div>
-				
+
 			</div> <!-- end table -->
 			<h3>',__("Site"),'</h3>
 			<div class="table">
@@ -2650,7 +2650,7 @@ echo '<div class="main">
 				$validTo = date('Y-m-d H:i:s', $data['validTo_time_t']);
 			} else {
 				$validTo = "No Certificate";
-			}	
+			}
 
 			echo '<div>
 					<div>',__("Certificate Expiration"),'</div>
