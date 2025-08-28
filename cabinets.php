@@ -284,7 +284,7 @@ echo '		</select>
 
 echo '  </select>
   <input type="checkbox" id="assignDevOwnership" name="assignDevOwnership" value="Yes">
-  <label for="assignDevOwnership">Assign all devices in cabinet to this owner.</label>
+  <label for="assignDevOwnership">보관함의 모든 장치는 해당 소유자에게 할당합니다.</label>
   </div>
 </div>
 <div>
