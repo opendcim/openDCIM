@@ -41,7 +41,7 @@
 		$srname=sprintf(__("%s Storage Room"), $dc->Name);
 	}else{
 		$dev->Position=0;
-		$srname=__("General Storage Room");
+		$srname=__("일반 보관실");
 	}
 	$devList=$dev->ViewDevicesByCabinet(false,true);
 ?>
