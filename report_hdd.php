@@ -97,10 +97,10 @@ $hddList = $stmt->fetchAll(PDO::FETCH_OBJ);
         <table id="hdds" class="display stripe hover" style="width:100%">
           <thead>
             <tr>
-              <th><?php echo __('HDDID'); ?></th>
               <th><?php echo __('Device ID'); ?></th>
               <th><?php echo __('Device Label'); ?></th>
-              <th><?php echo __('Serial No'); ?></th>
+              <th><?php echo __('HDDID'); ?></th>
+              <th><?php echo __('Serial No HDD'); ?></th>
               <th><?php echo __('Status'); ?></th>
               <th><?php echo __('Size'); ?></th>
               <th><?php echo __('Type'); ?></th>
@@ -113,19 +113,16 @@ $hddList = $stmt->fetchAll(PDO::FETCH_OBJ);
           <tbody>
             <?php foreach ($hddList as $h): ?>
               <tr>
-                <td><?= htmlspecialchars($h->HDDID, ENT_QUOTES) ?></td>
                 <td><?= htmlspecialchars($h->DeviceID, ENT_QUOTES) ?></td>
-                <td><?= htmlspecialchars($h->DeviceLabel ?? '',
-ENT_QUOTES) ?></td>
+                <td><?= htmlspecialchars($h->DeviceLabel ?? '',ENT_QUOTES) ?></td>
+                <td><?= htmlspecialchars($h->HDDID, ENT_QUOTES) ?></td>
                 <td><?= htmlspecialchars($h->SerialNo, ENT_QUOTES) ?></td>
                 <td><?= htmlspecialchars($h->Status, ENT_QUOTES) ?></td>
                 <td><?= htmlspecialchars($h->Size, ENT_QUOTES) ?></td>
                 <td><?= htmlspecialchars($h->TypeMedia, ENT_QUOTES) ?></td>
                 <td><?= htmlspecialchars($h->DateAdd ?? '', ENT_QUOTES) ?></td>
-                <td><?= htmlspecialchars($h->DateWithdrawn ?? '',
-ENT_QUOTES) ?></td>
-                <td><?= htmlspecialchars($h->DateDestroyed ?? '',
-ENT_QUOTES) ?></td>
+                <td><?= htmlspecialchars($h->DateWithdrawn ?? '',ENT_QUOTES) ?></td>
+                <td><?= htmlspecialchars($h->DateDestroyed ?? '',ENT_QUOTES) ?></td>
                 <td>
                   <?php if (!empty($h->ProofDocument)): ?>
                     <a href="assets/uploads/<?=
