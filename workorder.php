@@ -82,6 +82,7 @@
 	$(document).ready(function(){
 		$('#clear').click(function(){
 			$.removeCookie('workOrder');
+			alert(clearedMessage);
 			location.href="index.php";
 		});
 		$('#unreserve').click(function(){
@@ -99,17 +100,68 @@
 			}
 		});
 		$('#storage').click(function(){
-			// Pretty much the same as the unreserve function
+			if (!confirm(confirmMoveMessage)) {
+				return;
+			}
 			var workList = JSON.parse($.cookie("workOrder"));
-			for(var x in workList) {
-				if ( workList[x] != 0 ) {
-					$.ajax({
-						type: "POST",
-						url: "/api/v1/device/"+workList[x]+"/store"
-					});
-				}
+			let successCount = 0;
+			let errorCount = 0;
+
+			let promises = workList.map(function(devID){
+			if (devID != 0) {
+				return $.ajax({
+					type: "POST",
+					url: "/api/v1/device/" + devID + "/store"
+				}).done(function(){
+					successCount++;
+				}).fail(function(jqXHR){
+					console.error("Error for device ID " + devID + ": " + jqXHR.responseText);
+					errorCount++;
+				});
+			}
+			});
+
+			Promise.allSettled(promises).then(function(){
+				let message = `${moveSuccessMessage}: ${successCount} ${moveSuccessCountMessage}, ${errorCount} ${moveErrorCountMessage}.`;
+				alert(message);
+			});
+		});
+		$('#audit').click(function(){
+	let workList = JSON.parse($.cookie("workOrder"));
+	if (!workList || workList.length === 0) {
+		$('#auditResults').html('<div class="error-message"><?php echo __("No devices selected."); ?></div>');
+		return;
+	}
+
+	$('#auditResults').html('<p><?php echo __("Running audit..."); ?></p>');
+
+	let auditPromises = workList
+		.filter(devID => devID != 0)
+		.map(function(devID){
+			return $.ajax({
+				type: "PUT",
+				url: `/api/v1/audit?DeviceID=${devID}`
+			}).then(function(response){
+				return { id: devID, result: response };
+			}).catch(function(){
+				return { id: devID, error: true };
+			});
+		});
+
+	Promise.all(auditPromises).then(function(results){
+		let html = '<h4><?php echo __("Audit Results"); ?></h4><ul>';
+		results.forEach(function(r){
+			if (r.error) {
+				html += `<li>Device ${r.id}: <strong><?php echo __("Error during audit"); ?></strong></li>`;
+			} else {
+				html += `<li>Device ${r.id}: OK</li>`;
 			}
 		});
+		html += '</ul>';
+		$('#auditResults').html(html);
+	});
+});
+
 		storeMediaList();
 	});
 </script>
@@ -133,6 +185,13 @@
 		}
 		$.cookie('connectionsMediaList',JSON.stringify(connectionsMediaList));
 	}
+	// Messages for the move to storage dialog
+	let confirmMoveMessage = "<?php echo __("Are you sure you want to move the selected items to storage?"); ?>";
+	let moveSuccessMessage = "<?php echo __("Move completed"); ?>";
+	let moveSuccessCountMessage = "<?php echo __("Successes"); ?>";
+	let moveErrorCountMessage = "<?php echo __("Errors"); ?>";
+	// Message #clear
+	let clearedMessage = "<?php echo __("Work order cleared successfully."); ?>";
 </script>
 </head>
 <body>
@@ -195,8 +254,10 @@
 ?>
 <button type="button" id="unreserve"><?php print __("Clear Reservation Flag"); ?></button>
 <button type="button" id="storage"><?php print __("Move Items to Storage"); ?></button>
-<button type="button" id="clear"><?php print __("Clear"); ?></button></div>
+<button type="button" id="clear"><?php print __("Clear"); ?></button>
+<button type="button" id="audit"><?php print __("Audit Selected Devices"); ?></button></div>
 </form>
+<div id="auditResults" style="margin-top: 1em;"></div>
 </div></div>
 </div><!-- END div.main -->
 </div><!-- END div.page -->
