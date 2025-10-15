@@ -431,6 +431,9 @@ CREATE TABLE fac_Ports (
   DeviceID int(11) NOT NULL,
   PortNumber int(11) NOT NULL,
   Label varchar(40) NOT NULL,
+  ConnectorID int(11) DEFAULT NULL,
+  ProtocolID int(11) DEFAULT NULL,
+  RateID int(11) DEFAULT NULL,
   MediaID int(11) NOT NULL DEFAULT '0',
   ColorID int(11) NOT NULL DEFAULT '0',
   ConnectedDeviceID int(11) DEFAULT NULL,
@@ -565,50 +568,50 @@ CREATE TABLE fac_PowerConnection (
 -- Table Structure for table fac_Powerconnector
 --
 
-DROP TABLE IF EXISTS fac_PowerConnector;
-CREATE TABLE fac_PowerConnector (
+DROP TABLE IF EXISTS fac_PowerConnectors;
+CREATE TABLE fac_PowerConnectors (
   ConnectorID int(11) NOT NULL AUTO_INCREMENT,
   ConnectorName varchar(40) NOT NULL,
   PRIMARY KEY ConnectorID (ConnectorID),
   UNIQUE KEY ConnectorName (ConnectorName)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO fac_PowerConnector set ConnectorName='C13';
-INSERT INTO fac_PowerConnector set ConnectorName='C19';
+INSERT INTO fac_PowerConnectors set ConnectorName='C13';
+INSERT INTO fac_PowerConnectors set ConnectorName='C19';
 
 --
--- Table Structure for table fac_PowerPhase
+-- Table Structure for table fac_PowerPhases
 --
 
-DROP TABLE IF EXISTS fac_PowerPhase;
-CREATE TABLE fac_PowerPhase (
+DROP TABLE IF EXISTS fac_PowerPhases;
+CREATE TABLE fac_PowerPhases (
   PhaseID int(11) NOT NULL AUTO_INCREMENT,
   PhaseName varchar(40) NOT NULL,
   PRIMARY KEY PhaseID (PhaseID),
   UNIQUE KEY PhaseName (PhaseName)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO fac_PowerPhase set PhaseName='A';
-INSERT INTO fac_PowerPhase set PhaseName='B';
-INSERT INTO fac_PowerPhase set PhaseName='C';
+INSERT INTO fac_PowerPhases set PhaseName='A';
+INSERT INTO fac_PowerPhases set PhaseName='B';
+INSERT INTO fac_PowerPhases set PhaseName='C';
 
 --
--- Table Structure for table fac_PowerVoltage
+-- Table Structure for table fac_PowerVoltages
 --
 
-DROP TABLE IF EXISTS fac_PowerVoltage;
-CREATE TABLE fac_PowerVoltage (
+DROP TABLE IF EXISTS fac_PowerVoltages;
+CREATE TABLE fac_PowerVoltages (
   VoltageID int(11) NOT NULL AUTO_INCREMENT,
   VoltageName varchar(40) NOT NULL,
   PRIMARY KEY VoltageID (VoltageID),
   UNIQUE KEY VoltageName (VoltageName)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO fac_PowerVoltage set VoltageName='120AC';
-INSERT INTO fac_PowerVoltage set VoltageName='208AC';
-INSERT INTO fac_PowerVoltage set VoltageName='240AC';
-INSERT INTO fac_PowerVoltage set VoltageName='277AC';
-INSERT INTO fac_PowerVoltage set VoltageName='48DC';
+INSERT INTO fac_PowerVoltages set VoltageName='120AC';
+INSERT INTO fac_PowerVoltages set VoltageName='208AC';
+INSERT INTO fac_PowerVoltages set VoltageName='240AC';
+INSERT INTO fac_PowerVoltages set VoltageName='277AC';
+INSERT INTO fac_PowerVoltages set VoltageName='48DC';
 
 --
 -- Table structure for table fac_PowerDistribution
@@ -668,6 +671,9 @@ CREATE TABLE fac_PowerPorts (
   DeviceID int(11) NOT NULL,
   PortNumber int(11) NOT NULL,
   Label varchar(40) NOT NULL,
+  ConnectorID int(11) DEFAULT NULL,
+  PhaseID int(11) DEFAULT NULL,
+  VoltageID int(11) DEFAULT NULL,
   ConnectedDeviceID int(11) DEFAULT NULL,
   ConnectedPort int(11) DEFAULT NULL,
   Notes varchar(80) NOT NULL,
