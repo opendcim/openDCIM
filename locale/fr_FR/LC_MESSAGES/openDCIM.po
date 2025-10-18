@@ -6203,3 +6203,24 @@ msgstr ""
 
 #~ msgid "MailTo"
 #~ msgstr "Envoyé à "
+
+msgid "Automatic PDU Link Planner"
+msgstr "Planificateur automatique de liaison PDU"
+
+msgid "Mode 1 – Load Balanced"
+msgstr "Mode 1 – Répartition équilibrée"
+
+msgid "Mode 2 – Dual Power Path"
+msgstr "Mode 2 – Voie double"
+
+msgid "Mode 3 – Intelligent Power Planner"
+msgstr "Mode 3 – Planificateur intelligent"
+
+msgid "Proposed Power Connection Plan"
+msgstr "Plan de raccordement proposé"
+
+msgid "Print Power Plan"
+msgstr "Imprimer le plan d'alimentation"
+
+msgid "You do not have permission to apply this plan."
+msgstr "Vous n’avez pas les droits pour appliquer ce plan."
