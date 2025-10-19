@@ -383,12 +383,12 @@ $body.='<div id="infopanel">
 
 	$body.="\t\t</div>\n\t</fieldset>\n";
 	// feature automatic-pdu-link-planner
-	$body.="<div class="center" style="margin-top:10px;">
-          <button id="btnAutoPlanner" class="btn btn-primary">
-            '.__('Automatic PDU Link Planner').'
-          </button>
-        </div>
-		<div id="autoPlanResult"></div>";
+	$body .= '<div class="center" style="margin-top:10px;">
+            <button id="btnAutoPlanner" class="btn btn-primary">'
+            . __('Automatic PDU Link Planner') .
+            '</button>
+          </div>
+          <div id="autoPlanResult"></div>';
 	// end
 	if ($person->CanWrite($cab->AssignedTo) || $person->SiteAdmin) {
 	    $body.="\t<fieldset>\n";
@@ -824,13 +824,14 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 <?php
 }
 ?>
+var cabinetID = <?php echo intval($cab->CabinetID); ?>;
 // feature automatic-pdu-link-planner JS modal + req. Ajax
 $('#btnAutoPlanner').click(function(){
   const html = `
   <div class="modal" id="pduPlannerModal">
     <div class="modal-dialog">
       <div class="modal-content p-4">
-        <h4>${__("Automatic PDU Link Planner")}</h4>
+        <h4><?php echo __('Automatic PDU Link Planner'); ?></h4>
         <p>${__("Select a power distribution mode for this cabinet")}</p>
         <label><input type="radio" name="planmode" value="balanced" checked> ${__("Mode 1 – Load Balanced")}</label><br>
         <label><input type="radio" name="planmode" value="dualpath"> ${__("Mode 2 – Dual Power Path")}</label><br>
