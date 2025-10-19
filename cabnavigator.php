@@ -832,16 +832,18 @@ $('#btnAutoPlanner').click(function(){
     <div class="modal-dialog">
       <div class="modal-content p-4">
         <h4><?php echo __('Automatic PDU Link Planner'); ?></h4>
-        <p>${__("Select a power distribution mode for this cabinet")}</p>
-        <label><input type="radio" name="planmode" value="balanced" checked> ${__("Mode 1 – Load Balanced")}</label><br>
-        <label><input type="radio" name="planmode" value="dualpath"> ${__("Mode 2 – Dual Power Path")}</label><br>
-        <label><input type="radio" name="planmode" value="intelligent"> ${__("Mode 3 – Intelligent Power Planner")}</label><br><br>
-        <button id="btnGeneratePlan" class="btn btn-success w-100">${__("Generate Plan")}</button>
+        <p>"<?php echo __('Select a power distribution mode for this cabinet'); ?>"</p>
+        <label><input type="radio" name="planmode" value="balanced" checked> <?php echo __('Mode 1 – Load Balanced'); ?></label><br>
+        <label><input type="radio" name="planmode" value="dualpath"> <?php echo __('Mode 2 – Dual Power Path'); ?></label><br>
+        <label><input type="radio" name="planmode" value="intelligent"> <?php echo __('Mode 3 – Intelligent Power Planner'); ?></label><br><br>
+        <button id="btnGeneratePlan" class="btn btn-success w-100"><?php echo __('Generate Plan'); ?></button>
       </div>
     </div>
   </div>`;
-  $('body').append(html);
-  $('#pduPlannerModal').modal('show');
+  $(document).on('hidden.bs.modal', '#pduPlannerModal', function() {
+  $(this).remove();
+});
+
 });
 
 $(document).on('click','#btnGeneratePlan',function(){
