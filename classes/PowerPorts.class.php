@@ -50,7 +50,7 @@ class PowerPorts {
 		$this->Notes=stripslashes(trim($this->Notes));
 	}
 
-	function RowToObject($dbRow){
+	public static function RowToObject($dbRow){
 	$pp = new PowerPorts();
 	$pp->DeviceID           = $dbRow['DeviceID'];
 	$pp->PortNumber         = $dbRow['PortNumber'];
@@ -376,7 +376,8 @@ class PowerPorts {
 		
 		$portList=array();
 		foreach($dbh->query($sql) as $row){
-			$portList[$row['PortNumber']]=PowerPorts::RowToObject($row);
+			$port = new PowerPorts();
+			$portList[$row["PortNumber"]] = $port->RowToObject($row);
 		}
 		
 		if( sizeof($portList)==0 && $dev->DeviceType!="Physical Infrastructure" ){
