@@ -861,6 +861,13 @@ $(document).ready(function(){
       </div>`;
     $(html).dialog({
       modal: true, width: 460, title: i18n.planner,
+	  appendTo: "body",             // ensures it’s not confined inside .main or .page
+  		dialogClass: "autoPlannerModal",
+  		draggable: false,
+  		resizable: false,
+  			open: function() {
+    		$(".ui-widget-overlay").css("opacity", "0.6"); // enforce overlay opacity
+		    },
       buttons: [
         { text: i18n.generate, click: function(){
             const mode = $('input[name="planmode"]:checked').val();
