@@ -1,20 +1,35 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+	session_name("openDCIMSession");
+    session_start();
+}
 require_once "db.inc.php";
 require_once "facilities.inc.php";
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+// --- Ensure $person is loaded ---
+$person = People::Current();
+
+if(!$person || $person->UserID == ""){
+    // Sometimes AJAX context fails to restore People::Current()
+    // -> fallback to People object manually
+    if(isset($_COOKIE['openDCIMUser'])){
+        $person = new People();
+        $person->UserID = $_COOKIE['openDCIMUser'];
+        $person->GetPersonByUserID();
+    }
 }
 
-$person = People::Current();
+if(!$person || $person->UserID == ""){
+    echo '<div class="alert alert-danger">'
+        .__("Session expired or user not found. Please reload the page.")
+        .'</div>';
+    exit;
+}
 
 header('Content-Type: text/html; charset=utf-8');
 
 $cabinetid = intval($_POST['cabinetid'] ?? 0);
 $mode      = sanitize($_POST['mode'] ?? 'balanced');
-
-$person = new People();
-$person->GetUserRights();
 
 // Get PDU List (instance method)
 $pdu = new PowerDistribution();
@@ -263,15 +278,20 @@ if($totalPower > 0){
 
 echo "</fieldset>";
 // person write access
+$cab = new Cabinet();
+$cab->CabinetID = $cabinetid;
+$cab->GetCabinet();
+
+// person write access
 echo "<div class='center'>";
-if($person->SiteAdmin || (isset($cab) && $person->CanWrite($cab->AssignedTo))){
-	// DEBUG TEMP
+if($person->SiteAdmin || ($cab->AssignedTo && $person->CanWrite($cab->AssignedTo))){
 	error_log("Planner:: user={$person->UserID} admin={$person->SiteAdmin}");
 	echo "<button id='btnApplyPowerPlan' class='btn btn-success'>".__("Apply and Save")."</button>";
 } else {
 	echo "<div class='alert alert-info'>".__("Read-only mode: preview and print only.")."</div>";
 }
 echo " <button onclick='window.print()' class='btn btn-secondary'>".__("Print Power Plan")."</button></div>";
+
 
 $_SESSION["auto_plan_$cabinetid"] = $planRows;
 
