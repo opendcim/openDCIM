@@ -2,6 +2,12 @@
 require_once "db.inc.php";
 require_once "facilities.inc.php";
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$person = People::Current();
+
 header('Content-Type: text/html; charset=utf-8');
 
 $cabinetid = intval($_POST['cabinetid'] ?? 0);
@@ -258,7 +264,9 @@ if($totalPower > 0){
 echo "</fieldset>";
 // person write access
 echo "<div class='center'>";
-if($person->SiteAdmin || $person->CanWrite($cab->AssignedTo)){
+if($person->SiteAdmin || (isset($cab) && $person->CanWrite($cab->AssignedTo))){
+	// DEBUG TEMP
+	error_log("Planner:: user={$person->UserID} admin={$person->SiteAdmin}");
 	echo "<button id='btnApplyPowerPlan' class='btn btn-success'>".__("Apply and Save")."</button>";
 } else {
 	echo "<div class='alert alert-info'>".__("Read-only mode: preview and print only.")."</div>";
