@@ -258,7 +258,7 @@ if($totalPower > 0){
 echo "</fieldset>";
 // person write access
 echo "<div class='center'>";
-if($person->WriteAccess()){
+if($person->SiteAdmin || $person->CanWrite($cab->AssignedTo)){
 	echo "<button id='btnApplyPowerPlan' class='btn btn-success'>".__("Apply and Save")."</button>";
 } else {
 	echo "<div class='alert alert-info'>".__("Read-only mode: preview and print only.")."</div>";
