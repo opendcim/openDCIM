@@ -378,12 +378,11 @@ $body.='<div id="infopanel">
 	} else {
 		// Display the button if user has at least read access
 		if ($person->CanRead($cab->AssignedTo)) {
-			$body .= '<div class="center" style="margin-top:10px;">
+			$body .= '<div id="autoPlanResult">
 						<button id="btnAutoPlanner" class="btn btn-primary">'
 						. __('Automatic PDU Link Planner') .
 						'</button>
-					</div>
-					<div id="autoPlanResult"></div>';
+					</div>';
 		}
 	}
 	// end

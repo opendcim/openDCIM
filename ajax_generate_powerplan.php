@@ -10,7 +10,10 @@ $mode      = sanitize($_POST['mode'] ?? 'balanced');
 $person = new People();
 $person->GetUserRights();
 
-$pduList  = PowerDistribution::GetPDUbyCabinet($cabinetid);
+// Get PDU List (instance method)
+$pdu = new PowerDistribution();
+$pdu->CabinetID = $cabinetid;
+$pduList = $pdu->GetPDUbyCabinet();
 $pduCount = is_array($pduList) ? count($pduList) : 0;
 
 if ($pduCount == 0) {
@@ -22,7 +25,10 @@ if ($mode === 'dualpath' && $pduCount < 2) {
 	exit;
 }
 
-$devices = Device::GetDevicesByCabinet($cabinetid);
+// --- Get devices ---
+$dev = new Device();
+$dev->Cabinet = $cabinetid;
+$devices = $dev->ViewDevicesByCabinet();
 if (empty($devices)) {
 	echo '<div class="alert alert-info">'.__("ℹ No devices detected in this cabinet.").'</div>';
 	exit;
