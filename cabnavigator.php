@@ -366,7 +366,27 @@ $body.='<div id="infopanel">
 	if($person->CanWrite($cab->AssignedTo)){
 		$body.="\n\t\t<ul class=\"nav\"><a href=\"devices.php?action=new&CabinetID=$cab->CabinetID&DeviceType=CDU\"><li>".__("Add CDU")."</li></a></ul>\n";
 	}
+	// --- Feature Guard: Require OpenDCIM 25.01 or later ---
+	//feature automatic-pdu-link-planner
+	$currentVersion = floatval($config->ParameterArray["Version"]);
 
+	if ($currentVersion < 25.01) {
+		$body .= '<div class="alert alert-warning" style="margin:10px; padding:10px; border-radius:6px;">
+			<strong>'.__("Feature unavailable").':</strong><br>'
+			.__("The Automatic PDU Link Planner requires OpenDCIM version 25.01 or newer. Please update your installation to access this feature.")
+			.'</div>';
+	} else {
+		// Display the button if user has at least read access
+		if ($person->CanRead($cab->AssignedTo)) {
+			$body .= '<div class="center" style="margin-top:10px;">
+						<button id="btnAutoPlanner" class="btn btn-primary">'
+						. __('Automatic PDU Link Planner') .
+						'</button>
+					</div>
+					<div id="autoPlanResult"></div>';
+		}
+	}
+	// end
 	$body.="\t\t</div>\n\t</fieldset>\n";
 
 	$body.='	<fieldset id="sensors">
@@ -382,14 +402,7 @@ $body.='<div id="infopanel">
 	}
 
 	$body.="\t\t</div>\n\t</fieldset>\n";
-	// feature automatic-pdu-link-planner
-	$body .= '<div class="center" style="margin-top:10px;">
-            <button id="btnAutoPlanner" class="btn btn-primary">'
-            . __('Automatic PDU Link Planner') .
-            '</button>
-          </div>
-          <div id="autoPlanResult"></div>';
-	// end
+
 	if ($person->CanWrite($cab->AssignedTo) || $person->SiteAdmin) {
 	    $body.="\t<fieldset>\n";
         if ($person->CanWrite($cab->AssignedTo) ) {
@@ -825,37 +838,41 @@ if ( $config->ParameterArray["WorkOrderBuilder"]=='enabled' ) {
 }
 ?>
 var cabinetID = <?php echo intval($cab->CabinetID); ?>;
-// feature automatic-pdu-link-planner JS modal + req. Ajax
-$('#btnAutoPlanner').click(function(){
-  const html = `
-  <div class="modal" id="pduPlannerModal">
-    <div class="modal-dialog">
-      <div class="modal-content p-4">
-        <h4><?php echo __('Automatic PDU Link Planner'); ?></h4>
-        <p>"<?php echo __('Select a power distribution mode for this cabinet'); ?>"</p>
-        <label><input type="radio" name="planmode" value="balanced" checked> <?php echo __('Mode 1 – Load Balanced'); ?></label><br>
-        <label><input type="radio" name="planmode" value="dualpath"> <?php echo __('Mode 2 – Dual Power Path'); ?></label><br>
-        <label><input type="radio" name="planmode" value="intelligent"> <?php echo __('Mode 3 – Intelligent Power Planner'); ?></label><br><br>
-        <button id="btnGeneratePlan" class="btn btn-success w-100"><?php echo __('Generate Plan'); ?></button>
-      </div>
-    </div>
-  </div>`;
-  $(document).on('hidden.bs.modal', '#pduPlannerModal', function() {
-  $(this).remove();
-});
+// feature automatic-pdu-link-planner JS modal + req. Ajax => 25.01
+$(document).ready(function(){
+  var cabinetID = <?php echo intval($cab->CabinetID); ?>;
+  var i18n = {
+    planner : "<?php echo __('Automatic PDU Link Planner'); ?>",
+    select  : "<?php echo __('Select a power distribution mode for this cabinet'); ?>",
+    mode1   : "<?php echo __('Mode 1 – Load Balanced'); ?>",
+    mode2   : "<?php echo __('Mode 2 – Dual Power Path'); ?>",
+    mode3   : "<?php echo __('Mode 3 – Intelligent Power Planner'); ?>",
+    generate: "<?php echo __('Generate Plan'); ?>",
+    cancel  : "<?php echo __('Cancel'); ?>"
+  };
 
-});
-
-$(document).on('click','#btnGeneratePlan',function(){
-  const mode = $('input[name="planmode"]:checked').val();
-  $.ajax({
-    url: 'ajax_generate_powerplan.php',
-    type: 'POST',
-    data: { cabinetid: cabinetID, mode: mode },
-    success: function(resp){
-      $('#pduPlannerModal').modal('hide');
-      $('#autoPlanResult').html(resp);
-    }
+  $('#btnAutoPlanner').on('click', function(){
+    const html = `
+      <div id="pduPlannerDialog">
+        <p>${i18n.select}</p>
+        <label><input type="radio" name="planmode" value="balanced" checked> ${i18n.mode1}</label><br>
+        <label><input type="radio" name="planmode" value="dualpath"> ${i18n.mode2}</label><br>
+        <label><input type="radio" name="planmode" value="intelligent"> ${i18n.mode3}</label>
+      </div>`;
+    $(html).dialog({
+      modal: true, width: 460, title: i18n.planner,
+      buttons: [
+        { text: i18n.generate, click: function(){
+            const mode = $('input[name="planmode"]:checked').val();
+            $.post('ajax_generate_powerplan.php', { cabinetid: cabinetID, mode: mode }, function(resp){
+              $('#autoPlanResult').html(resp);
+            });
+            $(this).dialog('close');
+        }},
+        { text: i18n.cancel, click: function(){ $(this).dialog('close'); } }
+      ],
+      close: function(){ $(this).remove(); }
+    });
   });
 });
 // end

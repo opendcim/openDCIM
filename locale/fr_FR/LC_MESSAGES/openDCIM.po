@@ -6205,22 +6205,76 @@ msgstr ""
 #~ msgstr "Envoyé à "
 
 msgid "Automatic PDU Link Planner"
-msgstr "Planificateur automatique de liaison PDU"
+msgstr "Planificateur automatique de liaisons PDU"
+
+msgid "Select a power distribution mode for this cabinet"
+msgstr "Sélectionnez un mode de distribution électrique pour cette baie"
 
 msgid "Mode 1 – Load Balanced"
 msgstr "Mode 1 – Répartition équilibrée"
 
 msgid "Mode 2 – Dual Power Path"
-msgstr "Mode 2 – Voie double"
+msgstr "Mode 2 – Double alimentation"
 
 msgid "Mode 3 – Intelligent Power Planner"
 msgstr "Mode 3 – Planificateur intelligent"
 
-msgid "Proposed Power Connection Plan"
-msgstr "Plan de raccordement proposé"
+msgid "⚠ No PDU detected in this cabinet."
+msgstr "⚠ Aucun PDU détecté dans cette baie."
+
+msgid "⚠ Dual Power Path mode requires at least two PDUs."
+msgstr "⚠ Le mode double alimentation nécessite au moins deux PDU."
+
+msgid "ℹ No devices detected in this cabinet."
+msgstr "ℹ Aucun équipement détecté dans cette baie."
+
+msgid "⚠ No available outlet found for this device."
+msgstr "⚠ Aucune prise disponible pour cet équipement."
+
+msgid "Proposed Power Distribution Plan"
+msgstr "Plan de distribution électrique proposé"
+
+msgid "Phase Load Summary"
+msgstr "Synthèse de charge par phase"
+
+msgid "Read-only mode: preview and print only."
+msgstr "Mode lecture seule : aperçu et impression uniquement."
+
+msgid "Apply and Save"
+msgstr "Appliquer et enregistrer"
 
 msgid "Print Power Plan"
 msgstr "Imprimer le plan d'alimentation"
 
+msgid "⚠ Single-power devices detected. Installing a Static Transfer Switch (STS) is recommended to enhance power redundancy."
+msgstr "⚠ Des équipements mono-alimentés ont été détectés. L’installation d’un STS (commutateur statique de transfert) est recommandée pour améliorer la redondance d'alimentation."
+
 msgid "You do not have permission to apply this plan."
-msgstr "Vous n’avez pas les droits pour appliquer ce plan."
+msgstr "Vous n’avez pas l’autorisation d’appliquer ce plan."
+
+msgid "no free power inlet on device"
+msgstr "aucune entrée d’alimentation libre sur l’équipement"
+
+msgid "target PDU port no longer available"
+msgstr "le port du PDU cible n’est plus disponible"
+
+msgid "failed to make power connection"
+msgstr "échec de la création de la connexion d’alimentation"
+
+msgid "⚠ No compatible outlet found for this device feed (%s, %s)."
+msgstr "⚠ Aucune prise compatible trouvée pour cette alimentation de l’équipement (%s, %s)."
+
+msgid "any connector"
+msgstr "n'importe quel connecteur"
+
+msgid "any voltage"
+msgstr "n'importe quelle tension"
+
+msgid "no free compatible power inlet on device"
+msgstr "aucune entrée d'alimentation compatible libre sur l’équipement"
+
+msgid "Feature unavailable"
+msgstr "Fonctionnalité indisponible"
+
+msgid "The Automatic PDU Link Planner requires OpenDCIM version 25.01 or newer. Please update your installation to access this feature."
+msgstr "Le planificateur automatique de liaisons PDU nécessite OpenDCIM version 25.01 ou plus récente. Veuillez mettre à jour votre installation pour accéder à cette fonctionnalité."

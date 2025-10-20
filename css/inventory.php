@@ -1477,5 +1477,7 @@ table#parcheos tr td:first-child + td table {margin-left: auto;}
 
 p.errormsg {padding: 20px; background-color: #DDDDDD; font-size: 120%; font-weight: bold; color: red;}
 
-
-
+.phase-load-table td {
+	padding: 3px 5px;
+	vertical-align: middle;
+}
