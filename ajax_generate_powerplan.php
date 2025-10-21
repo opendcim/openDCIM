@@ -1,8 +1,9 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
 	session_name("openDCIMSession");
-    session_start();
+	session_start();
 }
+
 require_once "db.inc.php";
 require_once "facilities.inc.php";
 
@@ -10,20 +11,18 @@ require_once "facilities.inc.php";
 $person = People::Current();
 
 if(!$person || $person->UserID == ""){
-    // Sometimes AJAX context fails to restore People::Current()
-    // -> fallback to People object manually
-    if(isset($_COOKIE['openDCIMUser'])){
-        $person = new People();
-        $person->UserID = $_COOKIE['openDCIMUser'];
-        $person->GetPersonByUserID();
-    }
+	if(isset($_COOKIE['openDCIMUser'])){
+		$person = new People();
+		$person->UserID = $_COOKIE['openDCIMUser'];
+		$person->GetPersonByUserID();
+	}
 }
 
 if(!$person || $person->UserID == ""){
-    echo '<div class="alert alert-danger">'
-        .__("Session expired or user not found. Please reload the page.")
-        .'</div>';
-    exit;
+	echo '<div class="alert alert-danger">'
+		.__("Session expired or user not found. Please reload the page.")
+		.'</div>';
+	exit;
 }
 
 header('Content-Type: text/html; charset=utf-8');
@@ -31,7 +30,7 @@ header('Content-Type: text/html; charset=utf-8');
 $cabinetid = intval($_POST['cabinetid'] ?? 0);
 $mode      = sanitize($_POST['mode'] ?? 'balanced');
 
-// Get PDU List (instance method)
+// Get PDU List
 $pdu = new PowerDistribution();
 $pdu->CabinetID = $cabinetid;
 $pduList = $pdu->GetPDUbyCabinet();
@@ -45,6 +44,10 @@ if ($mode === 'dualpath' && $pduCount < 2) {
 	echo '<div class="alert alert-warning">'.__("⚠ Dual Power Path mode requires at least two PDUs.").'</div>';
 	exit;
 }
+if ($mode === 'intelligent' && $pduCount < 2) {
+	echo '<div class="alert alert-warning">'.__("⚠ Intelligent Power Planner requires at least two PDUs.").'</div>';
+	exit;
+}
 
 // --- Get devices ---
 $dev = new Device();
@@ -56,121 +59,185 @@ if (empty($devices)) {
 }
 
 // ---------- Helpers ----------
-
-// a) free power ports on a PDU, including ConnectorID/PhaseID/VoltageID
 function getFreePowerPortsForPDUID($pduid){
 	$pp = new PowerPorts();
-	$ports = $pp->getPortList($pduid); // PowerPorts[] indexed by PortNumber
+	$ports = $pp->getPortList($pduid);
 	$free  = [];
 	foreach($ports as $n => $port){
 		if(intval($port->ConnectedDeviceID) === 0){
-			$free[$n] = $port; // keep full object with ConnectorID/PhaseID/VoltageID
+			$free[$n] = $port;
 		}
 	}
 	return $free;
 }
 
-// b) get device inlet requirements (array of device power inlets still free, with ConnectorID/VoltageID)
-//    We read on the DEVICE side to know what connector/voltage it expects.
 function getDeviceFreeInlets($deviceID){
-	$dp = new DevicePorts(); // class provided in your repo
-	$ports = $dp->getPortList($deviceID); // returns array of ports incl. power inlets
+	$dp = new DevicePorts();
+	$ports = $dp->getPortList($deviceID);
 	$free = [];
 	foreach($ports as $n => $port){
-		// We only consider POWER inlets, not data; rely on class typing if present, else heuristic:
 		if(property_exists($port,'PortType') && stripos($port->PortType,'power')===false){
-			continue; // not a power inlet
+			continue;
 		}
 		if(intval($port->ConnectedDeviceID) === 0){
-			$free[$n] = $port; // should carry ConnectorID/VoltageID if schema supports
+			$free[$n] = $port;
 		}
 	}
-	// Fallback: if DevicePorts doesn't carry ConnectorID/VoltageID, return empty -> no strict filter on device side
 	return $free;
 }
 
-// c) choose best (PDU,Port) strictly compatible with given device inlet requirements,
-//    and balancing the phase total load (lower is better).
 function pickBestPduPortStrict($targetsPDU, $pduState, $requiredConnectorID, $requiredVoltageID, &$phaseLoad){
 	$best = null;
 	$bestScore = PHP_INT_MAX;
-	$chosenPhase = 0;
-
 	foreach($targetsPDU as $pdu){
 		$PDUID = $pdu->PDUID;
 		if(!isset($pduState[$PDUID])) continue;
 		foreach($pduState[$PDUID]['free'] as $pn => $portObj){
-			// Strict filter: connector + voltage must match if device specified something
 			if($requiredConnectorID && intval($portObj->ConnectorID) !== intval($requiredConnectorID)) continue;
 			if($requiredVoltageID   && intval($portObj->VoltageID)   !== intval($requiredVoltageID))   continue;
-
 			$ph = intval($portObj->PhaseID) ?: 0;
 			$score = intval($phaseLoad[$ph] ?? 0);
 			if($score < $bestScore){
-				$bestScore  = $score;
-				$best       = ['pdu'=>$pdu,'port'=>$pn,'phase'=>$ph];
+				$bestScore = $score;
+				$best = ['pdu'=>$pdu,'port'=>$pn,'phase'=>$ph];
 			}
 		}
 	}
-	return $best; // null if none
+	return $best;
 }
 
-// ---------- Build PDU state (free ports) ----------
-$pduState = []; // PDUID => ['obj'=>PowerDistribution, 'free'=>[port#=>PowerPorts]]
+// ---------- Build PDU state ----------
+$pduState = [];
+$missingConnectorOrPhase = false;
+
 foreach($pduList as $pdu){
+	$freePorts = getFreePowerPortsForPDUID($pdu->PDUID);
 	$pduState[$pdu->PDUID] = [
 		'obj'  => $pdu,
-		'free' => getFreePowerPortsForPDUID($pdu->PDUID)
+		'free' => $freePorts
 	];
+
+	// Vérification des données critiques
+	foreach($freePorts as $port){
+		if(empty($port->ConnectorID) || empty($port->PhaseID)){
+			$missingConnectorOrPhase = true;
+			break 2; // on sort dès qu’un port incomplet est détecté
+		}
+	}
 }
 
-// Phase load accumulator (unknown phase = 0 bucket)
-$phaseLoad   = [];            // phaseID => watts
+// ⚠️ Alerte si ConnectorID ou PhaseID manquant
+if($missingConnectorOrPhase && $mode === 'intelligent'){
+	echo '<div class="alert alert-warning">'
+		.__("⚠ Warning: One or more PDU ports have missing ConnectorID or PhaseID values.<br>
+		Automatic balancing by connector/phase cannot be guaranteed.<br><br>
+		The planner will proceed in generic mode (balanced only).")
+		.'</div>';
+}
+
+$phaseLoad   = [];
 $phaseLabels = [1=>'A',2=>'B',3=>'C'];
 $planRows    = [];
 $hasMonoFeed = false;
 
-// ---------- Main loop over devices ----------
+// ---------- Main loop ----------
 foreach($devices as $dev){
 	if(!in_array($dev->DeviceType, ['Server','Switch','Appliance','Chassis','Storage Array'])){ continue; }
 
 	$feeds = max(1, intval($dev->PowerSupplyCount));
 	$power = intval($dev->Power);
 	$hasMonoFeed = $hasMonoFeed || ($feeds == 1);
-
-	// read FREE inlets on the DEVICE to know expected Connector/Voltage (strict)
 	$deviceFreeInlets = getDeviceFreeInlets($dev->DeviceID);
 
-	// Resolve how many feeds we request in this mode
-	$requestedFeeds = ($mode === 'dualpath') ? min(2, $feeds) : $feeds;
+	// Mode 3: Intelligent Power Planner
+	if($mode === 'intelligent'){
+		$pdus = array_values($pduList);
+		if(count($pdus) < 2) continue;
 
-	// What PDUs are eligible for each feed (depends on mode)
-	$targets = array_values($pduList); // default: all
-	if($mode === 'balanced' && count($targets) >= 2){
-		// We'll alternate [0],[1],[0],[1] ...
-	} elseif($mode === 'dualpath' && count($targets) >= 2){
-		// feed 1 -> [0], feed 2 -> [1]
-	} else {
-		// intelligent: consider all targets each time, scoring by phaseLoad
+		$pduA = $pdus[0];
+		$pduB = $pdus[1];
+
+		// Carte PDU / Phase / Connecteur
+		$pduPhaseMap = [];
+		foreach($pduState as $pid => $pdata){
+			foreach($pdata['free'] as $pn => $port){
+				$ph = intval($port->PhaseID) ?: 0;
+				$conn = intval($port->ConnectorID) ?: 0;
+				if(!isset($pduPhaseMap[$pid][$ph][$conn])) $pduPhaseMap[$pid][$ph][$conn] = [];
+				$pduPhaseMap[$pid][$ph][$conn][] = $pn;
+			}
+		}
+
+		$assigned = [];
+		for($f=1; $f<=min($feeds,2); $f++){
+			$reqConnectorID = null;
+			$reqVoltageID   = null;
+			if(!empty($deviceFreeInlets)){
+				$inletKey = array_key_first($deviceFreeInlets);
+				$inlet    = $deviceFreeInlets[$inletKey];
+				unset($deviceFreeInlets[$inletKey]);
+				if(property_exists($inlet,'ConnectorID') && $inlet->ConnectorID) $reqConnectorID = intval($inlet->ConnectorID);
+				if(property_exists($inlet,'VoltageID')   && $inlet->VoltageID)   $reqVoltageID   = intval($inlet->VoltageID);
+			}
+
+			$targetPDU = ($f == 1) ? $pduA : $pduB;
+			$best = null;
+			$bestScore = PHP_INT_MAX;
+
+			foreach($pduPhaseMap[$targetPDU->PDUID] as $phase => $conns){
+				if($reqConnectorID && !isset($conns[$reqConnectorID])) continue;
+				$connKey = $reqConnectorID ?: array_key_first($conns);
+				if(empty($conns[$connKey])) continue;
+				$score = $phaseLoad[$phase] ?? 0;
+				if($score < $bestScore){
+					$bestScore = $score;
+					$best = [
+						'pdu'=>$targetPDU,
+						'phase'=>$phase,
+						'conn'=>$connKey,
+						'port'=>array_shift($pduPhaseMap[$targetPDU->PDUID][$phase][$connKey])
+					];
+				}
+			}
+
+			if(!$best){
+				$planRows[] = [
+					'Device'=>$dev->Label,
+					'Error'=>sprintf(__("⚠ No compatible port found on %s (connector %d)."), $targetPDU->Label, $reqConnectorID)
+				];
+				continue;
+			}
+
+			$planRows[] = [
+				'Device'=>$dev->Label,
+				'DeviceID'=>$dev->DeviceID,
+				'PDU'=>$best['pdu']->Label,
+				'PDUID'=>$best['pdu']->PDUID,
+				'Port'=>$best['port']
+			];
+			unset($pduState[$best['pdu']->PDUID]['free'][$best['port']]);
+			$phaseLoad[$best['phase']] = ($phaseLoad[$best['phase']] ?? 0) + ($power / min($feeds,2));
+		}
+		continue;
 	}
 
+	// Modes 1 & 2
+	$requestedFeeds = ($mode === 'dualpath') ? min(2, $feeds) : $feeds;
+	$targets = array_values($pduList);
 	$assigned = [];
+
 	for($f=0; $f<$requestedFeeds; $f++){
-		// Pick a device FREE inlet compatible (for this feed)
 		$reqConnectorID = null;
 		$reqVoltageID   = null;
 
 		if(!empty($deviceFreeInlets)){
-			// take one free inlet and use its requirements
 			$inletKey = array_key_first($deviceFreeInlets);
 			$inlet    = $deviceFreeInlets[$inletKey];
 			unset($deviceFreeInlets[$inletKey]);
 			if(property_exists($inlet,'ConnectorID') && $inlet->ConnectorID){ $reqConnectorID = intval($inlet->ConnectorID); }
 			if(property_exists($inlet,'VoltageID')   && $inlet->VoltageID){   $reqVoltageID   = intval($inlet->VoltageID); }
 		}
-		// If device side doesn't expose requirements, req* stay null -> no strict filter on that axis.
 
-		// Determine eligible PDU set for this feed based on mode
 		$eligiblePDU = $targets;
 		if($mode === 'balanced' && count($targets) >= 2){
 			$eligiblePDU = [$targets[$f % 2]];
@@ -179,23 +246,16 @@ foreach($devices as $dev){
 			$eligiblePDU = [$targets[min($f,1)]];
 		}
 
-		// Pick best PDU/Port strictly matching connector/voltage + min phase load
 		$best = pickBestPduPortStrict($eligiblePDU, $pduState, $reqConnectorID, $reqVoltageID, $phaseLoad);
-
 		if($best){
 			$assigned[] = $best;
-			// reserve the chosen port
 			unset($pduState[$best['pdu']->PDUID]['free'][$best['port']]);
-			// update phase load (W divided across feeds of this device)
 			$ph = intval($best['phase']) ?: 0;
 			$phaseLoad[$ph] = ($phaseLoad[$ph] ?? 0) + ($power / max(1,$requestedFeeds));
 		}else{
-			// No compatible outlet found for this feed
-			$niceConn = ($reqConnectorID) ? sprintf(__("connector #%d"), $reqConnectorID) : __("any connector");
-			$niceVolt = ($reqVoltageID)   ? sprintf(__("voltage #%d"),   $reqVoltageID)   : __("any voltage");
 			$planRows[] = [
 				'Device'=>$dev->Label,
-				'Error'=>sprintf(__("⚠ No compatible outlet found for this device feed (%s, %s)."), $niceConn, $niceVolt)
+				'Error'=>__("⚠ No compatible outlet found for this device feed.")
 			];
 		}
 	}
@@ -203,17 +263,17 @@ foreach($devices as $dev){
 	if(!empty($assigned)){
 		foreach($assigned as $a){
 			$planRows[] = [
-				'Device'   => $dev->Label,
-				'DeviceID' => $dev->DeviceID,
-				'PDU'      => $a['pdu']->Label,
-				'PDUID'    => $a['pdu']->PDUID,
-				'Port'     => $a['port']
+				'Device'=>$dev->Label,
+				'DeviceID'=>$dev->DeviceID,
+				'PDU'=>$a['pdu']->Label,
+				'PDUID'=>$a['pdu']->PDUID,
+				'Port'=>$a['port']
 			];
 		}
 	}
 }
 
-// ---------- HTML Render ----------
+// ---------- HTML Output ----------
 echo "<h4>".__("Proposed Power Distribution Plan")."</h4>";
 
 if ($hasMonoFeed) {
@@ -240,25 +300,19 @@ foreach($phaseLoad as $ph => $load){
 }
 echo "</ul></fieldset>";
 
-// ---------- Phase Load Visual Summary ----------
 $totalPower = array_sum($phaseLoad);
 $maxPhaseLoad = ($totalPower > 0) ? max($phaseLoad) : 0;
-
-// Définir couleurs dynamiques selon % de charge max
 function phaseColor($percent){
-	if($percent > 80){ return "#f44336"; }   // rouge
-	if($percent > 60){ return "#ffc107"; }   // jaune
-	return "#4caf50";                        // vert
+	if($percent > 80){ return "#f44336"; }
+	if($percent > 60){ return "#ffc107"; }
+	return "#4caf50";
 }
-
 echo "<fieldset><legend>".__("Visual Load Summary")."</legend>";
 echo "<table class='phase-load-table' style='width:100%; border-collapse:collapse;'>";
-
 foreach($phaseLoad as $ph => $load){
 	$label = $phaseLabels[$ph] ?? __("Unknown");
 	$percent = ($maxPhaseLoad > 0) ? round(($load / $maxPhaseLoad) * 100) : 0;
 	$color = phaseColor($percent);
-
 	echo "<tr>
 			<td style='width:60px; font-weight:bold;'>Phase $label</td>
 			<td style='width:80%; background:#eee; border-radius:5px;'>
@@ -267,31 +321,25 @@ foreach($phaseLoad as $ph => $load){
 			<td style='width:60px; text-align:right;'>".number_format($load,0)." W</td>
 		</tr>";
 }
-
 echo "</table>";
-
 if($totalPower > 0){
 	echo "<p style='text-align:center; margin-top:8px; font-weight:bold;'>"
 		.sprintf(__("Total Estimated Power: %.1f W"), $totalPower)
 		."</p>";
 }
-
 echo "</fieldset>";
-// person write access
+
 $cab = new Cabinet();
 $cab->CabinetID = $cabinetid;
 $cab->GetCabinet();
 
-// person write access
 echo "<div class='center'>";
 if($person->SiteAdmin || ($cab->AssignedTo && $person->CanWrite($cab->AssignedTo))){
-	error_log("Planner:: user={$person->UserID} admin={$person->SiteAdmin}");
 	echo "<button id='btnApplyPowerPlan' class='btn btn-success'>".__("Apply and Save")."</button>";
 } else {
 	echo "<div class='alert alert-info'>".__("Read-only mode: preview and print only.")."</div>";
 }
 echo " <button onclick='window.print()' class='btn btn-secondary'>".__("Print Power Plan")."</button></div>";
 
-
 $_SESSION["auto_plan_$cabinetid"] = $planRows;
-
+?>
