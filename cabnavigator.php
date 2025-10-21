@@ -882,6 +882,27 @@ $(document).ready(function(){
   });
 });
 // end
+// === Apply and Save button handler ===
+$(document).on('click','#btnApplyPowerPlan',function(){
+  const btn = $(this);
+  btn.prop('disabled', true).text("<?php echo __('Applying...'); ?>");
+  $('#autoPlanResult').html('<div class="alert alert-info"><?php echo __('Applying connections...'); ?></div>');
+  $.ajax({
+    url: 'ajax_apply_powerplan.php',
+    type: 'POST',
+    data: { cabinetid: cabinetID },
+    success: function(resp){
+      $('#autoPlanResult').html(resp);
+    },
+    error: function(){
+      alert("<?php echo __('An error occurred while applying the power plan.'); ?>");
+    },
+    complete: function(){
+      btn.prop('disabled', false).text("<?php echo __('Apply and Save'); ?>");
+    }
+  });
+});
+//end
 </script>
 </body>
 </html>

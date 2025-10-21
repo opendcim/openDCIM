@@ -1,73 +1,124 @@
 <?php
+// -----------------------------------------------------------------------------
+// openDCIM - Automatic PDU Link Planner : Apply generated power plan
+// Version: 25.01 compatible
+// Author: Alexandre Oliveira (feature/automatic-pdu-link-planner)
+// -----------------------------------------------------------------------------
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_name("openDCIMSession");
+    session_start();
+}
+
 require_once "db.inc.php";
 require_once "facilities.inc.php";
 
-header('Content-Type: application/json; charset=utf-8');
+// --- Restore user context ---
+$person = People::Current();
 
-$cabinetid = intval($_POST['cabinetid'] ?? 0);
-$plan      = $_SESSION["auto_plan_$cabinetid"] ?? [];
-
-$person = new People();
-$person->GetUserRights();
-
-if (!$person->WriteAccess()) {
-	echo json_encode(["error" => __("You do not have permission to apply this plan.")]);
-	exit;
+if(!$person || $person->UserID == ""){
+    if(isset($_COOKIE['openDCIMUser'])){
+        $person = new People();
+        $person->UserID = $_COOKIE['openDCIMUser'];
+        $person->GetPersonByUserID();
+    }
 }
 
-$pp = new PowerPorts();
-$dp = new DevicePorts();
+if(!$person || $person->UserID == ""){
+    echo '<div class="alert alert-danger">'
+        .__("Session expired or user not found. Please reload the page.")
+        .'</div>';
+    exit;
+}
 
-$ok = 0; $err = [];
+// --- Retrieve CabinetID and plan data ---
+$cabinetid = intval($_POST['cabinetid'] ?? 0);
+if($cabinetid <= 0){
+    echo '<div class="alert alert-danger">'.__("Invalid cabinet ID.").'</div>';
+    exit;
+}
+
+$cab = new Cabinet();
+$cab->CabinetID = $cabinetid;
+if(!$cab->GetCabinet()){
+    echo '<div class="alert alert-danger">'.__("Cabinet not found.").'</div>';
+    exit;
+}
+
+// --- Check permissions ---
+if(!$person->SiteAdmin && !$person->CanWrite($cab->AssignedTo)){
+    echo '<div class="alert alert-warning">'
+        .__("You do not have sufficient rights to apply this power plan.")
+        .'</div>';
+    exit;
+}
+
+// --- Retrieve plan from session ---
+$plan = $_SESSION["auto_plan_$cabinetid"] ?? [];
+
+if(empty($plan)){
+    echo '<div class="alert alert-warning">'.__("No power plan in memory. Please generate one first.").'</div>';
+    exit;
+}
+
+echo "<h4>".__("Applying Power Distribution Plan")."</h4>";
+
+// --- Apply connections ---
+$success = 0;
+$failed  = 0;
+$total   = 0;
+
+$pc = new PowerConnection();
 
 foreach($plan as $row){
-	if(isset($row['Error'])){ continue; }
+    if(
+        !isset($row['PDUID']) ||
+        !isset($row['Port'])  ||
+        !isset($row['DeviceID'])
+    ){
+        continue;
+    }
 
-	// 1) Read PDU chosen port to know ConnectorID/VoltageID constraints
-	$pduPorts = $pp->getPortList($row['PDUID']);
-	if(!isset($pduPorts[$row['Port']])){
-		$err[] = $row['Device']." – ".__("target PDU port no longer available");
-		continue;
-	}
-	$pduPortObj = $pduPorts[$row['Port']];
-	$needConnID = property_exists($pduPortObj,'ConnectorID') ? intval($pduPortObj->ConnectorID) : null;
-	$needVoltID = property_exists($pduPortObj,'VoltageID')   ? intval($pduPortObj->VoltageID)   : null;
+    $total++;
 
-	// 2) Pick a FREE device inlet compatible with PDU port
-	$devPorts = $dp->getPortList($row['DeviceID']);
-	$devInletObj = null;
-	foreach($devPorts as $n => $dport){
-		// only power inlets
-		if(property_exists($dport,'PortType') && stripos($dport->PortType,'power')===false) continue;
-		if(intval($dport->ConnectedDeviceID)!=0) continue;
+    $pc->PDUID        = intval($row['PDUID']);
+    $pc->PDUPosition  = intval($row['Port']);
+    $pc->DeviceID     = intval($row['DeviceID']);
 
-		// strict match if device exposes ConnectorID/VoltageID, else accept
-		$okConn = true; $okVolt = true;
-		if($needConnID && property_exists($dport,'ConnectorID') && $dport->ConnectorID){
-			$okConn = (intval($dport->ConnectorID) === $needConnID);
-		}
-		if($needVoltID && property_exists($dport,'VoltageID') && $dport->VoltageID){
-			$okVolt = (intval($dport->VoltageID) === $needVoltID);
-		}
-		if($okConn && $okVolt){ $devInletObj = $dport; break; }
-	}
-	if(!$devInletObj){
-		$err[] = $row['Device']." – ".__("no free compatible power inlet on device");
-		continue;
-	}
+    // Remove any existing connection before creating a new one (avoid duplicate)
+    $existing = new PowerConnection();
+    $existing->PDUID = $pc->PDUID;
+    $existing->PDUPosition = $pc->PDUPosition;
+    $existing->RemoveConnection();
 
-	// 3) Make the power connection (device inlet <-> selected PDU port)
-	if(!$pp->makeConnection($devInletObj, $pduPortObj)){
-		$err[] = $row['Device']." – ".__("failed to make power connection");
-		continue;
-	}
-
-	LogActions::Insert('Device', $row['DeviceID'], 'AutoLink', 'PDU', '', $row['PDUID']);
-	$ok++;
+    if($pc->CreateConnection()){
+        $success++;
+    } else {
+        $failed++;
+    }
 }
 
-if($err){
-	echo json_encode(["partial"=>true, "applied"=>$ok, "errors"=>$err]);
-} else {
-	echo json_encode(["success"=>true, "applied"=>$ok]);
+// --- Output summary ---
+echo '<div class="alert alert-success">'
+    .sprintf(__("✅ %d power connections successfully created."), $success)
+    .'</div>';
+
+if($failed > 0){
+    echo '<div class="alert alert-danger">'
+        .sprintf(__("⚠ %d connections failed."), $failed)
+        .'</div>';
 }
+
+if($success == 0 && $failed == 0){
+    echo '<div class="alert alert-info">'.__("No valid connections to apply.").'</div>';
+}
+
+// --- Final note ---
+echo "<p class='center'>"
+    .sprintf(__("Processed %d total entries."), $total)
+    ."</p>";
+
+// --- Cleanup temporary session ---
+unset($_SESSION["auto_plan_$cabinetid"]);
+
+?>
