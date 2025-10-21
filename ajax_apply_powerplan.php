@@ -15,7 +15,6 @@ require_once "facilities.inc.php";
 
 // --- Restore user context ---
 $person = People::Current();
-
 if(!$person || $person->UserID == ""){
     if(isset($_COOKIE['openDCIMUser'])){
         $person = new People();
@@ -23,7 +22,6 @@ if(!$person || $person->UserID == ""){
         $person->GetPersonByUserID();
     }
 }
-
 if(!$person || $person->UserID == ""){
     echo '<div class="alert alert-danger">'
         .__("Session expired or user not found. Please reload the page.")
@@ -62,49 +60,67 @@ if(empty($plan)){
     exit;
 }
 
-// -----------------------------------------------------------------------------
-// APPLY POWER CONNECTIONS
-// -----------------------------------------------------------------------------
 echo "<h4>".__("Applying Power Distribution Plan")."</h4>";
 
 $success = 0;
 $failed  = 0;
 $total   = 0;
 
+global $dbh;
+
 foreach($plan as $row){
-    if(
-        empty($row['PDUID']) ||
-        empty($row['Port'])  ||
-        empty($row['DeviceID'])
-    ){
+    if(empty($row['PDUID']) || empty($row['Port']) || empty($row['DeviceID'])){
         continue;
     }
 
     $total++;
+    $PDUID     = intval($row['PDUID']);
+    $portNum   = intval($row['Port']);
+    $deviceID  = intval($row['DeviceID']);
 
     // On détermine le numéro d’entrée sur le device (DeviceConnNumber)
-    // Ici, on suppose 1ère alim = 1, 2e alim = 2, etc.
     static $feedCount = [];
-    $devID = intval($row['DeviceID']);
-    if(!isset($feedCount[$devID])) $feedCount[$devID] = 1;
-    else $feedCount[$devID]++;
+    if(!isset($feedCount[$deviceID])) $feedCount[$deviceID] = 1;
+    else $feedCount[$deviceID]++;
 
     $conn = new PowerConnection();
-    $conn->PDUID            = intval($row['PDUID']);
-    $conn->PDUPosition      = intval($row['Port']);
-    $conn->DeviceID         = $devID;
-    $conn->DeviceConnNumber = $feedCount[$devID]; // important !
+    $conn->PDUID            = $PDUID;
+    $conn->PDUPosition      = $portNum;
+    $conn->DeviceID         = $deviceID;
+    $conn->DeviceConnNumber = $feedCount[$deviceID];
 
-    // Nettoyage éventuel avant création
+    // Supprimer ancienne liaison éventuelle
     $existing = new PowerConnection();
-    $existing->PDUID = $conn->PDUID;
-    $existing->PDUPosition = $conn->PDUPosition;
+    $existing->PDUID = $PDUID;
+    $existing->PDUPosition = $portNum;
     $existing->RemoveConnection();
 
+    // Crée la connexion (fac_PowerConnection)
     if($conn->CreateConnection()){
+        // --- Synchroniser fac_PowerPorts ---
+
+        // Récupérer port côté PDU
+        $pp = new PowerPorts();
+        $pduPorts = $pp->getPortList($PDUID);
+        if(isset($pduPorts[$portNum])){
+            $pduPort = $pduPorts[$portNum];
+            $pduPort->ConnectedDeviceID = $deviceID;
+            $pduPort->ConnectedPort = $feedCount[$deviceID];
+            $pduPort->UpdatePort();
+        }
+
+        // Récupérer port côté DEVICE
+        $devPorts = $pp->getPortList($deviceID);
+        if(isset($devPorts[$feedCount[$deviceID]])){
+            $devPort = $devPorts[$feedCount[$deviceID]];
+            $devPort->ConnectedDeviceID = $PDUID;
+            $devPort->ConnectedPort = $portNum;
+            $devPort->UpdatePort();
+        }
+
         $success++;
     } else {
-        error_log("❌ Failed to create connection for Device {$conn->DeviceID} Port {$conn->PDUPosition}");
+        error_log("❌ Failed to create connection for Device $deviceID Port $portNum");
         $failed++;
     }
 }
@@ -114,16 +130,14 @@ foreach($plan as $row){
 // -----------------------------------------------------------------------------
 if($success > 0){
     echo '<div class="alert alert-success">'
-        .sprintf(__("✅ %d power connections successfully created."), $success)
+        .sprintf(__("✅ %d power connections successfully created and synchronized."), $success)
         .'</div>';
 }
-
 if($failed > 0){
     echo '<div class="alert alert-danger">'
         .sprintf(__("⚠ %d connections failed."), $failed)
         .'</div>';
 }
-
 if($success == 0 && $failed == 0){
     echo '<div class="alert alert-info">'.__("No valid connections to apply.").'</div>';
 }
