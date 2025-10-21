@@ -31,7 +31,9 @@ if(!$person || $person->UserID == ""){
     exit;
 }
 
-// --- Retrieve CabinetID and plan data ---
+header('Content-Type: text/html; charset=utf-8');
+
+// --- Retrieve CabinetID ---
 $cabinetid = intval($_POST['cabinetid'] ?? 0);
 if($cabinetid <= 0){
     echo '<div class="alert alert-danger">'.__("Invalid cabinet ID.").'</div>';
@@ -53,55 +55,68 @@ if(!$person->SiteAdmin && !$person->CanWrite($cab->AssignedTo)){
     exit;
 }
 
-// --- Retrieve plan from session ---
+// --- Retrieve generated plan ---
 $plan = $_SESSION["auto_plan_$cabinetid"] ?? [];
-
 if(empty($plan)){
     echo '<div class="alert alert-warning">'.__("No power plan in memory. Please generate one first.").'</div>';
     exit;
 }
 
+// -----------------------------------------------------------------------------
+// APPLY POWER CONNECTIONS
+// -----------------------------------------------------------------------------
 echo "<h4>".__("Applying Power Distribution Plan")."</h4>";
 
-// --- Apply connections ---
 $success = 0;
 $failed  = 0;
 $total   = 0;
 
-$pc = new PowerConnection();
-
 foreach($plan as $row){
     if(
-        !isset($row['PDUID']) ||
-        !isset($row['Port'])  ||
-        !isset($row['DeviceID'])
+        empty($row['PDUID']) ||
+        empty($row['Port'])  ||
+        empty($row['DeviceID'])
     ){
         continue;
     }
 
     $total++;
 
-    $pc->PDUID        = intval($row['PDUID']);
-    $pc->PDUPosition  = intval($row['Port']);
-    $pc->DeviceID     = intval($row['DeviceID']);
+    // On détermine le numéro d’entrée sur le device (DeviceConnNumber)
+    // Ici, on suppose 1ère alim = 1, 2e alim = 2, etc.
+    static $feedCount = [];
+    $devID = intval($row['DeviceID']);
+    if(!isset($feedCount[$devID])) $feedCount[$devID] = 1;
+    else $feedCount[$devID]++;
 
-    // Remove any existing connection before creating a new one (avoid duplicate)
+    $conn = new PowerConnection();
+    $conn->PDUID            = intval($row['PDUID']);
+    $conn->PDUPosition      = intval($row['Port']);
+    $conn->DeviceID         = $devID;
+    $conn->DeviceConnNumber = $feedCount[$devID]; // important !
+
+    // Nettoyage éventuel avant création
     $existing = new PowerConnection();
-    $existing->PDUID = $pc->PDUID;
-    $existing->PDUPosition = $pc->PDUPosition;
+    $existing->PDUID = $conn->PDUID;
+    $existing->PDUPosition = $conn->PDUPosition;
     $existing->RemoveConnection();
 
-    if($pc->CreateConnection()){
+    if($conn->CreateConnection()){
         $success++;
     } else {
+        error_log("❌ Failed to create connection for Device {$conn->DeviceID} Port {$conn->PDUPosition}");
         $failed++;
     }
 }
 
-// --- Output summary ---
-echo '<div class="alert alert-success">'
-    .sprintf(__("✅ %d power connections successfully created."), $success)
-    .'</div>';
+// -----------------------------------------------------------------------------
+// RESULT OUTPUT
+// -----------------------------------------------------------------------------
+if($success > 0){
+    echo '<div class="alert alert-success">'
+        .sprintf(__("✅ %d power connections successfully created."), $success)
+        .'</div>';
+}
 
 if($failed > 0){
     echo '<div class="alert alert-danger">'
@@ -113,12 +128,11 @@ if($success == 0 && $failed == 0){
     echo '<div class="alert alert-info">'.__("No valid connections to apply.").'</div>';
 }
 
-// --- Final note ---
 echo "<p class='center'>"
     .sprintf(__("Processed %d total entries."), $total)
     ."</p>";
 
-// --- Cleanup temporary session ---
+// --- Cleanup session ---
 unset($_SESSION["auto_plan_$cabinetid"]);
 
 ?>
