@@ -6280,7 +6280,7 @@ msgid "The Automatic PDU Link Planner requires OpenDCIM version 25.01 or newer. 
 msgstr "Le planificateur automatique de liaisons PDU nécessite OpenDCIM version 25.01 ou plus récente. Veuillez mettre à jour votre installation pour accéder à cette fonctionnalité."
 
 msgid "Unable to determine connectors and phases for some PDU ports (ConnectorID and PhaseID are null)."
-msgstr "Impossible de déterminer les connecteurs et les
+msgstr "Impossible de déterminer les connecteurs et les phases de certains ports PDU (ConnectorID et PhaseID sont nuls)."
 
 msgid "Unable to determine connectors for some PDU ports (ConnectorID is null)."
 msgstr "Impossible de déterminer les connecteurs de certains ports PDU (ConnectorID est nul)."
