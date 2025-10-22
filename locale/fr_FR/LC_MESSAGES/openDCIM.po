@@ -6278,3 +6278,27 @@ msgstr "Fonctionnalité indisponible"
 
 msgid "The Automatic PDU Link Planner requires OpenDCIM version 25.01 or newer. Please update your installation to access this feature."
 msgstr "Le planificateur automatique de liaisons PDU nécessite OpenDCIM version 25.01 ou plus récente. Veuillez mettre à jour votre installation pour accéder à cette fonctionnalité."
+
+msgid "Unable to determine connectors and phases for some PDU ports (ConnectorID and PhaseID are null)."
+msgstr "Impossible de déterminer les connecteurs et les
+
+msgid "Unable to determine connectors for some PDU ports (ConnectorID is null)."
+msgstr "Impossible de déterminer les connecteurs de certains ports PDU (ConnectorID est nul)."
+
+msgid "Unable to determine phases for some PDU ports (PhaseID is null)."
+msgstr "Impossible de déterminer les phases de certains ports PDU (PhaseID est nul)."
+
+msgid "The planner will proceed with a simplified balanced mode without connector/phase distinction."
+msgstr "Le planificateur sera exécuté en mode équilibrage simple sans distinction de connecteur ou de phase."
+
+msgid "Do you want to continue?"
+msgstr "Voulez-vous continuer ?"
+
+msgid "Operation cancelled."
+msgstr "Opération annulée."
+
+msgid "⚠ No compatible outlet found for this device feed (connector %s)."
+msgstr "⚠ Aucune prise compatible trouvée pour cette alimentation de l'équipement (connecteur %s)."
+
+msgid "any"
+msgstr "n'importe lequel"
