@@ -62,7 +62,7 @@ class Config{
 				if(preg_match('/[m|w]Date/',$key)){
 					if($value!='now'){$value='blank';} // if someone puts a weird value in default it back to blank
 				}
-				$sql="update fac_Config set Value=\"".sanitize($value)."\" where Parameter=\"$key\";";
+				$sql="update fac_Config set Value=\"".sanitize($value,true,false)."\" where Parameter=\"$key\";";
 				if(!$dbh->query($sql)){
 					$info=$dbh->errorInfo();
 					error_log("UpdateConfig::PDO Error: {$info[2]} SQL=$sql");
