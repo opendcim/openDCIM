@@ -4,13 +4,13 @@
 
 DROP TABLE IF EXISTS fac_Cabinet;
 CREATE TABLE fac_Cabinet (
-  CabinetID int(11) NOT NULL AUTO_INCREMENT,
-  DataCenterID int(11) NOT NULL,
+  CabinetID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  DataCenterID int(10) UNSIGNED NOT NULL,
   Location varchar(20) NOT NULL,
   LocationSortable varchar(20) NOT NULL,
   AssignedTo int(11) NOT NULL,
-  ZoneID int(11) NOT NULL,
-  CabRowID int(11) NOT NULL,
+  ZoneID int(10) UNSIGNED NOT NULL,
+  CabRowID int(10) UNSIGNED NOT NULL,
   CabinetHeight int(11) NOT NULL,
   Model varchar(80) NOT NULL,
   Keylock varchar(30) NOT NULL,
@@ -33,10 +33,10 @@ CREATE TABLE fac_Cabinet (
 
 DROP TABLE IF EXISTS fac_CabRow;
 CREATE TABLE fac_CabRow (
-  CabRowID int(11) NOT NULL AUTO_INCREMENT,
+  CabRowID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Name varchar(120) NOT NULL,
-  DataCenterID int(11) NOT NULL,
-  ZoneID int(11) NOT NULL,
+  DataCenterID int(10) UNSIGNED NOT NULL,
+  ZoneID int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (CabRowID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -46,10 +46,10 @@ CREATE TABLE fac_CabRow (
 
 DROP TABLE IF EXISTS fac_Container;
 CREATE TABLE fac_Container (
-  ContainerID int(11) NOT NULL AUTO_INCREMENT,
+  ContainerID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Name varchar(120) NOT NULL,
   countryCode CHAR(2) NOT NULL,
-  ParentID int(11) NOT NULL DEFAULT '0',
+  ParentID int(10) UNSIGNED NOT NULL DEFAULT '0',
   DrawingFileName varchar(255) DEFAULT NULL,
   MapX int(11) NOT NULL,
   MapY int(11) NOT NULL,
@@ -62,8 +62,8 @@ CREATE TABLE fac_Container (
 
 DROP TABLE IF EXISTS fac_CabinetTags;
 CREATE TABLE fac_CabinetTags (
-  CabinetID int(11) NOT NULL,
-  TagID int(11) NOT NULL,
+  CabinetID int(10) UNSIGNED NOT NULL,
+  TagID int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (CabinetID,TagID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -73,7 +73,7 @@ CREATE TABLE fac_CabinetTags (
 
 DROP TABLE IF EXISTS fac_SensorReadings;
 CREATE TABLE fac_SensorReadings (
-  DeviceID int(11) NOT NULL,
+  DeviceID int(10) UNSIGNED NOT NULL,
   Temperature float NOT NULL,
   Humidity float NOT NULL,
   LastRead datetime NOT NULL,
@@ -87,8 +87,8 @@ CREATE TABLE fac_SensorReadings (
 
 DROP TABLE IF EXISTS fac_SensorTemplate;
 CREATE TABLE fac_SensorTemplate (
-	TemplateID INT(11) NOT NULL AUTO_INCREMENT,
-	ManufacturerID INT(11) NOT NULL,
+	TemplateID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	ManufacturerID int(10) UNSIGNED NOT NULL,
 	Model VARCHAR(80) NOT NULL,
 	TemperatureOID VARCHAR(256) NOT NULL,
 	HumidityOID VARCHAR(256) NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE fac_SensorTemplate (
 --
 DROP TABLE IF EXISTS fac_Slots;
 CREATE TABLE fac_Slots (
-	TemplateID INT(11) NOT NULL,
+	TemplateID int(10) UNSIGNED NOT NULL,
 	Position INT(11) NOT NULL,
 	BackSide TINYINT(1) NOT NULL,
 	X INT(11) NULL,
@@ -118,11 +118,11 @@ CREATE TABLE fac_Slots (
 --
 DROP TABLE IF EXISTS fac_TemplatePorts;
 CREATE TABLE IF NOT EXISTS fac_TemplatePorts (
-  TemplateID int(11) NOT NULL,
+  TemplateID int(10) UNSIGNED NOT NULL,
   PortNumber int(11) NOT NULL,
   Label varchar(40) NOT NULL,
-  MediaID int(11) NOT NULL DEFAULT '0',
-  ColorID int(11) NOT NULL DEFAULT '0',
+  MediaID int(10) UNSIGNED NOT NULL DEFAULT '0',
+  ColorID int(10) UNSIGNED NOT NULL DEFAULT '0',
   Notes varchar(80) NOT NULL,
   PRIMARY KEY (TemplateID,PortNumber),
   UNIQUE KEY LabeledPort (TemplateID,PortNumber,Label)
@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS fac_TemplatePorts (
 
 DROP TABLE IF EXISTS fac_TemplatePowerPorts;
 CREATE TABLE fac_TemplatePowerPorts (
-  TemplateID int(11) NOT NULL,
+  TemplateID int(10) UNSIGNED NOT NULL,
   PortNumber int(11) NOT NULL,
   Label varchar(40) NOT NULL,
   PortNotes varchar(80) NOT NULL,
@@ -148,8 +148,8 @@ CREATE TABLE fac_TemplatePowerPorts (
 
 DROP TABLE IF EXISTS fac_CDUTemplate;
 CREATE TABLE fac_CDUTemplate (
-  TemplateID int(11) NOT NULL AUTO_INCREMENT,
-  ManufacturerID int(11) NOT NULL,
+  TemplateID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  ManufacturerID int(10) UNSIGNED NOT NULL,
   Model varchar(80) NOT NULL,
   Managed int(1) NOT NULL,
   ATS int(1) NOT NULL,
@@ -181,7 +181,7 @@ CREATE TABLE fac_CDUTemplate (
 
 DROP TABLE IF EXISTS fac_ColorCoding;
 CREATE TABLE fac_ColorCoding (
-  ColorID INT(11) NOT NULL AUTO_INCREMENT,
+  ColorID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Name VARCHAR(20) NOT NULL,
   DefaultNote VARCHAR(40),
   PRIMARY KEY(ColorID),
@@ -204,7 +204,7 @@ CREATE TABLE fac_DataCache (
 
 DROP TABLE IF EXISTS fac_DataCenter;
 CREATE TABLE fac_DataCenter (
-  DataCenterID int(11) NOT NULL AUTO_INCREMENT,
+  DataCenterID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Name varchar(255) NOT NULL,
   SquareFootage int(11) NOT NULL,
   DeliveryAddress varchar(255) NOT NULL,
@@ -213,7 +213,7 @@ CREATE TABLE fac_DataCenter (
   MaxkW int(11) NOT NULL,
   DrawingFileName varchar(255) NOT NULL,
   EntryLogging tinyint(1) NOT NULL,
-  ContainerID INT(11) NOT NULL,
+  ContainerID int(10) UNSIGNED NOT NULL,
   MapX int(11) NOT NULL,
   MapY int(11) NOT NULL,
   U1Position varchar(7) NOT NULL DEFAULT "Default",
@@ -226,7 +226,7 @@ CREATE TABLE fac_DataCenter (
 
 DROP TABLE IF EXISTS fac_Department;
 CREATE TABLE fac_Department (
-  DeptID int(11) NOT NULL AUTO_INCREMENT,
+  DeptID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Name varchar(255) NOT NULL,
   ExecSponsor varchar(80) NOT NULL,
   SDM varchar(80) NOT NULL,
@@ -242,8 +242,8 @@ CREATE TABLE fac_Department (
 
 DROP TABLE IF EXISTS fac_DeptContacts;
 CREATE TABLE fac_DeptContacts (
-  DeptID int(11) NOT NULL,
-  ContactID int(11) NOT NULL
+  DeptID int(10) UNSIGNED NOT NULL,
+  ContactID int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -265,7 +265,7 @@ CREATE TABLE fac_Decommission (
 
 DROP TABLE IF EXISTS fac_Device;
 CREATE TABLE fac_Device (
-  DeviceID int(11) NOT NULL AUTO_INCREMENT,
+  DeviceID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Label varchar(80) NOT NULL,
   SerialNo varchar(40) NOT NULL,
   AssetTag varchar(20) NOT NULL,
@@ -284,15 +284,15 @@ CREATE TABLE fac_Device (
   APIPort smallint(4) NOT NULL,
   ProxMoxRealm varchar(80) NOT NULL,
   Owner int(11) NOT NULL,
-  EscalationTimeID int(11) NOT NULL,
-  EscalationID int(11) NOT NULL,
+  EscalationTimeID int(10) UNSIGNED NOT NULL,
+  EscalationID int(10) UNSIGNED NOT NULL,
   PrimaryContact int(11) NOT NULL,
   Cabinet int(11) NOT NULL,
   Position int(11) NOT NULL,
   Height int(11) NOT NULL,
   Ports int(11) NOT NULL,
   FirstPortNum int(11) NOT NULL,
-  TemplateID int(11) NOT NULL,
+  TemplateID int(10) UNSIGNED NOT NULL,
   NominalWatts int(11) NOT NULL,
   PowerSupplyCount int(11) NOT NULL,
   DeviceType varchar(23) NOT NULL DEFAULT "Server",
@@ -322,7 +322,7 @@ CREATE TABLE fac_Device (
 
 DROP TABLE IF EXISTS fac_DeviceCache;
 CREATE TABLE fac_DeviceCache (
-  DeviceID int(11) NOT NULL,
+  DeviceID int(10) UNSIGNED NOT NULL,
   Front mediumtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   Rear mediumtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   UNIQUE KEY DeviceID (DeviceID)
@@ -334,8 +334,8 @@ CREATE TABLE fac_DeviceCache (
 
 DROP TABLE IF EXISTS fac_DeviceTags;
 CREATE TABLE fac_DeviceTags (
-  DeviceID int(11) NOT NULL,
-  TagID int(11) NOT NULL,
+  DeviceID int(10) UNSIGNED NOT NULL,
+  TagID int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (DeviceID,TagID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -345,8 +345,8 @@ CREATE TABLE fac_DeviceTags (
 
 DROP TABLE IF EXISTS fac_DeviceTemplate;
 CREATE TABLE fac_DeviceTemplate (
-  TemplateID int(11) NOT NULL AUTO_INCREMENT,
-  ManufacturerID int(11) NOT NULL,
+  TemplateID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  ManufacturerID int(10) UNSIGNED NOT NULL,
   Model varchar(80) NOT NULL,
   Height int(11) NOT NULL,
   Weight int(11) NOT NULL,
@@ -360,7 +360,7 @@ CREATE TABLE fac_DeviceTemplate (
   ChassisSlots SMALLINT(6) NOT NULL,
   RearChassisSlots SMALLINT(6) NOT NULL,
   SNMPVersion VARCHAR(2) NOT NULL DEFAULT '2c',
-  GlobalID int(11) NOT NULL DEFAULT 0,
+  GlobalID int(10) UNSIGNED NOT NULL DEFAULT 0,
   ShareToRepo tinyint(1) NOT NULL DEFAULT 0,
   KeepLocal tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (TemplateID),
@@ -373,7 +373,7 @@ CREATE TABLE fac_DeviceTemplate (
 
 DROP TABLE IF EXISTS fac_EscalationTimes;
 CREATE TABLE fac_EscalationTimes (
-	EscalationTimeID int(11) NOT NULL AUTO_INCREMENT,
+	EscalationTimeID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 	TimePeriod varchar(80) NOT NULL,
 	PRIMARY KEY (EscalationTimeID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -384,7 +384,7 @@ CREATE TABLE fac_EscalationTimes (
 
 DROP TABLE IF EXISTS fac_Escalations;
 CREATE TABLE fac_Escalations (
-	EscalationID int(11) NOT NULL AUTO_INCREMENT,
+	EscalationID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 	Details varchar(80) NULL,
 	PRIMARY KEY (EscalationID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -398,7 +398,7 @@ CREATE TABLE `fac_GenericLog` (
   UserID varchar(80) NOT NULL,
   Class varchar(40) NOT NULL,
   ObjectID varchar(80) NOT NULL,
-  ChildID int(11) DEFAULT NULL,
+  ChildID int(10) UNSIGNED DEFAULT NULL,
   Action varchar(40) NOT NULL,
   Property varchar(40) NOT NULL,
   OldVal varchar(255) NOT NULL,
@@ -414,9 +414,9 @@ CREATE TABLE `fac_GenericLog` (
 
 DROP TABLE IF EXISTS fac_Manufacturer;
 CREATE TABLE fac_Manufacturer (
-  ManufacturerID int(11) NOT NULL AUTO_INCREMENT,
+  ManufacturerID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Name varchar(80) NOT NULL,
-  GlobalID int(11) NOT NULL DEFAULT 0,
+  GlobalID int(10) UNSIGNED NOT NULL DEFAULT 0,
   SubscribeToUpdates int(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (ManufacturerID),
   UNIQUE KEY Name (Name)
@@ -428,15 +428,15 @@ CREATE TABLE fac_Manufacturer (
 
 DROP TABLE IF EXISTS fac_Ports;
 CREATE TABLE fac_Ports (
-  DeviceID int(11) NOT NULL,
+  DeviceID int(10) UNSIGNED NOT NULL,
   PortNumber int(11) NOT NULL,
   Label varchar(40) NOT NULL,
-  ConnectorID int(11) DEFAULT NULL,
-  ProtocolID int(11) DEFAULT NULL,
-  RateID int(11) DEFAULT NULL,
-  MediaID int(11) NOT NULL DEFAULT '0',
-  ColorID int(11) NOT NULL DEFAULT '0',
-  ConnectedDeviceID int(11) DEFAULT NULL,
+  ConnectorID int(10) UNSIGNED DEFAULT NULL,
+  ProtocolID int(10) UNSIGNED DEFAULT NULL,
+  RateID int(10) UNSIGNED DEFAULT NULL,
+  MediaID int(10) UNSIGNED NOT NULL DEFAULT '0',
+  ColorID int(10) UNSIGNED NOT NULL DEFAULT '0',
+  ConnectedDeviceID int(10) UNSIGNED DEFAULT NULL,
   ConnectedPort int(11) DEFAULT NULL,
   Notes varchar(80) NOT NULL,
   PRIMARY KEY (DeviceID,PortNumber),
@@ -451,9 +451,9 @@ CREATE TABLE fac_Ports (
 
 DROP TABLE IF EXISTS fac_MediaTypes;
 CREATE TABLE IF NOT EXISTS fac_MediaTypes (
-  MediaID int(11) NOT NULL AUTO_INCREMENT,
+  MediaID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   MediaType varchar(40) NOT NULL,
-  ColorID INT(11) NOT NULL,
+  ColorID int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (mediaid),
   UNIQUE KEY mediatype (mediatype)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
@@ -464,7 +464,7 @@ CREATE TABLE IF NOT EXISTS fac_MediaTypes (
 
 DROP TABLE IF EXISTS fac_MediaConnectors;
 CREATE TABLE IF NOT EXISTS fac_MediaConnectors (
-  ConnectorID int(11) NOT NULL AUTO_INCREMENT,
+  ConnectorID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   ConnectorType varchar(40) NOT NULL,
   PRIMARY KEY (ConnectorIDid),
   UNIQUE KEY connectortype (ConnectorType)
@@ -476,7 +476,7 @@ CREATE TABLE IF NOT EXISTS fac_MediaConnectors (
 
 DROP TABLE IF EXISTS fac_MediaProtocols;
 CREATE TABLE IF NOT EXISTS fac_MediaProtocols (
-  ProtocolID int(11) NOT NULL AUTO_INCREMENT,
+  ProtocolID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   ProtocolName varchar(40) NOT NULL,
   PRIMARY KEY (ProtocolID),
   UNIQUE KEY protocolname (ProtocolName)
@@ -488,7 +488,7 @@ CREATE TABLE IF NOT EXISTS fac_MediaProtocols (
 
 DROP TABLE IF EXISTS fac_MediaDataRates;
 CREATE TABLE IF NOT EXISTS fac_MediaDataRates (
-  RateID int(11) NOT NULL AUTO_INCREMENT,
+  RateID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   RateText varchar(40) NOT NULL,
   PRIMARY KEY (RateID),
   UNIQUE KEY ratetext (RateText)
@@ -500,7 +500,7 @@ CREATE TABLE IF NOT EXISTS fac_MediaDataRates (
 
 DROP TABLE IF EXISTS fac_PanelSchedule;
 CREATE TABLE fac_PanelSchedule (
-  PanelID int(11) NOT NULL AUTO_INCREMENT,
+  PanelID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   PolePosition int(11) NOT NULL,
   NumPoles int(11) NOT NULL,
   Label varchar(80) NOT NULL,
@@ -513,7 +513,7 @@ CREATE TABLE fac_PanelSchedule (
 
 DROP TABLE IF EXISTS fac_PDUStats;
 create table fac_PDUStats(
-  PDUID int(11) NOT NULL,
+  PDUID int(10) UNSIGNED NOT NULL,
   Wattage int(11) NOT NULL,
   LastRead datetime DEFAULT NULL,
   PRIMARY KEY (PDUID)
@@ -525,12 +525,13 @@ create table fac_PDUStats(
 
 DROP TABLE IF EXISTS fac_People;
 CREATE TABLE fac_People (
-  PersonID int(11) NOT NULL AUTO_INCREMENT,
+  PersonID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   UserID varchar(255) NOT NULL,
   LastName varchar(40) NOT NULL,
   FirstName varchar(40) NOT NULL,
   Phone1 varchar(20) NOT NULL,
   Phone2 varchar(20) NOT NULL,
+  Phone3 varchar(20) NOT NULL,
   countryCode char(2) NOT NULL,
   Email varchar(80) NOT NULL,
   APIKey varchar(80) NOT NULL,
@@ -543,6 +544,7 @@ CREATE TABLE fac_People (
   RackAdmin tinyint(1) NOT NULL,
   BulkOperations tinyint(1) NOT NULL,
   SiteAdmin tinyint(1) NOT NULL,
+  APIToken VARCHAR(80) NOT NULL,
   Disabled tinyint(1) NOT NULL,
   LastActivity DATETIME NOT NULL,
   ExpirationDate DATE NOT NULL,
@@ -556,9 +558,9 @@ CREATE TABLE fac_People (
 
 DROP TABLE IF EXISTS fac_PowerConnection;
 CREATE TABLE fac_PowerConnection (
-  PDUID int(11) NOT NULL,
+  PDUID int(10) UNSIGNED NOT NULL,
   PDUPosition VARCHAR(11) NOT NULL,
-  DeviceID int(11) NOT NULL,
+  DeviceID int(10) UNSIGNED NOT NULL,
   DeviceConnNumber int(11) NOT NULL,
   UNIQUE KEY PDUID (PDUID,PDUPosition),
   UNIQUE KEY DeviceID (DeviceID,DeviceConnNumber)
@@ -570,7 +572,7 @@ CREATE TABLE fac_PowerConnection (
 
 DROP TABLE IF EXISTS fac_PowerConnectors;
 CREATE TABLE fac_PowerConnectors (
-  ConnectorID int(11) NOT NULL AUTO_INCREMENT,
+  ConnectorID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   ConnectorName varchar(40) NOT NULL,
   PRIMARY KEY ConnectorID (ConnectorID),
   UNIQUE KEY ConnectorName (ConnectorName)
@@ -585,7 +587,7 @@ INSERT INTO fac_PowerConnectors set ConnectorName='C19';
 
 DROP TABLE IF EXISTS fac_PowerPhases;
 CREATE TABLE fac_PowerPhases (
-  PhaseID int(11) NOT NULL AUTO_INCREMENT,
+  PhaseID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   PhaseName varchar(40) NOT NULL,
   PRIMARY KEY PhaseID (PhaseID),
   UNIQUE KEY PhaseName (PhaseName)
@@ -601,7 +603,7 @@ INSERT INTO fac_PowerPhases set PhaseName='C';
 
 DROP TABLE IF EXISTS fac_PowerVoltages;
 CREATE TABLE fac_PowerVoltages (
-  VoltageID int(11) NOT NULL AUTO_INCREMENT,
+  VoltageID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   VoltageName varchar(40) NOT NULL,
   PRIMARY KEY VoltageID (VoltageID),
   UNIQUE KEY VoltageName (VoltageName)
@@ -619,14 +621,14 @@ INSERT INTO fac_PowerVoltages set VoltageName='48DC';
 
 DROP TABLE IF EXISTS fac_PowerDistribution;
 CREATE TABLE fac_PowerDistribution (
-  PDUID int(11) NOT NULL AUTO_INCREMENT,
+  PDUID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Label varchar(40) NOT NULL,
-  CabinetID int(11) NOT NULL,
-  TemplateID int(11) NOT NULL,
+  CabinetID int(10) UNSIGNED NOT NULL,
+  TemplateID int(10) UNSIGNED NOT NULL,
   IPAddress varchar(254) NOT NULL,
   SNMPCommunity varchar(50) NOT NULL,
   FirmwareVersion varchar(40) NOT NULL,
-  PanelID int(11) NOT NULL,
+  PanelID int(10) UNSIGNED NOT NULL,
   BreakerSize int(11) NOT NULL,
   PanelPole varchar(20) NOT NULL,
   InputAmperage int(11) NOT NULL,
@@ -644,17 +646,17 @@ CREATE TABLE fac_PowerDistribution (
 
 DROP TABLE IF EXISTS fac_PowerPanel;
 CREATE TABLE fac_PowerPanel (
-  PanelID int(11) NOT NULL AUTO_INCREMENT,
+  PanelID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   PanelLabel varchar(80) NOT NULL,
   NumberOfPoles int(11) NOT NULL,
   MainBreakerSize int(11) NOT NULL,
   PanelVoltage int(11) NOT NULL,
   NumberScheme varchar(10) NOT NULL DEFAULT "Sequential",
-  ParentPanelID int(11) NOT NULL,
+  ParentPanelID int(10) UNSIGNED NOT NULL,
   ParentBreakerName varchar(80) NOT NULL,
   PanelIPAddress varchar(30) NOT NULL,
-  TemplateID int(11) NOT NULL,
-  MapDataCenterID INT(11) NOT NULL,
+  TemplateID int(10) UNSIGNED NOT NULL,
+  MapDataCenterID int(10) UNSIGNED NOT NULL,
   MapX1 INT(11) NOT NULL,
   MapX2 INT(11) NOT NULL,
   MapY1 INT(11) NOT NULL,
@@ -668,13 +670,13 @@ CREATE TABLE fac_PowerPanel (
 
 DROP TABLE IF EXISTS fac_PowerPorts;
 CREATE TABLE fac_PowerPorts (
-  DeviceID int(11) NOT NULL,
+  DeviceID int(10) UNSIGNED NOT NULL,
   PortNumber int(11) NOT NULL,
   Label varchar(40) NOT NULL,
-  ConnectorID int(11) DEFAULT NULL,
-  PhaseID int(11) DEFAULT NULL,
-  VoltageID int(11) DEFAULT NULL,
-  ConnectedDeviceID int(11) DEFAULT NULL,
+  ConnectorID int(10) UNSIGNED DEFAULT NULL,
+  PhaseID int(10) UNSIGNED DEFAULT NULL,
+  VoltageID int(10) UNSIGNED DEFAULT NULL,
+  ConnectedDeviceID int(10) UNSIGNED DEFAULT NULL,
   ConnectedPort int(11) DEFAULT NULL,
   Notes varchar(80) NOT NULL,
   PRIMARY KEY (DeviceID,PortNumber),
@@ -689,8 +691,8 @@ CREATE TABLE fac_PowerPorts (
 
 DROP TABLE IF EXISTS fac_RackRequest;
 CREATE TABLE fac_RackRequest (
-  RequestID int(11) NOT NULL AUTO_INCREMENT,
-  RequestorID int(11) NOT NULL,
+  RequestID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  RequestorID int(10) UNSIGNED NOT NULL,
   RequestTime datetime NOT NULL,
   CompleteTime datetime NOT NULL,
   Label varchar(40) NOT NULL,
@@ -720,7 +722,7 @@ CREATE TABLE fac_RackRequest (
 
 DROP TABLE IF EXISTS fac_Tags;
 CREATE TABLE fac_Tags (
-  TagID int(11) NOT NULL AUTO_INCREMENT,
+  TagID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Name varchar(128) NOT NULL,
   PRIMARY KEY (`TagID`),
   UNIQUE KEY `Name` (`Name`)
@@ -735,10 +737,10 @@ INSERT INTO fac_Tags VALUES (NULL , 'NoReport');
 
 DROP TABLE IF EXISTS fac_VMInventory;
 CREATE TABLE fac_VMInventory (
-  VMIndex int(11) NOT NULL AUTO_INCREMENT,
-  DeviceID int(11) NOT NULL,
+  VMIndex int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  DeviceID int(10) UNSIGNED NOT NULL,
   LastUpdated datetime NOT NULL,
-  vmID int(11) NOT NULL,
+  vmID int(10) UNSIGNED NOT NULL,
   vmName varchar(80) NOT NULL,
   vmState varchar(80) NOT NULL,
   Owner int(11) NOT NULL,
@@ -754,8 +756,8 @@ CREATE TABLE fac_VMInventory (
 
 DROP TABLE IF EXISTS fac_Zone;
 CREATE TABLE fac_Zone (
-  ZoneID int(11) NOT NULL AUTO_INCREMENT,
-  DataCenterID int(11) NOT NULL,
+  ZoneID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  DataCenterID int(10) UNSIGNED NOT NULL,
   Description varchar(120) NOT NULL,
   MapX1 int(11) NOT NULL,
   MapY1 int(11) NOT NULL,
@@ -771,7 +773,7 @@ CREATE TABLE fac_Zone (
 --
 DROP TABLE IF EXISTS fac_SupplyBin;
 CREATE TABLE fac_SupplyBin (
-  BinID int(11) NOT NULL AUTO_INCREMENT,
+  BinID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Location varchar(40) NOT NULL,
   PRIMARY KEY (BinID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -781,7 +783,7 @@ CREATE TABLE fac_SupplyBin (
 --
 DROP TABLE IF EXISTS fac_Supplies;
 CREATE TABLE fac_Supplies (
-  SupplyID int(11) NOT NULL AUTO_INCREMENT,
+  SupplyID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   PartNum varchar(40) NOT NULL,
   PartName varchar(80) NOT NULL,
   MinQty int(11) NOT NULL,
@@ -794,8 +796,8 @@ CREATE TABLE fac_Supplies (
 --
 DROP TABLE IF EXISTS fac_BinContents;
 CREATE TABLE fac_BinContents (
-  BinID int(11) NOT NULL,
-  SupplyID int(11) NOT NULL,
+  BinID int(10) UNSIGNED NOT NULL,
+  SupplyID int(10) UNSIGNED NOT NULL,
   Count int(11) NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -804,8 +806,8 @@ CREATE TABLE fac_BinContents (
 --
 DROP TABLE IF EXISTS fac_BinAudits;
 CREATE TABLE fac_BinAudits (
-  BinID int(11) NOT NULL,
-  UserID int(11) NOT NULL,
+  BinID int(10) UNSIGNED NOT NULL,
+  UserID int(10) UNSIGNED NOT NULL,
   AuditStamp datetime NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -882,7 +884,7 @@ INSERT INTO fac_CDUToolTip VALUES(NULL, 'NumOutlets', 'Used/Total Connections', 
 
 DROP TABLE IF EXISTS fac_Config;
 CREATE TABLE fac_Config (
- Parameter varchar(40) NOT NULL,
+ Parameter varchar(40) NOT NULL PRIMARY KEY,
  Value text NOT NULL,
  UnitOfMeasure varchar(40) NOT NULL,
  ValType varchar(40) NOT NULL,
@@ -890,7 +892,7 @@ CREATE TABLE fac_Config (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO fac_Config VALUES
-	('Version','23.03','','',''),
+	('Version','23.04','','',''),
 	('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),
 	('ClassList','ITS, Internal, Customer','List','string','ITS, Internal, Customer'),
 	('SpaceRed','80','percentage','float','80'),
@@ -1042,7 +1044,7 @@ INSERT INTO fac_Config VALUES
 --
 DROP TABLE IF EXISTS fac_DeviceCustomAttribute;
 CREATE TABLE fac_DeviceCustomAttribute(
-  AttributeID int(11) NOT NULL AUTO_INCREMENT,
+  AttributeID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Label varchar(80) NOT NULL,
   AttributeType varchar(8) NOT NULL DEFAULT "string",
   Required tinyint(1) NOT NULL DEFAULT 0,
@@ -1057,8 +1059,8 @@ CREATE TABLE fac_DeviceCustomAttribute(
 --
 DROP TABLE IF EXISTS fac_DeviceTemplateCustomValue;
 CREATE TABLE fac_DeviceTemplateCustomValue (
-  TemplateID int(11) NOT NULL,
-  AttributeID int(11) NOT NULL,
+  TemplateID int(10) UNSIGNED NOT NULL,
+  AttributeID int(10) UNSIGNED NOT NULL,
   Required tinyint(1) NOT NULL DEFAULT 0,
   Value TEXT(65000),
   PRIMARY KEY (TemplateID, AttributeID)
@@ -1069,8 +1071,8 @@ CREATE TABLE fac_DeviceTemplateCustomValue (
 --
 DROP TABLE IF EXISTS fac_DeviceCustomValue;
 CREATE TABLE fac_DeviceCustomValue (
-  DeviceID int(11) NOT NULL,
-  AttributeID int(11) NOT NULL,
+  DeviceID int(10) UNSIGNED NOT NULL,
+  AttributeID int(10) UNSIGNED NOT NULL,
   Value TEXT(65000),
   PRIMARY KEY (DeviceID, AttributeID)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1092,7 +1094,7 @@ CREATE TABLE IF NOT EXISTS fac_Jobs (
 
 DROP TABLE IF EXISTS fac_Projects;
 CREATE TABLE fac_Projects (
-  ProjectID int(11) NOT NULL AUTO_INCREMENT,
+  ProjectID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   ProjectName varchar(80) NOT NULL,
   ProjectSponsor varchar(80) NOT NULL,
   ProjectStartDate date NOT NULL,
@@ -1104,9 +1106,9 @@ CREATE TABLE fac_Projects (
 
 DROP TABLE IF EXISTS fac_ProjectMembership;
 CREATE TABLE fac_ProjectMembership (
-  ProjectID int(11) NOT NULL,
+  ProjectID int(10) UNSIGNED NOT NULL,
   MemberType varchar(7) NOT NULL DEFAULT 'Device',
-  MemberID int(11) NOT NULL,
+  MemberID int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (`ProjectID`, `MemberType`, `MemberID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1116,7 +1118,7 @@ CREATE TABLE fac_ProjectMembership (
 --
 
 CREATE TABLE fac_Disposition (
-DispositionID INT(11) NOT NULL AUTO_INCREMENT,
+DispositionID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 Name VARCHAR(80) NOT NULL,
 Description VARCHAR(255) NOT NULL,
 ReferenceNumber VARCHAR(80) NOT NULL,
@@ -1125,8 +1127,8 @@ PRIMARY KEY (DispositionID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 CREATE TABLE fac_DispositionMembership (
-DispositionID INT(11) NOT NULL,
-DeviceID INT(11) NOT NULL,
+DispositionID int(10) UNSIGNED NOT NULL,
+DeviceID int(10) UNSIGNED NOT NULL,
 DispositionDate DATE NOT NULL,
 DisposedBy VARCHAR(80) NOT NULL,
 PRIMARY KEY (DeviceID)
@@ -1140,7 +1142,7 @@ INSERT INTO fac_Disposition VALUES ( 2, 'Returned to Customer', 'Item has been r
 --
 
 CREATE TABLE fac_DeviceStatus (
-  StatusID INT(11) NOT NULL AUTO_INCREMENT,
+  StatusID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Status varchar(40) NOT NULL,
   ColorCode VARCHAR(7) NOT NULL,
   PRIMARY KEY(StatusID)

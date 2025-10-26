@@ -8,7 +8,7 @@
 
 DROP TABLE IF EXISTS fac_MediaConnectors;
 CREATE TABLE IF NOT EXISTS fac_MediaConnectors (
-  ConnectorID int(11) NOT NULL AUTO_INCREMENT,
+  ConnectorID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   ConnectorType varchar(40) NOT NULL,
   PRIMARY KEY (ConnectorID),
   UNIQUE KEY connectortype (ConnectorType)
@@ -23,7 +23,7 @@ INSERT INTO fac_MediaConnectors set ConnectorType='CAT6';
 
 DROP TABLE IF EXISTS fac_MediaProtocols;
 CREATE TABLE IF NOT EXISTS fac_MediaProtocols (
-  ProtocolID int(11) NOT NULL AUTO_INCREMENT,
+  ProtocolID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   ProtocolName varchar(40) NOT NULL,
   PRIMARY KEY (ProtocolID),
   UNIQUE KEY protocolname (ProtocolName)
@@ -37,7 +37,7 @@ INSERT INTO fac_MediaProtocols set ProtocolName='Ethernet';
 
 DROP TABLE IF EXISTS fac_MediaDataRates;
 CREATE TABLE IF NOT EXISTS fac_MediaDataRates (
-  RateID int(11) NOT NULL AUTO_INCREMENT,
+  RateID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   RateText varchar(40) NOT NULL,
   PRIMARY KEY (RateID),
   UNIQUE KEY ratetext (RateText)
@@ -56,7 +56,7 @@ ALTER TABLE fac_Ports ADD COLUMN RateID int(11) DEFAULT NULL AFTER ProtocolID;
 
 DROP TABLE IF EXISTS fac_PowerConnectors;
 CREATE TABLE fac_PowerConnectors (
-  ConnectorID int(11) NOT NULL AUTO_INCREMENT,
+  ConnectorID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   ConnectorName varchar(40) NOT NULL,
   PRIMARY KEY ConnectorID (ConnectorID),
   UNIQUE KEY ConnectorName (ConnectorName)
@@ -71,7 +71,7 @@ INSERT INTO fac_PowerConnectors set ConnectorName='C19';
 
 DROP TABLE IF EXISTS fac_PowerPhases;
 CREATE TABLE fac_PowerPhases (
-  PhaseID int(11) NOT NULL AUTO_INCREMENT,
+  PhaseID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   PhaseName varchar(40) NOT NULL,
   PRIMARY KEY PhaseID (PhaseID),
   UNIQUE KEY PhaseName (PhaseName)
@@ -87,7 +87,7 @@ INSERT INTO fac_PowerPhases set PhaseName='C';
 
 DROP TABLE IF EXISTS fac_PowerVoltages;
 CREATE TABLE fac_PowerVoltages (
-  VoltageID int(11) NOT NULL AUTO_INCREMENT,
+  VoltageID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   VoltageName varchar(40) NOT NULL,
   PRIMARY KEY VoltageID (VoltageID),
   UNIQUE KEY VoltageName (VoltageName)
