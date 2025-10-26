@@ -42,13 +42,16 @@
 		through nested groups for us.
 	*/
 	function isUserInLDAPGroup(&$config, &$ldapConn, $groupDN, $ldapUser) {
-		if($config->ParameterArray['LDAPBaseSearch'] == ""){
-			$query="(&(sAMAccountName=$ldapUser)(memberOf:1.2.840.113556.1.4.1941:=$groupDN))";
-			$ldapSearch=ldap_search($ldapConn,$config->ParameterArray['LDAPBaseDN'],$query,array("dn"));
-		}else{
-			$query=str_replace("%userid%",$ldapUser,html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
-			$ldapSearch=ldap_read($ldapConn,$groupDN,$query,array("dn"));
+		if ($config->ParameterArray['LDAPBaseSearch'] == "") {
+			$query = "(&(sAMAccountName=$ldapUser)$groupDN)";
+			$cmd='ldap_search';
+			$base=$config->ParameterArray['LDAPBaseDN'];
+		} else {
+			$query = str_replace("%userid%", $ldapUser, html_entity_decode($config->ParameterArray['LDAPBaseSearch']));
+			$cmd='ldap_read';
+			$base=$groupDN;
 		}
+		$ldapSearch = $cmd($ldapConn, $base, $query, array("dn"));
 		$ldapResults=ldap_get_entries($ldapConn, $ldapSearch);
 		// user should only be returned once IF they're a member of the group
 		if ($ldapResults["count"] == 1) {
