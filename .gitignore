@@ -14,8 +14,9 @@ locale/*/LC_MESSAGES/openDCIM.po*
 #ignore pictures
 pictures/
 drawings/
-/composer.lock
 assets/
+vendor/
+/composer.lock
 
 #ignore symlinks
 scripts/jquery-ui.min.js
