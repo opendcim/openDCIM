@@ -289,14 +289,14 @@ function get_base_url() {
 		$errors++;
 	}
 
-	$url = get_base_url().'images%2Fallowencodedslashes.jpg';
-	$array = get_headers($url);
-	if(strpos($array[0],"404")){
-		$tests['EncodedSlashes']['state']="warning";
-		$tests['EncodedSlashes']['message']='Apache does not appear to be rewriting URLs correctly. Check your AllowEncodedSlashes directive and change to "AllowEncodedSlashes On"<br><br><b>READ THE FAQ</b> <a href="https://github.com/opendcim/openDCIM/wiki/FAQ#getting-404-trying-to-access-some-linksimages" target="_blank">https://github.com/opendcim/openDCIM/wiki/FAQ#getting-404-trying-to-access-some-linksimages</a>';
-	}else{
-		$tests['EncodedSlashes']['state']="good";
-	}
+	// $url = get_base_url().'images%2Fallowencodedslashes.jpg';
+	// $array = get_headers($url);
+	// if(strpos($array[0],"404")){
+	// 	$tests['EncodedSlashes']['state']="warning";
+	// 	$tests['EncodedSlashes']['message']='Apache does not appear to be rewriting URLs correctly. Check your AllowEncodedSlashes directive and change to "AllowEncodedSlashes On"<br><br><b>READ THE FAQ</b> <a href="https://github.com/opendcim/openDCIM/wiki/FAQ#getting-404-trying-to-access-some-linksimages" target="_blank">https://github.com/opendcim/openDCIM/wiki/FAQ#getting-404-trying-to-access-some-linksimages</a>';
+	// }else{
+	// 	$tests['EncodedSlashes']['state']="good";
+	// }
 
 
 
