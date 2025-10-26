@@ -92,12 +92,14 @@ textarea {white-space: pre;word-wrap: break-word;}
 
 /*  Header/logo */
 #header{
+	color: white;
 	padding:5px 0;
 	background:<?php echo $config->ParameterArray['HeaderColor']; ?> url("../<?php echo $config->ParameterArray['PDFLogoFile']; ?>") no-repeat left center;
+	background-position: 20px center;
 	height:66px;
 	position: relative;
 }
-#header > span {color: white;display: block;margin-top: 5px;text-align: center;
+#header > span {display: block;margin-top: 5px;text-align: center;
 	text-shadow: 1px 1px 0 #063, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
 }
 #header1 {font-size: xx-large;}
