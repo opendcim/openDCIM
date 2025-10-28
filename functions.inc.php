@@ -43,3 +43,19 @@ function ArraySearchRecursive($Needle, $Haystack, $NeedleKey = "", $Strict = fal
     }
     return false;
 }
+
+/**
+ * temporary logging function
+ *
+ * @param  mixed $content
+ * @return void
+ */
+function save_log($content) {
+    $logfile = '/var/www/html/dcim2/assets/reports/debug.log';
+    $timestamp = date('Y-m-d H:i:s');
+    if (is_array($content) || is_object($content)) {
+        $content = json_encode($content, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    }
+    $logentry = "[$timestamp] $content" . PHP_EOL;
+    file_put_contents($logfile, $logentry, FILE_APPEND | LOCK_EX);
+}
