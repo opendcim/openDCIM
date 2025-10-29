@@ -788,7 +788,6 @@
 
 			// Finished updating devices or creating them.  Refresh the object with data from the DB
 			$dev->GetDevice();
-
 			// Audits are either at the individual device or the full cabinet level, so grab the latest date for both
 			$cabAudit = new CabinetAudit();
 			$cabAudit->CabinetID = $dev->Cabinet;
