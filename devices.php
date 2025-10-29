@@ -2200,8 +2200,8 @@ echo '
 			$PanelDCList=array();
 			$PanelContainerList=array();
 			if(isset($cab) && isset($cab->DataCenterID) && intval($cab->DataCenterID)>0){
-				// Panels associated to this device's Data Center
-				$PanelDCList=$Panel->getPanelsByDataCenter($cab->DataCenterID);
+					// Panels associated to this device's Data Center (by MapDataCenterID)
+					$PanelDCList=$Panel->getPanelsForMap($cab->DataCenterID);
 				
 				// Panels associated to all Data Centers in the same Container
 				$dc=new DataCenter();
@@ -2214,7 +2214,7 @@ echo '
 						$dcList=$cont->GetChildDCList();
 						$seen=array(); // de-dup panels by PanelID
 						foreach($dcList as $dcrow){
-							$plist=$Panel->getPanelsByDataCenter($dcrow->DataCenterID);
+							$plist=$Panel->getPanelsForMap($dcrow->DataCenterID);
 							foreach($plist as $pp){
 								if(!isset($seen[$pp->PanelID])){
 									$PanelContainerList[]=$pp;
