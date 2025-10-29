@@ -2225,10 +2225,13 @@ echo '
 					}
 				}
 			}
-			foreach($PanelList as $key=>$value){
-				$selected=($value->PanelID == $pdu->PanelID)?' selected':"";
-				print "\n\t\t\t\t\t<option value=\"$value->PanelID\"$selected>$value->PanelLabel</option>\n"; 
-			}
+				foreach($PanelList as $key=>$value){
+					$label=trim($value->PanelLabel);
+					if(intval($value->PanelID)>0 && $label!=''){
+						$selected=($value->PanelID == $pdu->PanelID)?' selected':"";
+						print "\n\t\t\t\t\t<option value=\"$value->PanelID\"$selected>$value->PanelLabel</option>\n"; 
+					}
+				}
 
 			echo '
 					</select>
@@ -2320,8 +2323,11 @@ echo '
 										<option value=0>',__("Select Panel"),'</option>';
 
 					foreach($PanelList as $key=>$value){
-						if($value->PanelID==$pdu->PanelID2){$selected=" selected";}else{$selected="";}
-						print "\n\t\t\t\t\t\t<option value=$value->PanelID$selected>$value->PanelLabel</option>";
+						$label=trim($value->PanelLabel);
+						if(intval($value->PanelID)>0 && $label!=''){
+							if($value->PanelID==$pdu->PanelID2){$selected=" selected";}else{$selected="";}
+							print "\n\t\t\t\t\t\t<option value=$value->PanelID$selected>$value->PanelLabel</option>";
+						}
 					}
 
 				echo '
@@ -2338,19 +2344,28 @@ echo '
 				<div id="paneltemplates" class="hide">
 					<select id="allPanelsTemplate">';
 						foreach($PanelList as $key=>$value){
-							print "\n\t\t\t\t\t\t<option value=\"$value->PanelID\">$value->PanelLabel</option>";
+							$label=trim($value->PanelLabel);
+							if(intval($value->PanelID)>0 && $label!=''){
+								print "\n\t\t\t\t\t\t<option value=\"$value->PanelID\">$value->PanelLabel</option>";
+							}
 						}
 				echo '
 					</select>
 					<select id="containerPanelsTemplate">';
 						foreach($PanelContainerList as $key=>$value){
-							print "\n\t\t\t\t\t\t<option value=\"$value->PanelID\">$value->PanelLabel</option>";
+							$label=trim($value->PanelLabel);
+							if(intval($value->PanelID)>0 && $label!=''){
+								print "\n\t\t\t\t\t\t<option value=\"$value->PanelID\">$value->PanelLabel</option>";
+							}
 						}
 				echo '
 					</select>
 					<select id="dcPanelsTemplate">';
 						foreach($PanelDCList as $key=>$value){
-							print "\n\t\t\t\t\t\t<option value=\"$value->PanelID\">$value->PanelLabel</option>";
+							$label=trim($value->PanelLabel);
+							if(intval($value->PanelID)>0 && $label!=''){
+								print "\n\t\t\t\t\t\t<option value=\"$value->PanelID\">$value->PanelLabel</option>";
+							}
 						}
 				echo '
 					</select>
