@@ -2174,25 +2174,65 @@ echo '
 	</div>
 	<br><span>*'.__("Polling is disabled after three consecutive failures.").'</span>
 </fieldset>
-<fieldset id="cdu" class="hide">
-	<legend>'.__("Power Specifications").'</legend>
-	<div class="table">
-		<div>
-			<div><label for="PanelID">',__("Source Panel"),'</label></div>
+	<fieldset id="cdu" class="hide">
+		<legend>'.__("Power Specifications").'</legend>
+		<div class="table">
+				<div>
+					<div><label for="PanelFilterScope">',__("Filter Source Panels"),'</label></div>
+					<div>
+						<select id="PanelFilterScope">
+							<option value="all">',__("All Sources"),'</option>
+							<option value="container">',__("Sources in Container"),'</option>
+							<option value="dc">',__("Sources in Data Center"),'</option>
+						</select>
+					</div>
+				</div>
 			<div>
-				<select name="PanelID" id="PanelID" >
-					<option value=0>',__("Select Panel"),'</option>';
+				<div><label for="PanelID">',__("Source Panel"),'</label></div>
+				<div>
+					<select name="PanelID" id="PanelID" >
+						<option value=0>',__("Select Panel"),'</option>';
 
-		$Panel=new PowerPanel();
-		$PanelList=$Panel->getPanelList();
-		foreach($PanelList as $key=>$value){
-			$selected=($value->PanelID == $pdu->PanelID)?' selected':"";
-			print "\n\t\t\t\t\t<option value=\"$value->PanelID\"$selected>$value->PanelLabel</option>\n"; 
-		}
+			$Panel=new PowerPanel();
+			$PanelList=$Panel->getPanelList();
+			
+			// Build filtered lists for Data Center and Container scopes
+			$PanelDCList=array();
+			$PanelContainerList=array();
+			if(isset($cab) && isset($cab->DataCenterID) && intval($cab->DataCenterID)>0){
+				// Panels associated to this device's Data Center
+				$PanelDCList=$Panel->getPanelsByDataCenter($cab->DataCenterID);
+				
+				// Panels associated to all Data Centers in the same Container
+				$dc=new DataCenter();
+				$dc->DataCenterID=$cab->DataCenterID;
+				if($dc->GetDataCenter()){
+					$containerID=intval($dc->ContainerID);
+					if($containerID>0){
+						$cont=new Container();
+						$cont->ContainerID=$containerID;
+						$dcList=$cont->GetChildDCList();
+						$seen=array(); // de-dup panels by PanelID
+						foreach($dcList as $dcrow){
+							$plist=$Panel->getPanelsByDataCenter($dcrow->DataCenterID);
+							foreach($plist as $pp){
+								if(!isset($seen[$pp->PanelID])){
+									$PanelContainerList[]=$pp;
+									$seen[$pp->PanelID]=true;
+								}
+							}
+						}
+					}
+				}
+			}
+			foreach($PanelList as $key=>$value){
+				$selected=($value->PanelID == $pdu->PanelID)?' selected':"";
+				print "\n\t\t\t\t\t<option value=\"$value->PanelID\"$selected>$value->PanelLabel</option>\n"; 
+			}
 
-		echo '
-				</select>
-			</div>';
+			echo '
+					</select>
+				</div>';
 		if($pdu->PanelID >0){
 			print "<div><a href=\"power_panel.php?PanelID=$pdu->PanelID\">[ ".__("Goto Panel")." ]</a></div>\n";
 		}	
@@ -2264,39 +2304,86 @@ echo '
 			<div id="lastread">',$LastRead,'</div>
 		</div>';
 		}
-		echo '
-		<div class="caption">
-			<fieldset class="noborder">
-				<legend>',__("Automatic Transfer Switch"),'</legend>
-				<div class="table centermargin border">
-					<div>
-						<div><label for="failsafe">',__("Fail Safe Switch?"),'</label></div>
-						<div><input type="checkbox" name="failsafe" id="failsafe"',(($pdu->FailSafe)?" checked":""),'></div>
-					</div>
-					<div>
-						<div><label for="PanelID2">',__("Source Panel (Secondary Source)"),'</label></div>
-						<div>
-							<select name="PanelID2" id="PanelID2">
-								<option value=0>',__("Select Panel"),'</option>';
-
-				foreach($PanelList as $key=>$value){
-					if($value->PanelID==$pdu->PanelID2){$selected=" selected";}else{$selected="";}
-					print "\n\t\t\t\t\t\t<option value=$value->PanelID$selected>$value->PanelLabel</option>";
-				}
-
 			echo '
-							</select>
+				<div class="caption">
+					<fieldset class="noborder">
+						<legend>',__("Automatic Transfer Switch"),'</legend>
+						<div class="table centermargin border">
+							<div>
+								<div><label for="failsafe">',__("Fail Safe Switch?"),'</label></div>
+								<div><input type="checkbox" name="failsafe" id="failsafe"',(($pdu->FailSafe)?" checked":""),'></div>
+							</div>
+							<div>
+								<div><label for="PanelID2">',__("Source Panel (Secondary Source)"),'</label></div>
+								<div>
+									<select name="PanelID2" id="PanelID2">
+										<option value=0>',__("Select Panel"),'</option>';
+
+					foreach($PanelList as $key=>$value){
+						if($value->PanelID==$pdu->PanelID2){$selected=" selected";}else{$selected="";}
+						print "\n\t\t\t\t\t\t<option value=$value->PanelID$selected>$value->PanelLabel</option>";
+					}
+
+				echo '
+								</select>
+							</div>
+						</div>
+						<div>
+							<div><label for="PanelPole2">',__("Panel Pole Number (Secondary Source)"),'</label></div>
+							<div><input type="text" name="PanelPole2" id="PanelPole2" size=4 value="',$pdu->PanelPole2,'"></div>
 						</div>
 					</div>
-					<div>
-						<div><label for="PanelPole2">',__("Panel Pole Number (Secondary Source)"),'</label></div>
-						<div><input type="text" name="PanelPole2" id="PanelPole2" size=4 value="',$pdu->PanelPole2,'"></div>
-					</div>
+				</fieldset>
+			</div>
+				<div id="paneltemplates" class="hide">
+					<select id="allPanelsTemplate">';
+						foreach($PanelList as $key=>$value){
+							print "\n\t\t\t\t\t\t<option value=\"$value->PanelID\">$value->PanelLabel</option>";
+						}
+				echo '
+					</select>
+					<select id="containerPanelsTemplate">';
+						foreach($PanelContainerList as $key=>$value){
+							print "\n\t\t\t\t\t\t<option value=\"$value->PanelID\">$value->PanelLabel</option>";
+						}
+				echo '
+					</select>
+					<select id="dcPanelsTemplate">';
+						foreach($PanelDCList as $key=>$value){
+							print "\n\t\t\t\t\t\t<option value=\"$value->PanelID\">$value->PanelLabel</option>";
+						}
+				echo '
+					</select>
 				</div>
-			</fieldset>
+				<script>
+				jQuery(function($){
+					function refillSelect(sel, tpl){
+						var current=$(sel).val();
+						var $tmpl=$(tpl);
+						var $sel=$(sel);
+						var defaultText=$('#PanelID option:first').text() || 'Select Panel';
+						$sel.empty();
+						$sel.append($('<option>').attr('value',0).text(defaultText));
+						$sel.append($tmpl.children().clone());
+						if(current && $sel.find('option[value="'+current+'"]').length){
+							$sel.val(current);
+						}else{
+							$sel.val('0');
+						}
+					}
+					// Scope selection: All / Container / Data Center
+					$('#PanelFilterScope').change(function(){
+						var scope=$(this).val();
+						var tpl='#allPanelsTemplate';
+						if(scope==='container'){ tpl='#containerPanelsTemplate'; }
+						if(scope==='dc'){ tpl='#dcPanelsTemplate'; }
+						refillSelect('#PanelID', tpl);
+						refillSelect('#PanelID2', tpl);
+					}).trigger('change');
+				});
+				</script>
 		</div>
-	</div>
-</fieldset>
+	</fieldset>
 <fieldset id="firstport" class="hide">
 	<legend>'.__("Switch SNMP").'</legend>
 	<div><p>'.__("Use these buttons to set the first port for the switch, check the status of the ports again, or attempt to load the Port Name Labels from the switch device.").'</p><button type="button" name="firstport">'.__("Set First Port").'</button><button type="button" name="refresh">'.__("Refresh Status").'</button><button type="button" name="name">'.__("Refresh Port Names").'</button><button type="button" name="Notes">'.__("Refresh Port Notes").'</button></div>
