@@ -593,7 +593,8 @@
 	$pwrCords=null;
 	$chassis="";
 	$copy = false;
-	$copyerr=__("This device is a copy of an existing device.  Remember to set the new location before saving.");
+$copyerr=__("This device is a copy of an existing device.  Remember to set the new location before saving.");
+$CurrentProjectID = 0; // Default: no project selected for new devices
 	$childList=array();
 
 	// This page was called from somewhere so let's do stuff.
@@ -838,13 +839,7 @@
 				}
 			}
 
-			// Build project options for the Project select
-			$projectOptions = '<option value="0">'.__("None").'</option>';
-			$projList = Projects::getProjectList();
-			foreach($projList as $proj){
-				$selected = ($proj->ProjectID == $CurrentProjectID) ? ' selected' : '';
-				$projectOptions .= "\t\t\t\t<option value=\"{$proj->ProjectID}\"{$selected}>{$proj->ProjectName}</option>\n";
-			}
+			// Build project options is now handled after this block to also fill on new devices
 
 			// Since a device exists we're gonna need some additional info, but only if it's not a copy
 			if(!$copy){
@@ -902,6 +897,14 @@
 
 		// sets install date to today when a new device is being created
 		$dev->InstallDate=date("Y-m-d");
+	}
+
+	// Build project options for the Project select (always available)
+	$projectOptions = '<option value="0">'.__("None").'</option>';
+	$projList = Projects::getProjectList();
+	foreach($projList as $proj){
+		$selected = ($proj->ProjectID == $CurrentProjectID) ? ' selected' : '';
+		$projectOptions .= "\t\t\t\t<option value=\"{$proj->ProjectID}\"{$selected}>{$proj->ProjectName}</option>\n";
 	}
 
 	// We don't want someone accidentally adding a chassis device inside of a chassis slot.
