@@ -2845,6 +2845,7 @@ print "<!--				<div>".__("Panel")."</div> -->
 <?php
 	if ($write) {
 ?>
+		$('#projectid').combobox();
 		$('#CabinetID').combobox();
 		$('#TemplateID').combobox();
 		$('select[name=ParentDevice]').combobox();
