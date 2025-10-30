@@ -682,6 +682,9 @@
 
 					// Put the device rights back just in case we had someone try to inject them
 					$dev->Rights=$devrights;
+
+					// Capture selected project from POST (if any)
+					$selectedProjectID=(isset($_POST['ProjectID']))?intval($_POST['ProjectID']):0;
 					// Stupid Cabinet vs CabinetID
 					$dev->Cabinet=$_POST['CabinetID'];
 					// Checkboxes don't work quite like normal inputs
@@ -721,6 +724,11 @@
 								$dev->MoveToStorage();
 							}else{
 								$dev->UpdateDevice();
+							}
+							// Update Project association (remove existing, then add if selected)
+							ProjectMembership::RemoveDeviceMemberships($dev->DeviceID);
+							if($selectedProjectID>0){
+								ProjectMembership::addMember($selectedProjectID,$dev->DeviceID,'Device');
 							}
 							break;
 						case 'Delete':
@@ -775,6 +783,15 @@
 					$dev->CreateDevice();
 					$dev->SetTags($tagarray);
 
+					// Update Project association (remove existing, then add if selected)
+					ProjectMembership::RemoveDeviceMemberships($dev->DeviceID);
+					if(isset($_POST['ProjectID'])){
+						$selectedProjectID=intval($_POST['ProjectID']);
+						if($selectedProjectID>0){
+							ProjectMembership::addMember($selectedProjectID,$dev->DeviceID,'Device');
+						}
+					}
+
 					// We've, hopefully, successfully created a new device. Force them to the new device page.
 					header('Location: '.redirect("devices.php?DeviceID=$dev->DeviceID"));
 					exit;
@@ -809,6 +826,24 @@
 			if(count($tags)>0){
 				// We have some tags so build the javascript elements we need to create the tags themselves
 				$taginsert="\t\ttags: {items: ".json_encode($tags)."},\n";
+			}
+
+			// Get existing project association for this device (direct membership only)
+			$CurrentProjectID = 0;
+			if ( $dev->DeviceID > 0 ) {
+				$st = $dbh->prepare("SELECT ProjectID FROM fac_ProjectMembership WHERE MemberType='Device' AND MemberID=:id ORDER BY ProjectID ASC");
+				$st->execute(array(":id"=>$dev->DeviceID));
+				if($row = $st->fetch(PDO::FETCH_NUM)){
+					$CurrentProjectID = intval($row[0]);
+				}
+			}
+
+			// Build project options for the Project select
+			$projectOptions = '<option value="0">'.__("None").'</option>';
+			$projList = Projects::getProjectList();
+			foreach($projList as $proj){
+				$selected = ($proj->ProjectID == $CurrentProjectID) ? ' selected' : '';
+				$projectOptions .= "\t\t\t\t<option value=\"{$proj->ProjectID}\"{$selected}>{$proj->ProjectName}</option>\n";
 			}
 
 			// Since a device exists we're gonna need some additional info, but only if it's not a copy
@@ -1835,6 +1870,10 @@ echo '			</select>
 		   <div><label for="AssetTag">'.__("Asset Tag").'</label></div>
 		   <div><input type="text" name="AssetTag" id="AssetTag" size="20" value="'.$dev->AssetTag.'">
 		   <button class="hide" type="button" onclick="getScan(\'AssetTag\')">',__("Scan Barcode"),'</button></div>
+		</div>
+		<div>
+		   <div><label for="projectid">'.__("Project").'</label></div>
+		   <div><select name="ProjectID" id="projectid">'.$projectOptions.'</select></div>
 		</div>
 		<div>
 		  <div><label for="PrimaryIP">'.__("Primary IP / Host Name").'</label></div>
