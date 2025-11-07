@@ -1,3 +1,5 @@
+-- Add SerialNo column to fac_Cabinet after Model
+ALTER TABLE fac_Cabinet ADD COLUMN SerialNo VARCHAR(30) AFTER Model;
 ---
 --- Schema changes for 23.04 to 25.01
 ---
