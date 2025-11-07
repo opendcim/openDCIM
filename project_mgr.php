@@ -159,6 +159,7 @@
   <script type="text/javascript" src="scripts/jquery.miniColors.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine-en.js"></script>
   <script type="text/javascript" src="scripts/jquery.validationEngine.js"></script>
+  <script type="text/javascript" src="scripts/common.js?v<?php echo filemtime('scripts/common.js');?>"></script>
 <script type="text/javascript">
 	function showdevs(obj){
 		self.frames['projectadmin'].location.href='project_members.php?membertype=Device&projectid='+obj;
@@ -177,6 +178,9 @@
 		$('.main .center form').validationEngine('hide');		
 	}
 	$(document).ready(function(){
+		// Make project list searchable (type to filter)
+		$('#projectid').combobox();
+		$('span.custom-combobox').width($('span.custom-combobox').width()+2);
 		$('#projectid').change(function(e){
 			location.href='project_mgr.php?projectid='+this.value;
 		});

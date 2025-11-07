@@ -1140,6 +1140,11 @@ div.cabinet {
 #pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;} 
 #pandn.table .custom-combobox a {margin: 0; vertical-align: top; border-left: 0px; border-right: 2px; position: absolute;} 
 
+/* Project Manager: align combobox toggle with input */
+#projectid + span.custom-combobox { position: relative; display: inline-block; width: 100%; vertical-align: middle; }
+#projectid + span.custom-combobox input { width: calc(100% - 24px) !important; }
+#projectid + span.custom-combobox a.custom-combobox-toggle { position: absolute; right: 0; top: 0; bottom: 0; width: 24px; padding: 0; }
+
 #olog > div:first-child { border-bottom: 2px solid black; }
 #olog > div > div:first-child { width: 100px; padding-right: 5px; white-space: nowrap; }
 #olog > div:first-child > div:first-child { border-right: 0 none; }
