@@ -1032,14 +1032,7 @@ CREATE TABLE fac_MaitriseType (
 
 INSERT INTO fac_MaitriseType (MaitriseName)
 VALUES
-('METIER'),
-('MOA'),
-('MOE'),
-('IIA'),
-('INTEX pilotage'),
-('INTEX EA'),
-('DEV'),
-('PROD EA'),
+('CUSTOMER'),
 ('PROD ES');
 
 DROP TABLE IF EXISTS fac_ProjectMaitrise;
