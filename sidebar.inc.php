@@ -64,12 +64,25 @@
 		}).next().after(arrow);
 		arrow.css({'top': inputpos.top+'px', 'left': inputpos.left+inputobj.width()-(arrow.width()/2)});
 	}
+	// Toggle Advanced Search form (slide open/close)
 	$('#advsrch, #searchadv ~ .ui-icon.ui-icon-close').click(function(){
 		var here=$(this).position();
 		$('#searchadv, #searchname').val('');
 		$('#searchadv').parents('form').height(here.top).toggle('slide',200).removeClass('hide');
 		if($('#searchadv').hasClass('ui-autocomplete-input')){$('#searchadv').autocomplete('destroy');}
 		if($(this).text()=='<?php echo __("Advanced");?>'){$(this).text('<?php echo __("Basic");?>');$('#searchadv ~ select[name="key"]').trigger('change');}else{$(this).text('<?php echo __("Advanced");?>');}
+
+		// Persist the Advanced Search panel visibility using sessionStorage
+		// English-only comments; UI strings are gettext-ready elsewhere
+		try{
+			var isOpen = $('#searchadv').parents('form').is(':visible');
+			sessionStorage.setItem('adv.active', isOpen ? '1' : '0');
+			if(isOpen){
+				// When opening, also persist the current key so it can be restored
+				var k=$('#searchadv').siblings('select[name="key"]').val();
+				sessionStorage.setItem('adv.key', k||'');
+			}
+		}catch(e){}
 	});
 	$('#customsrch').click(function(){
 		window.location="custom_search.php";
@@ -150,6 +163,45 @@ addlookup($('#searchname'),'name');
 $('#searchadv ~ select[name="key"]').change(function(){
 	addlookup($('#searchadv'),$(this).val())
 }).outerHeight($('#searchadv').outerHeight()).outerWidth(157);
+
+// Advanced Search persistence (sessionStorage)
+// Keys used:
+//  - adv.active: '1' when Advanced Search is open, '0' otherwise
+//  - adv.key: the selected filter key (dropdown)
+//  - adv.value: the typed search value in #searchadv
+// On Advanced form submit, save state so that the sidebar restores after page reload.
+$('form.advsearch').on('submit', function(){
+    try{
+        sessionStorage.setItem('adv.active','1');
+        sessionStorage.setItem('adv.key',$('#searchadv').siblings('select[name="key"]').val()||'');
+        sessionStorage.setItem('adv.value',$('#searchadv').val()||'');
+    }catch(e){}
+});
+
+// On Basic form submit, mark Advanced as closed so it won't reopen on next load.
+$('#searchname').closest('form').on('submit', function(){
+    try{ sessionStorage.setItem('adv.active','0'); }catch(e){}
+});
+
+// On page load, if Advanced was active, reopen it and restore key/value.
+$(function(){
+    try{
+        if(sessionStorage.getItem('adv.active')==='1'){
+            if($('#searchadv').parents('form').hasClass('hide') || !$('#searchadv').parents('form').is(':visible')){
+                // Trigger the same toggle used by the UI to ensure consistent behavior
+                $('#advsrch').trigger('click');
+            }
+            var savedKey=sessionStorage.getItem('adv.key')||'';
+            var savedVal=sessionStorage.getItem('adv.value')||'';
+            if(savedKey){
+                $('#searchadv').siblings('select[name="key"]').val(savedKey).trigger('change');
+            }
+            if(savedVal){
+                $('#searchadv').val(savedVal);
+            }
+        }
+    }catch(e){}
+});
 
 // Really long cabinet / zone / dc combinations are making the screen jump around.
 // If they make this thing so big it's unusable, fuck em.
