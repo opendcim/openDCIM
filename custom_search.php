@@ -60,15 +60,22 @@
 			AddRow($('select[name=searchoptions] > option:selected'));
 		}
 	});
-	$('#customsearch').on('click',function(e){
+    $('#customsearch').on('click',function(e){
 		var searchstring='search.php?key=dev&loose';
 		$('#searchfields > div > div > :input').each(function(){
 			if(this.value){
 				searchstring+="&"+this.name+"="+this.value;
 			}
 		});
-		newtab(searchstring);
-	});
+    newtab(searchstring);
+    });
+    // Cabinet Serial Number quick search
+    $('#cabcustomsearch').on('click', function(){
+        var v=$('#cabserial_criteria').val();
+        if(v){
+            newtab('search.php?key=cabserial&search='+encodeURIComponent(v));
+        }
+    });
 	function BuildSelect(data,name){
 		select=$('<select />').attr('name',name);
 		for(var i in data){
@@ -179,8 +186,8 @@
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
-<div class="center"><div>
-<h3>Device Criteria</h3>
+  <div class="center"><div>
+  <h3>Device Criteria</h3>
 <?php
 echo '<form action="',$_SERVER["SCRIPT_NAME"].$formpatch,'" method="POST">
 <div class="table" id="searchfields">
@@ -211,6 +218,18 @@ echo '<form action="',$_SERVER["SCRIPT_NAME"].$formpatch,'" method="POST">
 </div><!-- END div.table --> '
 ?>
 </form>
+
+<h3>',__("Cabinet Criteria"),'</h3>
+<div class="table" id="cabinetfields">
+  <div>
+    <div></div>
+    <div>',__("Cabinet Serial Number"),'</div>
+    <div><input type="text" id="cabserial_criteria" name="cabserial"></div>
+  </div>
+  <div class="caption">
+    <button type="button" id="cabcustomsearch">',__("Search Cabinets"),'</button>
+  </div>
+</div>
 
 
 <!-- CONTENT GOES HERE -->
