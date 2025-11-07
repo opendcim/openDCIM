@@ -70,7 +70,7 @@
 		$('#searchadv, #searchname').val('');
 		$('#searchadv').parents('form').height(here.top).toggle('slide',200).removeClass('hide');
 		if($('#searchadv').hasClass('ui-autocomplete-input')){$('#searchadv').autocomplete('destroy');}
-		if($(this).text()=='<?php echo __("Advanced");?>'){$(this).text('<?php echo __("Basic");?>');$('#searchadv ~ select[name="key"]').trigger('change');}else{$(this).text('<?php echo __("Advanced");?>');}
+    	if($(this).text()=='<?php echo __("Advanced");?>'){$(this).text('<?php echo __("Basic");?>');}else{$(this).text('<?php echo __("Advanced");?>');}
 
 		// Persist the Advanced Search panel visibility using sessionStorage
 		// English-only comments; UI strings are gettext-ready elsewhere
@@ -78,9 +78,13 @@
 			var isOpen = $('#searchadv').parents('form').is(':visible');
 			sessionStorage.setItem('adv.active', isOpen ? '1' : '0');
 			if(isOpen){
-				// When opening, also persist the current key so it can be restored
-				var k=$('#searchadv').siblings('select[name="key"]').val();
-				sessionStorage.setItem('adv.key', k||'');
+    			// When opening, restore saved key if present then trigger change to bind autocomplete
+    			var savedKey=sessionStorage.getItem('adv.key')||'';
+    			if(savedKey){ $('form.advsearch select[name="key"]').val(savedKey); }
+    			$('form.advsearch select[name="key"]').trigger('change');
+    			// Also persist current key
+    			var k=$('form.advsearch select[name="key"]').val();
+    			sessionStorage.setItem('adv.key', k||'');
 			}
 		}catch(e){}
 	});
@@ -160,8 +164,10 @@ $("#sidebar .nav").menu();
 
 $('#searchname').width($('#sidebar').innerWidth() - $('#searchname ~ button').outerWidth());
 addlookup($('#searchname'),'name');
-$('#searchadv ~ select[name="key"]').change(function(){
-	addlookup($('#searchadv'),$(this).val())
+$('form.advsearch select[name="key"]').change(function(){
+    addlookup($('#searchadv'),$(this).val());
+    // Persist selected filter key so it is restored after reload
+    try{ sessionStorage.setItem('adv.key', $(this).val()||''); }catch(e){}
 }).outerHeight($('#searchadv').outerHeight()).outerWidth(157);
 
 // Advanced Search persistence (sessionStorage)
@@ -173,8 +179,8 @@ $('#searchadv ~ select[name="key"]').change(function(){
 $('form.advsearch').on('submit', function(){
     try{
         sessionStorage.setItem('adv.active','1');
-        sessionStorage.setItem('adv.key',$('#searchadv').siblings('select[name="key"]').val()||'');
-        sessionStorage.setItem('adv.value',$('#searchadv').val()||'');
+        sessionStorage.setItem('adv.key',$('form.advsearch select[name="key"]').val()||'');
+        // Do not persist the typed value by request
     }catch(e){}
 });
 
@@ -183,22 +189,25 @@ $('#searchname').closest('form').on('submit', function(){
     try{ sessionStorage.setItem('adv.active','0'); }catch(e){}
 });
 
-// On page load, if Advanced was active, reopen it and restore key/value.
+// On page load, preselect saved key, and if Advanced was active, reopen it and restore the selected filter (only on search.php).
 $(function(){
     try{
-        if(sessionStorage.getItem('adv.active')==='1'){
+        var currentScript = '<?php echo basename($_SERVER['SCRIPT_NAME']);?>';
+        // Preselect saved key so UI reflects it even before opening
+        var preKey=sessionStorage.getItem('adv.key')||'';
+        if(preKey){ $('form.advsearch select[name="key"]').val(preKey); }
+        if(currentScript==='search.php' && sessionStorage.getItem('adv.active')==='1'){
             if($('#searchadv').parents('form').hasClass('hide') || !$('#searchadv').parents('form').is(':visible')){
                 // Trigger the same toggle used by the UI to ensure consistent behavior
                 $('#advsrch').trigger('click');
             }
             var savedKey=sessionStorage.getItem('adv.key')||'';
-            var savedVal=sessionStorage.getItem('adv.value')||'';
             if(savedKey){
-                $('#searchadv').siblings('select[name="key"]').val(savedKey).trigger('change');
+                $('form.advsearch select[name="key"]').val(savedKey).trigger('change');
             }
-            if(savedVal){
-                $('#searchadv').val(savedVal);
-            }
+        } else if (currentScript!=='search.php') {
+            // Do not auto-open Advanced on non-search pages
+            sessionStorage.setItem('adv.active','0');
         }
     }catch(e){}
 });
