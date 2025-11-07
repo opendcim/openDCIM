@@ -520,6 +520,16 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 		padding: 10px;
 		margin-bottom: 8px;
 }
+
+/* Maitrise Types modal spacing */
+#maitrisetypesmodal { padding: 10px; }
+#maitrisetypesmodal table { border-collapse: separate; border-spacing: 0 8px; }
+#maitrisetypesmodal th, #maitrisetypesmodal td { padding: 6px 10px; vertical-align: middle; }
+#maitrisetypesmodal input[type="text"],
+#maitrisetypesmodal input[type="email"],
+#maitrisetypesmodal select { padding: 6px 8px; margin: 4px 6px 4px 0; }
+#maitrisetypesmodal button { margin: 4px 6px; }
+#maitrisetypesmodal .note { margin-top: 10px; display: block; }
 #infopanel fieldset button, #infopanel fieldset input[type=submit], #infopanel fieldset input[type=button],.reports fieldset button, .reports fieldset input[type=submit], .reports fieldset input[type=button] {width: 100%;}
 #infopanel legend, .device legend, .reports legend {border: 1px <?php echo $config->ParameterArray['HeaderColor']; ?> solid;background-color: white;}
 div.cabinet {
