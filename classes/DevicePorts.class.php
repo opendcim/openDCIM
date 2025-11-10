@@ -27,6 +27,9 @@ class DevicePorts {
 	var $DeviceID;
 	var $PortNumber;
 	var $Label;
+	var $ConnectorID;
+	var $ProtocolID;
+	var $RateID;
 	var $MediaID;
 	var $ColorID;
 	var $ConnectedDeviceID;
@@ -37,6 +40,9 @@ class DevicePorts {
 		$this->DeviceID=intval($this->DeviceID);
 		$this->PortNumber=intval($this->PortNumber);
 		$this->Label=sanitize($this->Label);
+		$this->ConnectorID=sanitize($this->ConnectorID);
+		$this->ProtocolID=sanitize($this->ProtocolID);
+		$this->RateID=sanitize($this->RateID);
 		$this->MediaID=intval($this->MediaID);
 		$this->ColorID=intval($this->ColorID);
 		$this->ConnectedDeviceID=intval($this->ConnectedDeviceID);
@@ -59,6 +65,9 @@ class DevicePorts {
 		$dp->DeviceID=$dbRow['DeviceID'];
 		$dp->PortNumber=(int)$dbRow['PortNumber'];
 		$dp->Label=$dbRow['Label'];
+		$dp->ConnectorID=$dbRow['ConnectorID'];
+		$dp->ProtocolID=$dbRow['ProtocolID'];
+		$db->RateID=$dbRow['RateID'];
 		$dp->MediaID=$dbRow['MediaID'];
 		$dp->ColorID=$dbRow['ColorID'];
 		$dp->ConnectedDeviceID=(int)$dbRow['ConnectedDeviceID'];
@@ -121,7 +130,8 @@ class DevicePorts {
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_Ports SET DeviceID=$this->DeviceID, PortNumber=$this->PortNumber, 
-			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
+			Label=\"$this->Label\", ConnectorID=$this->ConnectorID, ProtocolID=$this->ProtocolID, RateID=$this->RateID,
+			MediaID=$this->MediaID, ColorID=$this->ColorID, 
 			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort, 
 			Notes=\"$this->Notes\"";
 
@@ -295,6 +305,9 @@ class DevicePorts {
 				$tmpport->ConnectedDeviceID=$this->DeviceID;
 				$tmpport->ConnectedPort=$this->PortNumber;
 				$tmpport->Notes=$this->Notes;
+				$tmpport->ConnectorID=$this->ConnectorID;
+				$tmpport->ProtocolID=$this->ProtocolID;
+				$tmpport->RateID=$this->RateID;
 				$tmpport->MediaID=$this->MediaID;
 				$tmpport->ColorID=$this->ColorID;
 				$tmpport->updatePort(true);
@@ -303,7 +316,8 @@ class DevicePorts {
 			}
 		}
 		// update port
-		$sql="UPDATE fac_Ports SET MediaID=$this->MediaID, ColorID=$this->ColorID, 
+		$sql="UPDATE fac_Ports SET ConnectorID=$this->ConnectorID, ProtocolID=$this->ConnectorID,
+			RateID=$this->RateID, MediaID=$this->MediaID, ColorID=$this->ColorID, 
 			ConnectedDeviceID=$this->ConnectedDeviceID, Label=\"$this->Label\", 
 			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\" 
 			WHERE DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
