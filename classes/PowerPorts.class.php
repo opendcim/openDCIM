@@ -56,19 +56,24 @@ class PowerPorts {
 		$this->Notes=stripslashes(trim($this->Notes));
 	}
 
-	static function RowToObject($dbRow){
-		$pp=new PowerPorts();
-		$pp->DeviceID=$dbRow['DeviceID'];
-		$pp->PortNumber=$dbRow['PortNumber'];
-		$pp->Label=$dbRow['Label'];
-		$pp->ConnectedDeviceID=$dbRow['ConnectedDeviceID'];
-		$pp->ConnectedPort=$dbRow['ConnectedPort'];
-		$pp->Notes=$dbRow['Notes'];
+	public static function RowToObject($dbRow){
+	$pp = new PowerPorts();
+	$pp->DeviceID           = $dbRow['DeviceID'];
+	$pp->PortNumber         = $dbRow['PortNumber'];
+	$pp->Label              = $dbRow['Label'];
+	// ➜ new 25.01
+	if(array_key_exists('ConnectorID',$dbRow)) { $pp->ConnectorID = $dbRow['ConnectorID']; }
+	if(array_key_exists('PhaseID',$dbRow))     { $pp->PhaseID     = $dbRow['PhaseID']; }
+	if(array_key_exists('VoltageID',$dbRow))   { $pp->VoltageID   = $dbRow['VoltageID']; }
+	// exist
+	$pp->ConnectedDeviceID  = $dbRow['ConnectedDeviceID'];
+	$pp->ConnectedPort      = $dbRow['ConnectedPort'];
+	$pp->Notes              = $dbRow['Notes'];
 
-		$pp->MakeDisplay();
+	$pp->MakeDisplay();
+	return $pp;
+}
 
-		return $pp;
-	}
 
 	function getPort(){
 		global $dbh;
@@ -377,7 +382,8 @@ class PowerPorts {
 		
 		$portList=array();
 		foreach($dbh->query($sql) as $row){
-			$portList[$row['PortNumber']]=PowerPorts::RowToObject($row);
+			$port = new PowerPorts();
+			$portList[$row["PortNumber"]] = $port->RowToObject($row);
 		}
 		
 		if( sizeof($portList)==0 && $dev->DeviceType!="Physical Infrastructure" ){
