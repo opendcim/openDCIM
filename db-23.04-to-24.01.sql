@@ -5,9 +5,9 @@
 UPDATE fac_Config set Value="24.01" WHERE Parameter="Version";
 --- feature hdd
 ---  -fac_config
-INSERT INTO fac_Config (Parameter, Value) VALUES ('feature_hdd', 'disabled')
+INSERT INTO fac_Config (Parameter, Value, UnitOfMeasure, ValType, DefaultVal) VALUES ('feature_hdd', 'disabled','Enabled/Disabled','string','Disabled')
 ON DUPLICATE KEY UPDATE Value = Value;
-INSERT INTO fac_Config (Parameter, Value) VALUES ('Log_for_user_hdd', 'disabled')
+INSERT INTO fac_Config (Parameter, Value, UnitOfMeasure, ValType, DefaultVal) VALUES ('Log_for_user_hdd', 'disabled','Enabled/Disabled','string','Disabled')
 ON DUPLICATE KEY UPDATE Value = Value;
 ---  -fac_people
 ALTER TABLE fac_People ADD COLUMN ManageHDD TINYINT(1) DEFAULT 0;
@@ -32,3 +32,4 @@ CREATE TABLE fac_HDD (
   DateDestroyed DATETIME DEFAULT NULL,
   PRIMARY KEY (HDDID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
