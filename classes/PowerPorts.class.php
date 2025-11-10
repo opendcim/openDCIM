@@ -27,6 +27,9 @@ class PowerPorts {
 	var $DeviceID;
 	var $PortNumber;
 	var $Label;
+	var $ConnectorID;
+	var $PhaseID;
+	var $VoltageID;
 	var $ConnectedDeviceID;
 	var $ConnectedPort;
 	var $Notes;
@@ -35,6 +38,9 @@ class PowerPorts {
 		$this->DeviceID=intval($this->DeviceID);
 		$this->PortNumber=intval($this->PortNumber);
 		$this->Label=sanitize($this->Label);
+		$this->ConnectorID=sanitize($this->ConnectorID);
+		$this->PhaseID=sanitize($this->PhaseID);
+		$this->VoltageID=sanitize($this->VoltageID);
 		$this->ConnectedDeviceID=intval($this->ConnectedDeviceID);
 		$this->ConnectedPort=intval($this->ConnectedPort);
 		$this->Notes=sanitize($this->Notes);
