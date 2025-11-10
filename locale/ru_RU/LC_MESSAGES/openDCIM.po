@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-26 10:18-0500\n"
+"POT-Creation-Date: 2025-10-15 11:32-0500\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1916,7 +1916,7 @@ msgstr "Инвентарный номер"
 msgid "Target Cabinet"
 msgstr "Шкаф назначения"
 
-#: connections_spreadsheet.php:120 classes/PowerPorts.class.php:151
+#: connections_spreadsheet.php:120 classes/PowerPorts.class.php:157
 msgid "Power Connection"
 msgstr "Подключение питания"
 
@@ -3529,8 +3529,8 @@ msgstr "Неизвестная ошибка"
 #: pathmaker.php:247 pathmaker.php:324 pathmaker.php:460
 #: /home/runner/openDCIM/paths.php:75 paths.php:132
 #: /home/runner/openDCIM/paths.php:246 paths.php:320
-#: /home/runner/openDCIM/paths.php:404 classes/DevicePorts.class.php:188
-#: classes/DevicePorts.class.php:206
+#: /home/runner/openDCIM/paths.php:404 classes/DevicePorts.class.php:198
+#: classes/DevicePorts.class.php:216
 msgid "Port"
 msgstr "Порт"
 
