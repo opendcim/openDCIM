@@ -198,6 +198,8 @@
             $columnList[$labelName] = $colName;
         }
 
+        $usedSheetTitles = array();
+
         foreach( $manList as $mfg ) {
             $dt = new DeviceTemplate();
             $dt->ManufacturerID = $mfg->ManufacturerID;
@@ -205,7 +207,23 @@
 
             if ( sizeof($templateList) > 0 ) {
             	$sheet = $workBook->createSheet(null);
-            	$sheet->setTitle( $mfg->Name );
+            	// Sanitize worksheet title; enforce uniqueness and Excel limits
+            	if (class_exists('\\PhpOffice\\PhpSpreadsheet\\Worksheet\\Worksheet') && method_exists('\\PhpOffice\\PhpSpreadsheet\\Worksheet\\Worksheet','sanitizeSheetTitle')) {
+            		$safeTitle = \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::sanitizeSheetTitle($mfg->Name);
+            	} else {
+            		$safeTitle = preg_replace('/[:\\\\\/?*\[\]]/',' ', (string)$mfg->Name);
+            	}
+            	$safeTitle = mb_substr($safeTitle, 0, 31);
+            	$safeTitle = (trim($safeTitle) !== '') ? $safeTitle : __('Manufacturer');
+            	$baseTitle = $safeTitle;
+            	$dup = 1;
+            	while (in_array($safeTitle, $usedSheetTitles)) {
+            		$suffix = ' ('.($dup++).')';
+            		$cut = 31 - strlen($suffix);
+            		$safeTitle = mb_substr($baseTitle, 0, max(0,$cut)) . $suffix;
+            	}
+            	$usedSheetTitles[] = $safeTitle;
+            	$sheet->setTitle( $safeTitle );
 
                 foreach( $columnList as $fieldName=>$columnName ) {
                     $cellAddr = $columnName."1";
@@ -257,7 +275,7 @@
                     // Nothing got added, so delete this sheet
                     $workBook->removeSheetByIndex(
                         $workBook->getIndex(
-                            $workBook->getSheetByName($mfg->Name)));
+                            $workBook->getSheetByName($safeTitle)));
                 }
             }
         }
