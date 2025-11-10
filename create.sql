@@ -1132,7 +1132,7 @@ CREATE TABLE fac_ProjectMaitrise (
   ProjectID INT NOT NULL,
   MaitriseTypeID INT NOT NULL,
   BureauName VARCHAR(100) NOT NULL,
-  BureauEmail VARCHAR(255) NOT NULL,
+  BureauEmail VARCHAR(255) DEFAULT NULL,
   KEY (ProjectID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

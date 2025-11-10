@@ -131,8 +131,10 @@
 			$mtid=intval($types[$i]);
 			$bname=isset($names[$i])?trim($names[$i]):'';
 			$bemail=isset($emails[$i])?trim($emails[$i]):'';
-			if($mtid>0 && $bname!=='' && $bemail!==''){
-				$ins->execute(array(":pid"=>$projectID, ":mtid"=>$mtid, ":bname"=>$bname, ":bemail"=>$bemail));
+			// Allow empty email: save NULL when not provided
+			if($mtid>0 && $bname!==''){
+				$bemailParam = ($bemail==='')? null : $bemail;
+				$ins->execute(array(":pid"=>$projectID, ":mtid"=>$mtid, ":bname"=>$bname, ":bemail"=>$bemailParam));
 			}
 		}
 	}
