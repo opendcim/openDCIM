@@ -25,6 +25,9 @@
 
 	$project = new Projects();
 
+	// Collect non-blocking warnings (e.g., invalid optional emails)
+	$maitriseEmailWarnings = array();
+
 	// Handle Maitrise Type management actions (admin only)
 	if(isset($_POST['mt_action']) && $person->ContactAdmin){
 		if($_POST['mt_action']==='AddType' && isset($_POST['newmaitrise'])){
@@ -110,6 +113,7 @@
 	// Helper function to save Maitrise rows
 	function saveProjectMaitriseRows($projectID){
 		global $dbh;
+		global $maitriseEmailWarnings;
 		// Ensure required table exists; if not, skip gracefully
 		try{
 			$chk=$dbh->query("SHOW TABLES LIKE 'fac_ProjectMaitrise'");
@@ -132,14 +136,44 @@
 			$bname=isset($names[$i])?trim($names[$i]):'';
 			$bemail=isset($emails[$i])?trim($emails[$i]):'';
 			// Allow empty email: save NULL when not provided
+			// If provided, validate email format; on invalid, save NULL and warn
 			if($mtid>0 && $bname!==''){
-				$bemailParam = ($bemail==='')? null : $bemail;
-				$ins->execute(array(":pid"=>$projectID, ":mtid"=>$mtid, ":bname"=>$bname, ":bemail"=>$bemailParam));
+				$bemailParam = null;
+				if($bemail!==''){
+					$valid = false;
+					if(function_exists('filter_var') && defined('FILTER_VALIDATE_EMAIL')){
+						$valid = (bool)filter_var($bemail, FILTER_VALIDATE_EMAIL);
+					}else{
+						$valid = (bool)preg_match('/^[^@\s]+@[^@\s]+\.[^@\s]+$/', $bemail);
+					}
+					if($valid){
+						$bemailParam = $bemail;
+					}else{
+						$maitriseEmailWarnings[] = array('email'=>$bemail,'name'=>$bname);
+						$bemailParam = null;
+					}
+				}
+				try{
+					$ins->execute(array(":pid"=>$projectID, ":mtid"=>$mtid, ":bname"=>$bname, ":bemail"=>$bemailParam));
+				}catch(Exception $ex){
+					$maitriseEmailWarnings[] = array('email'=>$bemail,'name'=>$bname);
+				}
 			}
 		}
 	}
 
 	$title = __("openDCIM Project Information" );
+
+	// Prepare warnings HTML to be injected in form output
+	$maitriseEmailWarningsHtml = '';
+	if(!empty($maitriseEmailWarnings)){
+		$maitriseEmailWarningsHtml .= '<div class="warning">';
+		foreach($maitriseEmailWarnings as $w){
+			$msg = sprintf(__('Email "%s" for "%s" is invalid and was not saved.'), $w['email'], $w['name']);
+			$maitriseEmailWarningsHtml .= '<div>'.htmlspecialchars($msg).'</div>';
+		}
+		$maitriseEmailWarningsHtml .= '</div>';
+	}
 ?>
 <!doctype html>
 <html>
@@ -222,7 +256,8 @@
 	include( 'sidebar.inc.php' );
 	echo '<div class="main">
 <div class="center"><div>
-<form method="POST">
+<form method="POST">',
+$maitriseEmailWarningsHtml,'
 <div class="table centermargin">
 <div>
    <div>',__("Project"),'</div>
@@ -292,7 +327,7 @@
         echo '<option value="__more__">'.__("More").'</option>';
         echo '</select> ';
         echo '<input type="text" name="maitrise_bureau[]" placeholder="'.__("Bureau Name").'" value="'.htmlspecialchars($row['BureauName']).'"> ';
-        echo '<input type="email" name="maitrise_email[]" placeholder="'.__("Email").'" value="'.htmlspecialchars($row['BureauEmail']).'"> ';
+        echo '<input type="email" class="validate[custom[email]]" name="maitrise_email[]" placeholder="'.__("Email").'" value="'.htmlspecialchars($row['BureauEmail']).'"> ';
         echo '<button type="button" class="removemaitrise">'.__("Remove").'</button>';
         echo '</div>';
       }
@@ -307,7 +342,7 @@
           <option value="__more__"><?php echo __("More"); ?></option>
         </select>
         <input type="text" name="maitrise_bureau[]" placeholder="<?php echo __("Bureau Name"); ?>">
-        <input type="email" name="maitrise_email[]" placeholder="<?php echo __("Email"); ?>">
+        <input type="email" class="validate[custom[email]]" name="maitrise_email[]" placeholder="<?php echo __("Email"); ?>">
         <button type="button" class="removemaitrise"><?php echo __("Remove"); ?></button>
       </div>
     </div>

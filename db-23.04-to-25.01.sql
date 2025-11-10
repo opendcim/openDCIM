@@ -103,4 +103,29 @@ ALTER TABLE fac_PowerPorts ADD COLUMN ConnectorID int(11) DEFAULT NULL AFTER Lab
 ALTER TABLE fac_PowerPorts ADD COLUMN PhaseID int(11) DEFAULT NULL AFTER ConnectorType;
 ALTER TABLE fac_PowerPorts ADD COLUMN VoltageID int(11) DEFAULT NULL AFTER Phase;
 
+--
+-- Maitrise types and project linkage
+--
+
+DROP TABLE IF EXISTS fac_MaitriseType;
+CREATE TABLE fac_MaitriseType (
+  MaitriseTypeID INT AUTO_INCREMENT PRIMARY KEY,
+  MaitriseName VARCHAR(100) UNIQUE NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO fac_MaitriseType (MaitriseName)
+VALUES
+('CUSTOMER'),
+('PROD ES');
+
+DROP TABLE IF EXISTS fac_ProjectMaitrise;
+CREATE TABLE fac_ProjectMaitrise (
+  ProjectMaitriseID INT AUTO_INCREMENT PRIMARY KEY,
+  ProjectID INT NOT NULL,
+  MaitriseTypeID INT NOT NULL,
+  BureauName VARCHAR(100) NOT NULL,
+  BureauEmail VARCHAR(255) NULL DEFAULT NULL,
+  KEY (ProjectID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 UPDATE fac_Config set Value="25.01" WHERE Parameter="Version";
