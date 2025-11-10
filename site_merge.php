@@ -119,7 +119,7 @@ while ( $row = $childStmt->fetch() ) {
 	$targetTag = new Tags;
 	if ( ! $ttag = $targetTag->FindID( $row["Name"] )) {
 		$targetTag->Name = $row["Name"];
-		$targetTag->CreateTag();
+		$targetTag->CreateTag( $targetTag->Name );
 		$tagMap[$row["TagID"]] = $targetTag->TagID;
 	} else {
 		$tagMap[$row["TagID"]] = $ttag;
