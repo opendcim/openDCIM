@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-26 10:18-0500\n"
+"POT-Creation-Date: 2025-10-15 11:32-0500\n"
 "PO-Revision-Date: 2014-08-04 13:57-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -1912,7 +1912,7 @@ msgstr ""
 msgid "Target Cabinet"
 msgstr ""
 
-#: connections_spreadsheet.php:120 classes/PowerPorts.class.php:151
+#: connections_spreadsheet.php:120 classes/PowerPorts.class.php:157
 #, fuzzy
 msgid "Power Connection"
 msgstr "Edit Pow'r Panels"
@@ -3551,8 +3551,8 @@ msgstr ""
 #: pathmaker.php:247 pathmaker.php:324 pathmaker.php:460
 #: /home/runner/openDCIM/paths.php:75 paths.php:132
 #: /home/runner/openDCIM/paths.php:246 paths.php:320
-#: /home/runner/openDCIM/paths.php:404 classes/DevicePorts.class.php:188
-#: classes/DevicePorts.class.php:206
+#: /home/runner/openDCIM/paths.php:404 classes/DevicePorts.class.php:198
+#: classes/DevicePorts.class.php:216
 msgid "Port"
 msgstr ""
 
