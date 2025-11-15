@@ -2379,7 +2379,7 @@ function LameLogDisplay(){
 		getConnectors: function(target){
 			var row=this;
 			var $connections=$('<select>').append('<option value=0>&nbsp;</option>');
-			$.get("api/v1/powerconnectortypes/"+this.conntype.find('select').val()).done(function(data){
+			$.get("api/v1/powerconnectortypes").done(function(data){
 				if(!data.error){
 					for(var i in data.connectortype){
 						var conn=data.connectortype[i];
@@ -2391,11 +2391,11 @@ function LameLogDisplay(){
 		getVoltages: function(target){
 			var row=this;
 			var $voltages=$('<select>').append('<option value=0>&nbsp;</option>');
-			$.get("api/v1/powervoltages/"+this.voltage.find('select').val()).done(function(data){
+			$.get("api/v1/powervoltages").done(function(data){
 				if(!data.error){
 					for(var i in data.powervoltages){
 						var volt=data.powervoltages[i];
-						$voltages.append('<option value='+volt.VoltageID+'>'+volt.Voltage+'</option>');
+						$voltages.append('<option value='+volt.VoltageID+'>'+volt.VoltageName+'</option>');
 					}
 				}
 			});
@@ -2403,11 +2403,11 @@ function LameLogDisplay(){
 		getPhases: function(target){
 			var row=this;
 			var $phases=$('<select>').append('<option value=0>&nbsp;</option>');
-			$.get("api/v1/powerphases/"+this.phase.find('select').val()).done(function(data){
+			$.get("api/v1/powerphases").done(function(data){
 				if(!data.error){
 					for(var i in data.powerphases){
 						var phase=data.powerphases[i];
-						$phases.append('<option value='+phase.PhaseID+'>'+phase.Phase+'</option>');
+						$phases.append('<option value='+phase.PhaseID+'>'+phase.PhaseName+'</option>');
 					}
 				}
 			});
