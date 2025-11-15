@@ -2366,6 +2366,42 @@ function LameLogDisplay(){
 			// Hide mass edit controls
 			$('.power.table').massedit('hide');
 		},
+		getConnectors: function(target){
+			var row=this;
+			var $connections=$('<select[name=ConnectorTypeID]>').append('<option value=0>&nbsp;</option>');
+			$.get("api/v1/powerconnectortypes/"+this.cdevice.find('select').val()).done(function(data){
+				if(!data.error){
+					for(var i in data.connectortype){
+						var conn=data.connectortype[i];
+						$connections.append('<option value='+conn.ConnectorTypeID+'>'+conn.ConnectorType+'</option>');
+					}
+				}
+			});
+		},
+		getVoltages: function(target){
+			var row=this;
+			var $voltages=$('<select[name=VoltageID]>').append('<option value=0>&nbsp;</option>');
+			$.get("api/v1/powervoltages/"+this.cdevice.find('select').val()).done(function(data){
+				if(!data.error){
+					for(var i in data.powervoltages){
+						var volt=data.powervoltages[i];
+						$voltages.append('<option value='+volt.VoltageID+'>'+volt.Voltage+'</option>');
+					}
+				}
+			});
+		},
+		getPhases: function(target){
+			var row=this;
+			var $phases=$('<select[name=PhaseID]>').append('<option value=0>&nbsp;</option>');
+			$.get("api/v1/powerphases/"+this.cdevice.find('select').val()).done(function(data){
+				if(!data.error){
+					for(var i in data.powerphases){
+						var phase=data.powerphases[i];
+						$phases.append('<option value='+phase.PhaseID+'>'+phase.Phase+'</option>');
+					}
+				}
+			});
+		},
 		getdevices: function(target){
 			var row=this;
 			var cdulimit=($('select[name=DeviceType]').val()=='CDU')?'':'&DeviceType=CDU';

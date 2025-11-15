@@ -1430,4 +1430,28 @@ $app->get( '/pollers/sensors', function(Request $request, Response $response) {
 
 });
 
+$app->get( '/powerconnectortypes', function(Request $request, Response $response) {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['powerconnectortypes'] = PowerConnectors::getPowerConnectorTypes();
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+$app->get( '/powervoltages', function(Request $request, Response $response) {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['powervoltages'] = PowerVoltages::getPowerVoltages();
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+$app->get( '/powerphases', function(Request $request, Response $response) {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['powerphases'] = PowerPhases::getPowerPhases();
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
 ?>
