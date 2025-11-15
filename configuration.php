@@ -412,6 +412,42 @@
 	}
 	$tzmenu.='</ul>';
 
+	// Build list of media connectors
+	$mediaconnectors="";
+	$mediaConnectorList=MediaConnectors::GetConnectorList();
+	if(count($mediaConnectorList)>0){
+		foreach($mediaConnectorList as $mc){
+			$mediaconnectors.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="connector_type[]" data='.$mc->ConnectorID.' value="'.$mc->ConnectorType.'"></div>
+				</div>';
+		}
+	}
+
+	// Build list of media protocols
+	$mediaprotocols="";
+	$mediaProtocolList=MediaProtocols::GetProtocolList();
+	if(count($mediaProtocolList)>0){
+		foreach($mediaProtocolList as $mp){
+			$mediaprotocols.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="protocol_name[]" data='.$mp->ProtocolID.' value="'.$mp->ProtocolName.'"></div>
+				</div>';
+		}
+	}
+
+	// Build list of media data rates
+	$mediadatarates="";
+	$mediaDataRateList=MediaDataRates::GetRateList();
+	if(count($mediaDataRateList)>0){
+		foreach($mediaDataRateList as $mdr){
+			$mediadatarates.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="rate_text[]" data='.$mdr->RateID.' value="'.$mdr->RateText.'"></div>
+				</div>';
+		}
+	}
+
 	// Build list of cable color codes
 	$cablecolors="";
 	$colorselector='<select name="mediacolorcode[]"><option value="0"></option>';
@@ -428,6 +464,30 @@
 		}
 	}
 	$colorselector.='</select>';
+
+	// Build list of power connectors
+	$powerconnectors="";
+	$powerConnectorList=PowerConnectors::GetConnectorList();
+	if(count($powerConnectorList)>0){
+		foreach($powerConnectorList as $pc){
+			$powerconnectors.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="connector_type[]" data='.$pc->ConnectorID.' value="'.$pc->ConnectorName.'"></div>
+				</div>';
+		}
+	}
+
+	// Build List of Power Voltages
+	$powervoltages="";
+	$powerVoltageList=PowerVoltages::GetVoltageList();
+	if(count($powerVoltageList)>0){
+		foreach($powerVoltageList as $pv){
+			$powervoltages.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="voltage_type[]" data='.$pv->VoltageID.' value="'.$pv->VoltageName.'"></div>
+				</div>';
+		}
+	}
 
 	// Build list of media types
 	$mediatypes="";
@@ -2397,6 +2457,66 @@ echo '<div class="main">
 					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
 					<div><input type="text" name="colorcode[]"></div>
 					<div><input type="text" name="ccdefaulttext[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Media Protocols"),'</h3>
+			<div class="table" id="mediaprotocols">
+				<div>
+					<div></div>
+					<div>',__("Protocol Name"),'</div>
+				</div>
+				',$mediaprotocols,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="protocol_name[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Media Connectors"),'</h3>
+			<div class="table" id="mediaconnectors">
+				<div>
+					<div></div>
+					<div>',__("Connector Type"),'</div>
+				</div>
+				',$mediaconnectors,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="connector_type[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Media Data Rates"),'</h3>
+			<div class="table" id="mediadatarates">
+				<div>
+					<div></div>
+					<div>',__("Data Rate"),'</div>
+				</div>
+				',$mediadatarates,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="data_rate[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Power Connectors"),'</h3>
+			<div class="table" id="powerconnectors">
+				<div>
+					<div></div>
+					<div>',__("Connector Type"),'</div>
+				</div>
+				',$powerconnectors,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="connector_type[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Power Voltages"),'</h3>
+			<div class="table" id="powervoltages">
+				<div>
+					<div></div>
+					<div>',__("Voltage Value"),'</div>
+				</div>
+				',$powervoltages,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="voltage_name[]"></div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Connection Filtering"),'</h3>

@@ -4,7 +4,7 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2023 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2024 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
  */
 
@@ -109,7 +109,7 @@ trait FpdfTplTrait
             unset($x['tpl']);
             \extract($x, EXTR_IF_EXISTS);
             /** @noinspection NotOptimalIfConditionsInspection */
-            /** @noinspection PhpConditionAlreadyCheckedInspection */
+            /** @phpstan-ignore function.alreadyNarrowedType  */
             if (\is_array($x)) {
                 $x = 0;
             }
@@ -253,9 +253,9 @@ trait FpdfTplTrait
         $this->currentTemplateId = $templateId;
 
         $this->h = $height;
-        $this->hPt = $height / $this->k;
+        $this->hPt = $height * $this->k;
         $this->w = $width;
-        $this->wPt = $width / $this->k;
+        $this->wPt = $width * $this->k;
 
         $this->SetXY($this->lMargin, $this->tMargin);
         $this->SetRightMargin($this->w - $width + $this->rMargin);
