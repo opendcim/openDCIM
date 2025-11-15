@@ -2359,6 +2359,9 @@ function LameLogDisplay(){
 
 			row.getdevices(this.cdevice);
 			row.portname.html('<input type="text" style="min-width: 60px;" value="'+row.portname.text()+'">');
+			row.getConnectors(this.conntype);
+			row.getVoltages(this.voltage);
+			row.getPhases(this.phase);
 			row.cnotes.html('<input type="text" style="min-width: 200px;" value="'+row.cnotes.text()+'">');
 
 //			this.element.append(this.controls.clone(true));
@@ -2376,7 +2379,7 @@ function LameLogDisplay(){
 		getConnectors: function(target){
 			var row=this;
 			var $connections=$('<select>').append('<option value=0>&nbsp;</option>');
-			$.get("api/v1/powerconnectortypes/"+this.cdevice.find('select').val()).done(function(data){
+			$.get("api/v1/powerconnectortypes/"+this.conntype.find('select').val()).done(function(data){
 				if(!data.error){
 					for(var i in data.connectortype){
 						var conn=data.connectortype[i];
@@ -2388,7 +2391,7 @@ function LameLogDisplay(){
 		getVoltages: function(target){
 			var row=this;
 			var $voltages=$('<select>').append('<option value=0>&nbsp;</option>');
-			$.get("api/v1/powervoltages/"+this.cdevice.find('select').val()).done(function(data){
+			$.get("api/v1/powervoltages/"+this.voltage.find('select').val()).done(function(data){
 				if(!data.error){
 					for(var i in data.powervoltages){
 						var volt=data.powervoltages[i];
@@ -2400,7 +2403,7 @@ function LameLogDisplay(){
 		getPhases: function(target){
 			var row=this;
 			var $phases=$('<select>').append('<option value=0>&nbsp;</option>');
-			$.get("api/v1/powerphases/"+this.cdevice.find('select').val()).done(function(data){
+			$.get("api/v1/powerphases/"+this.phase.find('select').val()).done(function(data){
 				if(!data.error){
 					for(var i in data.powerphases){
 						var phase=data.powerphases[i];
