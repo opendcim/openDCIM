@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-15 10:43-0600\n"
+"POT-Creation-Date: 2025-11-15 10:51-0600\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -328,7 +328,7 @@ msgstr "Strona"
 msgid "Cabinet Location"
 msgstr "Lokalizacja szafy"
 
-#: cabaudit.php:404 cabaudit.php:510 configuration.php:2554 devices.php:1865
+#: cabaudit.php:404 cabaudit.php:510 configuration.php:2578 devices.php:1865
 #: rackrequest.php:351 report_aging.php:425 report_aging.php:460
 #: report_asset.php:54 report_warranty.php:439 report_warranty.php:472
 #: sidebar.inc.php:18 workorder.php:156
@@ -413,7 +413,7 @@ msgstr "Zaktualizowano"
 msgid "New Cabinet"
 msgstr "Nowa Szafa"
 
-#: cabinets.php:272 configuration.php:2143 report_sensors.php:24
+#: cabinets.php:272 configuration.php:2155 report_sensors.php:24
 #: report_supply_status.php:103 search_export.php:150 supplybin.php:159
 msgid "Location"
 msgstr "Lokalizacja"
@@ -442,12 +442,12 @@ msgstr "Wysokość szafy"
 msgid "U1 Position"
 msgstr "Pozycja U1"
 
-#: cabinets.php:306 configuration.php:2095 dc_stats.php:321 dc_stats.php:329
+#: cabinets.php:306 configuration.php:2107 dc_stats.php:321 dc_stats.php:329
 #: mapmaker.php:172 zone_stats.php:309 zone_stats.php:317
 msgid "Bottom"
 msgstr "Dno"
 
-#: cabinets.php:306 configuration.php:2096 dc_stats.php:319 dc_stats.php:327
+#: cabinets.php:306 configuration.php:2108 dc_stats.php:319 dc_stats.php:327
 #: mapmaker.php:170 zone_stats.php:307 zone_stats.php:315
 msgid "Top"
 msgstr "Szczyt"
@@ -485,7 +485,7 @@ msgid "Notes"
 msgstr "Uwagi"
 
 #: cabinets.php:347 /home/runner/openDCIM/cabrow.php:196 cdu_templates.php:236
-#: configuration.php:2857 container.php:306 datacenter.php:352
+#: configuration.php:2881 container.php:306 datacenter.php:352
 #: departments.php:218 device_manufacturers.php:203 devices.php:2670
 #: disposition.php:115 escalations.php:86 power_panel.php:345
 #: project_mgr.php:174 report_logging.php:73 timeperiods.php:86 usermgr.php:337
@@ -524,7 +524,7 @@ msgid "Return to Navigator"
 msgstr "Powrót do Nawigacji"
 
 #: cabinets.php:362 /home/runner/openDCIM/cabrow.php:204 cdu_templates.php:245
-#: configuration.php:2862 container.php:320 datacenter.php:378
+#: configuration.php:2886 container.php:320 datacenter.php:378
 #: departments.php:229 device_manufacturers.php:218 device_templates.php:1128
 #: disposition.php:121 escalations.php:96 image_management.php:163
 #: pathmaker.php:523 /home/runner/openDCIM/paths.php:617 power_panel.php:438
@@ -776,7 +776,7 @@ msgstr "Zarządzalny"
 msgid "Automatic Transfer Switch"
 msgstr "ATS, Automatyczne wprowadzanie rezerwy"
 
-#: cdu_templates.php:129 configuration.php:2312 device_templates.php:796
+#: cdu_templates.php:129 configuration.php:2324 device_templates.php:796
 #: devices.php:2146
 msgid "SNMP Version"
 msgstr "Wersja SNMP"
@@ -861,37 +861,37 @@ msgstr "Konfiguracja Data Center"
 msgid "Current selection"
 msgstr "Current selection"
 
-#: configuration.php:831 configuration.php:869 container.php:118
+#: configuration.php:843 configuration.php:881 container.php:118
 #: datacenter.php:143 device_templates.php:407 rackrequest.php:334
 #: rackrequest.php:450
 msgid "Select"
 msgstr "Wybierz"
 
-#: configuration.php:935 configuration.php:1123
+#: configuration.php:947 configuration.php:1135
 msgid "Clear all"
 msgstr "Wyczyść wszystko"
 
-#: configuration.php:943 configuration.php:959 configuration.php:1133
-#: configuration.php:1154 configuration.php:1377 configuration.php:1391
-#: configuration.php:1490 configuration.php:1507
+#: configuration.php:955 configuration.php:971 configuration.php:1145
+#: configuration.php:1166 configuration.php:1389 configuration.php:1403
+#: configuration.php:1502 configuration.php:1519
 msgid "Something just went horribly wrong."
 msgstr "Stało się coś okropnego."
 
-#: configuration.php:950 configuration.php:1140
+#: configuration.php:962 configuration.php:1152
 msgid "Replace"
 msgstr "Podmień"
 
-#: configuration.php:966 configuration.php:1161 configuration.php:1372
-#: configuration.php:1399 configuration.php:1486 configuration.php:1514
+#: configuration.php:978 configuration.php:1173 configuration.php:1384
+#: configuration.php:1411 configuration.php:1498 configuration.php:1526
 #: device_templates.php:467
 msgid "Cancel"
 msgstr "Anuluj"
 
-#: configuration.php:970
+#: configuration.php:982
 msgid "Media Type Delete Override"
 msgstr "Wymuś Skasowanie Typu Nośnika"
 
-#: configuration.php:970
+#: configuration.php:982
 msgid ""
 "This media type is in use somewhere. Select an alternate type to assign to "
 "all the records to or choose clear all."
@@ -899,11 +899,11 @@ msgstr ""
 "Ten typ nośnika jest obecnie używany. Użyj innego typy aby przypisać go do "
 "wszystkich rekordów albo wybierz \"wyczyść wszystko\"."
 
-#: configuration.php:1165
+#: configuration.php:1177
 msgid "Code Delete Override"
 msgstr "Wymuś Skasowanie Kodu"
 
-#: configuration.php:1165
+#: configuration.php:1177
 msgid ""
 "This code is in use somewhere. You can either choose to clear all instances "
 "of this color being used or choose to have them replaced with another color."
@@ -911,19 +911,19 @@ msgstr ""
 "Ten kod jest obecnie używany. Możesz, albo wyczyścić wszystkie wystąpienia "
 "użytego w tym celu koloru, albo użyć innego koloru w zastępstwie. "
 
-#: configuration.php:1377
+#: configuration.php:1389
 msgid "Custom Device Attribute Type Change Error"
 msgstr "Błąd Zmiany Typu Atrybutu Urządzenia Niestandardowego"
 
-#: configuration.php:1385
+#: configuration.php:1397
 msgid "Change Type and Clear all uses"
 msgstr "Zmień Typ i Wyczyść wszystkie jego użycia"
 
-#: configuration.php:1404
+#: configuration.php:1416
 msgid "Custom Device Attribute Type Change Override"
 msgstr "Wymuś Zmianę Typu Atrybutu Urządzenia Niestandardowego"
 
-#: configuration.php:1404
+#: configuration.php:1416
 msgid ""
 "This custom device attribute is in use somewhere. If you choose to change "
 "the attribute type, it will be cleared from all devices and device templates."
@@ -931,19 +931,19 @@ msgstr ""
 "Ten atrybut niestandardowego urządzenia jest używany. Jeśli zmienisz typ "
 "tego atrybutu, zostanie on usunięty z wszystkich urządzeń i szablonów."
 
-#: configuration.php:1490
+#: configuration.php:1502
 msgid "Custom Device Attribute Delete Error"
 msgstr "Błąd Usunięcia Atrybutu Urządzenia Niestandardowego"
 
-#: configuration.php:1499
+#: configuration.php:1511
 msgid "Delete from All Devices/Templates"
 msgstr "Usuń z listy Urządzeń/Szablonów"
 
-#: configuration.php:1518
+#: configuration.php:1530
 msgid "Custom Device Attribute Delete Override"
 msgstr "Wymuś Usunięcie Atrybutu Urządzenia Niestandardowego"
 
-#: configuration.php:1518
+#: configuration.php:1530
 msgid ""
 "This custom device attribute is in use somewhere. If you choose to delete "
 "the attribute, it will be removed from all devices and device templates."
@@ -951,935 +951,946 @@ msgstr ""
 "Ten atrybut niestandardowego urządzenia jest używany. Jeśli go usuniesz , "
 "zostanie on usunięty z wszystkich urządzeń i szablonów."
 
-#: configuration.php:1725
+#: configuration.php:1737
 msgid "Verify directory rights"
 msgstr "Verify directory rights"
 
-#: configuration.php:1814
+#: configuration.php:1826
 msgid "General"
 msgstr "Ogólny"
 
-#: configuration.php:1815
+#: configuration.php:1827
 #, fuzzy
 msgid "Workflow/Style"
 msgstr "Przepływ Pracy"
 
-#: configuration.php:1816
+#: configuration.php:1828
 msgid "Privacy/Email"
 msgstr ""
 
-#: configuration.php:1817
+#: configuration.php:1829
 msgid "Reporting"
 msgstr "Raportowanie"
 
-#: configuration.php:1818
+#: configuration.php:1830
 msgid "ToolTips"
 msgstr "Porady"
 
-#: configuration.php:1819
+#: configuration.php:1831
 msgid "Cabling"
 msgstr "Okablowanie"
 
-#: configuration.php:1820 configuration.php:2550
+#: configuration.php:1832 configuration.php:2574
 msgid "Custom Device Attributes"
 msgstr "Atrybuty Niestandardowego Urządzenia"
 
-#: configuration.php:1821
+#: configuration.php:1833
 msgid "Attribute Mapping"
 msgstr "Attribute Mapping"
 
-#: configuration.php:1822
+#: configuration.php:1834
 #, fuzzy
 msgid "OIDC/LDAP"
 msgstr "LDAP"
 
-#: configuration.php:1823
+#: configuration.php:1835
 msgid "SAML"
 msgstr "SAML"
 
-#: configuration.php:1824
+#: configuration.php:1836
 msgid "Pre-Flight Check"
 msgstr "Wstępna Lista Kontrolna "
 
-#: configuration.php:1825
+#: configuration.php:1837
 #, fuzzy
 msgid "Credits"
 msgstr "Rewizje/Przeglądy"
 
-#: configuration.php:1830
+#: configuration.php:1842
 msgid "Organization Name"
 msgstr "Nazwa Organizacji"
 
-#: configuration.php:1834
+#: configuration.php:1846
 msgid "Locale"
 msgstr "Tłumaczenia"
 
-#: configuration.php:1838
+#: configuration.php:1850
 msgid "Default Panel Voltage"
 msgstr "Napięcie Domyślne Panelu"
 
-#: configuration.php:1842
+#: configuration.php:1854
 msgid "Site Specific Paths"
 msgstr "Site Specific Paths"
 
-#: configuration.php:1848
+#: configuration.php:1860
 msgid "Relative path for Drawings"
 msgstr "Relative path for Drawings"
 
-#: configuration.php:1852
+#: configuration.php:1864
 msgid "Relative path for Pictures"
 msgstr "Relative path for Pictures"
 
-#: configuration.php:1857
+#: configuration.php:1869
 msgid "Relative path for Local/Custom Reports"
 msgstr "Relative path for Local/Custom Reports"
 
-#: configuration.php:1862
+#: configuration.php:1874
 msgid "Time and Measurements"
 msgstr "Czas i Miary"
 
-#: configuration.php:1865
+#: configuration.php:1877
 msgid "Time Zone"
 msgstr "Strefa Czasowa"
 
-#: configuration.php:1870
+#: configuration.php:1882
 msgid "Log Retention (Days)"
 msgstr "Log Retention (Days)"
 
-#: configuration.php:1874 devices.php:1884 rackrequest.php:372
+#: configuration.php:1886 devices.php:1884 rackrequest.php:372
 msgid "Manufacture Date"
 msgstr "Data Produkcji"
 
-#: configuration.php:1876 configuration.php:1884
+#: configuration.php:1888 configuration.php:1896
 msgid "Blank"
 msgstr "Pusty"
 
-#: configuration.php:1877 configuration.php:1885 report_surplus.php:31
+#: configuration.php:1889 configuration.php:1897 report_surplus.php:31
 msgid "Now"
 msgstr "Teraz"
 
-#: configuration.php:1882
+#: configuration.php:1894
 msgid "Warranty Date"
 msgstr "Data Gwarancji"
 
-#: configuration.php:1890
+#: configuration.php:1902
 msgid "Measurement Units"
 msgstr "Jednostki Miar"
 
-#: configuration.php:1892
+#: configuration.php:1904
 msgid "English"
 msgstr "Angielski"
 
-#: configuration.php:1893
+#: configuration.php:1905
 msgid "Metric"
 msgstr "Metryczny"
 
-#: configuration.php:1898
+#: configuration.php:1910
 msgid "Page Size"
 msgstr "Rozmiar Strony"
 
-#: configuration.php:1900
+#: configuration.php:1912
 msgid "A4"
 msgstr "A4"
 
-#: configuration.php:1901
+#: configuration.php:1913
 msgid "A3"
 msgstr "A3"
 
-#: configuration.php:1902
+#: configuration.php:1914
 msgid "Letter"
 msgstr "Listowy"
 
-#: configuration.php:1903
+#: configuration.php:1915
 msgid "Legal"
 msgstr "Legal"
 
-#: configuration.php:1908 departments.php:235
+#: configuration.php:1920 departments.php:235
 msgid "Users"
 msgstr "Użytkownicy"
 
-#: configuration.php:1911
+#: configuration.php:1923
 msgid "Department Types"
 msgstr "Typy Wydziałów"
 
-#: configuration.php:1915
+#: configuration.php:1927
 msgid "User Lookup URL"
 msgstr "URL wyszukiwania użytkowników"
 
-#: configuration.php:1919
+#: configuration.php:1931
 msgid "Block Undefined Users"
 msgstr "Zablokuj Niezdefiniowanych Użytkowników"
 
-#: configuration.php:1921 configuration.php:1995 configuration.php:2006
-#: configuration.php:2017 configuration.php:2025 configuration.php:2126
-#: configuration.php:2134 configuration.php:2186 configuration.php:2194
-#: configuration.php:2260 configuration.php:2268 configuration.php:2399
-#: configuration.php:2412 configuration.php:2427 configuration.php:2527
-#: configuration.php:2720 configuration.php:2741 usermgr.php:331
+#: configuration.php:1933 configuration.php:2007 configuration.php:2018
+#: configuration.php:2029 configuration.php:2037 configuration.php:2138
+#: configuration.php:2146 configuration.php:2198 configuration.php:2206
+#: configuration.php:2272 configuration.php:2280 configuration.php:2411
+#: configuration.php:2424 configuration.php:2439 configuration.php:2551
+#: configuration.php:2744 configuration.php:2765 usermgr.php:331
 msgid "Disabled"
 msgstr "Wyłączony"
 
-#: configuration.php:1922 configuration.php:1996 configuration.php:2007
-#: configuration.php:2018 configuration.php:2026 configuration.php:2127
-#: configuration.php:2135 configuration.php:2187 configuration.php:2195
-#: configuration.php:2261 configuration.php:2269 configuration.php:2400
-#: configuration.php:2413 configuration.php:2721 configuration.php:2742
+#: configuration.php:1934 configuration.php:2008 configuration.php:2019
+#: configuration.php:2030 configuration.php:2038 configuration.php:2139
+#: configuration.php:2147 configuration.php:2199 configuration.php:2207
+#: configuration.php:2273 configuration.php:2281 configuration.php:2412
+#: configuration.php:2425 configuration.php:2745 configuration.php:2766
 msgid "Enabled"
 msgstr "Czynny"
 
-#: configuration.php:1927
+#: configuration.php:1939
 msgid "Rack Usage"
 msgstr "Wykorzystanie Stojaka"
 
-#: configuration.php:1930
+#: configuration.php:1942
 msgid "Space Critical"
 msgstr "Przestrzeń Krytyczna"
 
-#: configuration.php:1933
+#: configuration.php:1945
 msgid "Temperature Critical"
 msgstr "Temperatura Krytyczna"
 
-#: configuration.php:1937
+#: configuration.php:1949
 msgid "Space Warning"
 msgstr "Przestrzeń Alarmowa"
 
-#: configuration.php:1940
+#: configuration.php:1952
 msgid "Temperature Warning"
 msgstr "Temperatura Alarmowa"
 
-#: configuration.php:1944
+#: configuration.php:1956
 msgid "Weight Critical"
 msgstr "Waga Krytyczna"
 
-#: configuration.php:1947
+#: configuration.php:1959
 msgid "High Humidity Critical"
 msgstr "Wysoka Wilgotność Krytyczna "
 
-#: configuration.php:1951
+#: configuration.php:1963
 msgid "Weight Warning"
 msgstr "Waga Ostrzegawcza"
 
-#: configuration.php:1954
+#: configuration.php:1966
 msgid "Low Humidity Critical"
 msgstr "Niska Wilgotność Krytyczna "
 
-#: configuration.php:1958
+#: configuration.php:1970
 msgid "Power Critical"
 msgstr "Zasilanie Krytyczne"
 
-#: configuration.php:1961
+#: configuration.php:1973
 msgid "High Humidity Caution"
 msgstr "Uwaga, Wysoka Wilgotność "
 
-#: configuration.php:1965
+#: configuration.php:1977
 msgid "Power Warning"
 msgstr "Ostrzeżenia Zasilania"
 
-#: configuration.php:1968
+#: configuration.php:1980
 msgid "Low Humidity Caution"
 msgstr "Uwaga, Niska Wilgotność"
 
-#: configuration.php:1972
+#: configuration.php:1984
 msgid "RCI (Rack Cooling Index) High"
 msgstr "Wysoki współczynnik RCI (Rack Cooling Index) "
 
-#: configuration.php:1975
+#: configuration.php:1987
 msgid "RCI (Rack Cooling Index) Low"
 msgstr "Niski współczynnik RCI (Rack Cooling Index) "
 
-#: configuration.php:1979
+#: configuration.php:1991
 msgid "Expirations"
 msgstr "Expirations"
 
-#: configuration.php:1982
+#: configuration.php:1994
 msgid "Unseen Virtual Machines (Days)"
 msgstr "Unseen Virtual Machines (Days)"
 
-#: configuration.php:1985
+#: configuration.php:1997
 msgid "Uninstalled Reservations (Days)"
 msgstr "Uninstalled Reservations (Days)"
 
-#: configuration.php:1993
+#: configuration.php:2005
 msgid "Work Order Builder"
 msgstr "Kreator Zleceń Wykonania"
 
-#: configuration.php:2001
+#: configuration.php:2013
 msgid "Site Level Security Options"
 msgstr "Ustawienia Bezpieczeństwa w Obrębie Lokalizacji"
 
-#: configuration.php:2004
+#: configuration.php:2016
 msgid "Filter Cabinet List"
 msgstr "Filtruj Listę Szaf"
 
-#: configuration.php:2012 configuration.php:2015
+#: configuration.php:2024 configuration.php:2027
 msgid "Rack Requests"
 msgstr "Zapotrzebowanie na Szafę"
 
-#: configuration.php:2023
+#: configuration.php:2035
 #, fuzzy
 msgid "Rack Requests Actions"
 msgstr "Zapotrzebowanie na Stojak"
 
-#: configuration.php:2031
+#: configuration.php:2043
 msgid "Mail Subject"
 msgstr "Tytuł Wiadomości E-mail"
 
-#: configuration.php:2035
+#: configuration.php:2047
 msgid "Warning (Hours)"
 msgstr "Ostrzeżenie (Godziny)"
 
-#: configuration.php:2039
+#: configuration.php:2051
 msgid "Critical (Hours)"
 msgstr "Stan Krytyczny (Godziny)"
 
-#: configuration.php:2060
+#: configuration.php:2072
 msgid "Racks & Maps"
 msgstr "Szafy i Mapy"
 
-#: configuration.php:2063
+#: configuration.php:2075
 msgid "Critical Color"
 msgstr "Kolor Krytyczny"
 
-#: configuration.php:2069
+#: configuration.php:2081
 msgid "Caution Color"
 msgstr "Kolor Ostrzegawczy"
 
-#: configuration.php:2075
+#: configuration.php:2087
 msgid "Good Color"
 msgstr "Kolor Stanu Dobrego"
 
-#: configuration.php:2087
+#: configuration.php:2099
 msgid "Unused Spaces"
 msgstr "Niewykorzystana Przestrzeń"
 
-#: configuration.php:2093
+#: configuration.php:2105
 msgid "Default U1 Position"
 msgstr "Domyślna Pozycja U1"
 
-#: configuration.php:2100 departments.php:235
+#: configuration.php:2112 departments.php:235
 msgid "Devices"
 msgstr "Urządzenia"
 
-#: configuration.php:2103
+#: configuration.php:2115
 msgid "Device Labels"
 msgstr "Etykiety Urządzenia"
 
-#: configuration.php:2105
+#: configuration.php:2117
 msgid "Uppercase"
 msgstr "Wielkie Litery"
 
-#: configuration.php:2106
+#: configuration.php:2118
 msgid "Lowercase"
 msgstr "Małe Litery"
 
-#: configuration.php:2107
+#: configuration.php:2119
 msgid "Initial caps"
 msgstr "Pierwsze Wielkie Litery"
 
-#: configuration.php:2108
+#: configuration.php:2120
 msgid "Don't touch my labels"
 msgstr "Nie ruszaj moich etykiet"
 
-#: configuration.php:2113
+#: configuration.php:2125
 msgid "Device Lists"
 msgstr "Lista Urządzeń"
 
-#: configuration.php:2115
+#: configuration.php:2127
 msgid "Just Devices"
 msgstr "Tylko Urządzenia"
 
-#: configuration.php:2116
+#: configuration.php:2128
 msgid "Show Datacenter and Cabinet"
 msgstr "Pokaż Datacenter i Szafę"
 
-#: configuration.php:2121 departments.php:235 rowview.php:92
+#: configuration.php:2133 departments.php:235 rowview.php:92
 msgid "Cabinets"
 msgstr "Szafy"
 
-#: configuration.php:2124
+#: configuration.php:2136
 msgid "Draw Cabinet Outlines"
 msgstr "Rysuj obwiednie Szaf"
 
-#: configuration.php:2132
+#: configuration.php:2144
 msgid "Add Cabinet Labels"
 msgstr "Dodaj Etykiety Szaf"
 
-#: configuration.php:2140
+#: configuration.php:2152
 msgid "Which Cabinet Label?"
 msgstr "Which Cabinet Label?"
 
-#: configuration.php:2144
+#: configuration.php:2156
 msgid "Owner Name"
 msgstr "Owner Name"
 
-#: configuration.php:2145
+#: configuration.php:2157
 msgid "Key Lock Information"
 msgstr "Key Lock Information"
 
-#: configuration.php:2146
+#: configuration.php:2158
 msgid "Model No"
 msgstr "Model No"
 
-#: configuration.php:2152
+#: configuration.php:2164
 msgid "Site"
 msgstr "Lokalizacja"
 
-#: configuration.php:2155
+#: configuration.php:2167
 msgid "Header Color"
 msgstr "Kolor Nagłówków"
 
-#: configuration.php:2161
+#: configuration.php:2173
 msgid "Body Color"
 msgstr "Kolor Treści"
 
-#: configuration.php:2167
+#: configuration.php:2179
 msgid "Link Color"
 msgstr "Kolor Linków"
 
-#: configuration.php:2173
+#: configuration.php:2185
 msgid "Viewed Link Color"
 msgstr "Kolor Linków Odwiedzonych"
 
-#: configuration.php:2181
+#: configuration.php:2193
 #, fuzzy
 msgid "GDPR Enforcement"
 msgstr "Wymusić"
 
-#: configuration.php:2184
+#: configuration.php:2196
 msgid "GDPR Enforcement of Country Isolation"
 msgstr ""
 
-#: configuration.php:2192
+#: configuration.php:2204
 msgid "GPDR PII Privacy"
 msgstr ""
 
-#: configuration.php:2200
+#: configuration.php:2212
 #, fuzzy
 msgid "Default Country for Users"
 msgstr "Kolor Domyślny"
 
-#: configuration.php:2210
+#: configuration.php:2222
 #, fuzzy
 msgid "SMTP Options"
 msgstr "Opcje SNMP"
 
-#: configuration.php:2214
+#: configuration.php:2226
 msgid "SMTP Server"
 msgstr "Serwer SMTP"
 
-#: configuration.php:2218
+#: configuration.php:2230
 msgid "SMTP Port"
 msgstr "Port SMTP"
 
-#: configuration.php:2222
+#: configuration.php:2234
 msgid "SMTP Helo"
 msgstr "SMTP Helo"
 
-#: configuration.php:2226
+#: configuration.php:2238
 msgid "SMTP Username"
 msgstr "Użytkownik SMTP"
 
-#: configuration.php:2230
+#: configuration.php:2242
 msgid "SMTP Password"
 msgstr "Hasło SMTP"
 
-#: configuration.php:2234
+#: configuration.php:2246
 msgid "Mail To"
 msgstr "Wiadomość Do"
 
-#: configuration.php:2238
+#: configuration.php:2250
 msgid "Mail From"
 msgstr "Wiadomość Od"
 
-#: configuration.php:2242
+#: configuration.php:2254
 msgid "Facility Manager"
 msgstr "Kierownik Obiektu"
 
-#: configuration.php:2246
+#: configuration.php:2258
 msgid "Facility Manager Email"
 msgstr "E-mail Kierownika Obiektu"
 
-#: configuration.php:2251
+#: configuration.php:2263
 msgid "Test Settings"
 msgstr "Test Settings"
 
-#: configuration.php:2258
+#: configuration.php:2270
 msgid "Email Alerts on Power Poll"
 msgstr "Email Alerts on Power Poll"
 
-#: configuration.php:2266
+#: configuration.php:2278
 msgid "Email Alerts on Sensor Poll"
 msgstr "Email Alerts on Sensor Poll"
 
-#: configuration.php:2281 report_cost.php:397 report_cost.php:400
+#: configuration.php:2293 report_cost.php:397 report_cost.php:400
 msgid "Annual Cost Per Rack Unit (Year)"
 msgstr "Roczny Koszt za Stojak"
 
-#: configuration.php:2285
+#: configuration.php:2297
 msgid "Cost Per KwHr"
 msgstr "Cena kWh"
 
-#: configuration.php:2289
+#: configuration.php:2301
 msgid "Logo file for headers"
 msgstr "Plik z Logo do Nagłówków "
 
-#: configuration.php:2293
+#: configuration.php:2305
 msgid "Font"
 msgstr "Czcionka"
 
-#: configuration.php:2297
+#: configuration.php:2309
 msgid "New Installs Period"
 msgstr "Nowy Okres Instalacji"
 
-#: configuration.php:2301
+#: configuration.php:2313
 msgid "Base URL for install"
 msgstr "Podstawowy adres URL do instalacji"
 
-#: configuration.php:2305
+#: configuration.php:2317
 msgid "SNMP Options"
 msgstr "Opcje SNMP"
 
-#: configuration.php:2308
+#: configuration.php:2320
 msgid "Default SNMP Community"
 msgstr "Domyślna Wspólnota SNMP"
 
-#: configuration.php:2322 devices.php:2163
+#: configuration.php:2334 devices.php:2163
 msgid "SNMPv3 Security Level"
 msgstr "Poziom Bezpieczeństwa SNMPv3"
 
-#: configuration.php:2332 devices.php:2176
+#: configuration.php:2344 devices.php:2176
 msgid "SNMPv3 AuthProtocol"
 msgstr "Protokół Autoryzacji SNMPv3"
 
-#: configuration.php:2341 devices.php:2189
+#: configuration.php:2353 devices.php:2189
 msgid "SNMPv3 Passphrase"
 msgstr "Hasło SNMPv2"
 
-#: configuration.php:2345 devices.php:2193
+#: configuration.php:2357 devices.php:2193
 msgid "SNMPv3 PrivProtocol"
 msgstr "SNMPv3 PrivProtocol"
 
-#: configuration.php:2354 devices.php:2206
+#: configuration.php:2366 devices.php:2206
 msgid "SNMPv3 PrivPassphrase"
 msgstr "SNMPv3 PrivPassphrase"
 
-#: configuration.php:2358
+#: configuration.php:2370
 msgid "Capacity Reporting"
 msgstr "Raportowanie Pojemności"
 
-#: configuration.php:2361
+#: configuration.php:2373
 msgid "Switches"
 msgstr "Przełączniki"
 
-#: configuration.php:2364
+#: configuration.php:2376
 msgid "OptIn"
 msgstr "OptIn"
 
-#: configuration.php:2365
+#: configuration.php:2377
 msgid "OptOut"
 msgstr "OptOut"
 
-#: configuration.php:2370
+#: configuration.php:2382
 msgid "Switch Capacity Threshold"
 msgstr "Próg Pojemności Przełącznika"
 
-#: configuration.php:2374
+#: configuration.php:2386
 msgid "Utilities"
 msgstr "Narzędzia"
 
-#: configuration.php:2377
+#: configuration.php:2389
 msgid "snmpget"
 msgstr "snmpget"
 
-#: configuration.php:2381
+#: configuration.php:2393
 msgid "snmpwalk"
 msgstr "snmpwalk"
 
-#: configuration.php:2385
+#: configuration.php:2397
 msgid "cut"
 msgstr "wytnij"
 
-#: configuration.php:2389
+#: configuration.php:2401
 msgid "dot"
 msgstr "kropka"
 
-#: configuration.php:2397
+#: configuration.php:2409
 msgid "Cabinet ToolTips"
 msgstr "Porady dot. Szaf"
 
-#: configuration.php:2410
+#: configuration.php:2422
 msgid "CDU ToolTips"
 msgstr "Porady dot. CDU"
 
-#: configuration.php:2422
+#: configuration.php:2434
 msgid "Media Types"
 msgstr "Typy Kabli"
 
-#: configuration.php:2425
+#: configuration.php:2437
 msgid "Media Type Matching"
 msgstr "Dopasowanie Typów Kabli"
 
-#: configuration.php:2428 configuration.php:2528
+#: configuration.php:2440 configuration.php:2552
 msgid "Enforce"
 msgstr "Wymusić"
 
-#: configuration.php:2438 devices.php:2566 devices.php:2613
+#: configuration.php:2450 devices.php:2566 devices.php:2613
 msgid "Media Type"
 msgstr "Typ Kabla"
 
-#: configuration.php:2439
+#: configuration.php:2451
 msgid "Default Color"
 msgstr "Kolor Domyślny"
 
-#: configuration.php:2443 configuration.php:2457 configuration.php:2470
-#: configuration.php:2482 configuration.php:2494 configuration.php:2506
-#: configuration.php:2518 configuration.php:2562 configuration.php:2579
+#: configuration.php:2455 configuration.php:2469 configuration.php:2482
+#: configuration.php:2494 configuration.php:2506 configuration.php:2518
+#: configuration.php:2530 configuration.php:2542 configuration.php:2586
+#: configuration.php:2603
 msgid "Add new row"
 msgstr "Dodaj nowy wiersz"
 
-#: configuration.php:2448
+#: configuration.php:2460
 msgid "Cable Colors"
 msgstr "Kolory Kabli"
 
-#: configuration.php:2452 connections_spreadsheet.php:25
+#: configuration.php:2464 connections_spreadsheet.php:25
 msgid "Color"
 msgstr "Kolor"
 
-#: configuration.php:2453
+#: configuration.php:2465
 msgid "Default Note"
 msgstr "Domyślna Notatka"
 
-#: configuration.php:2462
+#: configuration.php:2474
 msgid "Media Protocols"
 msgstr ""
 
-#: configuration.php:2466
+#: configuration.php:2478
 #, fuzzy
 msgid "Protocol Name"
 msgstr "Nazwa Portu"
 
-#: configuration.php:2474
+#: configuration.php:2486
 #, fuzzy
 msgid "Media Connectors"
 msgstr "Połączenie Tylne"
 
-#: configuration.php:2478 configuration.php:2502 devices.php:2504
+#: configuration.php:2490 configuration.php:2514 devices.php:2504
 #, fuzzy
 msgid "Connector Type"
 msgstr "Połączenia"
 
-#: configuration.php:2486
+#: configuration.php:2498
 #, fuzzy
 msgid "Media Data Rates"
 msgstr "Edytuj Data Center"
 
-#: configuration.php:2490
+#: configuration.php:2502
 #, fuzzy
 msgid "Data Rate"
 msgstr "Data Center"
 
-#: configuration.php:2498
+#: configuration.php:2510
 #, fuzzy
 msgid "Power Connectors"
 msgstr "Połączenia Zasilania"
 
-#: configuration.php:2510
+#: configuration.php:2522
 #, fuzzy
 msgid "Power Voltages"
 msgstr "Napięcie Panelu"
 
-#: configuration.php:2514
+#: configuration.php:2526
 #, fuzzy
 msgid "Voltage Value"
 msgstr "Napięcie"
 
-#: configuration.php:2522
+#: configuration.php:2534
+#, fuzzy
+msgid "Power Phases"
+msgstr "Panel Zasilający"
+
+#: configuration.php:2538
+#, fuzzy
+msgid "Phase Name"
+msgstr "Nazwa Panelu"
+
+#: configuration.php:2546
 msgid "Connection Filtering"
 msgstr "Filtrowanie Połączeń"
 
-#: configuration.php:2525
+#: configuration.php:2549
 msgid "Patch panel rear connection filtering"
 msgstr "Filtrowanie tylnych połączeń patch panelu"
 
-#: configuration.php:2533
+#: configuration.php:2557
 msgid "Connection Pathing"
 msgstr "Trasowanie Połączeń"
 
-#: configuration.php:2536
+#: configuration.php:2560
 msgid "Cabinet Weight"
 msgstr "Waga Szafy"
 
-#: configuration.php:2540
+#: configuration.php:2564
 msgid "Weight for rear connections between panels"
 msgstr "Waga tylnych połączeń między panelami"
 
-#: configuration.php:2544
+#: configuration.php:2568
 msgid "Weight for patches in the same row"
 msgstr "Waga paneli w tym samym rzędzie "
 
-#: configuration.php:2555
+#: configuration.php:2579
 msgid "Type"
 msgstr "Typ"
 
-#: configuration.php:2556
+#: configuration.php:2580
 msgid "Required"
 msgstr "Wymagany"
 
-#: configuration.php:2557
+#: configuration.php:2581
 msgid "Apply to<br>All Devices"
 msgstr "Zastosuj do <br> Wszystkich Urządzeń"
 
-#: configuration.php:2558
+#: configuration.php:2582
 msgid "Default Value"
 msgstr "Wartość Domyślna"
 
-#: configuration.php:2570 search_export.php:164
+#: configuration.php:2594 search_export.php:164
 #, fuzzy
 msgid "Device Status"
 msgstr "Lista Urządzeń"
 
-#: configuration.php:2585
+#: configuration.php:2609
 #, fuzzy
 msgid "Authentication Attribute Mapping"
 msgstr "Konfiguracja Autentykacji i Autoryzacji LDAP"
 
-#: configuration.php:2588
+#: configuration.php:2612
 msgid "FirstName"
 msgstr "FirstName"
 
-#: configuration.php:2592 usermgr.php:267
+#: configuration.php:2616 usermgr.php:267
 msgid "Last Name"
 msgstr "Nazwisko"
 
-#: configuration.php:2596 report_contact.php:451 report_cost.php:435
+#: configuration.php:2620 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Email"
 msgstr "Email"
 
-#: configuration.php:2600 report_contact.php:451 report_cost.php:435
+#: configuration.php:2624 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Phone1"
 msgstr "Telefon1"
 
-#: configuration.php:2604 report_contact.php:451 report_cost.php:435
+#: configuration.php:2628 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Phone2"
 msgstr "Telefon2"
 
-#: configuration.php:2608 container.php:250 datacenter.php:283 usermgr.php:283
+#: configuration.php:2632 container.php:250 datacenter.php:283 usermgr.php:283
 #, fuzzy
 msgid "Country"
 msgstr "Ilość"
 
-#: configuration.php:2612
+#: configuration.php:2636
 #, fuzzy
 msgid "Username Transformations"
 msgstr "Zarządzanie Użytkownikami"
 
-#: configuration.php:2615
+#: configuration.php:2639
 msgid "Remove Account Prefix"
 msgstr "Remove Account Prefix"
 
-#: configuration.php:2619
+#: configuration.php:2643
 msgid "Remove Account Suffix"
 msgstr "Remove Account Suffix"
 
-#: configuration.php:2623
+#: configuration.php:2647
 msgid "Group/Scope Mapping"
 msgstr "Group/Scope Mapping"
 
-#: configuration.php:2626
+#: configuration.php:2650
 msgid "SAML Attribute containing Groups"
 msgstr "SAML Attribute containing Groups"
 
-#: configuration.php:2630
+#: configuration.php:2654
 msgid "Site Access"
 msgstr "Dostęp do Lokalizacji"
 
-#: configuration.php:2634
+#: configuration.php:2658
 msgid "Global Read"
 msgstr "Globalny Odczyt"
 
-#: configuration.php:2638
+#: configuration.php:2662
 msgid "Global Write"
 msgstr "Globalny Zapis"
 
-#: configuration.php:2642
+#: configuration.php:2666
 msgid "Global Delete"
 msgstr "Globalne Kasowanie"
 
-#: configuration.php:2646
+#: configuration.php:2670
 msgid "Admin Owned Devices"
 msgstr "Urządzenia Należące do Administratora"
 
-#: configuration.php:2650
+#: configuration.php:2674
 msgid "Enter Rack Request"
 msgstr "Wprowadź Zapotrzebowanie na Stojak"
 
-#: configuration.php:2654
+#: configuration.php:2678
 msgid "Complete Rack Request"
 msgstr "Dokończ Zapotrzebowanie na Stojak"
 
-#: configuration.php:2658
+#: configuration.php:2682
 msgid "Contact Admin"
 msgstr "Skontaktuj się z Administratorem"
 
-#: configuration.php:2662
+#: configuration.php:2686
 msgid "Bulk Operations"
 msgstr "Operacje Wieloobiektowe"
 
-#: configuration.php:2666
+#: configuration.php:2690
 msgid "Site Admin"
 msgstr "Administrator Lokalizacji"
 
-#: configuration.php:2672
+#: configuration.php:2696
 #, fuzzy
 msgid "OIDC Connection Configuration"
 msgstr "Konfiguracja Data Center"
 
-#: configuration.php:2675
+#: configuration.php:2699
 #, fuzzy
 msgid "OIDC Authorization Endpoint"
 msgstr "Importu wielu obiektów sieciowych."
 
-#: configuration.php:2679
+#: configuration.php:2703
 msgid "OIDC Client ID"
 msgstr "OIDC Client ID"
 
-#: configuration.php:2683
+#: configuration.php:2707
 msgid "OIDC Client Secret"
 msgstr "OIDC Client Secret"
 
-#: configuration.php:2687
+#: configuration.php:2711
 #, fuzzy
 msgid "OIDC UserID Attribute"
 msgstr "Atrybuty Niestandardowe"
 
-#: configuration.php:2691
+#: configuration.php:2715
 msgid "LDAP Authentication and Authorization Configuration"
 msgstr "Konfiguracja Autentykacji i Autoryzacji LDAP"
 
-#: configuration.php:2694
+#: configuration.php:2718
 msgid "LDAP Server URI"
 msgstr "URI Serwera LADP"
 
-#: configuration.php:2698
+#: configuration.php:2722
 msgid "Base DN"
 msgstr "Bazowy DN"
 
-#: configuration.php:2702
+#: configuration.php:2726
 msgid "Base Search"
 msgstr "Wyszukiwanie Podstawowe"
 
-#: configuration.php:2703
+#: configuration.php:2727
 msgid "Leave blank for Active Directory"
 msgstr "Leave blank for Active Directory"
 
-#: configuration.php:2706
+#: configuration.php:2730
 msgid "Bind DN"
 msgstr "Powiązany DN"
 
-#: configuration.php:2710
+#: configuration.php:2734
 msgid "User Search"
 msgstr "Wyszukiwanie Użytkownika "
 
-#: configuration.php:2714
+#: configuration.php:2738
 msgid "LDAP Session Expiration (Seconds)"
 msgstr "Wygasanie Sesji LDAP (w sekundach)"
 
-#: configuration.php:2718
+#: configuration.php:2742
 msgid "LDAP Debugging"
 msgstr "LDAP Debugging"
 
-#: configuration.php:2726
+#: configuration.php:2750
 msgid "Emergency Bypass Password"
 msgstr "Emergency Bypass Password"
 
-#: configuration.php:2732
+#: configuration.php:2756
 #, fuzzy
 msgid "SAML Authentication Configuration"
 msgstr "Konfiguracja Autentykacji i Autoryzacji LDAP"
 
-#: configuration.php:2735
+#: configuration.php:2759
 #, fuzzy
 msgid "Base URL"
 msgstr "Bazowy DN"
 
-#: configuration.php:2739
+#: configuration.php:2763
 msgid "Show Success Page"
 msgstr "Show Success Page"
 
-#: configuration.php:2747
+#: configuration.php:2771
 msgid "SAML SP Information and Certificate Generation"
 msgstr "SAML SP Information and Certificate Generation"
 
-#: configuration.php:2751
+#: configuration.php:2775
 msgid "Entity ID"
 msgstr "Entity ID"
 
-#: configuration.php:2755
+#: configuration.php:2779
 msgid "Country (2 Character)"
 msgstr "Country (2 Character)"
 
-#: configuration.php:2759
+#: configuration.php:2783
 msgid "State or Province"
 msgstr "State or Province"
 
-#: configuration.php:2763
+#: configuration.php:2787
 msgid "Organization"
 msgstr "Organization"
 
-#: configuration.php:2776
+#: configuration.php:2800
 msgid "Certificate Expiration"
 msgstr "Certificate Expiration"
 
-#: configuration.php:2780
+#: configuration.php:2804
 msgid "SP Private Key"
 msgstr "SP Private Key"
 
-#: configuration.php:2784
+#: configuration.php:2808
 msgid "SP x509 Certificate"
 msgstr "SP x509 Certificate"
 
-#: configuration.php:2789
+#: configuration.php:2813
 msgid "Generate/Renew Certificate"
 msgstr "Generate/Renew Certificate"
 
-#: configuration.php:2794
+#: configuration.php:2818
 #, fuzzy
 msgid "SAML Identity Provider Configuration"
 msgstr "Konfiguracja Data Center"
 
-#: configuration.php:2798
+#: configuration.php:2822
 msgid "IdP entityId"
 msgstr "IdP entityId"
 
-#: configuration.php:2802
+#: configuration.php:2826
 msgid "IdP Metadata URL"
 msgstr "IdP Metadata URL"
 
-#: configuration.php:2806
+#: configuration.php:2830
 msgid "SSO URL"
 msgstr "SSO URL"
 
-#: configuration.php:2810
+#: configuration.php:2834
 msgid "SLS URL"
 msgstr "SLS URL"
 
-#: configuration.php:2814
+#: configuration.php:2838
 msgid "IdP x509 Certificate"
 msgstr "IdP x509 Certificate"
 
-#: configuration.php:2819
+#: configuration.php:2843
 msgid "Refresh IdP Metadata"
 msgstr "Refresh IdP Metadata"
 
-#: configuration.php:2862
+#: configuration.php:2886
 #, fuzzy
 msgid "Reserved"
 msgstr "Zarezerwowane Urządzenia"
 
-#: configuration.php:2862
+#: configuration.php:2886
 msgid "Disposed"
 msgstr "Disposed"
 
