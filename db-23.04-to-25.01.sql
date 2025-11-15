@@ -46,9 +46,9 @@ CREATE TABLE IF NOT EXISTS fac_MediaDataRates (
 INSERT INTO fac_MediaDataRates set RateText='100M';
 INSERT INTO fac_MediaDataRates set RateText='1G';
 
-ALTER TABLE fac_Ports ADD COLUMN ConnectorID int(11) DEFAULT NULL AFTER Label;
-ALTER TABLE fac_Ports ADD COLUMN ProtocolID int(11) DEFAULT NULL AFTER ConnectorID;
-ALTER TABLE fac_Ports ADD COLUMN RateID int(11) DEFAULT NULL AFTER ProtocolID;
+ALTER TABLE fac_Ports ADD COLUMN ConnectorID int(11) NOT NULL DEFAULT 0 AFTER Label;
+ALTER TABLE fac_Ports ADD COLUMN ProtocolID int(11) NOT NULL DEFAULT 0 AFTER ConnectorID;
+ALTER TABLE fac_Ports ADD COLUMN RateID int(11) NOT NULL DEFAULT 0 AFTER ProtocolID;
 
 --
 -- Table Structure for table fac_Powerconnectors
