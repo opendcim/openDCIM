@@ -648,7 +648,7 @@ function buildportstable(){
 
 function buildpowerportstable(){
 	var table=$('<div>').addClass('table');
-	table.append('<div><div>Port Number</div><div>Label</div><div>Notes</div></div>');
+	table.append('<div><div>Port Number</div><div>Label</div><div>Connector</div><div>Voltage</div><div>Phase</div><div>Notes</div></div>');
 	var ports=[];
 
 	function buildrow(TemplatePortObj){
@@ -660,6 +660,9 @@ function buildpowerportstable(){
 		var row=$('<div>').
 			append($('<div>').html(pn)).
 			append($('<div>').html($('<input>').val(label).text(label).attr('name','powerlabel'+pn))).
+			append($('<div>').html($('<select>').attr('name','connector'+pn))).
+			append($('<div>').html($('<select>').attr('name','voltage'+pn))).
+			append($('<div>').html($('<select>').attr('name','phase'+pn))).
 			append($('<div>').html($('<input>').val(n).text(n).attr('name','powerportnotes'+pn))).
 			data('change',((rrow.data('change'))?true:false));
 
@@ -2316,7 +2319,11 @@ function LameLogDisplay(){
 			this.portname    = this.element.find('div:nth-child(3)');
 			this.cdevice     = this.element.find('div:nth-child(4)');
 			this.cdeviceport = this.element.find('div:nth-child(5)');
-			this.cnotes      = this.element.find('div:nth-child(6)');
+			this.conntype    = this.element.find('div:nth-child(6)');
+			this.phase       = this.element.find('div:nth-child(7)');
+			this.voltage     = this.element.find('div:nth-child(8)');
+			this.cnotes      = this.element.find('div:nth-child(9)');
+
 			// As we only track power connections on the primary chassis but display them 
 			// on children we need a common place to check for the correct device id
 			this.deviceid    = (typeof $('select[name=ParentDevice]').val()=='undefined')?$('#DeviceID').val():$('select[name=ParentDevice]').val();
@@ -2368,7 +2375,7 @@ function LameLogDisplay(){
 		},
 		getConnectors: function(target){
 			var row=this;
-			var $connections=$('<select[name=ConnectorTypeID]>').append('<option value=0>&nbsp;</option>');
+			var $connections=$('<select>').append('<option value=0>&nbsp;</option>');
 			$.get("api/v1/powerconnectortypes/"+this.cdevice.find('select').val()).done(function(data){
 				if(!data.error){
 					for(var i in data.connectortype){
@@ -2380,7 +2387,7 @@ function LameLogDisplay(){
 		},
 		getVoltages: function(target){
 			var row=this;
-			var $voltages=$('<select[name=VoltageID]>').append('<option value=0>&nbsp;</option>');
+			var $voltages=$('<select>').append('<option value=0>&nbsp;</option>');
 			$.get("api/v1/powervoltages/"+this.cdevice.find('select').val()).done(function(data){
 				if(!data.error){
 					for(var i in data.powervoltages){
@@ -2392,7 +2399,7 @@ function LameLogDisplay(){
 		},
 		getPhases: function(target){
 			var row=this;
-			var $phases=$('<select[name=PhaseID]>').append('<option value=0>&nbsp;</option>');
+			var $phases=$('<select>').append('<option value=0>&nbsp;</option>');
 			$.get("api/v1/powerphases/"+this.cdevice.find('select').val()).done(function(data){
 				if(!data.error){
 					for(var i in data.powerphases){

@@ -2503,6 +2503,7 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 					<div>".__("Device Port")."</div>
 					<div>".__("Connector Type")."</div>
 					<div>".__("Voltage")."</div>
+					<div>".__("Phase")."</div>
 					<div id=\"ppn\">".__("Notes")."</div>";
 					if($dev->DeviceType=='CDU'){print "\t\t\t\t<div id=\"ppst\">".__("Status")."</div>";}
 print "<!--				<div>".__("Panel")."</div> -->
@@ -2522,11 +2523,15 @@ print "<!--				<div>".__("Panel")."</div> -->
 					$cord->ConnectedDeviceID=0;
 					$cord->ConnectedPort=0;
 				}
-				error_log( "DEBUG: ".print_r($cord, true) );
 				if($cord->VoltageID>0 && isset($voltageLevels[$cord->VoltageID])){
 					$cord->Voltage=PowerVoltages::getVoltage($cord->VoltageID)->VoltageName;
 				}else{
 					$cord->Voltage='';
+				}
+				if($cord->PhaseID>0 && isset($phaseTypes[$cord->PhaseID])){
+					$cord->Phase=PowerPhases::getPhase($cord->PhaseID)->PhaseName;
+				}else{
+					$cord->Phase='';
 				}
 				if($cord->ConnectorID>0 && isset($connectorTypes[$cord->ConnectorID])){
 					$cord->ConnectorType=PowerConnectors::getConnector($cord->ConnectorID)->ConnectorName;
@@ -2541,6 +2546,7 @@ print "<!--				<div>".__("Panel")."</div> -->
 					<div data-default=$cord->ConnectedPort>$tmpcord->Label</div>
 					<div id=\"ppct$i\" data-default=$cord->ConnectorType>$cord->ConnectorType</div>
 					<div id=\"ppv$i\" data-default=$cord->Voltage>$cord->Voltage</div>
+					<div id=\"ppp$i\" data-default=$cord->Phase>$cord->Phase</div>
 					<div id=\"ppn$i\" data-default=\"$cord->Notes\">$cord->Notes</div>";
 					if($dev->DeviceType=='CDU'){print "\t\t\t\t<div id=\"ppst$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 				print "\t\t\t\t</div>\n";
