@@ -489,6 +489,18 @@
 		}
 	}
 
+	// Build list of Power Phases
+	$powerphases="";
+	$powerPhaseList=PowerPhases::GetPhaseList();
+	if(count($powerPhaseList)>0){
+		foreach($powerPhaseList as $pp){
+			$powerphases.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="phase_type[]" data='.$pp->PhaseID.' value="'.$pp->PhaseName.'"></div>
+				</div>';
+		}
+	}
+
 	// Build list of media types
 	$mediatypes="";
 	$mediaList=MediaTypes::GetMediaTypeList();
@@ -2517,6 +2529,18 @@ echo '<div class="main">
 				<div>
 					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
 					<div><input type="text" name="voltage_name[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Power Phases"),'</h3>
+			<div class="table" id="powerphases">
+				<div>
+					<div></div>
+					<div>',__("Phase Name"),'</div>
+				</div>
+				',$powerphases,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="phase_name[]"></div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Connection Filtering"),'</h3>
