@@ -2378,38 +2378,43 @@ function LameLogDisplay(){
 		},
 		getConnectors: function(target){
 			var row=this;
-			var $connections=$('<select>').append('<option value=0>&nbsp;</option>');
 			$.get("api/v1/powerconnectortypes").done(function(data){
+				var connections=$('<select>').append('<option value=0>&nbsp;</option>');
 				if(!data.error){
 					for(var i in data.connectortype){
 						var conn=data.connectortype[i];
-						$connections.append('<option value='+conn.ConnectorTypeID+'>'+conn.ConnectorType+'</option>');
+						connections.append('<option value='+conn.ConnectorTypeID+'>'+conn.ConnectorType+'</option>');
 					}
 				}
+				row.conntype.html(connections).find('select').val(row.conntype.data('default'));
 			});
 		},
 		getVoltages: function(target){
 			var row=this;
-			var $voltages=$('<select>').append('<option value=0>&nbsp;</option>');
+
 			$.get("api/v1/powervoltages").done(function(data){
+				var voltages=$('<select>').append('<option value=0>&nbsp;</option>');
 				if(!data.error){
 					for(var i in data.powervoltages){
 						var volt=data.powervoltages[i];
-						$voltages.append('<option value='+volt.VoltageID+'>'+volt.VoltageName+'</option>');
+						voltages.append('<option value='+volt.VoltageID+'>'+volt.VoltageName+'</option>');
 					}
 				}
+				row.voltage.html(voltages).find('select').val(row.voltate.data('default'));
 			});
 		},
 		getPhases: function(target){
 			var row=this;
-			var $phases=$('<select>').append('<option value=0>&nbsp;</option>');
+
 			$.get("api/v1/powerphases").done(function(data){
+				var phases=$('<select>').append('<option value=0>&nbsp;</option>');
 				if(!data.error){
 					for(var i in data.powerphases){
 						var phase=data.powerphases[i];
-						$phases.append('<option value='+phase.PhaseID+'>'+phase.PhaseName+'</option>');
+						phases.append('<option value='+phase.PhaseID+'>'+phase.PhaseName+'</option>');
 					}
 				}
+				row.phase.html(phases).find('select').val(row.phase.data('default'));
 			});
 		},
 		getdevices: function(target){
