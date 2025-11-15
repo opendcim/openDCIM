@@ -61,6 +61,9 @@ class PowerPorts {
 		$pp->DeviceID=$dbRow['DeviceID'];
 		$pp->PortNumber=$dbRow['PortNumber'];
 		$pp->Label=$dbRow['Label'];
+		$pp->ConnectorID=$dbRow['ConnectorID'];
+		$pp->PhaseID=$dbRow['PhaseID'];
+		$pp->VoltageID=$dbRow['VoltageID'];
 		$pp->ConnectedDeviceID=$dbRow['ConnectedDeviceID'];
 		$pp->ConnectedPort=$dbRow['ConnectedPort'];
 		$pp->Notes=$dbRow['Notes'];

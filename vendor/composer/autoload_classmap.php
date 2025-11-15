@@ -54,6 +54,7 @@ return array(
     'PowerConnectors' => $baseDir . '/classes/PowerConnectors.class.php',
     'PowerDistribution' => $baseDir . '/classes/PowerDistribution.class.php',
     'PowerPanel' => $baseDir . '/classes/PowerPanel.class.php',
+    'PowerPhases' => $baseDir . '/classes/PowerPhases.class.php',
     'PowerPorts' => $baseDir . '/classes/PowerPorts.class.php',
     'PowerVoltages' => $baseDir . '/classes/PowerVoltages.class.php',
     'ProjectMembership' => $baseDir . '/classes/ProjectMembership.class.php',

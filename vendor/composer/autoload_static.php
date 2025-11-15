@@ -261,6 +261,7 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         'PowerConnectors' => __DIR__ . '/../..' . '/classes/PowerConnectors.class.php',
         'PowerDistribution' => __DIR__ . '/../..' . '/classes/PowerDistribution.class.php',
         'PowerPanel' => __DIR__ . '/../..' . '/classes/PowerPanel.class.php',
+        'PowerPhases' => __DIR__ . '/../..' . '/classes/PowerPhases.class.php',
         'PowerPorts' => __DIR__ . '/../..' . '/classes/PowerPorts.class.php',
         'PowerVoltages' => __DIR__ . '/../..' . '/classes/PowerVoltages.class.php',
         'ProjectMembership' => __DIR__ . '/../..' . '/classes/ProjectMembership.class.php',

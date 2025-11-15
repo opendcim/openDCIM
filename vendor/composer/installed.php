@@ -3,7 +3,7 @@
         'name' => 'opendcim/opendcim',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '24777443eab00b7f6a8dc13c32803e8f8a6ad8f4',
+        'reference' => '7a141971b9d2c1d552a0ee5ef9c3d8fb88d11993',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -157,7 +157,7 @@
         'opendcim/opendcim' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '24777443eab00b7f6a8dc13c32803e8f8a6ad8f4',
+            'reference' => '7a141971b9d2c1d552a0ee5ef9c3d8fb88d11993',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

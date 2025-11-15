@@ -67,7 +67,7 @@ class DevicePorts {
 		$dp->Label=$dbRow['Label'];
 		$dp->ConnectorID=$dbRow['ConnectorID'];
 		$dp->ProtocolID=$dbRow['ProtocolID'];
-		$db->RateID=$dbRow['RateID'];
+		$dp->RateID=$dbRow['RateID'];
 		$dp->MediaID=$dbRow['MediaID'];
 		$dp->ColorID=$dbRow['ColorID'];
 		$dp->ConnectedDeviceID=(int)$dbRow['ConnectedDeviceID'];
