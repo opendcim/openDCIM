@@ -2320,8 +2320,8 @@ function LameLogDisplay(){
 			this.cdevice     = this.element.find('div:nth-child(4)');
 			this.cdeviceport = this.element.find('div:nth-child(5)');
 			this.conntype    = this.element.find('div:nth-child(6)');
-			this.phase       = this.element.find('div:nth-child(7)');
-			this.voltage     = this.element.find('div:nth-child(8)');
+			this.voltage     = this.element.find('div:nth-child(7)');
+			this.phase       = this.element.find('div:nth-child(8)');
 			this.cnotes      = this.element.find('div:nth-child(9)');
 
 			// As we only track power connections on the primary chassis but display them 
@@ -2381,12 +2381,12 @@ function LameLogDisplay(){
 			$.get("api/v1/powerconnectortypes").done(function(data){
 				var connections=$('<select>').append('<option value=0>&nbsp;</option>');
 				if(!data.error){
-					for(var i in data.connectortype){
-						var conn=data.connectortype[i];
-						connections.append('<option value='+conn.ConnectorTypeID+'>'+conn.ConnectorType+'</option>');
+					for(var i in data.powerconnectortypes){
+						var conn=data.powerconnectortypes[i];
+						connections.append('<option value='+conn.ConnectorID+'>'+conn.ConnectorName+'</option>');
 					}
 				}
-				row.conntype.html(connections).find('select').val(row.conntype.data('default'));
+				row.conntype.html(connections).find('select').val(target.data('default'));
 			});
 		},
 		getVoltages: function(target){
@@ -2400,7 +2400,7 @@ function LameLogDisplay(){
 						voltages.append('<option value='+volt.VoltageID+'>'+volt.VoltageName+'</option>');
 					}
 				}
-				row.voltage.html(voltages).find('select').val(row.voltate.data('default'));
+				row.voltage.html(voltages).find('select').val(target.data('default'));
 			});
 		},
 		getPhases: function(target){
@@ -2414,7 +2414,7 @@ function LameLogDisplay(){
 						phases.append('<option value='+phase.PhaseID+'>'+phase.PhaseName+'</option>');
 					}
 				}
-				row.phase.html(phases).find('select').val(row.phase.data('default'));
+				row.phase.html(phases).find('select').val(target.data('default'));
 			});
 		},
 		getdevices: function(target){
@@ -2509,6 +2509,9 @@ function LameLogDisplay(){
 				Label: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
 				ConnectedDeviceID: row.cdevice.children('select').val(),
 				ConnectedPort: row.cdeviceport.children('select').val(),
+				ConnectorID: row.conntype.children('select').val(),
+				VoltageID: row.voltage.children('select').val(),
+				PhaseID: row.phase.children('select').val(),
 				Notes: row.cnotes.children('input').val(),
 			}).done(function(data){
 				if(!data.error){
@@ -2530,6 +2533,9 @@ function LameLogDisplay(){
 					port.ConnectedPortLabel=(port.ConnectedPortLabel==null)?'':port.ConnectedPortLabel;
 					row.cdevice.html('<a href="devices.php?DeviceID='+port.ConnectedDeviceID+'">'+port.ConnectedDeviceLabel+'</a>').data('default',port.ConnectedDeviceID);
 					row.cdeviceport.html(port.ConnectedPortLabel).data('default',port.ConnectedPort);
+					row.conntype.html((port.ConnectorID==null)?'':port.ConnectorID).data('default',port.ConnectorID);
+					row.voltage.html((port.VoltageID==null)?'':port.VoltageID).data('default',port.VoltageID);
+					row.phase.html((port.PhaseID==null)?'':port.PhaseID).data('default',port.PhaseName);
 					row.cnotes.html(port.Notes).data('default',port.Notes);
 					row.ct.css('padding','');
 					$(row.element[0]).children('div:nth-child(2) ~ div').removeAttr('style');

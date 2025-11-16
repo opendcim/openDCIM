@@ -2528,9 +2528,11 @@ print "<!--				<div>".__("Panel")."</div> -->
 				}else{
 					$cord->Voltage='';
 				}
-				if($cord->PhaseID>0 && isset($phaseTypes[$cord->PhaseID])){
+				if($cord->PhaseID>0 && isset($pwrPhases[$cord->PhaseID])){
 					$cord->Phase=PowerPhases::getPhase($cord->PhaseID)->PhaseName;
+					error_log( "Found Phase: ".print_r( $cord->Phase, true ) );
 				}else{
+					error_log( "Not called");
 					$cord->Phase='';
 				}
 				if($cord->ConnectorID>0 && isset($connectorTypes[$cord->ConnectorID])){
@@ -2544,9 +2546,9 @@ print "<!--				<div>".__("Panel")."</div> -->
 					<div id=\"ppcn$i\" data-default=\"$cord->Label\">$cord->Label</div>
 					<div data-default=$cord->ConnectedDeviceID><a href=\"devices.php?DeviceID=$cord->ConnectedDeviceID\">$tmppdu->Label</a></div>
 					<div data-default=$cord->ConnectedPort>$tmpcord->Label</div>
-					<div id=\"ppct$i\" data-default=$cord->ConnectorType>$cord->ConnectorType</div>
-					<div id=\"ppv$i\" data-default=$cord->Voltage>$cord->Voltage</div>
-					<div id=\"ppp$i\" data-default=$cord->Phase>$cord->Phase</div>
+					<div id=\"ppct$i\" data-default=$cord->ConnectorID>$cord->ConnectorType</div>
+					<div id=\"ppv$i\" data-default=$cord->VoltageID>$cord->Voltage</div>
+					<div id=\"ppp$i\" data-default=$cord->PhaseID>$cord->Phase</div>
 					<div id=\"ppn$i\" data-default=\"$cord->Notes\">$cord->Notes</div>";
 					if($dev->DeviceType=='CDU'){print "\t\t\t\t<div id=\"ppst$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 				print "\t\t\t\t</div>\n";
