@@ -121,7 +121,16 @@
 
             if ( sizeof( $prCabList ) + sizeof( $prDevList ) > 0 ) {
                 $sheet = $workBook->createSheet(null);
-                $sheet->setTitle( $p->ProjectName );
+                // Sanitize worksheet title to avoid PhpSpreadsheet exceptions
+                // Titles must be <= 31 chars and cannot contain: : \ / ? * [ ]
+                if (class_exists('\\PhpOffice\\PhpSpreadsheet\\Worksheet\\Worksheet') && method_exists('\\PhpOffice\\PhpSpreadsheet\\Worksheet\\Worksheet','sanitizeSheetTitle')) {
+                    $safeTitle = \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::sanitizeSheetTitle($p->ProjectName);
+                } else {
+                    $safeTitle = preg_replace('/[:\\\\\/?*\[\]]/',' ', (string)$p->ProjectName);
+                }
+                $safeTitle = mb_substr($safeTitle, 0, 31);
+                $safeTitle = (trim($safeTitle) !== '') ? $safeTitle : __('Project');
+                $sheet->setTitle( $safeTitle );
 
                 $sheet->setCellValue( 'A1', __("Project Name:"));
                 $sheet->setCellValue( 'B1', $p->ProjectName );
