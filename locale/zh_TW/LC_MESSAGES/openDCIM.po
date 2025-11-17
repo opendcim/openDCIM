@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-15 14:20-0600\n"
+"POT-Creation-Date: 2025-11-15 19:54-0600\n"
 "Language: zh-TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -469,14 +469,14 @@ msgstr "标签"
 
 #: cabinets.php:341 conflicts.php:608 connections_spreadsheet.php:23
 #: device_templates.php:915 devices.php:1200 devices.php:1984 devices.php:2507
-#: devices.php:2570 devices.php:2619 pathmaker.php:393 report_tags.php:37
+#: devices.php:2572 devices.php:2621 pathmaker.php:393 report_tags.php:37
 #: sidebar.inc.php:26
 msgid "Notes"
 msgstr "备注"
 
 #: cabinets.php:347 /home/runner/openDCIM/cabrow.php:196 cdu_templates.php:236
 #: configuration.php:2881 container.php:306 datacenter.php:352
-#: departments.php:218 device_manufacturers.php:203 devices.php:2676
+#: departments.php:218 device_manufacturers.php:203 devices.php:2678
 #: disposition.php:115 escalations.php:86 power_panel.php:345
 #: project_mgr.php:174 report_logging.php:73 timeperiods.php:86 usermgr.php:337
 #: /home/runner/openDCIM/zone.php:180
@@ -485,7 +485,7 @@ msgstr "更新内容"
 
 #: cabinets.php:348 /home/runner/openDCIM/cabrow.php:197 container.php:307
 #: datacenter.php:358 datacenter.php:373 departments.php:218
-#: device_manufacturers.php:204 devices.php:2685 escalations.php:87
+#: device_manufacturers.php:204 devices.php:2687 escalations.php:87
 #: power_panel.php:346 project_mgr.php:174 report_logging.php:70
 #: timeperiods.php:87 /home/runner/openDCIM/zone.php:181
 msgid "Delete"
@@ -502,14 +502,14 @@ msgstr "地图坐标"
 #: cabinets.php:352 /home/runner/openDCIM/cabrow.php:192 cdu_templates.php:238
 #: container.php:309 datacenter.php:354 departments.php:220
 #: device_manufacturers.php:206 device_templates.php:390
-#: device_templates.php:923 devices.php:2680 disposition.php:117
+#: device_templates.php:923 devices.php:2682 disposition.php:117
 #: escalations.php:89 power_panel.php:349 project_mgr.php:176
 #: rackrequest.php:486 report_logging.php:67 supplybin.php:165
 #: timeperiods.php:89 usermgr.php:339 /home/runner/openDCIM/zone.php:175
 msgid "Create"
 msgstr "创建"
 
-#: cabinets.php:360 devices.php:2702 devices.php:2704
+#: cabinets.php:360 devices.php:2704 devices.php:2706
 msgid "Return to Navigator"
 msgstr "返回导航页面"
 
@@ -644,7 +644,7 @@ msgstr "Environmental Sensors"
 msgid "Add Sensor"
 msgstr "Add Sensor"
 
-#: cabnavigator.php:395 devices.php:2678
+#: cabnavigator.php:395 devices.php:2680
 msgid "Certify Audit"
 msgstr "验证审核"
 
@@ -1507,7 +1507,7 @@ msgstr "匹配介质类型"
 msgid "Enforce"
 msgstr "强制"
 
-#: configuration.php:2450 devices.php:2572 devices.php:2619
+#: configuration.php:2450 devices.php:2574 devices.php:2621
 msgid "Media Type"
 msgstr "介质类型"
 
@@ -1897,7 +1897,7 @@ msgstr "开关"
 msgid "Switch Port"
 msgstr "交换机端口"
 
-#: conflicts.php:608 devices.php:2503 devices.php:2569 devices.php:2619
+#: conflicts.php:608 devices.php:2503 devices.php:2571 devices.php:2621
 msgid "Device Port"
 msgstr "设备端口"
 
@@ -1929,7 +1929,7 @@ msgstr "目标端口"
 msgid "MediaType"
 msgstr "介质类型"
 
-#: connections_spreadsheet.php:28 devices.php:2565 devices.php:2619
+#: connections_spreadsheet.php:28 devices.php:2567 devices.php:2621
 #: pathmaker.php:199
 msgid "Connections"
 msgstr "连接"
@@ -2552,13 +2552,13 @@ msgstr "Delete Template"
 msgid "Update Devices"
 msgstr "更新设备"
 
-#: device_templates.php:939 devices.php:2358 devices.php:2619
+#: device_templates.php:939 devices.php:2358 devices.php:2621
 #: classes/DeviceTemplate.class.php:592 classes/DeviceTemplate.class.php:596
 msgid "Front"
 msgstr "前置"
 
 #: device_templates.php:944 devices.php:434
-#: /home/runner/openDCIM/devices.php:2359 devices.php:2652 misc.inc.php:1142
+#: /home/runner/openDCIM/devices.php:2359 devices.php:2654 misc.inc.php:1142
 #: report_cabinets.php:180 report_cabinets.php:252 report_cabinets.php:293
 #: rowview.php:92 classes/Device.class.php:2192 classes/Device.class.php:2196
 #: classes/Device.class.php:2297 classes/Device.class.php:2300
@@ -2680,7 +2680,7 @@ msgid "VM Name"
 msgstr "虚拟机名称"
 
 #: devices.php:973 /home/runner/openDCIM/devices.php:1853 devices.php:2508
-#: devices.php:2571 disposition.php:102 report_project_outage_simulator.php:350
+#: devices.php:2573 disposition.php:102 report_project_outage_simulator.php:350
 #: report_surplus.php:136 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Status"
 msgstr "状态"
@@ -3052,11 +3052,11 @@ msgstr "Limit device selection to"
 msgid "Operational Log"
 msgstr "操作日志"
 
-#: devices.php:2501 devices.php:2567
+#: devices.php:2501 devices.php:2569
 msgid "Port Name"
 msgstr "端口名称"
 
-#: devices.php:2502 devices.php:2568 pathmaker.php:465 report_cabinets.php:188
+#: devices.php:2502 devices.php:2570 pathmaker.php:465 report_cabinets.php:188
 #: report_sensors.php:25 storageroom.php:76
 msgid "Device"
 msgstr "设备"
@@ -3071,39 +3071,39 @@ msgstr "排插名称"
 msgid "Panel"
 msgstr "面板"
 
-#: devices.php:2573
+#: devices.php:2575
 msgid "Color Code"
 msgstr "颜色代码"
 
-#: devices.php:2619
+#: devices.php:2621
 msgid "Patch Port"
 msgstr "配线架端口"
 
-#: devices.php:2619
+#: devices.php:2621
 msgid "Back"
 msgstr "返回"
 
-#: devices.php:2677 classes/Device.class.php:505
+#: devices.php:2679 classes/Device.class.php:505
 msgid "Copy"
 msgstr "复制"
 
-#: devices.php:2688 workorder.php:193
+#: devices.php:2690 workorder.php:193
 msgid "Export Connections"
 msgstr "出口连接"
 
-#: devices.php:2701
+#: devices.php:2703
 msgid "Return to Parent Device"
 msgstr "返回刀片机箱"
 
-#: devices.php:2707
+#: devices.php:2709
 msgid "Return to Storage Room"
 msgstr "返回仓库"
 
-#: devices.php:2709
+#: devices.php:2711
 msgid "Return to General Storage Room"
 msgstr "返回主仓库"
 
-#: devices.php:2714
+#: devices.php:2716
 msgid "Do you certify that you have completed an audit of this device?"
 msgstr "您是否确认您已完成该设备的审核?"
 

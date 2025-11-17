@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-15 14:20-0600\n"
+"POT-Creation-Date: 2025-11-15 19:54-0600\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -482,14 +482,14 @@ msgstr "Markierungen"
 
 #: cabinets.php:341 conflicts.php:608 connections_spreadsheet.php:23
 #: device_templates.php:915 devices.php:1200 devices.php:1984 devices.php:2507
-#: devices.php:2570 devices.php:2619 pathmaker.php:393 report_tags.php:37
+#: devices.php:2572 devices.php:2621 pathmaker.php:393 report_tags.php:37
 #: sidebar.inc.php:26
 msgid "Notes"
 msgstr "Notizen"
 
 #: cabinets.php:347 /home/runner/openDCIM/cabrow.php:196 cdu_templates.php:236
 #: configuration.php:2881 container.php:306 datacenter.php:352
-#: departments.php:218 device_manufacturers.php:203 devices.php:2676
+#: departments.php:218 device_manufacturers.php:203 devices.php:2678
 #: disposition.php:115 escalations.php:86 power_panel.php:345
 #: project_mgr.php:174 report_logging.php:73 timeperiods.php:86 usermgr.php:337
 #: /home/runner/openDCIM/zone.php:180
@@ -498,7 +498,7 @@ msgstr "Update"
 
 #: cabinets.php:348 /home/runner/openDCIM/cabrow.php:197 container.php:307
 #: datacenter.php:358 datacenter.php:373 departments.php:218
-#: device_manufacturers.php:204 devices.php:2685 escalations.php:87
+#: device_manufacturers.php:204 devices.php:2687 escalations.php:87
 #: power_panel.php:346 project_mgr.php:174 report_logging.php:70
 #: timeperiods.php:87 /home/runner/openDCIM/zone.php:181
 msgid "Delete"
@@ -515,14 +515,14 @@ msgstr "Koordinaten zuweisen"
 #: cabinets.php:352 /home/runner/openDCIM/cabrow.php:192 cdu_templates.php:238
 #: container.php:309 datacenter.php:354 departments.php:220
 #: device_manufacturers.php:206 device_templates.php:390
-#: device_templates.php:923 devices.php:2680 disposition.php:117
+#: device_templates.php:923 devices.php:2682 disposition.php:117
 #: escalations.php:89 power_panel.php:349 project_mgr.php:176
 #: rackrequest.php:486 report_logging.php:67 supplybin.php:165
 #: timeperiods.php:89 usermgr.php:339 /home/runner/openDCIM/zone.php:175
 msgid "Create"
 msgstr "Anlegen"
 
-#: cabinets.php:360 devices.php:2702 devices.php:2704
+#: cabinets.php:360 devices.php:2704 devices.php:2706
 msgid "Return to Navigator"
 msgstr "Zurück zum Navigator"
 
@@ -660,7 +660,7 @@ msgstr "Umgebungssensoren"
 msgid "Add Sensor"
 msgstr "Sensor hinzufügen"
 
-#: cabnavigator.php:395 devices.php:2678
+#: cabnavigator.php:395 devices.php:2680
 msgid "Certify Audit"
 msgstr "Audit bestätigen"
 
@@ -1537,7 +1537,7 @@ msgstr "Medientyp Abgleich"
 msgid "Enforce"
 msgstr "Erzwingen"
 
-#: configuration.php:2450 devices.php:2572 devices.php:2619
+#: configuration.php:2450 devices.php:2574 devices.php:2621
 msgid "Media Type"
 msgstr "Medientyp"
 
@@ -1932,7 +1932,7 @@ msgstr "Switch"
 msgid "Switch Port"
 msgstr "Switch Port"
 
-#: conflicts.php:608 devices.php:2503 devices.php:2569 devices.php:2619
+#: conflicts.php:608 devices.php:2503 devices.php:2571 devices.php:2621
 msgid "Device Port"
 msgstr "Geräte-Port"
 
@@ -1964,7 +1964,7 @@ msgstr "Zielport"
 msgid "MediaType"
 msgstr "Medientyp"
 
-#: connections_spreadsheet.php:28 devices.php:2565 devices.php:2619
+#: connections_spreadsheet.php:28 devices.php:2567 devices.php:2621
 #: pathmaker.php:199
 msgid "Connections"
 msgstr "Verbindungen"
@@ -2590,13 +2590,13 @@ msgstr "Vorlage löschen"
 msgid "Update Devices"
 msgstr "Gerät aktualisieren"
 
-#: device_templates.php:939 devices.php:2358 devices.php:2619
+#: device_templates.php:939 devices.php:2358 devices.php:2621
 #: classes/DeviceTemplate.class.php:592 classes/DeviceTemplate.class.php:596
 msgid "Front"
 msgstr "Vorderseite"
 
 #: device_templates.php:944 devices.php:434
-#: /home/runner/openDCIM/devices.php:2359 devices.php:2652 misc.inc.php:1142
+#: /home/runner/openDCIM/devices.php:2359 devices.php:2654 misc.inc.php:1142
 #: report_cabinets.php:180 report_cabinets.php:252 report_cabinets.php:293
 #: rowview.php:92 classes/Device.class.php:2192 classes/Device.class.php:2196
 #: classes/Device.class.php:2297 classes/Device.class.php:2300
@@ -2723,7 +2723,7 @@ msgid "VM Name"
 msgstr "VM Name"
 
 #: devices.php:973 /home/runner/openDCIM/devices.php:1853 devices.php:2508
-#: devices.php:2571 disposition.php:102 report_project_outage_simulator.php:350
+#: devices.php:2573 disposition.php:102 report_project_outage_simulator.php:350
 #: report_surplus.php:136 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Status"
 msgstr "Status"
@@ -3102,11 +3102,11 @@ msgstr "Geräteauswahl begrenzen auf"
 msgid "Operational Log"
 msgstr "Betriebsprotokoll"
 
-#: devices.php:2501 devices.php:2567
+#: devices.php:2501 devices.php:2569
 msgid "Port Name"
 msgstr "Port-Name"
 
-#: devices.php:2502 devices.php:2568 pathmaker.php:465 report_cabinets.php:188
+#: devices.php:2502 devices.php:2570 pathmaker.php:465 report_cabinets.php:188
 #: report_sensors.php:25 storageroom.php:76
 msgid "Device"
 msgstr "Gerät"
@@ -3121,39 +3121,39 @@ msgstr "Schaltfeldname"
 msgid "Panel"
 msgstr "Schaltfeld"
 
-#: devices.php:2573
+#: devices.php:2575
 msgid "Color Code"
 msgstr "Farbcode"
 
-#: devices.php:2619
+#: devices.php:2621
 msgid "Patch Port"
 msgstr "Patch Port"
 
-#: devices.php:2619
+#: devices.php:2621
 msgid "Back"
 msgstr "Zurück"
 
-#: devices.php:2677 classes/Device.class.php:505
+#: devices.php:2679 classes/Device.class.php:505
 msgid "Copy"
 msgstr "Kopieren"
 
-#: devices.php:2688 workorder.php:193
+#: devices.php:2690 workorder.php:193
 msgid "Export Connections"
 msgstr "Verbindungen exportieren"
 
-#: devices.php:2701
+#: devices.php:2703
 msgid "Return to Parent Device"
 msgstr "Zurück zu übergeordnetem Gerät"
 
-#: devices.php:2707
+#: devices.php:2709
 msgid "Return to Storage Room"
 msgstr "Zurück zum Speicherraum"
 
-#: devices.php:2709
+#: devices.php:2711
 msgid "Return to General Storage Room"
 msgstr "Zurück zum generellen Speicherraum"
 
-#: devices.php:2714
+#: devices.php:2716
 msgid "Do you certify that you have completed an audit of this device?"
 msgstr "Bestätigen Sie, dass Sie ein Audit dieses Geräts abgeschlossen haben?"
 
