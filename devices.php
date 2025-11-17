@@ -2530,9 +2530,7 @@ print "<!--				<div>".__("Panel")."</div> -->
 				}
 				if($cord->PhaseID>0 && isset($pwrPhases[$cord->PhaseID])){
 					$cord->Phase=PowerPhases::getPhase($cord->PhaseID)->PhaseName;
-					error_log( "Found Phase: ".print_r( $cord->Phase, true ) );
 				}else{
-					error_log( "Not called");
 					$cord->Phase='';
 				}
 				if($cord->ConnectorID>0 && isset($connectorTypes[$cord->ConnectorID])){
