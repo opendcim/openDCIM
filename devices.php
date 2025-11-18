@@ -2523,17 +2523,17 @@ print "<!--				<div>".__("Panel")."</div> -->
 					$cord->ConnectedDeviceID=0;
 					$cord->ConnectedPort=0;
 				}
-				if($cord->VoltageID>0 && isset($voltageLevels[$cord->VoltageID-1])){
+				if($cord->VoltageID>0 && isset($voltageLevels[$cord->VoltageID])){
 					$cord->Voltage=PowerVoltages::getVoltage($cord->VoltageID)->VoltageName;
 				}else{
 					$cord->Voltage='';
 				}
-				if($cord->PhaseID>0 && isset($pwrPhases[$cord->PhaseID-1])){
+				if($cord->PhaseID>0 && isset($pwrPhases[$cord->PhaseID])){
 					$cord->Phase=PowerPhases::getPhase($cord->PhaseID)->PhaseName;
 				}else{
 					$cord->Phase='';
 				}
-				if($cord->ConnectorID>0 && isset($connectorTypes[$cord->ConnectorID-1])){
+				if($cord->ConnectorID>0 && isset($connectorTypes[$cord->ConnectorID])){
 					$cord->ConnectorType=PowerConnectors::getConnector($cord->ConnectorID)->ConnectorName;
 				}else{
 					$cord->ConnectorType='';

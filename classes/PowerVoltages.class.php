@@ -58,7 +58,7 @@ class PowerVoltages {
 
 		$result = array();
 		while ( $row = $st->fetch() ) {
-			$result[] = $row;
+			$result[$row->VoltageID] = $row;
 		}
 
 		return $result;

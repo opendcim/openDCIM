@@ -58,7 +58,7 @@ class PowerPhases {
 
 		$result = array();
 		while ( $row = $st->fetch() ) {
-			$result[] = $row;
+			$result[$row->PhaseID] = $row;
 		}
 
 		return $result;
