@@ -403,7 +403,8 @@
 		$tzmenu.="\t<li>$country\n\t\t<ul>";
 		foreach($cityarray as $key => $city){
 			$z=new DateTimeZone($city);
-			$c=new DateTime(null, $z);
+			$c=new DateTime();
+			$c->setTimeZone($z);
 			$adjustedtime=$c->format('H:i a');
 			$offset=formatOffset($z->getOffset($c));
 			$tzmenu.="\t\t\t<li><a href=\"#\" data=\"$city\">$adjustedtime - $offset $city</a></li>\n";

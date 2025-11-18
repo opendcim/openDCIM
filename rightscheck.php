@@ -1,3 +1,4 @@
+<?php if(file_exists("db.inc.php")) require_once("db.inc.php"); ?>
 <!doctype html>
 <html>
 <head>

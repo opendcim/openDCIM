@@ -334,7 +334,7 @@
       if ( $idField == "DeviceID" ) {
         $dev->DeviceID = $row["DeviceID"];
         if ( ! $dev->GetDevice() ) {
-          error_log( "DeviceID = ${DeviceID} not found." );
+          error_log( "DeviceID = {$DeviceID} not found." );
           $rowError = true;
         }
       } else {

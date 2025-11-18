@@ -61,7 +61,7 @@ table thead td { background-color: #EEEEEE;
 <htmlpageheader name="myheader">
 <table width="100%"><tr>
 <td width="50%" style="color:#0000BB;"><span style="font-weight: bold; font-size: 14pt;">'.$config->ParameterArray["OrgName"].'</span></td>
-<td width="50%" style="text-align: right;">'.__("Date").':<span style="font-weight: bold; font-size: 12pt;">'.strftime("%x").'</span></td>
+<td width="50%" style="text-align: right;">'.__("Date").':<span style="font-weight: bold; font-size: 12pt;">'.date("Y-m-d H-i-s").'</span></td>
 </tr></table>
 </htmlpageheader>
 
