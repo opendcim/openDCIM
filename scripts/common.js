@@ -2384,6 +2384,7 @@ function LameLogDisplay(){
 					for(var i in data.powerconnectortypes){
 						var conn=data.powerconnectortypes[i];
 						connections.append('<option value='+conn.ConnectorID+'>'+conn.ConnectorName+'</option>');
+						row.conntype.data('label'+conn.ConnectorID,conn.ConnectorName);
 					}
 				}
 				row.conntype.html(connections).find('select').val(target.data('default'));
@@ -2398,6 +2399,7 @@ function LameLogDisplay(){
 					for(var i in data.powervoltages){
 						var volt=data.powervoltages[i];
 						voltages.append('<option value='+volt.VoltageID+'>'+volt.VoltageName+'</option>');
+						row.voltage.data('label'+volt.VoltageID,volt.VoltageName);
 					}
 				}
 				row.voltage.html(voltages).find('select').val(target.data('default'));
@@ -2412,6 +2414,7 @@ function LameLogDisplay(){
 					for(var i in data.powerphases){
 						var phase=data.powerphases[i];
 						phases.append('<option value='+phase.PhaseID+'>'+phase.PhaseName+'</option>');
+						row.phase.data('label'+phase.PhaseID,phase.PhaseName);
 					}
 				}
 				row.phase.html(phases).find('select').val(target.data('default'));
@@ -2533,9 +2536,9 @@ function LameLogDisplay(){
 					port.ConnectedPortLabel=(port.ConnectedPortLabel==null)?'':port.ConnectedPortLabel;
 					row.cdevice.html('<a href="devices.php?DeviceID='+port.ConnectedDeviceID+'">'+port.ConnectedDeviceLabel+'</a>').data('default',port.ConnectedDeviceID);
 					row.cdeviceport.html(port.ConnectedPortLabel).data('default',port.ConnectedPort);
-					row.conntype.html((port.ConnectorID==null)?'':port.ConnectorID).data('default',port.ConnectorID);
-					row.voltage.html((port.VoltageID==null)?'':port.VoltageID).data('default',port.VoltageID);
-					row.phase.html((port.PhaseID==null)?'':port.PhaseID).data('default',port.PhaseName);
+					row.conntype.html((port.ConnectorID==null)?'':row.conntype.data('label'+port.ConnectorID)).data('default',port.ConnectorID);
+					row.voltage.html((port.VoltageID==null)?'':row.voltage.data('label'+port.VoltageID)).data('default',port.VoltageID);
+					row.phase.html((port.PhaseID==null)?'':row.phase.data('label'+port.PhaseID)).data('default',port.PhaseName);
 					row.cnotes.html(port.Notes).data('default',port.Notes);
 					row.ct.css('padding','');
 					$(row.element[0]).children('div:nth-child(2) ~ div').removeAttr('style');
