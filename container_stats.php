@@ -22,7 +22,6 @@
 	}
 
 	$cStats=$c->GetContainerStatistics();
-
 ?>
 <!doctype html>
 <html>

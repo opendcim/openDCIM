@@ -53,6 +53,7 @@
 		}
 		$ldapSearch = $cmd($ldapConn, $base, $query, array("dn"));
 		$ldapResults=ldap_get_entries($ldapConn, $ldapSearch);
+
 		// user should only be returned once IF they're a member of the group
 		if ($ldapResults["count"] == 1) {
 			return true;

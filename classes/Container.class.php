@@ -286,8 +286,7 @@ class Container {
 		global $config;
 		$mapHTML="";
 		$mapfile="";
-		$tam=50;
-	 
+		$tam=$config->ParameterArray['ImgLenContainerMark'];
 		if ( strlen($this->DrawingFileName) > 0 ) {
 			$mapfile = $config->ParameterArray['drawingpath'] . $this->DrawingFileName;
 		}
