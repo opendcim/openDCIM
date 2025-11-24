@@ -57,6 +57,8 @@ $hddSpareList = HDD::GetSpareHDDByDevice($dev->DeviceID);
 <div class="main">
   <div class="center">
     <h2><?php echo htmlspecialchars(__("Manage HDDs for Device") . ": " . $dev->Label, ENT_QUOTES, 'UTF-8'); ?></h2>
+    <?php if (!empty($_SESSION['LastError'])) { echo '<div class="error">'.htmlspecialchars($_SESSION['LastError'], ENT_QUOTES, 'UTF-8').'</div>'; unset($_SESSION['LastError']); } ?>
+    <?php if (!empty($_SESSION['Message']))   { echo '<div class="message">'.htmlspecialchars($_SESSION['Message'],   ENT_QUOTES, 'UTF-8').'</div>'; unset($_SESSION['Message']); } ?>
     <form method="POST" action="savehdd.php">
       <input type="hidden" name="DeviceID" value="<?php echo (int)$dev->DeviceID; ?>">
       <h3><?php echo htmlspecialchars(__("Active HDDs"), ENT_QUOTES, 'UTF-8'); ?></h3>
@@ -100,10 +102,9 @@ foreach ($hddList as $hdd) {
        
          <td>
            <button type="submit" name="action" value="update_'.$id.'" title="'.__("Update").'">✏️</button>
-           <button type="submit" name="action" value="remove_'.$id.'" title="'.__("Remove").'">➖</button>
+           <button type="submit" name="action" value="remove_'.$id.'" title="'.__("Remove pending destroy").'">➖</button>
            <button type="submit" name="action" value="delete_'.$id.'" title="'.__("Delete").'" onclick="return confirmDelete();">🗑️</button>
-           <button type="submit" name="action" value="duplicate_'.$id.'" title="'.__("Duplicate all slot").'">📑</button>
-           <button type="submit" title="'.__("Destroy Selected Permanently").'" name="action" value="destroy_'.$id.'">⚠️</button>
+           <button type="submit" name="action" value="duplicate_'.$id.'" title="'.__("Duplicate all slot").'">📑</button>           
          </td>
          </tr>';
     $i++;
@@ -116,7 +117,6 @@ foreach ($hddList as $hdd) {
         <button type="button" onclick="openModal()">➕ <?php echo htmlspecialchars(__("Add New HDD"), ENT_QUOTES, 'UTF-8'); ?></button>
         <button type="submit" name="action" value="bulk_remove">➖ <?php echo htmlspecialchars(__("Remove Selected"), ENT_QUOTES, 'UTF-8'); ?></button>
         <button type="submit" name="action" value="bulk_delete" onclick="return confirmDelete();">🗑️ <?php echo htmlspecialchars(__("Delete Selected"), ENT_QUOTES, 'UTF-8'); ?></button>
-        <button type="submit" name="action" value="bulk_destroyFromActive">⚠️ <?php echo htmlspecialchars(__("Destroy Selected"), ENT_QUOTES, 'UTF-8'); ?></button>
       </p>
 
       <h3><?php echo htmlspecialchars(__("Pending Destroyed / Reuse"), ENT_QUOTES, 'UTF-8'); ?></h3>
@@ -144,7 +144,6 @@ foreach ($hddWaitList as $hdd) {
          <td> '.htmlspecialchars($hdd->Status, ENT_QUOTES, "UTF-8").'</td>
          <td> '.$hdd->DateWithdrawn.'</td>
          <td> 
-           <button type="submit" title="'.__("Destroy Selected Permanently").'" name="action" value="destroy_'.$id.'">⚠️</button>
            <button type="submit" title="'.__("Reasign in slot").'" name="action" value="reassign_'.$id.'">↩️</button>
            <button type="submit" title="'.__("Spare").'" name="action" value="spare_'.$id.'">🔧</button>
            <button type="button" class="btn-assign-device" data-hddid="'.$id.'" onclick="openAssignModal(this)" title="'.__("Assign other device").'">♻️</button>
@@ -158,6 +157,8 @@ foreach ($hddWaitList as $hdd) {
   
       <p>
         <button type="submit" name="action" value="bulk_destroy">⚠️ <?php echo htmlspecialchars(__("Destroy Selected"), ENT_QUOTES, 'UTF-8'); ?></button>
+      </p><p>
+        <button type="button" id="btnUploadProofMgmt" class="button"><?php echo __('Ajouter une preuve de destruction (PDF)'); ?></button>
       </p>
       <!-- table hdd destroyed -->
        <h3><?php echo htmlspecialchars(__("Destroyed"), ENT_QUOTES, 'UTF-8'); ?></h3>
@@ -181,6 +182,7 @@ foreach ($hddWaitList as $hdd) {
                           <td> '.htmlspecialchars($hdd->SerialNo, ENT_QUOTES, "UTF-8").'</td>
                           <td> '.htmlspecialchars($hdd->Status, ENT_QUOTES, "UTF-8").'</td>
                           <td> '.$hdd->DateDestroyed.'</td>
+                          <td>'.(!empty($hdd->ProofFile) ? '<a target="_blank" href="'.htmlspecialchars($hdd->ProofFile, ENT_QUOTES, 'UTF-8').'">'.__('Voir la preuve').'</a>' : '').'</td>
                           </tr>';
                       $i++;
                   }
@@ -212,7 +214,7 @@ foreach ($hddSpareList as $hdd) {
          <td> '.htmlspecialchars($hdd->Status, ENT_QUOTES, "UTF-8").'</td>
          <td> '.$hdd->DateWithdrawn.'</td>
          <td> 
-           <button type="submit" title="'.__("Destroy Selected Permanently").'" name="action" value="destroy_'.$id.'">⚠️</button>
+           <button type="submit" title="'.__("Pendind Destroy Selected Permanently").'" name="action" value="remove_'.$id.'">➖</button>
            <button type="submit" title="'.__("Reasign in slot").'" name="action" value="reassign_'.$id.'">↩️</button>
            <button type="button" class="btn-assign-device" data-hddid="'.$id.'" onclick="openAssignModal(this)" title="'.__("Assign other device").'">♻️</button>
            <button type="submit" name="action" value="delete_'.$id.'" title="'.__("Delete").'" onclick="return confirmDelete();">🗑️</button>
@@ -281,6 +283,26 @@ foreach ($hddSpareList as $hdd) {
 
 </div> <!-- End of page -->
 
+<!-- Modal Upload Proof -->
+<div id="uploadProofModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.4);">
+  <div style="background-color:#fff; margin:10% auto; padding:20px; border:1px solid #888; width:420px; position:relative;">
+    <span id="closeUploadProofModal" style="position:absolute; right:10px; top:10px; cursor:pointer;">&times;</span>
+    <h3><?php echo __('Ajouter une preuve de destruction'); ?></h3>
+    <form id="uploadProofForm" method="post" action="upload_hdd_proof.php" enctype="multipart/form-data">
+      <input type="hidden" name="return" value="managementhdd.php?DeviceID=<?php echo (int)$dev->DeviceID; ?>">
+      <div>
+        <label for="proof_pdf_m"><?php echo __('Fichier PDF (max 5 Mo)'); ?></label>
+        <input type="file" id="proof_pdf_m" name="proof_pdf" accept="application/pdf" required>
+      </div>
+      <div style="margin-top:15px; text-align:right;">
+        <button type="submit" class="button"><?php echo __('Téléverser'); ?></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</div> <!-- End of page -->
+
 <script type="text/javascript">
   // Modal
   function openModal() {
@@ -326,6 +348,21 @@ foreach ($hddSpareList as $hdd) {
     $('#select_all_pending_destroyed').on('change', function() {
       $('.select_pending_destroyed').prop('checked', this.checked);
     });
+
+  // Upload proof modal flow
+  $('#btnUploadProofMgmt').on('click', function(){
+    var ids = $('input.select_pending_destroyed:checked').map(function(){return this.value;}).get();
+    if(ids.length === 0){
+      alert('<?php echo addslashes(__('Veuillez sélectionner au moins un HDD')); ?>');
+      return;
+    }
+    $('#uploadProofForm input[name="hdd_ids[]"]').remove();
+    ids.forEach(function(id){
+      $('<input>').attr({type:'hidden', name:'hdd_ids[]', value:id}).appendTo('#uploadProofForm');
+    });
+    $('#uploadProofModal').show();
+  });
+  $('#closeUploadProofModal').on('click', function(){ $('#uploadProofModal').hide(); });
 
 </script>
 </body>

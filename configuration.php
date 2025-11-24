@@ -1798,6 +1798,10 @@ echo '<div class="main">
 					<div><input type="text" id="reportspath" defaultvalue="',$config->defaults["reportspath"],'" name="reportspath" value="',$config->ParameterArray["reportspath"],'" class="validate[required,custom[endWithSlashConfigurationPage]]">
 					</div>
 				</div>
+				<div>
+					<div><label for="hdd_proof_path">',__("Relative path for HDD Proofs"),'</label></div>
+					<div><input type="text" id="hdd_proof_path" defaultvalue="',$config->defaults["hdd_proof_path"],'" name="hdd_proof_path" value="',$config->ParameterArray["hdd_proof_path"],'" class="validate[required,custom[endWithSlashConfigurationPage]]"></div>
+				</div>
 			</div> <!-- end table -->			
 			<h3>',__("Time and Measurements"),'</h3>
 			<div class="table" id="timeandmeasurements">

@@ -16,6 +16,8 @@ class HDD {
     public string	$DateAdd;
     public ?string	$DateWithdrawn;
     public ?string	$DateDestroyed;
+    // Path to proof PDF (e.g. files/hdd/proof_YYYYMMDD-HHMMSS_RANDOM8.pdf)
+    public ?string  $ProofFile = null;
 
     private LoggerInterface $logger;
 
@@ -32,6 +34,17 @@ class HDD {
         $this->Status            = sanitize($this->Status);
         $this->Size              = intval($this->Size);
         $this->TypeMedia         = sanitize($this->TypeMedia);
+        if (isset($this->ProofFile) && $this->ProofFile !== null) {
+            global $config;
+            $pf = sanitize($this->ProofFile);
+            $relBase = $config->ParameterArray['hdd_proof_path'] ?? 'assets/files/hdd/';
+            $relBase = rtrim($relBase, '/') . '/';
+            // If path doesn't start with configured base, collapse to base + basename
+            if (strpos($pf, $relBase) !== 0) {
+                $pf = $relBase . basename($pf);
+            }
+            $this->ProofFile = $pf;
+        }
     }
 
 	public function MakeDisplay(): void {
@@ -111,7 +124,8 @@ class HDD {
                SerialNo   = :SerialNo,
                Status     = :Status,
                Size       = :Size,
-               TypeMedia  = :TypeMedia
+               TypeMedia  = :TypeMedia,
+               ProofFile  = :ProofFile
              WHERE HDDID = :HDDID"
         );
         $res = $stmt->execute([
@@ -120,6 +134,7 @@ class HDD {
             ":Status"    => $this->Status,
             ":Size"      => $this->Size,
             ":TypeMedia" => $this->TypeMedia,
+            ":ProofFile" => $this->ProofFile,
             ":HDDID"     => $this->HDDID
         ]);
         if ($res) self::logAction("Updated", $this->HDDID);
@@ -296,6 +311,44 @@ class HDD {
             $list[] = self::RowToObject($row);
         }
         return $list;
+    }
+    
+    // Accessor for proof file
+    public function GetProofFile(): ?string {
+        return $this->ProofFile ?? null;
+    }
+
+    // Mutator to set/update proof file for this HDD
+    public function SetProofFile(string $filename): bool {
+        global $dbh;
+        $this->ProofFile = $filename;
+        $this->MakeSafe();
+        $stmt = $dbh->prepare("UPDATE fac_HDD SET ProofFile = :ProofFile WHERE HDDID = :HDDID");
+        $res = $stmt->execute([
+            ':ProofFile' => $this->ProofFile,
+            ':HDDID'     => $this->HDDID
+        ]);
+        if ($res) {
+            self::logAction("Set proof file", $this->HDDID);
+        }
+        return $res;
+    }
+
+    // Batch update proof file for multiple HDD IDs
+    public static function SetProofFileForIds(array $ids, string $filename): int {
+        global $dbh;
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        if (empty($ids)) return 0;
+        $pf = sanitize($filename);
+        if (strpos($pf, 'files/hdd/') !== 0) {
+            $pf = 'files/hdd/' . basename($pf);
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $sql = "UPDATE fac_HDD SET ProofFile = ? WHERE HDDID IN ($placeholders)";
+        $stmt = $dbh->prepare($sql);
+        $params = array_merge([$pf], $ids);
+        $stmt->execute($params);
+        return $stmt->rowCount();
     }
 // List HDDs Spare destruction
 	public static function GetSpareHDDByDevice(int $DeviceID): array {

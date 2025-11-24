@@ -865,6 +865,7 @@ INSERT INTO fac_Config VALUES
 	('HumidityYellowLow', '45', 'percentage', 'float', '45'),
   ('feature_hdd', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
   ('Log_for_user_hdd', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
+  ('hdd_proof_path', 'assets/files/hdd/', 'path', 'string', 'assets/files/hdd/'),
 	('WorkOrderBuilder', 'disabled', 'Enabled/Disabled', 'string', 'disabled'),
 	('RackRequests', 'enabled', 'Enabled/Disabled', 'string', 'Enabled'),
 	('dot', '/usr/bin/dot', 'path', 'string', '/usr/bin/dot'),
@@ -1092,6 +1093,7 @@ CREATE TABLE fac_HDD (
                   DEFAULT 'On',
   Size            INT(11) DEFAULT NULL,          -- en Go
   TypeMedia       ENUM('HDD','SSD','MVME'),
+  ProofFile       VARCHAR(255) DEFAULT NULL,
   DateAdd         DATETIME      DEFAULT CURRENT_TIMESTAMP,
   DateWithdrawn   DATETIME DEFAULT NULL,
   DateDestroyed   DATETIME DEFAULT NULL,
