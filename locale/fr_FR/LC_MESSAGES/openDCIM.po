@@ -6183,6 +6183,97 @@ msgstr ""
 #~ msgid "Outlet Status"
 #~ msgstr "Statut de la prise électrique"
 
+# New strings for HDD CSV automation and logging
+msgid "Process CSV Batch"
+msgstr "Traiter un lot CSV"
+
+msgid "Import CSV for Automated Destruction"
+msgstr "Importer un CSV pour l'automatisation de la destruction"
+
+msgid "CSV file (UTF-8, max 2 MB)"
+msgstr "Fichier CSV (UTF-8, max 2 Mo)"
+
+msgid "Destruction proof file (PDF / Excel / ODS, max 5 MB)"
+msgstr "Fichier de preuve de destruction (PDF / Excel / ODS, max 5 Mo)"
+
+msgid "Apply destroyed status and date to matching HDDs"
+msgstr "Appliquer le statut détruit et la date aux HDD correspondants"
+
+msgid "Destruction date (applied to all matching HDDs)"
+msgstr "Date de destruction (appliquée à tous les HDD correspondants)"
+
+msgid "Optional note / reference"
+msgstr "Note / référence optionnelle"
+
+msgid "Reference or ticket number"
+msgstr "Référence ou numéro de ticket"
+
+msgid "Download log"
+msgstr "Télécharger le journal"
+
+msgid "Please select the CSV column containing serial numbers"
+msgstr "Veuillez sélectionner la colonne CSV contenant les numéros de série"
+
+msgid "Some serial numbers were not recognized. Continue processing the others?"
+msgstr "Certains numéros de série n'ont pas été reconnus. Continuer avec les autres ?"
+
+msgid "An error occurred while processing the CSV."
+msgstr "Une erreur est survenue lors du traitement du CSV."
+
+msgid "CSV file is required"
+msgstr "Le fichier CSV est requis"
+
+msgid "Error while uploading the CSV file"
+msgstr "Erreur lors du transfert du fichier CSV"
+
+msgid "CSV file is too large (max 2 MB)"
+msgstr "Le fichier CSV est trop volumineux (max 2 Mo)"
+
+msgid "Unable to read CSV file or file is empty"
+msgstr "Impossible de lire le fichier CSV ou le fichier est vide"
+
+msgid "Selected column was not found in the CSV header"
+msgstr "La colonne sélectionnée est introuvable dans l'en-tête CSV"
+
+msgid "No serial numbers were found in the selected column"
+msgstr "Aucun numéro de série n'a été trouvé dans la colonne sélectionnée"
+
+msgid "Please select a destruction date when applying the destroyed status"
+msgstr "Veuillez sélectionner une date de destruction lors de l'application du statut détruit"
+
+msgid "Invalid destruction date format (expected YYYY-MM-DD)"
+msgstr "Format de date de destruction invalide (format attendu AAAA-MM-JJ)"
+
+msgid "Please provide a destruction date when applying the destroyed status"
+msgstr "Veuillez fournir une date de destruction lors de l'application du statut détruit"
+
+msgid "Serial numbers already processed! Only valid serials were handled."
+msgstr "Numéros de série déjà traités ! Seuls les numéros valides seront pris en compte."
+
+msgid "No matching HDD serial numbers were available for processing"
+msgstr "Aucun numéro de série HDD correspondant n'est disponible pour le traitement"
+
+msgid "Processed %d serial numbers."
+msgstr "Traitement de %d numéros de série."
+
+msgid "Skipped %d unknown serial numbers."
+msgstr "Ignoré %d numéros de série inconnus."
+
+msgid "Proof file assigned to matching HDDs."
+msgstr "Fichier de preuve appliqué aux HDD correspondants."
+
+msgid "CSV batch - Notes: %s | Processed: %s | Already processed: %s | Unknown: %s"
+msgstr "Lot CSV - Notes : %s | Traités : %s | Déjà traités : %s | Inconnus : %s"
+
+msgid "Bulk destroy of %d HDD(s). IDs: %s"
+msgstr "Destruction en lot de %d HDD. ID : %s"
+
+msgid "Audit certified for this device."
+msgstr "Audit certifié pour cet équipement."
+
+msgid "Details"
+msgstr "Détails"
+
 #~ msgid "Outlet Status On State"
 #~ msgstr "Statut de la prise électrique en l'état"
 

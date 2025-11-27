@@ -266,6 +266,52 @@ class HDD {
 		return $res;
 	}
 
+	public static function RecordGenericLog(?int $deviceID, string $userID, string $action, string $details): void {
+		global $dbh;
+		$objectId = $deviceID ?? 0;
+		$stmt = $dbh->prepare("INSERT INTO fac_GenericLog (UserID, Class, ObjectID, ChildID, Action, Property, OldVal, NewVal)
+			VALUES (:UserID, 'HDD', :ObjectID, NULL, :Action, 'Details', '', :NewVal)");
+		$stmt->execute([
+			':UserID'   => $userID,
+			':ObjectID' => $objectId,
+			':Action'   => $action,
+			':NewVal'   => $details
+		]);
+	}
+
+	public static function RecordAudit(int $deviceID, string $userID): bool {
+		global $dbh;
+		$stmt = $dbh->prepare(
+			"INSERT INTO fac_GenericLog
+			   (UserID, Class, ObjectID, ChildID, Action, Property, OldVal, NewVal)
+			 VALUES
+			   (:UserID, 'HDD', :ObjectID, NULL, 'HDD_Audit', 'Audit', '', '')"
+		);
+		return $stmt->execute([
+			':UserID'   => $userID,
+			':ObjectID' => $deviceID
+		]);
+	}
+
+	public static function GetLastAudit(int $deviceID): ?array {
+		global $dbh;
+		$sql = "SELECT g.Time AS AuditTime, g.UserID,
+					   NULLIF(TRIM(CONCAT(COALESCE(p.FirstName,''), ' ', COALESCE(p.LastName,''))), '') AS PersonName
+				  FROM fac_GenericLog g
+				  LEFT JOIN fac_People p ON p.UserID = g.UserID
+				 WHERE g.Class='HDD' AND g.Action='HDD_Audit' AND g.ObjectID = :DeviceID
+				 ORDER BY g.Time DESC LIMIT 1";
+		$stmt = $dbh->prepare($sql);
+		$stmt->execute([':DeviceID' => $deviceID]);
+		if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			return [
+				'AuditTime'   => $row['AuditTime'],
+				'DisplayName' => ($row['PersonName'] ?: $row['UserID'])
+			];
+		}
+		return null;
+	}
+
     // List active HDDs for a device
     public static function GetHDDByDevice(int $DeviceID): array {
         global $dbh;

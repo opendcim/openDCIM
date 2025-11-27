@@ -1,6 +1,9 @@
 <?php
 	require_once( 'db.inc.php' );
 	require_once( 'facilities.inc.php' );
+	if(config->ParameterArray['feature_hdd'] == 'enabled'){
+		require_once( 'classes/hdd.class.php' );
+	}
 
 	$subheader=__("Data Center Device Detail");
 
@@ -2067,11 +2070,17 @@ echo '		<div>
 			if(
 				$template->EnableHDDFeature == 1
 				){
+				$deviceHddAudit = HDD::GetLastAudit($dev->DeviceID);
 				echo '
-				<div>
-				<div><label>',__("Manage HDD"),'</label></div>
-				<div><a class="button" href="managementhdd.php?DeviceID=',$dev->DeviceID,'">',__("Manage HDDs"),'</a></div>
-				</div>';
+                <div>
+                    <div><label>',__("Manage HDD"),'</label></div>
+                    <div><a class="button" href="managementhdd.php?DeviceID=',$dev->DeviceID,'">',__("Manage HDDs"),'</a></div></div>';
+                if($deviceHddAudit){
+                    echo '<div>
+                            <div><span class="hdd-audit-label">',__("Last HDD audit"),'</span></div>
+                            <div><span class="hdd-audit-label">',date('Y-m-d H:i', strtotime($deviceHddAudit['AuditTime'])),'</span></div>
+                            </div>';
+					}
 				}
 			}
 		

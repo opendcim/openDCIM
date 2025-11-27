@@ -102,14 +102,40 @@ try {
 			break;
 
 		case $action === "bulk_destroy":
-			foreach ($_POST['select_pending'] ?? [] as $id) {
-				HDD::MarkDestroyed(intval($id));
+			$pendingSelected = $_POST['select_pending_destroyed'] ?? ($_POST['select_pending'] ?? []);
+			$destroyedIds = [];
+			foreach ($pendingSelected as $id) {
+				$intId = intval($id);
+				if ($intId > 0 && HDD::MarkDestroyed($intId)) {
+					$destroyedIds[] = $intId;
+				}
+			}
+			if (!empty($destroyedIds)) {
+				$details = json_encode([
+					'ids' => $destroyedIds,
+					'count' => count($destroyedIds),
+					'source' => 'bulk_destroy'
+				], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				HDD::RecordGenericLog($deviceID, $person->UserID, 'HDD_BULK_DESTROY', $details);
 			}
 			break;
 					
 		case $action === "bulk_destroyFromActive":
-			foreach ($_POST['select_active'] ?? [] as $id) {
-				HDD::MarkDestroyed(intval($id));
+			$activeSelected = $_POST['select_active'] ?? [];
+			$destroyedActive = [];
+			foreach ($activeSelected as $id) {
+				$intId = intval($id);
+				if ($intId > 0 && HDD::MarkDestroyed($intId)) {
+					$destroyedActive[] = $intId;
+				}
+			}
+			if (!empty($destroyedActive)) {
+				$details = json_encode([
+					'ids' => $destroyedActive,
+					'count' => count($destroyedActive),
+					'source' => 'bulk_destroy_active'
+				], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				HDD::RecordGenericLog($deviceID, $person->UserID, 'HDD_BULK_DESTROY', $details);
 			}
 			break;
 
@@ -117,6 +143,14 @@ try {
 			 // Export XLS complet en 3 feuilles
 			 HDD::ExportAllToXls($deviceID);
 			 // (la méthode se termine par exit())
+			break;
+		
+		case $action === "certify_audit":
+			if (HDD::RecordAudit($deviceID, $person->UserID)) {
+				$_SESSION['Message'] = __('HDD audit recorded successfully');
+			} else {
+				$_SESSION['LastError'] = __('Unable to record HDD audit');
+			}
 			break;
 		
         default:

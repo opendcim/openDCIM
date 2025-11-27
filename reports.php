@@ -52,8 +52,11 @@ echo '<div class="main">
     <a href="report_warranty.php">',__("Warranty Expiration Report"),'</a>
 	<a href="report_vm_by_department.php">',__("Virtual Machines by Department"),'</a>
 	<a href="report_network_map.php">',__("Network Map"),'</a>
-	<a href="report_vendor_model.php">', __("Vendor/Model Report"),'</a>
-	<a href="report_hdd.php">', __("Report HDD"),'</a>
+	<a href="report_vendor_model.php">', __("Vendor/Model Report"),'</a>';
+		if($config->ParameterArray['feature_hdd'] == 'enabled'){
+			echo '	<a href="report_hdd.php">', __("Report HDD"),'</a>';
+		}
+echo '
 </fieldset>
 </div>
 
