@@ -1,6 +1,12 @@
+---
+--- Schema changes for 23.04 to 25.01
+---
+
 --
--- Schema changes for 23.04 to 25.01
+-- Table structure for table `fac_Cabinet`
 --
+-- Add SerialNo column to fac_Cabinet after Model
+ALTER TABLE fac_Cabinet ADD COLUMN SerialNo VARCHAR(30) AFTER Model;
 
 --
 -- Table structure for table `fac_MediaConnectors`
