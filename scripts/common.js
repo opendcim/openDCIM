@@ -648,7 +648,7 @@ function buildportstable(){
 
 function buildpowerportstable(){
 	var table=$('<div>').addClass('table');
-	table.append('<div><div>Port Number</div><div>Label</div><div>Notes</div></div>');
+	table.append('<div><div>Port Number</div><div>Label</div><div>Connector</div><div>Voltage</div><div>Phase</div><div>Notes</div></div>');
 	var ports=[];
 
 	function buildrow(TemplatePortObj){
@@ -660,6 +660,9 @@ function buildpowerportstable(){
 		var row=$('<div>').
 			append($('<div>').html(pn)).
 			append($('<div>').html($('<input>').val(label).text(label).attr('name','powerlabel'+pn))).
+			append($('<div>').html($('<select>').attr('name','connector'+pn))).
+			append($('<div>').html($('<select>').attr('name','voltage'+pn))).
+			append($('<div>').html($('<select>').attr('name','phase'+pn))).
 			append($('<div>').html($('<input>').val(n).text(n).attr('name','powerportnotes'+pn))).
 			data('change',((rrow.data('change'))?true:false));
 
@@ -2316,7 +2319,11 @@ function LameLogDisplay(){
 			this.portname    = this.element.find('div:nth-child(3)');
 			this.cdevice     = this.element.find('div:nth-child(4)');
 			this.cdeviceport = this.element.find('div:nth-child(5)');
-			this.cnotes      = this.element.find('div:nth-child(6)');
+			this.conntype    = this.element.find('div:nth-child(6)');
+			this.voltage     = this.element.find('div:nth-child(7)');
+			this.phase       = this.element.find('div:nth-child(8)');
+			this.cnotes      = this.element.find('div:nth-child(9)');
+
 			// As we only track power connections on the primary chassis but display them 
 			// on children we need a common place to check for the correct device id
 			this.deviceid    = (typeof $('select[name=ParentDevice]').val()=='undefined')?$('#DeviceID').val():$('select[name=ParentDevice]').val();
@@ -2352,6 +2359,9 @@ function LameLogDisplay(){
 
 			row.getdevices(this.cdevice);
 			row.portname.html('<input type="text" style="min-width: 60px;" value="'+row.portname.text()+'">');
+			row.getConnectors(this.conntype);
+			row.getVoltages(this.voltage);
+			row.getPhases(this.phase);
 			row.cnotes.html('<input type="text" style="min-width: 200px;" value="'+row.cnotes.text()+'">');
 
 //			this.element.append(this.controls.clone(true));
@@ -2365,6 +2375,50 @@ function LameLogDisplay(){
 			row.element.data('edit',true);
 			// Hide mass edit controls
 			$('.power.table').massedit('hide');
+		},
+		getConnectors: function(target){
+			var row=this;
+			$.get("api/v1/powerconnectortypes").done(function(data){
+				var connections=$('<select>').append('<option value=0>&nbsp;</option>');
+				if(!data.error){
+					for(var i in data.powerconnectortypes){
+						var conn=data.powerconnectortypes[i];
+						connections.append('<option value='+conn.ConnectorID+'>'+conn.ConnectorName+'</option>');
+						row.conntype.data('label'+conn.ConnectorID,conn.ConnectorName);
+					}
+				}
+				row.conntype.html(connections).find('select').val(target.data('default'));
+			});
+		},
+		getVoltages: function(target){
+			var row=this;
+
+			$.get("api/v1/powervoltages").done(function(data){
+				var voltages=$('<select>').append('<option value=0>&nbsp;</option>');
+				if(!data.error){
+					for(var i in data.powervoltages){
+						var volt=data.powervoltages[i];
+						voltages.append('<option value='+volt.VoltageID+'>'+volt.VoltageName+'</option>');
+						row.voltage.data('label'+volt.VoltageID,volt.VoltageName);
+					}
+				}
+				row.voltage.html(voltages).find('select').val(target.data('default'));
+			});
+		},
+		getPhases: function(target){
+			var row=this;
+
+			$.get("api/v1/powerphases").done(function(data){
+				var phases=$('<select>').append('<option value=0>&nbsp;</option>');
+				if(!data.error){
+					for(var i in data.powerphases){
+						var phase=data.powerphases[i];
+						phases.append('<option value='+phase.PhaseID+'>'+phase.PhaseName+'</option>');
+						row.phase.data('label'+phase.PhaseID,phase.PhaseName);
+					}
+				}
+				row.phase.html(phases).find('select').val(target.data('default'));
+			});
 		},
 		getdevices: function(target){
 			var row=this;
@@ -2458,6 +2512,9 @@ function LameLogDisplay(){
 				Label: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
 				ConnectedDeviceID: row.cdevice.children('select').val(),
 				ConnectedPort: row.cdeviceport.children('select').val(),
+				ConnectorID: row.conntype.children('select').val(),
+				VoltageID: row.voltage.children('select').val(),
+				PhaseID: row.phase.children('select').val(),
 				Notes: row.cnotes.children('input').val(),
 			}).done(function(data){
 				if(!data.error){
@@ -2479,6 +2536,9 @@ function LameLogDisplay(){
 					port.ConnectedPortLabel=(port.ConnectedPortLabel==null)?'':port.ConnectedPortLabel;
 					row.cdevice.html('<a href="devices.php?DeviceID='+port.ConnectedDeviceID+'">'+port.ConnectedDeviceLabel+'</a>').data('default',port.ConnectedDeviceID);
 					row.cdeviceport.html(port.ConnectedPortLabel).data('default',port.ConnectedPort);
+					row.conntype.html((port.ConnectorID==null)?'':row.conntype.data('label'+port.ConnectorID)).data('default',port.ConnectorID);
+					row.voltage.html((port.VoltageID==null)?'':row.voltage.data('label'+port.VoltageID)).data('default',port.VoltageID);
+					row.phase.html((port.PhaseID==null)?'':row.phase.data('label'+port.PhaseID)).data('default',port.PhaseName);
 					row.cnotes.html(port.Notes).data('default',port.Notes);
 					row.ct.css('padding','');
 					$(row.element[0]).children('div:nth-child(2) ~ div').removeAttr('style');

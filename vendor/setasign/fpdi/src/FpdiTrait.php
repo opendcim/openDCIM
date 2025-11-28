@@ -4,7 +4,7 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2023 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2024 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
  */
 
@@ -129,7 +129,7 @@ trait FpdiTrait
      */
     protected function getPdfParserInstance(StreamReader $streamReader, array $parserParams = [])
     {
-        // note: if you get an exception here - turn off errors/warnings on not found for your autoloader.
+        // note: if you get an exception here - turn off errors/warnings on not found classes for your autoloader.
         // psr-4 (https://www.php-fig.org/psr/psr-4/) says: Autoloader implementations MUST NOT throw
         // exceptions, MUST NOT raise errors of any level, and SHOULD NOT return a value.
         /** @noinspection PhpUndefinedClassInspection */
@@ -444,6 +444,7 @@ trait FpdiTrait
             unset($x['pageId']);
             \extract($x, EXTR_IF_EXISTS);
             /** @noinspection NotOptimalIfConditionsInspection */
+            /** @phpstan-ignore function.alreadyNarrowedType  */
             if (\is_array($x)) {
                 $x = 0;
             }
@@ -596,7 +597,7 @@ trait FpdiTrait
         } elseif ($value instanceof PdfString) {
             $this->_put('(' . $value->value . ')', false);
         } elseif ($value instanceof PdfHexString) {
-            $this->_put('<' . $value->value . '>');
+            $this->_put('<' . $value->value . '>', false);
         } elseif ($value instanceof PdfBoolean) {
             $this->_put($value->value ? 'true ' : 'false ', false);
         } elseif ($value instanceof PdfArray) {
@@ -615,11 +616,8 @@ trait FpdiTrait
         } elseif ($value instanceof PdfToken) {
             $this->_put($value->value);
         } elseif ($value instanceof PdfNull) {
-            $this->_put('null ');
+            $this->_put('null ', false);
         } elseif ($value instanceof PdfStream) {
-            /**
-             * @var $value PdfStream
-             */
             $this->writePdfType($value->value);
             $this->_put('stream');
             $this->_put($value->getStream());
@@ -636,12 +634,22 @@ trait FpdiTrait
 
             $this->_put($this->objectMap[$this->currentReaderId][$value->value] . ' 0 R ', false);
         } elseif ($value instanceof PdfIndirectObject) {
-            /**
-             * @var PdfIndirectObject $value
-             */
             $n = $this->objectMap[$this->currentReaderId][$value->objectNumber];
             $this->_newobj($n);
             $this->writePdfType($value->value);
+
+            // add newline before "endobj" for all objects in view to PDF/A conformance
+            if (
+                !(
+                    ($value->value instanceof PdfArray) ||
+                    ($value->value instanceof PdfDictionary) ||
+                    ($value->value instanceof PdfToken) ||
+                    ($value->value instanceof PdfStream)
+                )
+            ) {
+                $this->_put("\n", false);
+            }
+
             $this->_put('endobj');
         }
     }

@@ -2,15 +2,13 @@
 /**
  * This file is part of php-saml.
  *
- * (c) OneLogin Inc
- *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
  * @package OneLogin
- * @author  OneLogin Inc <saml-info@onelogin.com>
- * @license MIT https://github.com/onelogin/php-saml/blob/master/LICENSE
- * @link    https://github.com/onelogin/php-saml
+ * @author  Sixto Martin <sixto.martin.garcia@gmail.com>
+ * @license MIT https://github.com/SAML-Toolkits/php-saml/blob/master/LICENSE
+ * @link    https://github.com/SAML-Toolkits/php-saml
  */
 
 namespace OneLogin\Saml2;
@@ -19,7 +17,7 @@ use DOMDocument;
 use Exception;
 
 /**
- * IdP Metadata Parser of OneLogin PHP Toolkit
+ * IdP Metadata Parser of SAML PHP Toolkit
  */
 class IdPMetadataParser
 {
@@ -38,10 +36,11 @@ class IdPMetadataParser
      * @param string $desiredNameIdFormat If available on IdP metadata, use that nameIdFormat
      * @param string $desiredSSOBinding   Parse specific binding SSO endpoint
      * @param string $desiredSLOBinding   Parse specific binding SLO endpoint
+     * @param bool   $validatePeer        Enable or disable validate peer SSL certificate
      *
      * @return array metadata info in php-saml settings format
      */
-    public static function parseRemoteXML($url, $entityId = null, $desiredNameIdFormat = null, $desiredSSOBinding = Constants::BINDING_HTTP_REDIRECT, $desiredSLOBinding = Constants::BINDING_HTTP_REDIRECT)
+    public static function parseRemoteXML($url, $entityId = null, $desiredNameIdFormat = null, $desiredSSOBinding = Constants::BINDING_HTTP_REDIRECT, $desiredSLOBinding = Constants::BINDING_HTTP_REDIRECT, $validatePeer = false)
     {
         $metadataInfo = array();
 
@@ -53,7 +52,7 @@ class IdPMetadataParser
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $validatePeer);
             curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 
             $xml = curl_exec($ch);

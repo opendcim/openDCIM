@@ -4,7 +4,7 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2023 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2024 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
  */
 
@@ -14,6 +14,7 @@ use setasign\Fpdi\PdfParser\CrossReference\CrossReferenceException;
 use setasign\Fpdi\PdfParser\PdfParserException;
 use setasign\Fpdi\PdfParser\Type\PdfIndirectObject;
 use setasign\Fpdi\PdfParser\Type\PdfNull;
+use setasign\Fpdi\PdfParser\Type\PdfType;
 
 /**
  * This trait is used for the implementation of FPDI in FPDF and tFPDF.
@@ -139,23 +140,9 @@ trait FpdfTrait
             $rect = sprintf('%.2F %.2F %.2F %.2F', $pl[0], $pl[1], $pl[0] + $pl[2], $pl[1] - $pl[3]);
             $this->_put('<</Type /Annot /Subtype /Link /Rect [' . $rect . ']', false);
             if (is_string($pl[4])) {
-                $this->_put('/A <</S /URI /URI ' . $this->_textstring($pl[4]) . '>>');
                 if (isset($pl['importedLink'])) {
+                    $this->_put('/A <</S /URI /URI (' . $this->_escape($pl[4]) . ')>>');
                     $values = $pl['importedLink']['pdfObject']->value;
-                    unset(
-                        $values['P'],
-                        $values['NM'],
-                        $values['AP'],
-                        $values['AS'],
-                        $values['Type'],
-                        $values['Subtype'],
-                        $values['Rect'],
-                        $values['A'],
-                        $values['QuadPoints'],
-                        $values['Rotate'],
-                        $values['M'],
-                        $values['StructParent']
-                    );
 
                     foreach ($values as $name => $entry) {
                         $this->_put('/' . $name . ' ', false);
@@ -171,6 +158,7 @@ trait FpdfTrait
                         $this->_put($s);
                     }
                 } else {
+                    $this->_put('/A <</S /URI /URI ' . $this->_textstring($pl[4]) . '>>');
                     $this->_put('/Border [0 0 0]', false);
                 }
                 $this->_put('>>');

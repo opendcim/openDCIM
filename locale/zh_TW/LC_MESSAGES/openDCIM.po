@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-15 11:32-0500\n"
+"POT-Creation-Date: 2025-11-17 08:50-0600\n"
 "Language: zh-TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -121,7 +121,7 @@ msgid "Data Center"
 msgstr "数据中心"
 
 #: bulk_importer.php:223 bulk_moves.php:230 cabinets.php:246 dc_stats.php:317
-#: devices.php:1955 pathmaker.php:227 pathmaker.php:304 pathmaker.php:470
+#: devices.php:1994 pathmaker.php:227 pathmaker.php:304 pathmaker.php:470
 #: /home/runner/openDCIM/paths.php:221 paths.php:296
 #: /home/runner/openDCIM/paths.php:380 report_cabinets.php:187
 #: report_contact.php:486 report_cost.php:469 report_exception.php:165
@@ -151,7 +151,7 @@ msgstr "型号"
 msgid "Department"
 msgstr "部门"
 
-#: bulk_importer.php:269 devices.php:934 /home/runner/openDCIM/devices.php:1913
+#: bulk_importer.php:269 devices.php:973 /home/runner/openDCIM/devices.php:1952
 #: report_aging.php:425 report_aging.php:460
 #: report_project_outage_simulator.php:354 report_warranty.php:439
 #: report_warranty.php:472 search_export.php:161
@@ -287,7 +287,7 @@ msgstr "信息技术服务"
 msgid "Cabinet Audit Report"
 msgstr "机柜审核报告"
 
-#: cabaudit.php:53 /home/runner/openDCIM/devices.php:2430 report_aging.php:95
+#: cabaudit.php:53 /home/runner/openDCIM/devices.php:2469 report_aging.php:95
 #: report_asset.php:29 report_audit.php:321 report_audit.php:417
 #: report_audit_frequency.php:33 report_contact.php:42 report_cost.php:46
 #: report_department.php:36 report_diverse_power_exceptions.php:35
@@ -318,7 +318,7 @@ msgstr "页"
 msgid "Cabinet Location"
 msgstr "机柜位置"
 
-#: cabaudit.php:404 cabaudit.php:510 configuration.php:2434 devices.php:1826
+#: cabaudit.php:404 cabaudit.php:510 configuration.php:2578 devices.php:1865
 #: rackrequest.php:351 report_aging.php:425 report_aging.php:460
 #: report_asset.php:54 report_warranty.php:439 report_warranty.php:472
 #: sidebar.inc.php:18 workorder.php:156
@@ -333,7 +333,7 @@ msgstr "序列号"
 msgid "AssetTag"
 msgstr "资产标签"
 
-#: cabaudit.php:404 connections_spreadsheet.php:58 devices.php:1997
+#: cabaudit.php:404 connections_spreadsheet.php:58 devices.php:2036
 #: rackrequest.php:471 report_asset.php:54 report_contact.php:486
 #: report_cost.php:469 report_diverse_power_exceptions.php:167
 #: report_exception.php:165 report_exception.php:235
@@ -403,7 +403,7 @@ msgstr "更新"
 msgid "New Cabinet"
 msgstr "新机柜"
 
-#: cabinets.php:272 configuration.php:2083 report_sensors.php:24
+#: cabinets.php:272 configuration.php:2155 report_sensors.php:24
 #: report_supply_status.php:103 search_export.php:150 supplybin.php:159
 msgid "Location"
 msgstr "位置"
@@ -432,12 +432,12 @@ msgstr "机柜高度"
 msgid "U1 Position"
 msgstr "U1 Position"
 
-#: cabinets.php:306 configuration.php:2035 dc_stats.php:321 dc_stats.php:329
+#: cabinets.php:306 configuration.php:2107 dc_stats.php:321 dc_stats.php:329
 #: mapmaker.php:172 zone_stats.php:309 zone_stats.php:317
 msgid "Bottom"
 msgstr "底部"
 
-#: cabinets.php:306 configuration.php:2036 dc_stats.php:319 dc_stats.php:327
+#: cabinets.php:306 configuration.php:2108 dc_stats.php:319 dc_stats.php:327
 #: mapmaker.php:170 zone_stats.php:307 zone_stats.php:315
 msgid "Top"
 msgstr "顶部"
@@ -462,21 +462,21 @@ msgstr "最高承重"
 msgid "Date of Installation"
 msgstr "开通日期"
 
-#: cabinets.php:335 cabnavigator.php:66 devices.php:1933 search_export.php:159
+#: cabinets.php:335 cabnavigator.php:66 devices.php:1972 search_export.php:159
 #: search_export_storage_room.php:73
 msgid "Tags"
 msgstr "标签"
 
 #: cabinets.php:341 conflicts.php:608 connections_spreadsheet.php:23
-#: device_templates.php:915 devices.php:1161 devices.php:1945 devices.php:2465
-#: devices.php:2510 devices.php:2559 pathmaker.php:393 report_tags.php:37
+#: device_templates.php:915 devices.php:1200 devices.php:1984 devices.php:2507
+#: devices.php:2570 devices.php:2619 pathmaker.php:393 report_tags.php:37
 #: sidebar.inc.php:26
 msgid "Notes"
 msgstr "备注"
 
 #: cabinets.php:347 /home/runner/openDCIM/cabrow.php:196 cdu_templates.php:236
-#: configuration.php:2737 container.php:306 datacenter.php:352
-#: departments.php:218 device_manufacturers.php:203 devices.php:2616
+#: configuration.php:2881 container.php:306 datacenter.php:352
+#: departments.php:218 device_manufacturers.php:203 devices.php:2676
 #: disposition.php:115 escalations.php:86 power_panel.php:345
 #: project_mgr.php:174 report_logging.php:73 timeperiods.php:86 usermgr.php:337
 #: /home/runner/openDCIM/zone.php:180
@@ -485,7 +485,7 @@ msgstr "更新内容"
 
 #: cabinets.php:348 /home/runner/openDCIM/cabrow.php:197 container.php:307
 #: datacenter.php:358 datacenter.php:373 departments.php:218
-#: device_manufacturers.php:204 devices.php:2625 escalations.php:87
+#: device_manufacturers.php:204 devices.php:2685 escalations.php:87
 #: power_panel.php:346 project_mgr.php:174 report_logging.php:70
 #: timeperiods.php:87 /home/runner/openDCIM/zone.php:181
 msgid "Delete"
@@ -502,19 +502,19 @@ msgstr "地图坐标"
 #: cabinets.php:352 /home/runner/openDCIM/cabrow.php:192 cdu_templates.php:238
 #: container.php:309 datacenter.php:354 departments.php:220
 #: device_manufacturers.php:206 device_templates.php:390
-#: device_templates.php:923 devices.php:2620 disposition.php:117
+#: device_templates.php:923 devices.php:2680 disposition.php:117
 #: escalations.php:89 power_panel.php:349 project_mgr.php:176
 #: rackrequest.php:486 report_logging.php:67 supplybin.php:165
 #: timeperiods.php:89 usermgr.php:339 /home/runner/openDCIM/zone.php:175
 msgid "Create"
 msgstr "创建"
 
-#: cabinets.php:360 devices.php:2642 devices.php:2644
+#: cabinets.php:360 devices.php:2702 devices.php:2704
 msgid "Return to Navigator"
 msgstr "返回导航页面"
 
 #: cabinets.php:362 /home/runner/openDCIM/cabrow.php:204 cdu_templates.php:245
-#: configuration.php:2742 container.php:320 datacenter.php:378
+#: configuration.php:2886 container.php:320 datacenter.php:378
 #: departments.php:229 device_manufacturers.php:218 device_templates.php:1128
 #: disposition.php:121 escalations.php:96 image_management.php:163
 #: pathmaker.php:523 /home/runner/openDCIM/paths.php:617 power_panel.php:438
@@ -536,18 +536,18 @@ msgstr ""
 "您确定要删除这个机柜以及机柜内的所有设备吗?<br><br><b>这个操作是不可逆的!</b>"
 
 #: cabinets.php:384 /home/runner/openDCIM/cabrow.php:122 container.php:169
-#: datacenter.php:182 devices.php:1566 devices.php:1719 power_panel.php:451
+#: datacenter.php:182 devices.php:1605 devices.php:1758 power_panel.php:451
 #: project_mgr.php:103 report_exception.php:261 zone.php:245
 msgid "Yes"
 msgstr "是"
 
 #: cabinets.php:395 /home/runner/openDCIM/cabrow.php:127 container.php:174
-#: datacenter.php:194 devices.php:1570 devices.php:1725 power_panel.php:463
+#: datacenter.php:194 devices.php:1609 devices.php:1764 power_panel.php:463
 #: project_mgr.php:114 report_exception.php:263 zone.php:250
 msgid "No"
 msgstr "否"
 
-#: cabnavigator.php:52 devices.php:1850
+#: cabnavigator.php:52 devices.php:1889
 msgid "Install Date"
 msgstr "安装日期"
 
@@ -595,7 +595,7 @@ msgid "Space"
 msgstr "空间"
 
 #: cabnavigator.php:271 dc_dashboard.php:85 dc_stats.php:298
-#: device_templates.php:768 devices.php:2022 zone_stats.php:287
+#: device_templates.php:768 devices.php:2061 zone_stats.php:287
 #: scripts/ajax_tooltip.php:155
 msgid "Weight"
 msgstr "重量"
@@ -644,11 +644,11 @@ msgstr "Environmental Sensors"
 msgid "Add Sensor"
 msgstr "Add Sensor"
 
-#: cabnavigator.php:395 devices.php:2618
+#: cabnavigator.php:395 devices.php:2678
 msgid "Certify Audit"
 msgstr "验证审核"
 
-#: cabnavigator.php:396 devices.php:2351
+#: cabnavigator.php:396 devices.php:2390
 msgid "Add Device"
 msgstr "添加设备"
 
@@ -758,12 +758,12 @@ msgstr "新的模板"
 msgid "Managed"
 msgstr "管理"
 
-#: cdu_templates.php:123 devices.php:2270
+#: cdu_templates.php:123 devices.php:2309
 msgid "Automatic Transfer Switch"
 msgstr "自动切换开关"
 
-#: cdu_templates.php:129 configuration.php:2252 device_templates.php:796
-#: devices.php:2107
+#: cdu_templates.php:129 configuration.php:2324 device_templates.php:796
+#: devices.php:2146
 msgid "SNMP Version"
 msgstr "SNMP版本"
 
@@ -827,7 +827,7 @@ msgstr "ATS预期效果"
 msgid "Processing Scheme"
 msgstr "处理方案"
 
-#: cdu_templates.php:222 device_templates.php:1046
+#: cdu_templates.php:222 device_templates.php:1046 devices.php:2505
 msgid "Voltage"
 msgstr "电压"
 
@@ -847,37 +847,37 @@ msgstr "数据中心配置"
 msgid "Current selection"
 msgstr "Current selection"
 
-#: configuration.php:771 configuration.php:809 container.php:118
+#: configuration.php:843 configuration.php:881 container.php:118
 #: datacenter.php:143 device_templates.php:407 rackrequest.php:334
 #: rackrequest.php:450
 msgid "Select"
 msgstr "选择"
 
-#: configuration.php:875 configuration.php:1063
+#: configuration.php:947 configuration.php:1135
 msgid "Clear all"
 msgstr "全部清除"
 
-#: configuration.php:883 configuration.php:899 configuration.php:1073
-#: configuration.php:1094 configuration.php:1317 configuration.php:1331
-#: configuration.php:1430 configuration.php:1447
+#: configuration.php:955 configuration.php:971 configuration.php:1145
+#: configuration.php:1166 configuration.php:1389 configuration.php:1403
+#: configuration.php:1502 configuration.php:1519
 msgid "Something just went horribly wrong."
 msgstr "有设备发生了严重错误."
 
-#: configuration.php:890 configuration.php:1080
+#: configuration.php:962 configuration.php:1152
 msgid "Replace"
 msgstr "更换"
 
-#: configuration.php:906 configuration.php:1101 configuration.php:1312
-#: configuration.php:1339 configuration.php:1426 configuration.php:1454
+#: configuration.php:978 configuration.php:1173 configuration.php:1384
+#: configuration.php:1411 configuration.php:1498 configuration.php:1526
 #: device_templates.php:467
 msgid "Cancel"
 msgstr "取消"
 
-#: configuration.php:910
+#: configuration.php:982
 msgid "Media Type Delete Override"
 msgstr "介质类型强制删除"
 
-#: configuration.php:910
+#: configuration.php:982
 msgid ""
 "This media type is in use somewhere. Select an alternate type to assign to "
 "all the records to or choose clear all."
@@ -885,11 +885,11 @@ msgstr ""
 "这种介质类型正在某个地方被使用中. 选择一个替代的类型分配到所有记录或者选择全"
 "部清除."
 
-#: configuration.php:1105
+#: configuration.php:1177
 msgid "Code Delete Override"
 msgstr "代码强制删除"
 
-#: configuration.php:1105
+#: configuration.php:1177
 msgid ""
 "This code is in use somewhere. You can either choose to clear all instances "
 "of this color being used or choose to have them replaced with another color."
@@ -897,19 +897,19 @@ msgstr ""
 "这段代码在某些地方正被使用. 您可以选择清除所有实用这种颜色的实例, 或者选择其"
 "它的颜色进行替代."
 
-#: configuration.php:1317
+#: configuration.php:1389
 msgid "Custom Device Attribute Type Change Error"
 msgstr "Custom Device Attribute Type Change Error"
 
-#: configuration.php:1325
+#: configuration.php:1397
 msgid "Change Type and Clear all uses"
 msgstr "Change Type and Clear all uses"
 
-#: configuration.php:1344
+#: configuration.php:1416
 msgid "Custom Device Attribute Type Change Override"
 msgstr "Custom Device Attribute Type Change Override"
 
-#: configuration.php:1344
+#: configuration.php:1416
 msgid ""
 "This custom device attribute is in use somewhere. If you choose to change "
 "the attribute type, it will be cleared from all devices and device templates."
@@ -917,19 +917,19 @@ msgstr ""
 "This custom device attribute is in use somewhere. If you choose to change "
 "the attribute type, it will be cleared from all devices and device templates."
 
-#: configuration.php:1430
+#: configuration.php:1502
 msgid "Custom Device Attribute Delete Error"
 msgstr "Custom Device Attribute Delete Error"
 
-#: configuration.php:1439
+#: configuration.php:1511
 msgid "Delete from All Devices/Templates"
 msgstr "Delete from All Devices/Templates"
 
-#: configuration.php:1458
+#: configuration.php:1530
 msgid "Custom Device Attribute Delete Override"
 msgstr "Custom Device Attribute Delete Override"
 
-#: configuration.php:1458
+#: configuration.php:1530
 msgid ""
 "This custom device attribute is in use somewhere. If you choose to delete "
 "the attribute, it will be removed from all devices and device templates."
@@ -937,886 +937,942 @@ msgstr ""
 "This custom device attribute is in use somewhere. If you choose to delete "
 "the attribute, it will be removed from all devices and device templates."
 
-#: configuration.php:1665
+#: configuration.php:1737
 msgid "Verify directory rights"
 msgstr "Verify directory rights"
 
-#: configuration.php:1754
+#: configuration.php:1826
 msgid "General"
 msgstr "常规"
 
-#: configuration.php:1755
+#: configuration.php:1827
 #, fuzzy
 msgid "Workflow/Style"
 msgstr "工作流程"
 
-#: configuration.php:1756
+#: configuration.php:1828
 msgid "Privacy/Email"
 msgstr ""
 
-#: configuration.php:1757
+#: configuration.php:1829
 msgid "Reporting"
 msgstr "报告"
 
-#: configuration.php:1758
+#: configuration.php:1830
 msgid "ToolTips"
 msgstr "工具栏"
 
-#: configuration.php:1759
+#: configuration.php:1831
 msgid "Cabling"
 msgstr "线缆"
 
-#: configuration.php:1760 configuration.php:2430
+#: configuration.php:1832 configuration.php:2574
 msgid "Custom Device Attributes"
 msgstr "Custom Device Attributes"
 
-#: configuration.php:1761
+#: configuration.php:1833
 msgid "Attribute Mapping"
 msgstr "Attribute Mapping"
 
-#: configuration.php:1762
+#: configuration.php:1834
 msgid "OIDC/LDAP"
 msgstr "OIDC/LDAP"
 
-#: configuration.php:1763
+#: configuration.php:1835
 msgid "SAML"
 msgstr "SAML"
 
-#: configuration.php:1764
+#: configuration.php:1836
 msgid "Pre-Flight Check"
 msgstr "Pre-Flight Check"
 
-#: configuration.php:1765
+#: configuration.php:1837
 msgid "Credits"
 msgstr "Credits"
 
-#: configuration.php:1770
+#: configuration.php:1842
 msgid "Organization Name"
 msgstr "组织名称"
 
-#: configuration.php:1774
+#: configuration.php:1846
 msgid "Locale"
 msgstr "位置"
 
-#: configuration.php:1778
+#: configuration.php:1850
 msgid "Default Panel Voltage"
 msgstr "默认排插电压"
 
-#: configuration.php:1782
+#: configuration.php:1854
 msgid "Site Specific Paths"
 msgstr "Site Specific Paths"
 
-#: configuration.php:1788
+#: configuration.php:1860
 msgid "Relative path for Drawings"
 msgstr "Relative path for Drawings"
 
-#: configuration.php:1792
+#: configuration.php:1864
 msgid "Relative path for Pictures"
 msgstr "Relative path for Pictures"
 
-#: configuration.php:1797
+#: configuration.php:1869
 msgid "Relative path for Local/Custom Reports"
 msgstr "Relative path for Local/Custom Reports"
 
-#: configuration.php:1802
+#: configuration.php:1874
 msgid "Time and Measurements"
 msgstr "生命周期与测量结果"
 
-#: configuration.php:1805
+#: configuration.php:1877
 msgid "Time Zone"
 msgstr "时区"
 
-#: configuration.php:1810
+#: configuration.php:1882
 msgid "Log Retention (Days)"
 msgstr "Log Retention (Days)"
 
-#: configuration.php:1814 devices.php:1845 rackrequest.php:372
+#: configuration.php:1886 devices.php:1884 rackrequest.php:372
 msgid "Manufacture Date"
 msgstr "制造日期"
 
-#: configuration.php:1816 configuration.php:1824
+#: configuration.php:1888 configuration.php:1896
 msgid "Blank"
 msgstr "空"
 
-#: configuration.php:1817 configuration.php:1825 report_surplus.php:31
+#: configuration.php:1889 configuration.php:1897 report_surplus.php:31
 msgid "Now"
 msgstr "现在"
 
-#: configuration.php:1822
+#: configuration.php:1894
 msgid "Warranty Date"
 msgstr "质保期"
 
-#: configuration.php:1830
+#: configuration.php:1902
 msgid "Measurement Units"
 msgstr "计量单位"
 
-#: configuration.php:1832
+#: configuration.php:1904
 msgid "English"
 msgstr "英语"
 
-#: configuration.php:1833
+#: configuration.php:1905
 msgid "Metric"
 msgstr "度量单位"
 
-#: configuration.php:1838
+#: configuration.php:1910
 msgid "Page Size"
 msgstr "页面尺寸"
 
-#: configuration.php:1840
+#: configuration.php:1912
 msgid "A4"
 msgstr "A4"
 
-#: configuration.php:1841
+#: configuration.php:1913
 msgid "A3"
 msgstr "A3"
 
-#: configuration.php:1842
+#: configuration.php:1914
 msgid "Letter"
 msgstr "信纸"
 
-#: configuration.php:1843
+#: configuration.php:1915
 msgid "Legal"
 msgstr "合法"
 
-#: configuration.php:1848 departments.php:235
+#: configuration.php:1920 departments.php:235
 msgid "Users"
 msgstr "用户"
 
-#: configuration.php:1851
+#: configuration.php:1923
 msgid "Department Types"
 msgstr "部门类型"
 
-#: configuration.php:1855
+#: configuration.php:1927
 msgid "User Lookup URL"
 msgstr "用户查询的URL"
 
-#: configuration.php:1859
+#: configuration.php:1931
 msgid "Block Undefined Users"
 msgstr "Block Undefined Users"
 
-#: configuration.php:1861 configuration.php:1935 configuration.php:1946
-#: configuration.php:1957 configuration.php:1965 configuration.php:2066
-#: configuration.php:2074 configuration.php:2126 configuration.php:2134
-#: configuration.php:2200 configuration.php:2208 configuration.php:2339
-#: configuration.php:2352 configuration.php:2367 configuration.php:2407
-#: configuration.php:2600 configuration.php:2621 usermgr.php:331
+#: configuration.php:1933 configuration.php:2007 configuration.php:2018
+#: configuration.php:2029 configuration.php:2037 configuration.php:2138
+#: configuration.php:2146 configuration.php:2198 configuration.php:2206
+#: configuration.php:2272 configuration.php:2280 configuration.php:2411
+#: configuration.php:2424 configuration.php:2439 configuration.php:2551
+#: configuration.php:2744 configuration.php:2765 usermgr.php:331
 msgid "Disabled"
 msgstr "禁用"
 
-#: configuration.php:1862 configuration.php:1936 configuration.php:1947
-#: configuration.php:1958 configuration.php:1966 configuration.php:2067
-#: configuration.php:2075 configuration.php:2127 configuration.php:2135
-#: configuration.php:2201 configuration.php:2209 configuration.php:2340
-#: configuration.php:2353 configuration.php:2601 configuration.php:2622
+#: configuration.php:1934 configuration.php:2008 configuration.php:2019
+#: configuration.php:2030 configuration.php:2038 configuration.php:2139
+#: configuration.php:2147 configuration.php:2199 configuration.php:2207
+#: configuration.php:2273 configuration.php:2281 configuration.php:2412
+#: configuration.php:2425 configuration.php:2745 configuration.php:2766
 msgid "Enabled"
 msgstr "启用"
 
-#: configuration.php:1867
+#: configuration.php:1939
 msgid "Rack Usage"
 msgstr "机架使用"
 
-#: configuration.php:1870
+#: configuration.php:1942
 msgid "Space Critical"
 msgstr "空间峰值"
 
-#: configuration.php:1873
+#: configuration.php:1945
 msgid "Temperature Critical"
 msgstr "温度峰值"
 
-#: configuration.php:1877
+#: configuration.php:1949
 msgid "Space Warning"
 msgstr "空间报警"
 
-#: configuration.php:1880
+#: configuration.php:1952
 msgid "Temperature Warning"
 msgstr "温度报警"
 
-#: configuration.php:1884
+#: configuration.php:1956
 msgid "Weight Critical"
 msgstr "承重峰值"
 
-#: configuration.php:1887
+#: configuration.php:1959
 msgid "High Humidity Critical"
 msgstr "最高湿度峰值"
 
-#: configuration.php:1891
+#: configuration.php:1963
 msgid "Weight Warning"
 msgstr "承重报警"
 
-#: configuration.php:1894
+#: configuration.php:1966
 msgid "Low Humidity Critical"
 msgstr "最小湿度限定"
 
-#: configuration.php:1898
+#: configuration.php:1970
 msgid "Power Critical"
 msgstr "电力峰值"
 
-#: configuration.php:1901
+#: configuration.php:1973
 msgid "High Humidity Caution"
 msgstr "最大湿度报警"
 
-#: configuration.php:1905
+#: configuration.php:1977
 msgid "Power Warning"
 msgstr "电力警告"
 
-#: configuration.php:1908
+#: configuration.php:1980
 msgid "Low Humidity Caution"
 msgstr "最低湿度警告"
 
-#: configuration.php:1912
+#: configuration.php:1984
 msgid "RCI (Rack Cooling Index) High"
 msgstr "RCI (Rack Cooling Index) High"
 
-#: configuration.php:1915
+#: configuration.php:1987
 msgid "RCI (Rack Cooling Index) Low"
 msgstr "RCI (Rack Cooling Index) Low"
 
-#: configuration.php:1919
+#: configuration.php:1991
 msgid "Expirations"
 msgstr "Expirations"
 
-#: configuration.php:1922
+#: configuration.php:1994
 msgid "Unseen Virtual Machines (Days)"
 msgstr "Unseen Virtual Machines (Days)"
 
-#: configuration.php:1925
+#: configuration.php:1997
 msgid "Uninstalled Reservations (Days)"
 msgstr "Uninstalled Reservations (Days)"
 
-#: configuration.php:1933
+#: configuration.php:2005
 msgid "Work Order Builder"
 msgstr "工单生成器"
 
-#: configuration.php:1941
+#: configuration.php:2013
 msgid "Site Level Security Options"
 msgstr "Site Level Security Options"
 
-#: configuration.php:1944
+#: configuration.php:2016
 msgid "Filter Cabinet List"
 msgstr "Filter Cabinet List"
 
-#: configuration.php:1952 configuration.php:1955
+#: configuration.php:2024 configuration.php:2027
 msgid "Rack Requests"
 msgstr "机位需求单"
 
-#: configuration.php:1963
+#: configuration.php:2035
 #, fuzzy
 msgid "Rack Requests Actions"
 msgstr "机位需求单"
 
-#: configuration.php:1971
+#: configuration.php:2043
 msgid "Mail Subject"
 msgstr "邮件主题"
 
-#: configuration.php:1975
+#: configuration.php:2047
 msgid "Warning (Hours)"
 msgstr "警报(小时)"
 
-#: configuration.php:1979
+#: configuration.php:2051
 msgid "Critical (Hours)"
 msgstr "峰值(小时)"
 
-#: configuration.php:2000
+#: configuration.php:2072
 msgid "Racks & Maps"
 msgstr "服务器机柜与网络拓扑"
 
-#: configuration.php:2003
+#: configuration.php:2075
 msgid "Critical Color"
 msgstr "峰值颜色"
 
-#: configuration.php:2009
+#: configuration.php:2081
 msgid "Caution Color"
 msgstr "警告颜色"
 
-#: configuration.php:2015
+#: configuration.php:2087
 msgid "Good Color"
 msgstr "正常颜色"
 
-#: configuration.php:2027
+#: configuration.php:2099
 msgid "Unused Spaces"
 msgstr "闲置空间"
 
-#: configuration.php:2033
+#: configuration.php:2105
 msgid "Default U1 Position"
 msgstr "Default U1 Position"
 
-#: configuration.php:2040 departments.php:235
+#: configuration.php:2112 departments.php:235
 msgid "Devices"
 msgstr "设备"
 
-#: configuration.php:2043
+#: configuration.php:2115
 msgid "Device Labels"
 msgstr "设备标签"
 
-#: configuration.php:2045
+#: configuration.php:2117
 msgid "Uppercase"
 msgstr "大写"
 
-#: configuration.php:2046
+#: configuration.php:2118
 msgid "Lowercase"
 msgstr "小写"
 
-#: configuration.php:2047
+#: configuration.php:2119
 msgid "Initial caps"
 msgstr "首字母大写"
 
-#: configuration.php:2048
+#: configuration.php:2120
 msgid "Don't touch my labels"
 msgstr "不要碰我的标签"
 
-#: configuration.php:2053
+#: configuration.php:2125
 msgid "Device Lists"
 msgstr "Device Lists"
 
-#: configuration.php:2055
+#: configuration.php:2127
 msgid "Just Devices"
 msgstr "Just Devices"
 
-#: configuration.php:2056
+#: configuration.php:2128
 msgid "Show Datacenter and Cabinet"
 msgstr "Show Datacenter and Cabinet"
 
-#: configuration.php:2061 departments.php:235 rowview.php:92
+#: configuration.php:2133 departments.php:235 rowview.php:92
 msgid "Cabinets"
 msgstr "机柜"
 
-#: configuration.php:2064
+#: configuration.php:2136
 msgid "Draw Cabinet Outlines"
 msgstr "Draw Cabinet Outlines"
 
-#: configuration.php:2072
+#: configuration.php:2144
 msgid "Add Cabinet Labels"
 msgstr "Add Cabinet Labels"
 
-#: configuration.php:2080
+#: configuration.php:2152
 msgid "Which Cabinet Label?"
 msgstr "Which Cabinet Label?"
 
-#: configuration.php:2084
+#: configuration.php:2156
 msgid "Owner Name"
 msgstr "Owner Name"
 
-#: configuration.php:2085
+#: configuration.php:2157
 msgid "Key Lock Information"
 msgstr "Key Lock Information"
 
-#: configuration.php:2086
+#: configuration.php:2158
 msgid "Model No"
 msgstr "Model No"
 
-#: configuration.php:2092
+#: configuration.php:2164
 msgid "Site"
 msgstr "站点"
 
-#: configuration.php:2095
+#: configuration.php:2167
 msgid "Header Color"
 msgstr "标题颜色"
 
-#: configuration.php:2101
+#: configuration.php:2173
 msgid "Body Color"
 msgstr "主体颜色"
 
-#: configuration.php:2107
+#: configuration.php:2179
 msgid "Link Color"
 msgstr "链接颜色"
 
-#: configuration.php:2113
+#: configuration.php:2185
 msgid "Viewed Link Color"
 msgstr "浏览过的链接颜色"
 
-#: configuration.php:2121
+#: configuration.php:2193
 #, fuzzy
 msgid "GDPR Enforcement"
 msgstr "强制"
 
-#: configuration.php:2124
+#: configuration.php:2196
 msgid "GDPR Enforcement of Country Isolation"
 msgstr ""
 
-#: configuration.php:2132
+#: configuration.php:2204
 msgid "GPDR PII Privacy"
 msgstr ""
 
-#: configuration.php:2140
+#: configuration.php:2212
 #, fuzzy
 msgid "Default Country for Users"
 msgstr "默认颜色"
 
-#: configuration.php:2150
+#: configuration.php:2222
 #, fuzzy
 msgid "SMTP Options"
 msgstr "SNMP Options"
 
-#: configuration.php:2154
+#: configuration.php:2226
 msgid "SMTP Server"
 msgstr "SMTP服务器"
 
-#: configuration.php:2158
+#: configuration.php:2230
 msgid "SMTP Port"
 msgstr "SMTP端口"
 
-#: configuration.php:2162
+#: configuration.php:2234
 msgid "SMTP Helo"
 msgstr "SMTP Helo"
 
-#: configuration.php:2166
+#: configuration.php:2238
 msgid "SMTP Username"
 msgstr "SMTP用户名"
 
-#: configuration.php:2170
+#: configuration.php:2242
 msgid "SMTP Password"
 msgstr "SMTP密码"
 
-#: configuration.php:2174
+#: configuration.php:2246
 msgid "Mail To"
 msgstr "发送邮件至"
 
-#: configuration.php:2178
+#: configuration.php:2250
 msgid "Mail From"
 msgstr "收到邮件来自"
 
-#: configuration.php:2182
+#: configuration.php:2254
 msgid "Facility Manager"
 msgstr "设备管理员"
 
-#: configuration.php:2186
+#: configuration.php:2258
 msgid "Facility Manager Email"
 msgstr "设备管理员电子邮件"
 
-#: configuration.php:2191
+#: configuration.php:2263
 msgid "Test Settings"
 msgstr "Test Settings"
 
-#: configuration.php:2198
+#: configuration.php:2270
 msgid "Email Alerts on Power Poll"
 msgstr "Email Alerts on Power Poll"
 
-#: configuration.php:2206
+#: configuration.php:2278
 msgid "Email Alerts on Sensor Poll"
 msgstr "Email Alerts on Sensor Poll"
 
-#: configuration.php:2221 report_cost.php:397 report_cost.php:400
+#: configuration.php:2293 report_cost.php:397 report_cost.php:400
 msgid "Annual Cost Per Rack Unit (Year)"
 msgstr "每个机架单元的费用(年)"
 
-#: configuration.php:2225
+#: configuration.php:2297
 msgid "Cost Per KwHr"
 msgstr "Cost Per KwHr"
 
-#: configuration.php:2229
+#: configuration.php:2301
 msgid "Logo file for headers"
 msgstr "标题上的商标文件"
 
-#: configuration.php:2233
+#: configuration.php:2305
 msgid "Font"
 msgstr "字体"
 
-#: configuration.php:2237
+#: configuration.php:2309
 msgid "New Installs Period"
 msgstr "新的安装周期"
 
-#: configuration.php:2241
+#: configuration.php:2313
 msgid "Base URL for install"
 msgstr "基础安装URL"
 
-#: configuration.php:2245
+#: configuration.php:2317
 msgid "SNMP Options"
 msgstr "SNMP Options"
 
-#: configuration.php:2248
+#: configuration.php:2320
 msgid "Default SNMP Community"
 msgstr "默认SNMP Community"
 
-#: configuration.php:2262 devices.php:2124
+#: configuration.php:2334 devices.php:2163
 msgid "SNMPv3 Security Level"
 msgstr "SNMPv3 Security Level"
 
-#: configuration.php:2272 devices.php:2137
+#: configuration.php:2344 devices.php:2176
 msgid "SNMPv3 AuthProtocol"
 msgstr "SNMPv3 AuthProtocol"
 
-#: configuration.php:2281 devices.php:2150
+#: configuration.php:2353 devices.php:2189
 msgid "SNMPv3 Passphrase"
 msgstr "SNMPv3 Passphrase"
 
-#: configuration.php:2285 devices.php:2154
+#: configuration.php:2357 devices.php:2193
 msgid "SNMPv3 PrivProtocol"
 msgstr "SNMPv3 PrivProtocol"
 
-#: configuration.php:2294 devices.php:2167
+#: configuration.php:2366 devices.php:2206
 msgid "SNMPv3 PrivPassphrase"
 msgstr "SNMPv3 PrivPassphrase"
 
-#: configuration.php:2298
+#: configuration.php:2370
 msgid "Capacity Reporting"
 msgstr "容量报告"
 
-#: configuration.php:2301
+#: configuration.php:2373
 msgid "Switches"
 msgstr "交换机"
 
-#: configuration.php:2304
+#: configuration.php:2376
 msgid "OptIn"
 msgstr "选择启用"
 
-#: configuration.php:2305
+#: configuration.php:2377
 msgid "OptOut"
 msgstr "选择禁用"
 
-#: configuration.php:2310
+#: configuration.php:2382
 msgid "Switch Capacity Threshold"
 msgstr "交换机流量阈值"
 
-#: configuration.php:2314
+#: configuration.php:2386
 msgid "Utilities"
 msgstr "实用工具"
 
-#: configuration.php:2317
+#: configuration.php:2389
 msgid "snmpget"
 msgstr "snmpget"
 
-#: configuration.php:2321
+#: configuration.php:2393
 msgid "snmpwalk"
 msgstr "snmpwalk"
 
-#: configuration.php:2325
+#: configuration.php:2397
 msgid "cut"
 msgstr "切断"
 
-#: configuration.php:2329
+#: configuration.php:2401
 msgid "dot"
 msgstr "点"
 
-#: configuration.php:2337
+#: configuration.php:2409
 msgid "Cabinet ToolTips"
 msgstr "机柜工具栏"
 
-#: configuration.php:2350
+#: configuration.php:2422
 msgid "CDU ToolTips"
 msgstr "CDU工具栏"
 
-#: configuration.php:2362
+#: configuration.php:2434
 msgid "Media Types"
 msgstr "介质类型"
 
-#: configuration.php:2365
+#: configuration.php:2437
 msgid "Media Type Matching"
 msgstr "匹配介质类型"
 
-#: configuration.php:2368 configuration.php:2408
+#: configuration.php:2440 configuration.php:2552
 msgid "Enforce"
 msgstr "强制"
 
-#: configuration.php:2378 devices.php:2512 devices.php:2559
+#: configuration.php:2450 devices.php:2572 devices.php:2619
 msgid "Media Type"
 msgstr "介质类型"
 
-#: configuration.php:2379
+#: configuration.php:2451
 msgid "Default Color"
 msgstr "默认颜色"
 
-#: configuration.php:2383 configuration.php:2397 configuration.php:2442
-#: configuration.php:2459
+#: configuration.php:2455 configuration.php:2469 configuration.php:2482
+#: configuration.php:2494 configuration.php:2506 configuration.php:2518
+#: configuration.php:2530 configuration.php:2542 configuration.php:2586
+#: configuration.php:2603
 msgid "Add new row"
 msgstr "添加新的一排"
 
-#: configuration.php:2388
+#: configuration.php:2460
 msgid "Cable Colors"
 msgstr "线缆颜色"
 
-#: configuration.php:2392 connections_spreadsheet.php:25
+#: configuration.php:2464 connections_spreadsheet.php:25
 msgid "Color"
 msgstr "颜色"
 
-#: configuration.php:2393
+#: configuration.php:2465
 msgid "Default Note"
 msgstr "默认注释"
 
-#: configuration.php:2402
+#: configuration.php:2474
+msgid "Media Protocols"
+msgstr ""
+
+#: configuration.php:2478
+#, fuzzy
+msgid "Protocol Name"
+msgstr "端口名称"
+
+#: configuration.php:2486
+#, fuzzy
+msgid "Media Connectors"
+msgstr "后置连接"
+
+#: configuration.php:2490 configuration.php:2514 devices.php:2504
+#, fuzzy
+msgid "Connector Type"
+msgstr "连接"
+
+#: configuration.php:2498
+#, fuzzy
+msgid "Media Data Rates"
+msgstr "编辑数据中心"
+
+#: configuration.php:2502
+#, fuzzy
+msgid "Data Rate"
+msgstr "数据中心"
+
+#: configuration.php:2510
+#, fuzzy
+msgid "Power Connectors"
+msgstr "电源连接"
+
+#: configuration.php:2522
+#, fuzzy
+msgid "Power Voltages"
+msgstr "电压面板"
+
+#: configuration.php:2526
+#, fuzzy
+msgid "Voltage Value"
+msgstr "电压"
+
+#: configuration.php:2534
+#, fuzzy
+msgid "Power Phases"
+msgstr "电源排插"
+
+#: configuration.php:2538
+#, fuzzy
+msgid "Phase Name"
+msgstr "排插名称"
+
+#: configuration.php:2546
 msgid "Connection Filtering"
 msgstr "Connection Filtering"
 
-#: configuration.php:2405
+#: configuration.php:2549
 msgid "Patch panel rear connection filtering"
 msgstr "Patch panel rear connection filtering"
 
-#: configuration.php:2413
+#: configuration.php:2557
 msgid "Connection Pathing"
 msgstr "接口路径"
 
-#: configuration.php:2416
+#: configuration.php:2560
 msgid "Cabinet Weight"
 msgstr "机柜重量"
 
-#: configuration.php:2420
+#: configuration.php:2564
 msgid "Weight for rear connections between panels"
 msgstr "后置连接面板的重量"
 
-#: configuration.php:2424
+#: configuration.php:2568
 msgid "Weight for patches in the same row"
 msgstr "同排机柜中的材料重量"
 
-#: configuration.php:2435
+#: configuration.php:2579
 msgid "Type"
 msgstr "Type"
 
-#: configuration.php:2436
+#: configuration.php:2580
 msgid "Required"
 msgstr "Required"
 
-#: configuration.php:2437
+#: configuration.php:2581
 msgid "Apply to<br>All Devices"
 msgstr "Apply to<br>All Devices"
 
-#: configuration.php:2438
+#: configuration.php:2582
 msgid "Default Value"
 msgstr "Default Value"
 
-#: configuration.php:2450 search_export.php:164
+#: configuration.php:2594 search_export.php:164
 #, fuzzy
 msgid "Device Status"
 msgstr "设备分类"
 
-#: configuration.php:2465
+#: configuration.php:2609
 #, fuzzy
 msgid "Authentication Attribute Mapping"
 msgstr "编辑配置"
 
-#: configuration.php:2468
+#: configuration.php:2612
 msgid "FirstName"
 msgstr "FirstName"
 
-#: configuration.php:2472 usermgr.php:267
+#: configuration.php:2616 usermgr.php:267
 msgid "Last Name"
 msgstr "姓"
 
-#: configuration.php:2476 report_contact.php:451 report_cost.php:435
+#: configuration.php:2620 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Email"
 msgstr "Email"
 
-#: configuration.php:2480 report_contact.php:451 report_cost.php:435
+#: configuration.php:2624 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Phone1"
 msgstr "电话1"
 
-#: configuration.php:2484 report_contact.php:451 report_cost.php:435
+#: configuration.php:2628 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Phone2"
 msgstr "电话2"
 
-#: configuration.php:2488 container.php:250 datacenter.php:283 usermgr.php:283
+#: configuration.php:2632 container.php:250 datacenter.php:283 usermgr.php:283
 #, fuzzy
 msgid "Country"
 msgstr "计数"
 
-#: configuration.php:2492
+#: configuration.php:2636
 #, fuzzy
 msgid "Username Transformations"
 msgstr "用户管理员"
 
-#: configuration.php:2495
+#: configuration.php:2639
 msgid "Remove Account Prefix"
 msgstr "Remove Account Prefix"
 
-#: configuration.php:2499
+#: configuration.php:2643
 msgid "Remove Account Suffix"
 msgstr "Remove Account Suffix"
 
-#: configuration.php:2503
+#: configuration.php:2647
 msgid "Group/Scope Mapping"
 msgstr "Group/Scope Mapping"
 
-#: configuration.php:2506
+#: configuration.php:2650
 msgid "SAML Attribute containing Groups"
 msgstr "SAML Attribute containing Groups"
 
-#: configuration.php:2510
+#: configuration.php:2654
 msgid "Site Access"
 msgstr "Site Access"
 
-#: configuration.php:2514
+#: configuration.php:2658
 msgid "Global Read"
 msgstr "Global Read"
 
-#: configuration.php:2518
+#: configuration.php:2662
 msgid "Global Write"
 msgstr "Global Write"
 
-#: configuration.php:2522
+#: configuration.php:2666
 msgid "Global Delete"
 msgstr "Global Delete"
 
-#: configuration.php:2526
+#: configuration.php:2670
 msgid "Admin Owned Devices"
 msgstr "Admin Owned Devices"
 
-#: configuration.php:2530
+#: configuration.php:2674
 msgid "Enter Rack Request"
 msgstr "Enter Rack Request"
 
-#: configuration.php:2534
+#: configuration.php:2678
 msgid "Complete Rack Request"
 msgstr "Complete Rack Request"
 
-#: configuration.php:2538
+#: configuration.php:2682
 msgid "Contact Admin"
 msgstr "Contact Admin"
 
-#: configuration.php:2542
+#: configuration.php:2686
 msgid "Bulk Operations"
 msgstr "Bulk Operations"
 
-#: configuration.php:2546
+#: configuration.php:2690
 msgid "Site Admin"
 msgstr "Site Admin"
 
-#: configuration.php:2552
+#: configuration.php:2696
 #, fuzzy
 msgid "OIDC Connection Configuration"
 msgstr "数据中心配置"
 
-#: configuration.php:2555
+#: configuration.php:2699
 msgid "OIDC Authorization Endpoint"
 msgstr "OIDC Authorization Endpoint"
 
-#: configuration.php:2559
+#: configuration.php:2703
 msgid "OIDC Client ID"
 msgstr "OIDC Client ID"
 
-#: configuration.php:2563
+#: configuration.php:2707
 msgid "OIDC Client Secret"
 msgstr "OIDC Client Secret"
 
-#: configuration.php:2567
+#: configuration.php:2711
 #, fuzzy
 msgid "OIDC UserID Attribute"
 msgstr "Custom Attributes"
 
-#: configuration.php:2571
+#: configuration.php:2715
 msgid "LDAP Authentication and Authorization Configuration"
 msgstr "LDAP Authentication and Authorization Configuration"
 
-#: configuration.php:2574
+#: configuration.php:2718
 msgid "LDAP Server URI"
 msgstr "LDAP Server URI"
 
-#: configuration.php:2578
+#: configuration.php:2722
 msgid "Base DN"
 msgstr "Base DN"
 
-#: configuration.php:2582
+#: configuration.php:2726
 msgid "Base Search"
 msgstr "Base Search"
 
-#: configuration.php:2583
+#: configuration.php:2727
 msgid "Leave blank for Active Directory"
 msgstr "Leave blank for Active Directory"
 
-#: configuration.php:2586
+#: configuration.php:2730
 msgid "Bind DN"
 msgstr "Bind DN"
 
-#: configuration.php:2590
+#: configuration.php:2734
 msgid "User Search"
 msgstr "User Search"
 
-#: configuration.php:2594
+#: configuration.php:2738
 msgid "LDAP Session Expiration (Seconds)"
 msgstr "LDAP Session Expiration (Seconds)"
 
-#: configuration.php:2598
+#: configuration.php:2742
 msgid "LDAP Debugging"
 msgstr "LDAP Debugging"
 
-#: configuration.php:2606
+#: configuration.php:2750
 msgid "Emergency Bypass Password"
 msgstr "Emergency Bypass Password"
 
-#: configuration.php:2612
+#: configuration.php:2756
 #, fuzzy
 msgid "SAML Authentication Configuration"
 msgstr "编辑配置"
 
-#: configuration.php:2615
+#: configuration.php:2759
 msgid "Base URL"
 msgstr "Base URL"
 
-#: configuration.php:2619
+#: configuration.php:2763
 msgid "Show Success Page"
 msgstr "Show Success Page"
 
-#: configuration.php:2627
+#: configuration.php:2771
 msgid "SAML SP Information and Certificate Generation"
 msgstr "SAML SP Information and Certificate Generation"
 
-#: configuration.php:2631
+#: configuration.php:2775
 msgid "Entity ID"
 msgstr "Entity ID"
 
-#: configuration.php:2635
+#: configuration.php:2779
 msgid "Country (2 Character)"
 msgstr "Country (2 Character)"
 
-#: configuration.php:2639
+#: configuration.php:2783
 msgid "State or Province"
 msgstr "State or Province"
 
-#: configuration.php:2643
+#: configuration.php:2787
 msgid "Organization"
 msgstr "Organization"
 
-#: configuration.php:2656
+#: configuration.php:2800
 msgid "Certificate Expiration"
 msgstr "Certificate Expiration"
 
-#: configuration.php:2660
+#: configuration.php:2804
 msgid "SP Private Key"
 msgstr "SP Private Key"
 
-#: configuration.php:2664
+#: configuration.php:2808
 msgid "SP x509 Certificate"
 msgstr "SP x509 Certificate"
 
-#: configuration.php:2669
+#: configuration.php:2813
 msgid "Generate/Renew Certificate"
 msgstr "Generate/Renew Certificate"
 
-#: configuration.php:2674
+#: configuration.php:2818
 #, fuzzy
 msgid "SAML Identity Provider Configuration"
 msgstr "数据中心配置"
 
-#: configuration.php:2678
+#: configuration.php:2822
 msgid "IdP entityId"
 msgstr "IdP entityId"
 
-#: configuration.php:2682
+#: configuration.php:2826
 msgid "IdP Metadata URL"
 msgstr "IdP Metadata URL"
 
-#: configuration.php:2686
+#: configuration.php:2830
 msgid "SSO URL"
 msgstr "SSO URL"
 
-#: configuration.php:2690
+#: configuration.php:2834
 msgid "SLS URL"
 msgstr "SLS URL"
 
-#: configuration.php:2694
+#: configuration.php:2838
 msgid "IdP x509 Certificate"
 msgstr "IdP x509 Certificate"
 
-#: configuration.php:2699
+#: configuration.php:2843
 msgid "Refresh IdP Metadata"
 msgstr "Refresh IdP Metadata"
 
-#: configuration.php:2742
+#: configuration.php:2886
 #, fuzzy
 msgid "Reserved"
 msgstr "保留中的设备"
 
-#: configuration.php:2742
+#: configuration.php:2886
 msgid "Disposed"
 msgstr "Disposed"
 
@@ -1832,7 +1888,7 @@ msgstr "Plug #"
 msgid "Power Supply"
 msgstr "供电"
 
-#: conflicts.php:608 devices.php:877 /home/runner/openDCIM/devices.php:891
+#: conflicts.php:608 devices.php:913 /home/runner/openDCIM/devices.php:927
 #: rackrequest.php:454
 msgid "Switch"
 msgstr "开关"
@@ -1841,7 +1897,7 @@ msgstr "开关"
 msgid "Switch Port"
 msgstr "交换机端口"
 
-#: conflicts.php:608 devices.php:2464 devices.php:2509 devices.php:2559
+#: conflicts.php:608 devices.php:2503 devices.php:2569 devices.php:2619
 msgid "Device Port"
 msgstr "设备端口"
 
@@ -1873,7 +1929,7 @@ msgstr "目标端口"
 msgid "MediaType"
 msgstr "介质类型"
 
-#: connections_spreadsheet.php:28 devices.php:2505 devices.php:2559
+#: connections_spreadsheet.php:28 devices.php:2565 devices.php:2619
 #: pathmaker.php:199
 msgid "Connections"
 msgstr "连接"
@@ -1882,14 +1938,14 @@ msgstr "连接"
 msgid "Device Label"
 msgstr "设备标签"
 
-#: connections_spreadsheet.php:52 devices.php:1830 rackrequest.php:368
+#: connections_spreadsheet.php:52 devices.php:1869 rackrequest.php:368
 #: report_asset.php:54 report_contact.php:486 report_cost.php:469
 #: report_exception.php:165 report_exception.php:235 search_export.php:154
 #: search_export_storage_room.php:68 sidebar.inc.php:20
 msgid "Serial Number"
 msgstr "序列号"
 
-#: connections_spreadsheet.php:54 devices.php:1835 rackrequest.php:376
+#: connections_spreadsheet.php:54 devices.php:1874 rackrequest.php:376
 #: report_asset.php:54 report_contact.php:486 report_cost.php:469
 #: search_export.php:155 search_export_storage_room.php:69 sidebar.inc.php:21
 #: storageroom.php:77
@@ -1900,7 +1956,7 @@ msgstr "资产标签"
 msgid "Target Cabinet"
 msgstr "目标机柜"
 
-#: connections_spreadsheet.php:120 classes/PowerPorts.class.php:157
+#: connections_spreadsheet.php:120 classes/PowerPorts.class.php:160
 msgid "Power Connection"
 msgstr "Power Connection"
 
@@ -2290,7 +2346,7 @@ msgstr "openDCIM Department Contact Maintenance"
 msgid "Group to Administer"
 msgstr "网站管理小组"
 
-#: dept_groups.php:66 devices.php:2260 login_ldap.php:271 people_depts.php:66
+#: dept_groups.php:66 devices.php:2299 login_ldap.php:271 people_depts.php:66
 #: project_members.php:140 supplybin.php:207
 msgid "Submit"
 msgstr "提交"
@@ -2400,12 +2456,12 @@ msgstr "关闭"
 msgid "Custom"
 msgstr "Custom"
 
-#: device_templates.php:520 devices.php:111
-#: /home/runner/openDCIM/devices.php:115 devices.php:168
+#: device_templates.php:520 devices.php:147
+#: /home/runner/openDCIM/devices.php:151 devices.php:204
 msgid "Invert Port Labels"
 msgstr "Invert Port Labels"
 
-#: device_templates.php:764 devices.php:1993 devices.php:2334
+#: device_templates.php:764 devices.php:2032 devices.php:2373
 #: rackrequest.php:426 search_export.php:152 search_export_storage_room.php:66
 msgid "Height"
 msgstr "高度"
@@ -2414,11 +2470,11 @@ msgstr "高度"
 msgid "0 for a vertical mounting"
 msgstr "0 for a vertical mounting"
 
-#: device_templates.php:772 devices.php:2259
+#: device_templates.php:772 devices.php:2298
 msgid "Wattage"
 msgstr "额定功率"
 
-#: device_templates.php:776 devices.php:2047 devices.php:2336
+#: device_templates.php:776 devices.php:2086 devices.php:2375
 #: rackrequest.php:447 report_vendor_model.php:53 search_export.php:157
 #: search_export_storage_room.php:71
 msgid "Device Type"
@@ -2496,13 +2552,13 @@ msgstr "Delete Template"
 msgid "Update Devices"
 msgstr "更新设备"
 
-#: device_templates.php:939 devices.php:2319 devices.php:2559
+#: device_templates.php:939 devices.php:2358 devices.php:2619
 #: classes/DeviceTemplate.class.php:592 classes/DeviceTemplate.class.php:596
 msgid "Front"
 msgstr "前置"
 
-#: device_templates.php:944 devices.php:398
-#: /home/runner/openDCIM/devices.php:2320 devices.php:2592 misc.inc.php:1142
+#: device_templates.php:944 devices.php:434
+#: /home/runner/openDCIM/devices.php:2359 devices.php:2652 misc.inc.php:1142
 #: report_cabinets.php:180 report_cabinets.php:252 report_cabinets.php:293
 #: rowview.php:92 classes/Device.class.php:2192 classes/Device.class.php:2196
 #: classes/Device.class.php:2297 classes/Device.class.php:2300
@@ -2562,74 +2618,74 @@ msgstr "数据中心设备详细信息"
 msgid "Something isn't working correctly"
 msgstr "Something isn't working correctly"
 
-#: devices.php:111 /home/runner/openDCIM/devices.php:115 devices.php:168
-#: /home/runner/openDCIM/devices.php:171 report_exception.php:165
+#: devices.php:147 /home/runner/openDCIM/devices.php:151 devices.php:204
+#: /home/runner/openDCIM/devices.php:207 report_exception.php:165
 #: report_exception.php:235
 msgid "From Template"
 msgstr "从模板"
 
-#: devices.php:253
+#: devices.php:289
 msgid "ERROR: No ports found"
 msgstr "错误: 未找到端口"
 
-#: devices.php:596
+#: devices.php:632
 msgid ""
 "This device is a copy of an existing device.  Remember to set the new "
 "location before saving."
 msgstr "该设备是一个现有设备的副本. 请切记在保存之前设定新的位置."
 
-#: devices.php:744
+#: devices.php:780
 msgid "Device did not copy.  Error."
 msgstr "未复制设备. 错误."
 
-#: devices.php:874 /home/runner/openDCIM/devices.php:888 rackrequest.php:451
+#: devices.php:910 /home/runner/openDCIM/devices.php:924 rackrequest.php:451
 msgid "Server"
 msgstr "服务器"
 
-#: devices.php:875 /home/runner/openDCIM/devices.php:889 rackrequest.php:452
+#: devices.php:911 /home/runner/openDCIM/devices.php:925 rackrequest.php:452
 msgid "Appliance"
 msgstr "设备"
 
-#: devices.php:876 /home/runner/openDCIM/devices.php:890 rackrequest.php:453
+#: devices.php:912 /home/runner/openDCIM/devices.php:926 rackrequest.php:453
 msgid "Storage Array"
 msgstr "存储阵列"
 
-#: devices.php:878 /home/runner/openDCIM/devices.php:892 rackrequest.php:455
+#: devices.php:914 /home/runner/openDCIM/devices.php:928 rackrequest.php:455
 msgid "Chassis"
 msgstr "服务器机箱"
 
-#: devices.php:879 /home/runner/openDCIM/devices.php:893 rackrequest.php:456
+#: devices.php:915 /home/runner/openDCIM/devices.php:929 rackrequest.php:456
 msgid "Patch Panel"
 msgstr "配线架"
 
-#: devices.php:880 /home/runner/openDCIM/devices.php:896
+#: devices.php:916 /home/runner/openDCIM/devices.php:932
 #: classes/Device.class.php:2613
 msgid "Sensor"
 msgstr "Sensor"
 
-#: devices.php:894 /home/runner/openDCIM/devices.php:1952 rackrequest.php:457
+#: devices.php:930 /home/runner/openDCIM/devices.php:1991 rackrequest.php:457
 msgid "Physical Infrastructure"
 msgstr "物理层的基础设备"
 
-#: devices.php:895 classes/PowerDistribution.class.php:553
+#: devices.php:931 classes/PowerDistribution.class.php:553
 msgid "CDU"
 msgstr "CDU"
 
-#: devices.php:927
+#: devices.php:966
 msgid "openDCIM Device Maintenance"
 msgstr "openDCIM设备维护"
 
-#: devices.php:934 vmnamecheck.php:43 vmnamecheck.php:81
+#: devices.php:973 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "VM Name"
 msgstr "虚拟机名称"
 
-#: devices.php:934 /home/runner/openDCIM/devices.php:1814 devices.php:2466
-#: devices.php:2511 disposition.php:102 report_project_outage_simulator.php:350
+#: devices.php:973 /home/runner/openDCIM/devices.php:1853 devices.php:2508
+#: devices.php:2571 disposition.php:102 report_project_outage_simulator.php:350
 #: report_surplus.php:136 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Status"
 msgstr "状态"
 
-#: devices.php:934 report_aging.php:425 report_aging.php:460
+#: devices.php:973 report_aging.php:425 report_aging.php:460
 #: report_diverse_power_exceptions.php:167 report_power_utilization.php:167
 #: report_project_outage_simulator.php:356 report_tags.php:35
 #: report_warranty.php:439 report_warranty.php:472 search_export.php:160
@@ -2638,277 +2694,277 @@ msgstr "状态"
 msgid "Owner"
 msgstr "所有人"
 
-#: devices.php:934 vmnamecheck.php:43 vmnamecheck.php:81
+#: devices.php:973 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Last Updated"
 msgstr "最后更新"
 
-#: devices.php:942 /home/runner/openDCIM/devices.php:950
+#: devices.php:981 /home/runner/openDCIM/devices.php:989
 #: report_exception.php:158 vmnamecheck.php:53 vmnamecheck.php:91
 msgid "Unknown"
 msgstr "未知"
 
-#: devices.php:1020
+#: devices.php:1059
 msgid "Open"
 msgstr "Open"
 
-#: devices.php:1109
+#: devices.php:1148
 msgid "Landscape"
 msgstr "外观"
 
-#: devices.php:1119 devices.php:1799
+#: devices.php:1158 devices.php:1838
 msgid "Portrait"
 msgstr "纵向"
 
-#: devices.php:1164
+#: devices.php:1203
 msgid "Network & Power"
 msgstr "网络与电力"
 
-#: devices.php:1551
+#: devices.php:1590
 msgid "Verify Delete Device"
 msgstr "确认删除设备"
 
-#: devices.php:1560
+#: devices.php:1599
 msgid ""
 "If this device has blades installed they will be deleted and there is no "
 "undo. Are you sure?"
 msgstr ""
 "如果该设备安装了刀片服务器, 这样它们将会被删除并且不可恢复. 您是否确定?"
 
-#: devices.php:1714
+#: devices.php:1753
 msgid "This device will be deleted and there is no undo. Are you sure?"
 msgstr "该设备将被删除并且无法恢复. 您是否确定?"
 
-#: devices.php:1807
+#: devices.php:1846
 msgid "Asset Tracking"
 msgstr "资产跟踪"
 
-#: devices.php:1810
+#: devices.php:1849
 msgid "Device ID"
 msgstr "设备ID"
 
-#: devices.php:1832 devices.php:1837
+#: devices.php:1871 devices.php:1876
 msgid "Scan Barcode"
 msgstr "扫描条形码"
 
-#: devices.php:1840 search_export.php:156 search_export_storage_room.php:70
+#: devices.php:1879 search_export.php:156 search_export_storage_room.php:70
 msgid "Primary IP / Host Name"
 msgstr "主IP/主机名"
 
-#: devices.php:1854
+#: devices.php:1893
 msgid "Warranty Company"
 msgstr "维保公司"
 
-#: devices.php:1858 search_export.php:162 search_export_storage_room.php:76
+#: devices.php:1897 search_export.php:162 search_export_storage_room.php:76
 msgid "Warranty Expiration"
 msgstr "保修到期"
 
-#: devices.php:1862
+#: devices.php:1901
 msgid "Last Audit Completed"
 msgstr "完成最终审核"
 
-#: devices.php:1866 rackrequest.php:390
+#: devices.php:1905 rackrequest.php:390
 msgid "Departmental Owner"
 msgstr "部门主管"
 
-#: devices.php:1869 devices.php:1915 rackrequest.php:393 search_export.php:62
+#: devices.php:1908 devices.php:1954 rackrequest.php:393 search_export.php:62
 #: search_export.php:196 scripts/ajax_tooltip.php:318
 msgid "Unassigned"
 msgstr "未分配"
 
-#: devices.php:1877
+#: devices.php:1916
 msgid "Show Contacts"
 msgstr "查看联系方式"
 
-#: devices.php:1883
+#: devices.php:1922
 msgid "Escalation Information"
 msgstr "升级信息"
 
-#: devices.php:1886
+#: devices.php:1925
 msgid "Time Period"
 msgstr "时间段"
 
-#: devices.php:1888 devices.php:1900 devices.php:2049
+#: devices.php:1927 devices.php:1939 devices.php:2088
 msgid "Select..."
 msgstr "选择..."
 
-#: devices.php:1898 escalations.php:80
+#: devices.php:1937 escalations.php:80
 msgid "Details"
 msgstr "详细信息"
 
-#: devices.php:1927
+#: devices.php:1966
 msgid "Contact Lookup"
 msgstr "查找联系人"
 
-#: devices.php:1939
+#: devices.php:1978
 msgid "Custom Attributes"
 msgstr "Custom Attributes"
 
-#: devices.php:1963
+#: devices.php:2002
 msgid "Parent Device"
 msgstr "刀片柜"
 
-#: devices.php:1975 rackrequest.php:406
+#: devices.php:2014 rackrequest.php:406
 msgid "Device Class"
 msgstr "设备分类"
 
-#: devices.php:1977
+#: devices.php:2016
 msgid "Select a template..."
 msgstr "选择模板..."
 
-#: devices.php:1993
+#: devices.php:2032
 msgid "Number of slots"
 msgstr "插槽数量"
 
-#: devices.php:2005 search_export.php:165
+#: devices.php:2044 search_export.php:165
 msgid "Half Depth"
 msgstr "一半长度"
 
-#: devices.php:2010 search_export.php:166
+#: devices.php:2049 search_export.php:166
 msgid "Back Side"
 msgstr "背面"
 
-#: devices.php:2014
+#: devices.php:2053
 msgid "Number of Data Ports"
 msgstr "数据端口数量"
 
-#: devices.php:2018
+#: devices.php:2057
 msgid "Nominal Draw (Watts)"
 msgstr "额定电量(wt)"
 
-#: devices.php:2029 devices.php:2457
+#: devices.php:2068 devices.php:2496
 msgid "Power Connections"
 msgstr "电源连接"
 
-#: devices.php:2037
+#: devices.php:2076
 msgid "Chassis Total Draw"
 msgstr "机箱综合视图"
 
-#: devices.php:2041
+#: devices.php:2080
 msgid "Chassis Total Weight"
 msgstr "机箱总重量"
 
-#: devices.php:2063
+#: devices.php:2102
 msgid "Sensor Readings"
 msgstr "Sensor Readings"
 
-#: devices.php:2070
+#: devices.php:2109
 msgid "Device Images"
 msgstr "Device Images"
 
-#: devices.php:2083
+#: devices.php:2122
 msgid "ProxMox Configuration"
 msgstr "ProxMox Configuration"
 
-#: devices.php:2086
+#: devices.php:2125
 msgid "API Username"
 msgstr "API Username"
 
-#: devices.php:2090
+#: devices.php:2129
 msgid "API Password"
 msgstr "API Password"
 
-#: devices.php:2094
+#: devices.php:2133
 msgid "API Port"
 msgstr "API Port"
 
-#: devices.php:2098
+#: devices.php:2137
 msgid "ProxMox Realm"
 msgstr "ProxMox Realm"
 
-#: devices.php:2104
+#: devices.php:2143
 msgid "SNMP Configuration"
 msgstr "SNMP Configuration"
 
-#: devices.php:2110 devices.php:2127 devices.php:2140 devices.php:2157
+#: devices.php:2149 devices.php:2166 devices.php:2179 devices.php:2196
 msgid "Configuration Default"
 msgstr "Configuration Default"
 
-#: devices.php:2120
+#: devices.php:2159
 msgid "SNMP Read Only Community"
 msgstr "只读SNMP Community"
 
-#: devices.php:2121
+#: devices.php:2160
 msgid "Test SNMP"
 msgstr "Test SNMP"
 
-#: devices.php:2171
+#: devices.php:2210
 msgid "Consecutive SNMP Failures"
 msgstr "Consecutive SNMP Failures"
 
-#: devices.php:2175
+#: devices.php:2214
 msgid "Polling is disabled after three consecutive failures."
 msgstr "Polling is disabled after three consecutive failures."
 
-#: devices.php:2178
+#: devices.php:2217
 msgid "Power Specifications"
 msgstr "Power Specifications"
 
-#: devices.php:2181
+#: devices.php:2220
 msgid "Source Panel"
 msgstr "电源面板"
 
-#: devices.php:2184 devices.php:2280
+#: devices.php:2223 devices.php:2319
 msgid "Select Panel"
 msgstr "选择面板"
 
-#: devices.php:2197
+#: devices.php:2236
 #, fuzzy
 msgid "Goto Panel"
 msgstr "配线架"
 
-#: devices.php:2202
+#: devices.php:2241
 msgid "Voltages:"
 msgstr "电压:"
 
-#: devices.php:2216
+#: devices.php:2255
 msgid "Breaker Size (# of Poles)"
 msgstr "开关规格(# 插头)"
 
-#: devices.php:2230
+#: devices.php:2269
 msgid "Panel Pole Number"
 msgstr "排插插座数量"
 
-#: devices.php:2237
+#: devices.php:2276
 msgid "All Breaker Poles"
 msgstr "所有断路器插座"
 
-#: devices.php:2243
+#: devices.php:2282
 msgid "Input Amperage"
 msgstr "输入安培数"
 
-#: devices.php:2251
+#: devices.php:2290
 msgid "Uptime"
 msgstr "正常运行时间"
 
-#: devices.php:2255
+#: devices.php:2294
 msgid "Firmware Version"
 msgstr "固件版本"
 
-#: devices.php:2260
+#: devices.php:2299
 msgid "Manual Entry"
 msgstr "手动输入"
 
-#: devices.php:2263
+#: devices.php:2302
 msgid "Last Update"
 msgstr "最后更新"
 
-#: devices.php:2273
+#: devices.php:2312
 msgid "Fail Safe Switch?"
 msgstr "故障切换保护?"
 
-#: devices.php:2277
+#: devices.php:2316
 msgid "Source Panel (Secondary Source)"
 msgstr "电源面板(第二路市电)"
 
-#: devices.php:2292
+#: devices.php:2331
 msgid "Panel Pole Number (Secondary Source)"
 msgstr "排插插座数量(第二路市电)"
 
-#: devices.php:2301
+#: devices.php:2340
 msgid "Switch SNMP"
 msgstr "交换机SNMP"
 
-#: devices.php:2302
+#: devices.php:2341
 msgid ""
 "Use these buttons to set the first port for the switch, check the status of "
 "the ports again, or attempt to load the Port Name Labels from the switch "
@@ -2917,27 +2973,27 @@ msgstr ""
 "使用这些按钮来设置交换机的第一个端口. 再次检查端口的状态, 或者尝试从交换机设"
 "备读取端口标签的名称."
 
-#: devices.php:2302
+#: devices.php:2341
 msgid "Set First Port"
 msgstr "设置第一个端口"
 
-#: devices.php:2302 devices.php:2306
+#: devices.php:2341 devices.php:2345
 msgid "Refresh Status"
 msgstr "刷新状态"
 
-#: devices.php:2302 devices.php:2306
+#: devices.php:2341 devices.php:2345
 msgid "Refresh Port Names"
 msgstr "刷新端口名称"
 
-#: devices.php:2302 devices.php:2306
+#: devices.php:2341 devices.php:2345
 msgid "Refresh Port Notes"
 msgstr "刷新端口标注"
 
-#: devices.php:2305
+#: devices.php:2344
 msgid "CDU SNMP"
 msgstr "CDU SNMP"
 
-#: devices.php:2306
+#: devices.php:2345
 msgid ""
 "Use these buttons to set the first power outlet for the CDU, check the "
 "status of the oultets again, or attempt to load the Outlet Name Labels from "
@@ -2947,102 +3003,107 @@ msgstr ""
 "status of the oultets again, or attempt to load the Outlet Name Labels from "
 "the CDU device."
 
-#: devices.php:2306
+#: devices.php:2345
 msgid "Set First Outlet"
 msgstr "Set First Outlet"
 
-#: devices.php:2315
+#: devices.php:2354
 msgid "Chassis Contents"
 msgstr "服务器机箱内部"
 
-#: devices.php:2323
+#: devices.php:2362
 msgid "Number of Slots in Chassis:"
 msgstr "机箱内插槽数量:"
 
-#: devices.php:2333
+#: devices.php:2372
 msgid "Slot #"
 msgstr "插槽#"
 
-#: devices.php:2335 report_contact.php:486 report_cost.php:469
+#: devices.php:2374 report_contact.php:486 report_cost.php:469
 #: report_diverse_power_exceptions.php:167 report_exception.php:165
 #: report_exception.php:235 report_power_distribution.php:202
 #: report_power_utilization.php:167
 msgid "Device Name"
 msgstr "设备名称"
 
-#: devices.php:2358
+#: devices.php:2397
 msgid ""
 "You must first define how many slots are in the chassis before you can add "
 "devices."
 msgstr "您必须先定义机箱内有多少个插槽, 然后才能添加设备."
 
-#: devices.php:2369
+#: devices.php:2408
 msgid "Hypervisor Server Information"
 msgstr "Hypervisor Server Information"
 
-#: devices.php:2375 search_export.php:167
+#: devices.php:2414 search_export.php:167
 msgid "Hypervisor"
 msgstr "Hypervisor"
 
-#: devices.php:2401
+#: devices.php:2440
 msgid "Limit device type selection to"
 msgstr "Limit device type selection to"
 
-#: devices.php:2415
+#: devices.php:2454
 msgid "Limit device selection to"
 msgstr "Limit device selection to"
 
-#: devices.php:2430
+#: devices.php:2469
 msgid "Operational Log"
 msgstr "操作日志"
 
-#: devices.php:2462 devices.php:2507
+#: devices.php:2501 devices.php:2567
 msgid "Port Name"
 msgstr "端口名称"
 
-#: devices.php:2463 devices.php:2508 pathmaker.php:465 report_cabinets.php:188
+#: devices.php:2502 devices.php:2568 pathmaker.php:465 report_cabinets.php:188
 #: report_sensors.php:25 storageroom.php:76
 msgid "Device"
 msgstr "设备"
 
-#: devices.php:2467 report_power_distribution.php:186
+#: devices.php:2506
+#, fuzzy
+msgid "Phase"
+msgstr "排插名称"
+
+#: devices.php:2509 report_power_distribution.php:186
 #: report_power_distribution.php:202
 msgid "Panel"
 msgstr "面板"
 
-#: devices.php:2513
+#: devices.php:2573
 msgid "Color Code"
 msgstr "颜色代码"
 
-#: devices.php:2559
+#: devices.php:2619
 msgid "Patch Port"
 msgstr "配线架端口"
 
-#: devices.php:2559
+#: devices.php:2619
 msgid "Back"
 msgstr "返回"
 
-#: devices.php:2617 classes/Device.class.php:505
+#: devices.php:2677 classes/Device.class.php:505
 msgid "Copy"
 msgstr "复制"
 
-#: devices.php:2628 workorder.php:193
+#: devices.php:2688 workorder.php:193
 msgid "Export Connections"
 msgstr "出口连接"
 
-#: devices.php:2641
+#: devices.php:2701
 msgid "Return to Parent Device"
 msgstr "返回刀片机箱"
 
-#: devices.php:2647
+#: devices.php:2707
 msgid "Return to Storage Room"
 msgstr "返回仓库"
 
-#: devices.php:2649
+#: devices.php:2709
 msgid "Return to General Storage Room"
 msgstr "返回主仓库"
 
-#: devices.php:2654
+#: devices.php:2714
 msgid "Do you certify that you have completed an audit of this device?"
 msgstr "您是否确认您已完成该设备的审核?"
 

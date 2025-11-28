@@ -1,8 +1,12 @@
--- Add SerialNo column to fac_Cabinet after Model
-ALTER TABLE fac_Cabinet ADD COLUMN SerialNo VARCHAR(30) AFTER Model;
 ---
 --- Schema changes for 23.04 to 25.01
 ---
+
+--
+-- Table structure for table `fac_Cabinet`
+--
+-- Add SerialNo column to fac_Cabinet after Model
+ALTER TABLE fac_Cabinet ADD COLUMN SerialNo VARCHAR(30) AFTER Model;
 
 --
 -- Table structure for table `fac_MediaConnectors`
@@ -48,9 +52,9 @@ CREATE TABLE IF NOT EXISTS fac_MediaDataRates (
 INSERT INTO fac_MediaDataRates set RateText='100M';
 INSERT INTO fac_MediaDataRates set RateText='1G';
 
-ALTER TABLE fac_Ports ADD COLUMN ConnectorID int(11) DEFAULT NULL AFTER Label;
-ALTER TABLE fac_Ports ADD COLUMN ProtocolID int(11) DEFAULT NULL AFTER ConnectorID;
-ALTER TABLE fac_Ports ADD COLUMN RateID int(11) DEFAULT NULL AFTER ProtocolID;
+ALTER TABLE fac_Ports ADD COLUMN ConnectorID int(11) NOT NULL DEFAULT 0 AFTER Label;
+ALTER TABLE fac_Ports ADD COLUMN ProtocolID int(11) NOT NULL DEFAULT 0 AFTER ConnectorID;
+ALTER TABLE fac_Ports ADD COLUMN RateID int(11) NOT NULL DEFAULT 0 AFTER ProtocolID;
 
 --
 -- Table Structure for table fac_Powerconnectors
@@ -102,7 +106,7 @@ INSERT INTO fac_PowerVoltages set VoltageName='277AC';
 INSERT INTO fac_PowerVoltages set VoltageName='48DC';
 
 ALTER TABLE fac_PowerPorts ADD COLUMN ConnectorID int(11) DEFAULT NULL AFTER Label;
-ALTER TABLE fac_PowerPorts ADD COLUMN PhaseID int(11) DEFAULT NULL AFTER ConnectorType;
-ALTER TABLE fac_PowerPorts ADD COLUMN VoltageID int(11) DEFAULT NULL AFTER Phase;
+ALTER TABLE fac_PowerPorts ADD COLUMN PhaseID int(11) DEFAULT NULL AFTER ConnectorID;
+ALTER TABLE fac_PowerPorts ADD COLUMN VoltageID int(11) DEFAULT NULL AFTER PhaseID;
 
 UPDATE fac_Config set Value="25.01" WHERE Parameter="Version";
