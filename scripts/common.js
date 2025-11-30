@@ -2576,6 +2576,9 @@ function LameLogDisplay(){
 			this.portname    = this.element.find('div[id^=spn],div[id^=pp]');
 			this.cdevice     = this.element.find('div[id^=d]:not([id^=dp]),div[id^=fd]');
 			this.cdeviceport = this.element.find('div[id^=dp],div[id^=fp]');
+			this.dctype	     = this.element.find('div[id^=dc]');
+			this.protocol    = this.element.find('div[id^=dpro]');
+			this.mediarate   = this.element.find('div[id^=dr]');
 			this.cnotes      = this.element.find('div[id^=n],div[id^=fn]');
 			this.rdevice     = this.element.find('div[id^=rd]');
 			this.rdeviceport = this.element.find('div[id^=rp]');
