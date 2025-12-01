@@ -101,6 +101,218 @@ $app->get('/people', function(Request $request, Response $response) use($person,
 });
 
 //
+//	URL:	/api/v1/hdd
+//	Method:	GET
+//	Params:	Optional DeviceID, Status (single value, comma separated list, or array), SerialNo (partial match), HDDID (single value or list)
+//	Returns:	List of HDD objects matching the filter
+//
+$app->get('/hdd', function(Request $request, Response $response) use ($person) {
+	global $dbh;
+
+	$r = array();
+
+	if (!($person->ManageHDD || $person->SiteAdmin)) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+		return $response->withJson($r, $r['errorcode']);
+	}
+
+	$filters = $request->getQueryParams() ?: $request->getParsedBody();
+	$sql = "SELECT * FROM fac_HDD WHERE 1=1";
+	$params = array();
+
+	if (isset($filters['DeviceID']) && intval($filters['DeviceID']) > 0) {
+		$sql .= " AND DeviceID = :DeviceID";
+		$params[':DeviceID'] = intval($filters['DeviceID']);
+	}
+
+	if (isset($filters['HDDID'])) {
+		$ids = $filters['HDDID'];
+		if (!is_array($ids)) {
+			$ids = array_map('trim', explode(',', $ids));
+		}
+		$ids = array_values(array_filter(array_map('intval', $ids), function($v){ return $v > 0; }));
+		if (!empty($ids)) {
+			$placeholders = array();
+			foreach ($ids as $idx => $id) {
+				$ph = ":hddid{$idx}";
+				$placeholders[] = $ph;
+				$params[$ph] = $id;
+			}
+			$sql .= " AND HDDID IN (" . implode(',', $placeholders) . ")";
+		}
+	}
+
+	if (isset($filters['SerialNo']) && strlen(trim($filters['SerialNo'])) > 0) {
+		$sql .= " AND SerialNo LIKE :SerialNo";
+		$params[':SerialNo'] = '%' . trim($filters['SerialNo']) . '%';
+	}
+
+	if (isset($filters['Status'])) {
+		$rawStatus = $filters['Status'];
+		if (!is_array($rawStatus)) {
+			$rawStatus = array_map('trim', explode(',', $rawStatus));
+		}
+		$allowedStatus = array('On','Off','Pending_destruction','Destroyed','Spare');
+		$statusPlaceholders = array();
+		$statusIndex = 0;
+		foreach ($rawStatus as $statusValue) {
+			if ($statusValue === '') {
+				continue;
+			}
+			if (!in_array($statusValue, $allowedStatus, true)) {
+				continue;
+			}
+			$ph = ":status{$statusIndex}";
+			$statusIndex++;
+			$statusPlaceholders[] = $ph;
+			$params[$ph] = $statusValue;
+		}
+		if (!empty($statusPlaceholders)) {
+			$sql .= " AND Status IN (" . implode(',', $statusPlaceholders) . ")";
+		}
+	}
+
+	$sql .= " ORDER BY DeviceID, HDDID";
+
+	$stmt = $dbh->prepare($sql);
+	$stmt->execute($params);
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+	$hddList = array();
+	foreach ($rows as $row) {
+		$hddList[] = HDD::RowToObject($row);
+	}
+
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['hdd'] = $hddList;
+	$r['filters'] = $filters;
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:	/api/v1/hdd/:hddid
+//	Method:	GET
+//	Params:	hddid (path)
+//	Returns:	HDD detail for the requested identifier
+//
+$app->get('/hdd/{hddid}', function(Request $request, Response $response, $args) use ($person) {
+	if (!($person->ManageHDD || $person->SiteAdmin)) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+		return $response->withJson($r, $r['errorcode']);
+	}
+
+	$hddid = intval($args['hddid']);
+	$hdd = HDD::GetHDDByID($hddid);
+
+	if (!$hdd) {
+		$r['error'] = true;
+		$r['errorcode'] = 404;
+		$r['message'] = __("HDD not found");
+	} else {
+		$r['error'] = false;
+		$r['errorcode'] = 200;
+		$r['hdd'] = $hdd;
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:	/api/v1/hdd/:hddid/proof
+//	Method:	GET
+//	Params:	hddid (path)
+//	Returns:	Metadata about destruction proof for the requested HDD
+//
+$app->get('/hdd/{hddid}/proof', function(Request $request, Response $response, $args) use ($person, $config) {
+	if (!($person->ManageHDD || $person->SiteAdmin)) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+		return $response->withJson($r, $r['errorcode']);
+	}
+
+	$hddid = intval($args['hddid']);
+	$hdd = HDD::GetHDDByID($hddid);
+
+	if (!$hdd) {
+		$r['error'] = true;
+		$r['errorcode'] = 404;
+		$r['message'] = __("HDD not found");
+		return $response->withJson($r, $r['errorcode']);
+	}
+
+	$proofValue = trim((string)$hdd->ProofFile);
+
+	if ($proofValue === '') {
+		$r['error'] = true;
+		$r['errorcode'] = 404;
+		$r['message'] = __("No destruction proof available for this HDD");
+		return $response->withJson($r, $r['errorcode']);
+	}
+
+	$pathSetting = $config->ParameterArray['hdd_proof_path'] ?? 'assets/files/hdd/';
+	$cleanBase = rtrim($pathSetting, '/\\');
+	$publicUrl = $proofValue;
+
+	$isAbsoluteUrl = (preg_match('#^(?:[a-z]+:)?//#i', $proofValue) === 1);
+	$isAbsolutePath = (!$isAbsoluteUrl && (strpos($proofValue, '/') === 0 || preg_match('#^[A-Za-z]:\\\\#', $proofValue) === 1));
+
+	if (!$isAbsoluteUrl && !$isAbsolutePath) {
+		if ($cleanBase !== '') {
+			$publicUrl = $cleanBase . '/' . ltrim($proofValue, '/\\');
+		} else {
+			$publicUrl = ltrim($proofValue, '/\\');
+		}
+	}
+
+	$projectRoot = realpath(__DIR__ . "/../..");
+	if ($projectRoot === false) {
+		$projectRoot = dirname(dirname(__DIR__));
+	}
+
+	$filesystemPath = '';
+	$fileExists = false;
+
+	if ($isAbsoluteUrl) {
+		$filesystemPath = '';
+	} elseif ($isAbsolutePath) {
+		$filesystemPath = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $proofValue);
+		$fileExists = is_file($filesystemPath);
+	} else {
+		$relativeBase = trim($cleanBase, '/\\');
+		$relativeStored = ltrim($proofValue, '/\\');
+
+		if ($relativeBase !== '' && stripos($relativeStored, $relativeBase) === 0) {
+			$relativePath = $relativeStored;
+		} else {
+			$relativePath = ($relativeBase !== '' ? $relativeBase . '/' : '') . $relativeStored;
+		}
+
+		$filesystemPath = rtrim($projectRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath);
+		$fileExists = is_file($filesystemPath);
+	}
+
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['proof'] = array(
+		'HDDID' => $hddid,
+		'SerialNo' => $hdd->SerialNo,
+		'ProofFile' => $proofValue,
+		'public_url' => $publicUrl,
+		'filesystem_path' => $filesystemPath,
+		'file_exists' => $fileExists
+	);
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
 //	URL:  /api/v1/department
 //	Method: GET
 //	Params:  none

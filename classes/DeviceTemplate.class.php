@@ -757,11 +757,12 @@ class DeviceTemplate {
 		return $array;
 	}
 	//feature manager for HDD
-	public function UpdateTemplateHDD() {
+	public function UpdateTemplateHDD(array $payload = null) {
 		global $dbh;
 				
-		$EnableHDDFeature = isset($_POST['EnableHDDFeature']) ? intval($_POST['EnableHDDFeature']) : 0;
-		$HDDCount = isset($_POST['HDDCount']) ? intval($_POST['HDDCount']) : 0;
+		$source = ($payload === null) ? $_POST : $payload;
+		$EnableHDDFeature = isset($source['EnableHDDFeature']) ? intval($source['EnableHDDFeature']) : 0;
+		$HDDCount = isset($source['HDDCount']) ? intval($source['HDDCount']) : 0;
 	
 		$check = $dbh->prepare("SELECT COUNT(*) FROM fac_DeviceTemplateHdd WHERE TemplateID = ?");
 		$check->execute([$this->TemplateID]);

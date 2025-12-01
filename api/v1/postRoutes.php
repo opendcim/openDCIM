@@ -129,6 +129,103 @@ $app->post('/people/{peopleid}/transferdevicesto/{newpeopleid}', function( Reque
 });
 
 //
+//	URL:	/api/v1/hdd/:hddid
+//	Method:	POST
+//	Params:	hddid (path), optional SerialNo, Status, TypeMedia, Size, DeviceID
+//	Returns:	Updated HDD record
+//
+$app->post('/hdd/{hddid}', function(Request $request, Response $response, $args) use ($person) {
+	if (!($person->ManageHDD || $person->SiteAdmin)) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+		return $response->withJson($r, $r['errorcode']);
+	}
+
+	$hddid = intval($args['hddid']);
+	$hdd = HDD::GetHDDByID($hddid);
+
+	if (!$hdd) {
+		$r['error'] = true;
+		$r['errorcode'] = 404;
+		$r['message'] = __("HDD not found");
+		return $response->withJson($r, $r['errorcode']);
+	}
+
+	$payload = $request->getQueryParams() ?: $request->getParsedBody();
+	$allowedStatus = array('On','Off','Pending_destruction','Destroyed','Spare');
+	$fieldsUpdated = array();
+
+	if (isset($payload['SerialNo'])) {
+		$hdd->SerialNo = $payload['SerialNo'];
+		$fieldsUpdated['SerialNo'] = $payload['SerialNo'];
+	}
+
+	if (isset($payload['Status']) && in_array($payload['Status'], $allowedStatus, true)) {
+		$hdd->Status = $payload['Status'];
+		$fieldsUpdated['Status'] = $payload['Status'];
+	}
+
+	if (isset($payload['TypeMedia'])) {
+		$hdd->TypeMedia = $payload['TypeMedia'];
+		$fieldsUpdated['TypeMedia'] = $payload['TypeMedia'];
+	}
+
+	if (isset($payload['Size'])) {
+		$hdd->Size = intval($payload['Size']);
+		$fieldsUpdated['Size'] = intval($payload['Size']);
+	}
+
+	$reassigned = false;
+	if (isset($payload['DeviceID'])) {
+		$targetDevice = intval($payload['DeviceID']);
+		if ($targetDevice > 0 && $targetDevice != intval($hdd->DeviceID)) {
+			if (HDD::GetRemainingSlotCount($targetDevice) <= 0) {
+				$r['error'] = true;
+				$r['errorcode'] = 409;
+				$r['message'] = __("slot hdd is full");
+				return $response->withJson($r, $r['errorcode']);
+			}
+			if (!HDD::ReassignToDevice($hddid, $targetDevice)) {
+				$r['error'] = true;
+				$r['errorcode'] = 500;
+				$r['message'] = __("Unable to reassign HDD to the requested device");
+				return $response->withJson($r, $r['errorcode']);
+			}
+			$hdd->DeviceID = $targetDevice;
+			$fieldsUpdated['DeviceID'] = $targetDevice;
+			$reassigned = true;
+		}
+	}
+
+	$updated = false;
+	if (!empty($fieldsUpdated)) {
+		if (!$hdd->Update()) {
+			$r['error'] = true;
+			$r['errorcode'] = 500;
+			$r['message'] = __("HDD update failed");
+			return $response->withJson($r, $r['errorcode']);
+		}
+		$updated = true;
+	}
+
+	if (!$updated && !$reassigned) {
+		$r['error'] = true;
+		$r['errorcode'] = 400;
+		$r['message'] = __("No valid parameters were supplied for update");
+		return $response->withJson($r, $r['errorcode']);
+	}
+
+	HDD::RecordGenericLog($hdd->DeviceID, $person->UserID, 'HDD_API_UPDATE', json_encode($fieldsUpdated, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['hdd'] = HDD::GetHDDByID($hddid);
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
 //	URL:	/api/v1/powerport/:deviceid
 //	Method:	POST
 //	Params:	
@@ -395,13 +492,23 @@ $app->post( '/devicetemplate/{templateid}', function( Request $request, Response
 					$dt->$prop=$val;
 				}
 			}
+			$hddPayload = array();
+			foreach (array('EnableHDDFeature','HDDCount') as $field) {
+				if (isset($vars[$field])) {
+					$hddPayload[$field] = $vars[$field];
+				}
+			}
 			if(!$dt->UpdateTemplate()){
 				$r['error']=true;
 				$r['errorcode']=400;
 				$r['message']=__("Device template update failed");
 			}else{
+				if (!empty($hddPayload)) {
+					$dt->UpdateTemplateHDD($hddPayload);
+				}
 				$r['error']=false;
 				$r['errorcode']=200;
+				$r['devicetemplate']=$dt;
 			}
 		}
 	}

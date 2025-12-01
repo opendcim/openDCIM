@@ -21,6 +21,8 @@ tags:
   externalDocs:
     description: "Find out more"
     url: "http://wiki.opendcim.org"
+- name: "HDD"
+  description: "HDD inventory endpoints."
 paths:
   /audit:
     get:
@@ -89,6 +91,160 @@ paths:
       security:
       - api_key: []
       - user_id: []  
+  /hdd:
+    get:
+      summary: "List HDD entries"
+      tags:
+      - "HDD"
+      description: "Requires ManageHDD or SiteAdmin."
+      produces:
+      - "application/json"
+      operationId: "GetHdd"
+      parameters:
+        - name: DeviceID
+          in: query
+          required: false
+          type: integer
+          format: "DeviceID filter"
+        - name: HDDID
+          in: query
+          required: false
+          type: string
+          description: "Single HDDID or comma separated list."
+        - name: Status
+          in: query
+          required: false
+          type: string
+          description: "Status filter (single value or comma separated list)."
+        - name: SerialNo
+          in: query
+          required: false
+          type: string
+          description: "Partial serial number match."
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/HDD"
+      security:
+      - api_key: []
+      - user_id: []
+    put:
+      summary: "Create HDD entry"
+      tags:
+      - "HDD"
+      consumes:
+      - "application/json"
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      description: "Creates an HDD entry. DeviceID and SerialNo are required; ProofFile is read-only."
+      operationId: "PutHdd"
+      parameters:
+        - in: body
+          name: body
+          description: "New HDD payload."
+          required: true
+          schema:
+            $ref: "#/definitions/HDD"
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/HDD"
+      security:
+      - api_key: []
+      - user_id: []
+  /hdd/{hddid}:
+    get:
+      summary: "Get HDD entry"
+      tags:
+      - "HDD"
+      produces:
+      - "application/json"
+      operationId: "GetHddById"
+      parameters:
+        - name: hddid
+          in: path
+          required: true
+          type: integer
+          format: "HDDID"
+      responses:
+        "401":
+          description: "Access denied."
+        "404":
+          description: "HDD not found."
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/HDD"
+      security:
+      - api_key: []
+      - user_id: []
+    post:
+      summary: "Update HDD entry"
+      tags:
+      - "HDD"
+      consumes:
+      - "application/json"
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      description: "Updates SerialNo, Size, TypeMedia, Status, or DeviceID for the specified HDD. ProofFile cannot be modified via the API."
+      operationId: "PostHdd"
+      parameters:
+        - name: hddid
+          in: path
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/HDD"
+      responses:
+        "401":
+          description: "Access denied."
+        "404":
+          description: "HDD not found."
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/HDD"
+      security:
+      - api_key: []
+      - user_id: []
+  /hdd/{hddid}/proof:
+    get:
+      summary: "Retrieve destruction proof metadata"
+      tags:
+      - "HDD"
+      produces:
+      - "application/json"
+      operationId: "GetHddProof"
+      parameters:
+        - name: hddid
+          in: path
+          required: true
+          type: integer
+      responses:
+        "401":
+          description: "Access denied."
+        "404":
+          description: "Proof not available."
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/HDDProof"
+      security:
+      - api_key: []
+      - user_id: []
   /cabinet:
     get:
       summary: Information about one or more cabinets
@@ -1415,6 +1571,12 @@ definitions:
       NumPorts:
         type: "integer"
         format: "Number of data ports"
+      EnableHDDFeature:
+        type: "integer"
+        format: "1 when the HDD management feature is enabled"
+      HDDCount:
+        type: "integer"
+        format: "Maximum HDD slots supported by this template"
       Notes:
         type: "string"
         format: "Freeform text"
@@ -1608,6 +1770,9 @@ definitions:
       BulkOperations:
         type: boolean
         format: "User has rights to perform Bulk Operations"
+      ManageHDD:
+        type: boolean
+        format: "User has rights to manage HDD inventory"
       SiteAdmin:
         type: boolean
         format: "User is a site administrator"
@@ -1674,6 +1839,62 @@ definitions:
       LastRead:
         type: "string"
         format: "Timestamp of last reading"
+  HDD:
+    type: "object"
+    properties:
+      HDDID:
+        type: "integer"
+        format: "keyValue"
+      DeviceID:
+        type: "integer"
+        format: "keyValue"
+      SerialNo:
+        type: "string"
+        format: "Serial number"
+      Status:
+        type: "string"
+        enum:
+        - "On"
+        - "Off"
+        - "Pending_destruction"
+        - "Destroyed"
+        - "Spare"
+      TypeMedia:
+        type: "string"
+        format: "Media type"
+      Size:
+        type: "integer"
+        format: "Capacity in GB"
+      DateAdd:
+        type: "string"
+        format: "Timestamp"
+      DateWithdrawn:
+        type: "string"
+        format: "Timestamp"
+      DateDestroyed:
+        type: "string"
+        format: "Timestamp"
+      ProofFile:
+        type: "string"
+        format: "Stored proof reference"
+  HDDProof:
+    type: "object"
+    properties:
+      HDDID:
+        type: "integer"
+      SerialNo:
+        type: "string"
+      ProofFile:
+        type: "string"
+      public_url:
+        type: "string"
+        format: "URL"
+      filesystem_path:
+        type: "string"
+        format: "Filesystem path when accessible"
+      file_exists:
+        type: "boolean"
+        format: "Indicates if the file is present on disk"
 securityDefinitions:
   api_key:
     type: "apiKey"

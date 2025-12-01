@@ -131,6 +131,65 @@ $app->put('/people/{userid}', function( Request $request, Response $response, $a
 });
 
 //
+//	URL:	/api/v1/hdd
+//	Method:	PUT
+//	Params:	DeviceID (required), SerialNo (required), optional Status, TypeMedia, Size
+//	Returns:	record as created
+//
+$app->put('/hdd', function(Request $request, Response $response) use ($person) {
+	if (!($person->ManageHDD || $person->SiteAdmin)) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+		return $response->withJson($r, $r['errorcode']);
+	}
+
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$deviceId = isset($vars['DeviceID']) ? intval($vars['DeviceID']) : 0;
+	$serial = isset($vars['SerialNo']) ? trim($vars['SerialNo']) : '';
+
+	if ($deviceId <= 0 || $serial === '') {
+		$r['error'] = true;
+		$r['errorcode'] = 400;
+		$r['message'] = __("DeviceID and SerialNo are required");
+		return $response->withJson($r, $r['errorcode']);
+	}
+
+	if (HDD::GetRemainingSlotCount($deviceId) <= 0) {
+		$r['error'] = true;
+		$r['errorcode'] = 409;
+		$r['message'] = __("slot hdd is full");
+		return $response->withJson($r, $r['errorcode']);
+	}
+
+	$allowedStatus = array('On','Off','Pending_destruction','Destroyed','Spare');
+	$status = (isset($vars['Status']) && in_array($vars['Status'], $allowedStatus, true)) ? $vars['Status'] : 'On';
+
+	$hdd = new HDD();
+	$hdd->DeviceID = $deviceId;
+	$hdd->SerialNo = $serial;
+	$hdd->Status = $status;
+	$hdd->TypeMedia = isset($vars['TypeMedia']) ? $vars['TypeMedia'] : 'HDD';
+	$hdd->Size = isset($vars['Size']) ? intval($vars['Size']) : 0;
+
+	$hdd->Create();
+
+	$details = array(
+		'HDDID' => $hdd->HDDID,
+		'DeviceID' => $deviceId,
+		'SerialNo' => $serial,
+		'Status' => $status
+	);
+	HDD::RecordGenericLog($deviceId, $person->UserID, 'HDD_API_CREATE', json_encode($details, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['hdd'] = $hdd;
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
 //  URL:    /api/v1/cabinet
 //  Method:	PUT
 //  Params:
@@ -520,6 +579,15 @@ $app->put( '/devicetemplate/{model}', function( Request $request, Response $resp
 			$r['errorcode']=400;
 			$r['message']=__("Device template creation failed");
 		}else{
+			$hddPayload = array();
+			foreach (array('EnableHDDFeature','HDDCount') as $field) {
+				if (isset($vars[$field])) {
+					$hddPayload[$field] = $vars[$field];
+				}
+			}
+			if (!empty($hddPayload)) {
+				$dt->UpdateTemplateHDD($hddPayload);
+			}
 			// refresh the model in case we extended it elsewhere
 			$d=new DeviceTemplate($dt->TemplateID);
 			$d->GetTemplateByID();

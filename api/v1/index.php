@@ -10,6 +10,7 @@
 	}
 
 	require_once( "../../facilities.inc.php" );
+	require_once( __DIR__ . "/../../classes/hdd.class.php" );
 
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Message\ResponseInterface as Response;
