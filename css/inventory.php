@@ -394,6 +394,34 @@ div.table > div > div {display: table-cell;vertical-align: middle; /* padding-bo
 .whiteborder, .whiteborder div {border: 1px solid white;}
 .border, .border div {border: 1px solid gray;}
 
+.assign-device-table {
+	text-align: center;
+}
+#assignDeviceList {
+	margin: 0 auto;
+	border-collapse: separate !important;
+	border-spacing: 10px 6px;
+}
+#assignDeviceList th,
+#assignDeviceList td {
+	padding: 8px 18px;
+}
+#assignDeviceList .assign-device-row:hover {
+	background-color: #eef6ff;
+	cursor: pointer;
+}
+
+.hdd-status-select {
+	transition: background-color .2s ease-in-out;
+	color: #000;
+}
+.hdd-status-select.status-on {
+	background-color: #dff5d8;
+}
+.hdd-status-select.status-off {
+	background-color: #ffd6d6;
+}
+
 /* Search Results */
 .search .center {text-align: left;}
 .search .main ol, .search .main ul{list-style-type: none;margin-left: 1em;}

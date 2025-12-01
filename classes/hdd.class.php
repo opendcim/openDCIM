@@ -153,14 +153,15 @@ class HDD {
 	}
 
 	// Duplicate this HDD
-	public static function DuplicateToEmptySlots(int $sourceHDDID): void {
+	public static function DuplicateToEmptySlots(int $sourceHDDID): array {
 		global $dbh;
+		$created = [];
 		// Récupère le disque source
 		$stmt = $dbh->prepare("SELECT * FROM fac_HDD WHERE HDDID = ?");
 		$stmt->execute([$sourceHDDID]);
 		$hdd = $stmt->fetch(PDO::FETCH_ASSOC);
 		if (!$hdd) {
-			return;
+			return $created;
 		}// Nombre max de HDD permis par template
 		$deviceID = intval($hdd['DeviceID']);
 		$stmt = $dbh->prepare(
@@ -173,7 +174,7 @@ class HDD {
 		$max = intval($stmt->fetchColumn());
 	
 		if ($max <= 0) {
-			return;
+			return $created;
 		}// Combien sont déjà présents ?
 		$stmt = $dbh->prepare("SELECT COUNT(*) FROM fac_HDD WHERE DeviceID = ? AND (Status = 'On' OR Status = 'Off')");
 		$stmt->execute([$deviceID]);
@@ -181,7 +182,7 @@ class HDD {
 	
 		$remaining = $max - $current;
 		if ($remaining <= 0) {
-			return;
+			return $created;
 		} // Insère les duplicata
 		$stmt = $dbh->prepare(
 			"INSERT INTO fac_HDD
@@ -198,8 +199,10 @@ class HDD {
 				$hdd['Size']
 			]);
 			$newId = intval($dbh->lastInsertId());
+			$created[] = $newId;
 			self::logAction("Duplicated from HDDID $sourceHDDID", $newId);
 		}
+		return $created;
 	}
 
     // Send HDD for destruction
@@ -218,15 +221,43 @@ class HDD {
     }
 
     // Mark HDD as destroyed
-    public static function MarkDestroyed(int $id): bool {
+    public static function MarkDestroyed(int $id, ?string $destroyDate = null): bool {
 		global $dbh;
-		$stmt = $dbh->prepare(
-			"UPDATE fac_HDD SET
-			   Status = 'Destroyed',
-			   DateDestroyed   = NOW()
-			 WHERE HDDID = ?"
-		);
-		$res = $stmt->execute([$id]);
+		$dateValue = null;
+		if ($destroyDate !== null && trim($destroyDate) !== '') {
+			$destroyDate = trim($destroyDate);
+			$formats = ['Y-m-d H:i:s', 'Y-m-d H:i', 'Y-m-d'];
+			foreach ($formats as $format) {
+				$dt = DateTime::createFromFormat($format, $destroyDate);
+				if ($dt instanceof DateTime) {
+					$dateValue = $dt->format('Y-m-d H:i:s');
+					break;
+				}
+			}
+		}
+
+		if ($dateValue) {
+			$stmt = $dbh->prepare(
+				"UPDATE fac_HDD SET
+				   Status = 'Destroyed',
+				   DateDestroyed   = :DateDestroyed
+				 WHERE HDDID = :HDDID"
+			);
+			$params = [
+				':DateDestroyed' => $dateValue,
+				':HDDID' => $id
+			];
+		} else {
+			$stmt = $dbh->prepare(
+				"UPDATE fac_HDD SET
+				   Status = 'Destroyed',
+				   DateDestroyed   = NOW()
+				 WHERE HDDID = :HDDID"
+			);
+			$params = [':HDDID' => $id];
+		}
+
+		$res = $stmt->execute($params);
 		if ($res) {
 			self::logAction("Marked as destroyed", $id);
 		}
@@ -236,6 +267,11 @@ class HDD {
 	//Reassign a HDD to another device
 	public static function ReassignToDevice(int $id, int $deviceID): bool {
 		global $dbh;
+		$current = self::GetHDDByID($id);
+		$currentDevice = ($current instanceof HDD) ? intval($current->DeviceID) : 0;
+		if ($currentDevice !== $deviceID && self::GetRemainingSlotCount($deviceID) <= 0) {
+			return false;
+		}
 		$stmt = $dbh->prepare(
 			"UPDATE fac_HDD SET
 			DeviceID = ?,
@@ -266,17 +302,32 @@ class HDD {
 		return $res;
 	}
 
-	public static function RecordGenericLog(?int $deviceID, string $userID, string $action, string $details): void {
+	public static function GetRemainingSlotCount(int $deviceID): int {
 		global $dbh;
-		$objectId = $deviceID ?? 0;
-		$stmt = $dbh->prepare("INSERT INTO fac_GenericLog (UserID, Class, ObjectID, ChildID, Action, Property, OldVal, NewVal)
-			VALUES (:UserID, 'HDD', :ObjectID, NULL, :Action, 'Details', '', :NewVal)");
-		$stmt->execute([
-			':UserID'   => $userID,
-			':ObjectID' => $objectId,
-			':Action'   => $action,
-			':NewVal'   => $details
-		]);
+		$stmt = $dbh->prepare(
+			"SELECT COALESCE(cfg.HDDCount, 0) AS Capacity,
+			        COALESCE(u.ActiveCount, 0) AS Used
+			   FROM fac_Device d
+			   LEFT JOIN fac_DeviceTemplateHdd cfg ON cfg.TemplateID = d.TemplateID AND cfg.EnableHDDFeature = 1
+			   LEFT JOIN (
+			        SELECT DeviceID, COUNT(*) AS ActiveCount
+			          FROM fac_HDD
+			         WHERE Status IN ('On','Off')
+			         GROUP BY DeviceID
+			   ) u ON u.DeviceID = d.DeviceID
+			  WHERE d.DeviceID = :DeviceID"
+		);
+		$stmt->execute([':DeviceID' => $deviceID]);
+		if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			$capacity = intval($row['Capacity']);
+			$used = intval($row['Used']);
+			if ($capacity <= 0) {
+				return 0;
+			}
+			$remaining = $capacity - $used;
+			return ($remaining > 0) ? $remaining : 0;
+		}
+		return 0;
 	}
 
 	public static function RecordAudit(int $deviceID, string $userID): bool {
@@ -290,6 +341,23 @@ class HDD {
 		return $stmt->execute([
 			':UserID'   => $userID,
 			':ObjectID' => $deviceID
+		]);
+	}
+
+	public static function RecordGenericLog(?int $deviceID, string $userID, string $action, string $details = ''): bool {
+		global $dbh;
+		$objectId = $deviceID ?? 0;
+		$stmt = $dbh->prepare(
+			"INSERT INTO fac_GenericLog
+			   (UserID, Class, ObjectID, ChildID, Action, Property, OldVal, NewVal)
+			 VALUES
+			   (:UserID, 'HDD', :ObjectID, NULL, :Action, 'Details', '', :NewVal)"
+		);
+		return $stmt->execute([
+			':UserID'   => $userID,
+			':ObjectID' => $objectId,
+			':Action'   => $action,
+			':NewVal'   => $details
 		]);
 	}
 

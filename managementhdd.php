@@ -38,6 +38,36 @@ $lastAudit = HDD::GetLastAudit($dev->DeviceID);
 $proofPathSetting = $config->ParameterArray['hdd_proof_path'] ?? 'assets/files/hdd/';
 $proofWebBase = rtrim($proofPathSetting, '/') . '/';
 
+$assignableDevices = [];
+$assignSql = "
+	SELECT d.DeviceID, d.Label, d.SerialNo, cfg.HDDCount,
+	       COALESCE(active.ActiveCount, 0) AS ActiveCount
+	  FROM fac_Device d
+	  INNER JOIN fac_DeviceTemplateHdd cfg ON cfg.TemplateID = d.TemplateID AND cfg.EnableHDDFeature = 1
+	  LEFT JOIN (
+	    SELECT DeviceID, COUNT(*) AS ActiveCount
+	      FROM fac_HDD
+	     WHERE Status IN ('On','Off')
+	     GROUP BY DeviceID
+	  ) active ON active.DeviceID = d.DeviceID
+	 WHERE d.DeviceID <> :DeviceID
+	 ORDER BY d.Label ASC";
+$assignStmt = $dbh->prepare($assignSql);
+$assignStmt->execute([':DeviceID' => $dev->DeviceID]);
+while ($row = $assignStmt->fetch(PDO::FETCH_ASSOC)) {
+	$capacity = intval($row['HDDCount']);
+	$used = intval($row['ActiveCount']);
+	$freeSlots = $capacity - $used;
+	if ($capacity > 0 && $freeSlots > 0) {
+		$assignableDevices[] = [
+			'DeviceID'  => intval($row['DeviceID']),
+			'Label'     => $row['Label'],
+			'SerialNo'  => $row['SerialNo'] ?? '',
+			'FreeSlots' => $freeSlots
+		];
+	}
+}
+
 if (!function_exists('build_hdd_proof_url')) {
     /**
      * Build a public URL for a stored proof file value.
@@ -83,6 +113,7 @@ if (!function_exists('build_hdd_proof_url')) {
     <?php if (!empty($_SESSION['Message']))   { echo '<div class="message">'.htmlspecialchars($_SESSION['Message'],   ENT_QUOTES, 'UTF-8').'</div>'; unset($_SESSION['Message']); } ?>
     <form method="POST" action="savehdd.php" id="manageHddForm">
       <input type="hidden" name="DeviceID" value="<?php echo (int)$dev->DeviceID; ?>">
+      <input type="hidden" name="custom_destroy_date" id="custom_destroy_date" value="">
       <h3><?php echo htmlspecialchars(__("Active HDDs"), ENT_QUOTES, 'UTF-8'); ?></h3>
     
     <table class="table2">
@@ -108,7 +139,7 @@ foreach ($hddList as $hdd) {
          <td><input type="checkbox" class="select_active" name="select_active[]" value="'.$id.'"></td>
          <td>'.$i.'</td>
          <td style="width: 150px;"><input type="text" name="SerialNo['.$id.']" value="'.htmlspecialchars($hdd->SerialNo, ENT_QUOTES, 'UTF-8').'"></td>
-         <td><select name="Status['.$id.']">
+         <td><select name="Status['.$id.']" class="hdd-status-select">
            <option value="On"'.($hdd->Status === 'On' ? ' selected' : '').'>On</option>
            <option value="Off"'.($hdd->Status === 'Off' ? ' selected' : '').'>Off</option>
            <option value="Pending_destruction"'.($hdd->Status === 'Pending_destruction' ? ' selected' : '').'>Pending_destruction</option>
@@ -260,16 +291,15 @@ foreach ($hddSpareList as $hdd) {
       
       <?php
         if($DeviceID >0){
-      echo '<div style="margin-top: 20px; text-align: right;">';
-      if($lastAudit){
-        echo '<div style="margin-bottom:5px;" id="lastAuditLabel">'.sprintf(__('Last HDD audit: %s (%s)'), date('Y-m-d H:i', strtotime($lastAudit['AuditTime'])), htmlspecialchars($lastAudit['DisplayName'], ENT_QUOTES, 'UTF-8')).'</div>';
-      }
-      echo '<button type="submit" class="button" form="auditHddForm">',__("Certify Audit HDD"),'</button></div>
+      echo '<div style="margin-top: 20px; text-align: right;"><button type="submit" class="button" form="auditHddForm">',__("Certify Audit HDD"),'</button></div>
             <div style="margin-top: 20px; text-align: right;"><button type="button" onclick="window.location.href=\'report_hdd.php\';">'.__('Report HDD').'</button></div>
             <div style="margin-top: 20px; text-align: right;"><button type="submit" form="manageHddForm" name="action" value="export_list">'.__('Export all to excel').'</button></div>
             <div style="margin-top: 20px; text-align: right;"><button type="button" onclick="window.location.href=\'hdd_log_view.php?DeviceID='.(int)$dev->DeviceID.'\';">'.__('View HDD Activity Log').'</button></div>';
-          }
-          ?>
+        }
+      if($lastAudit){
+        echo '<br><br><div style="margin-bottom:5px;" id="lastAuditLabel">'.sprintf(__('Last HDD audit: %s (%s)'), date('Y-m-d H:i', strtotime($lastAudit['AuditTime'])), htmlspecialchars($lastAudit['DisplayName'], ENT_QUOTES, 'UTF-8')).'</div>';
+        }
+      ?>
 
   </div> <!-- End of center div -->
       <div>
@@ -315,6 +345,12 @@ foreach ($hddSpareList as $hdd) {
   </div>
 </div> <!-- End Modal Add HDD -->
 
+<form id="assignHddForm" method="post" action="savehdd.php" style="display:none;">
+  <input type="hidden" name="DeviceID" value="<?php echo (int)$dev->DeviceID; ?>">
+  <input type="hidden" name="target_device_id" id="assign_target_device_id" value="">
+  <input type="hidden" name="action" id="assign_action" value="">
+</form>
+
 </div> <!-- End of page -->
 
 <!-- Modal Upload Proof -->
@@ -328,6 +364,11 @@ foreach ($hddSpareList as $hdd) {
         <label for="proof_pdf_m"><?php echo __('PDF / Excel / ODS file (max 5 MB)'); ?></label>
         <input type="file" id="proof_pdf_m" name="proof_pdf" accept=".pdf,.xls,.xlsx,.ods,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.oasis.opendocument.spreadsheet" required>
       </div>
+      <div style="margin-top:15px;">
+        <label for="proof_destroy_date"><?php echo __('Destruction date'); ?></label>
+        <input type="text" id="proof_destroy_date" name="destroy_date" placeholder="YYYY-MM-DD" autocomplete="off">
+        <small><?php echo __('This date will also be used when confirming destruction.'); ?></small>
+      </div>
       <div style="margin-top:15px; text-align:right;">
         <button type="submit" class="button" id="submitProofUpload"><?php echo __('Upload'); ?></button>
         <button type="button" class="button" id="cancelUploadProofBtn"><?php echo __('Cancel'); ?></button>
@@ -335,8 +376,45 @@ foreach ($hddSpareList as $hdd) {
     </form>
   </div>
 </div>
-</div> <!-- End of page -->
-
+<div id="assignDeviceModal" class="modal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.45);">
+  <div style="background-color:#fff; margin:5% auto; padding:20px; border:1px solid #888; width:600px; max-height:80%; overflow:auto; position:relative;">
+    <span id="closeAssignDeviceModal" style="position:absolute; right:10px; top:10px; cursor:pointer;">&times;</span>
+    <h3><?php echo __('Assign HDD to another device'); ?></h3>
+    <p><?php echo __('Click on a device to transfer the selected HDD into the first available slot.'); ?></p>
+    <input type="text" id="deviceFilterInput" placeholder="<?php echo __('Filter by label or serial...'); ?>" style="width:100%; padding:6px; margin-bottom:10px;">
+    <div class="assign-device-table" style="max-height:420px; overflow-y:auto;">
+      <table id="assignDeviceList" class="border">
+        <thead>
+          <tr>
+            <th><?php echo __('Device label'); ?></th>
+            <th><?php echo __('Serial number'); ?></th>
+            <th><?php echo __('Free HDD slots'); ?></th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php if (!empty($assignableDevices)): ?>
+          <?php foreach ($assignableDevices as $candidate): 
+            $labelEsc = htmlspecialchars($candidate['Label'], ENT_QUOTES, 'UTF-8');
+            $serialRaw = $candidate['SerialNo'] ?? '';
+            $serialEsc = htmlspecialchars($serialRaw, ENT_QUOTES, 'UTF-8');
+          ?>
+            <tr class="assign-device-row" data-device-id="<?php echo $candidate['DeviceID']; ?>" data-label="<?php echo $labelEsc; ?>" data-serial="<?php echo $serialEsc; ?>" data-free="<?php echo $candidate['FreeSlots']; ?>">
+              <td><?php echo $labelEsc; ?></td>
+              <td><?php echo ($serialRaw !== '') ? $serialEsc : '&mdash;'; ?></td>
+              <td><?php echo intval($candidate['FreeSlots']); ?></td>
+            </tr>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <tr class="assign-device-empty">
+            <td colspan="3"><?php echo __('No device with free HDD slots is available.'); ?></td>
+          </tr>
+        <?php endif; ?>
+        </tbody>
+      </table>
+      <div id="assignNoResult" style="display:none; padding:10px 0;"><?php echo __('No device matches your filter'); ?></div>
+    </div>
+  </div>
+</div>
 <script type="text/javascript">
   // Modal
   function openModal() {
@@ -383,6 +461,153 @@ foreach ($hddSpareList as $hdd) {
       $('.select_pending_destroyed').prop('checked', this.checked);
     });
 
+  var assignableDeviceCount = <?php echo (int)count($assignableDevices); ?>;
+  var assignDeviceModal = $('#assignDeviceModal');
+  var assignDeviceList = $('#assignDeviceList');
+  var assignNoResult = $('#assignNoResult');
+  var deviceFilterInput = $('#deviceFilterInput');
+  var assignActionInput = $('#assign_action');
+  var assignTargetDeviceInput = $('#assign_target_device_id');
+  var assignForm = document.getElementById('assignHddForm');
+  var assigningHddId = null;
+  var assignConfirmTemplate = '<?php echo addslashes(__('HDD transfered in (%s)')); ?>';
+  var noDeviceAvailableMessage = '<?php echo addslashes(__('No device with free HDD slots is available.')); ?>';
+  var slotFullAlertMessage = '<?php echo addslashes(__('slot hdd is full')); ?>';
+  var selectHddMessage = '<?php echo addslashes(__('Select an HDD first.')); ?>';
+  var unknownHddMessage = '<?php echo addslashes(__('Unable to determine HDD selection.')); ?>';
+
+  function filterAssignList(term){
+    if(!assignDeviceList.length){
+      return;
+    }
+    var normalized = (term || '').toLowerCase();
+    var anyVisible = false;
+    assignDeviceList.find('tbody tr.assign-device-row').each(function(){
+      var $row = $(this);
+      var label = ($row.data('label') || '').toLowerCase();
+      var serial = ($row.data('serial') || '').toLowerCase();
+      var matches = !normalized || label.indexOf(normalized) !== -1 || serial.indexOf(normalized) !== -1;
+      $row.toggle(matches);
+      if(matches){
+        anyVisible = true;
+      }
+    });
+    if(assignNoResult.length){
+      assignNoResult.toggle(!anyVisible);
+    }
+  }
+
+  window.openAssignModal = function(button){
+    if(!assignableDeviceCount){
+      alert(noDeviceAvailableMessage);
+      return;
+    }
+    var hddId = parseInt($(button).data('hddid'), 10);
+    if(!hddId){
+      alert(unknownHddMessage);
+      return;
+    }
+    assigningHddId = hddId;
+    if(deviceFilterInput.length){
+      deviceFilterInput.val('');
+      filterAssignList('');
+    }
+    assignDeviceModal.show();
+  };
+
+  window.closeAssignModal = function(){
+    assignDeviceModal.hide();
+    assigningHddId = null;
+  };
+
+  $('#closeAssignDeviceModal').on('click', function(){
+    closeAssignModal();
+  });
+
+  $('#assignDeviceModal').on('click', function(evt){
+    if(evt.target === this){
+      closeAssignModal();
+    }
+  });
+
+  if(deviceFilterInput.length){
+    deviceFilterInput.on('input', function(){
+      filterAssignList(this.value);
+    });
+  }
+
+  if(assignDeviceList.length){
+    assignDeviceList.on('click', '.assign-device-row', function(){
+      var free = parseInt($(this).data('free'), 10) || 0;
+      if(free <= 0){
+        alert(slotFullAlertMessage);
+        return;
+      }
+      if(!assigningHddId){
+        alert(selectHddMessage);
+        return;
+      }
+      var targetId = parseInt($(this).data('device-id'), 10);
+      if(!targetId){
+        alert(unknownHddMessage);
+        return;
+      }
+      var deviceLabel = $(this).data('label') || '';
+      assignActionInput.val('reassign_' + assigningHddId);
+      assignTargetDeviceInput.val(targetId);
+      closeAssignModal();
+      if(assignForm){
+        alert(assignConfirmTemplate.replace('%s', deviceLabel));
+        assignForm.submit();
+      }
+    });
+  }
+
+  function applyStatusSelectStyles(selectElem){
+    var $select = $(selectElem);
+    var value = $select.val();
+    $select.removeClass('status-on status-off');
+    if(value === 'On'){
+      $select.addClass('status-on');
+    }else if(value === 'Off'){
+      $select.addClass('status-off');
+    }
+  }
+
+  function initStatusSelects(){
+    $('.hdd-status-select').each(function(){
+      applyStatusSelectStyles(this);
+    }).on('change', function(){
+      applyStatusSelectStyles(this);
+    });
+  }
+
+  var destroyDateInput = null;
+  var hiddenDestroyDateInput = null;
+  var currentDestroyDate = '';
+
+  function todayFormatted(){
+    var today = new Date();
+    if (window.jQuery && $.datepicker && $.datepicker.formatDate){
+      return $.datepicker.formatDate('yy-mm-dd', today);
+    }
+    return today.toISOString().slice(0,10);
+  }
+
+  function setDestroyDateValue(value){
+    currentDestroyDate = value || '';
+    if (destroyDateInput && destroyDateInput.length){
+      destroyDateInput.val(currentDestroyDate);
+    }
+    if (hiddenDestroyDateInput && hiddenDestroyDateInput.length){
+      hiddenDestroyDateInput.val(currentDestroyDate);
+    }
+  }
+
+  function resetDestroyDateState(){
+    setDestroyDateValue('');
+  }
+
   // Destroy + proof workflow
   var pendingDestroyIds = [];
   var manageHddForm = document.getElementById('manageHddForm');
@@ -414,6 +639,7 @@ foreach ($hddSpareList as $hdd) {
     if(confirm(askProofMessage)){
       openProofModal();
     }else{
+      resetDestroyDateState();
       submitBulkDestroy();
     }
   }
@@ -428,13 +654,17 @@ foreach ($hddSpareList as $hdd) {
     pendingDestroyIds.forEach(function(id){
       $('<input>').attr({type:'hidden', name:'hdd_ids[]', value:id}).appendTo($form);
     });
+    setDestroyDateValue(todayFormatted());
     $('#uploadProofModal').show();
   }
 
   function closeProofModal(shouldReask){
     $('#uploadProofModal').hide();
-    if(shouldReask && pendingDestroyIds.length){
-      askProofPreference();
+    if(shouldReask){
+      resetDestroyDateState();
+      if(pendingDestroyIds.length){
+        askProofPreference();
+      }
     }
   }
 
@@ -493,6 +723,18 @@ foreach ($hddSpareList as $hdd) {
       }
       alert(errorMessage);
     });
+  });
+
+  $(function(){
+    initStatusSelects();
+    destroyDateInput = $('#proof_destroy_date');
+    hiddenDestroyDateInput = $('#custom_destroy_date');
+    if(destroyDateInput.length){
+      destroyDateInput.datepicker({ dateFormat: 'yy-mm-dd' });
+      destroyDateInput.on('change', function(){
+        setDestroyDateValue(this.value);
+      });
+    }
   });
 
 </script>

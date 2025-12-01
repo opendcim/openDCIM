@@ -55,6 +55,9 @@ function formatHddLogDetails($action, $payload) {
 	<meta charset="UTF-8">
 	<title><?php echo $subheader; ?></title>
 	<link rel="stylesheet" href="css/inventory.php">
+	<link rel="stylesheet" href="css/jquery-ui.css" type="text/css">
+	<script type="text/javascript" src="scripts/jquery.min.js"></script>
+	<script type="text/javascript" src="scripts/jquery-ui.min.js"></script>
 </head>
 <body>
 <?php include("header.inc.php"); ?>
