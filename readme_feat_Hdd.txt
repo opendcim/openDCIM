@@ -45,3 +45,28 @@
 ## 6. Points de vigilance / ï¿½volutions prï¿½vues
 - Les CSV doivent contenir au moins une colonne SN ; chaque colonne est analysï¿½e aprï¿½s upload (dï¿½limiteurs auto : , ; tab |).
 - Les futures ï¿½volutions prï¿½vues incluent lï¿½import natif dï¿½OCS Inventory pour afficher lï¿½ï¿½tat des disques (On/Off), faciliter maintenance/destruction et intï¿½grer un flux 100% automatisï¿½.
+## 7. API REST HDD
+Pour préparer l’automatisation (OCS ou autres), quatre routes REST ont été ajoutées. Toutes nécessitent le droit `ManageHDD` (ou `SiteAdmin`) et les en-têtes d’authentification habituels.
+
+### 7.1 GET /api/v1/hdd
+- Paramètres optionnels : `DeviceID`, `HDDID` (valeur ou liste séparée par virgules), `Status` (On, Off, Pending_destruction, Destroyed, Spare), `SerialNo` (recherche partielle).
+- Retour : tableau de modèles `HDD`.
+
+### 7.2 GET /api/v1/hdd/{HDDID}
+- Retour : détail du disque ciblé.
+
+### 7.3 GET /api/v1/hdd/{HDDID}/proof
+- Retour : JSON avec `ProofFile`, URL publique et chemin disque si le fichier existe. Aucun upload via API (GET uniquement).
+
+### 7.4 PUT /api/v1/hdd
+- Crée un disque sur un équipement. Champs requis : `DeviceID`, `SerialNo`. Champs optionnels : `Status`, `TypeMedia`, `Size`.
+- Contrôle automatique du nombre de slots (message « slot hdd is full » si le device est plein).
+
+### 7.5 POST /api/v1/hdd/{HDDID}
+- Met à jour SerialNo/Status/TypeMedia/Size ou réaffecte le disque à un autre DeviceID (slots vérifiés).
+
+### 7.6 DeviceTemplate & People
+- `DeviceTemplate` expose désormais `EnableHDDFeature` et `HDDCount` via GET/POST/PUT.
+- `People` expose le booléen `ManageHDD` pour activer l’accès API.
+
+La description complète (modèles, exemples) est disponible dans `api/docs/swagger.yaml`, section `HDD`.
