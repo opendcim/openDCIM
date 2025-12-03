@@ -58,7 +58,7 @@ class MediaDataRates {
 
 		$result = array();
 		while ( $row = $st->fetch() ) {
-			$result[] = $row;
+			$result[$row->RateID] = $row;
 		}
 
 		return $result;

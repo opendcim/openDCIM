@@ -58,7 +58,7 @@ class MediaProtocols {
 
 		$result = array();
 		while ( $row = $st->fetch() ) {
-			$result[] = $row;
+			$result[$row->ProtocolID] = $row;
 		}
 
 		return $result;

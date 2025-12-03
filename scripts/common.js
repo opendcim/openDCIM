@@ -2574,8 +2574,8 @@ function LameLogDisplay(){
 			this.ct			 = ct;
 			this.portnum     = this.element.data('port');
 			this.portname    = this.element.find('div[id^=spn],div[id^=pp]');
-			this.cdevice     = this.element.find('div[id^=d]:not([id^=dp]),div[id^=fd]');
-			this.cdeviceport = this.element.find('div[id^=dp],div[id^=fp]');
+			this.cdevice     = this.element.find('div[id^=d]:not([id^=dp]):not([id^=dc]):not([id^=dr]),div[id^=fd]');
+			this.cdeviceport = this.element.find('div[id^=dp]:not([id^=dpro]),div[id^=fp]');
 			this.dctype	     = this.element.find('div[id^=dc]');
 			this.protocol    = this.element.find('div[id^=dpro]');
 			this.mediarate   = this.element.find('div[id^=dr]');
@@ -2639,8 +2639,14 @@ function LameLogDisplay(){
 			row.getdevices(this.cdevice);
 			row.cnotes.html('<input type="text" style="min-width: 200px;" value="'+row.cnotes.text()+'">');
 			row.portname.html('<input type="text" style="min-width: 60px;" value="'+row.portname.text()+'">');
+			row.dctype.html('<input type="text" style="min-width: 60px;" value="'+row.dctype.text()+'">');
+			row.protocol.html('<input type="text" style="min-width: 60px;" value="'+row.protocol.text()+'">');
+			row.mediarate.html('<input type="text" style="min-width: 60px;" value="'+row.mediarate.text()+'">find this');
 			row.getmediatypes();
 			row.getcolortypes();
+			row.getdctype();
+			row.getprotocol();
+			row.getmediarate();
 
 			// rear panel edit
 			if(portrights.admin && row.rdevice.length>0){
@@ -2720,6 +2726,21 @@ function LameLogDisplay(){
 			},500);
 		},
 
+		getdctype: function(){
+			var row=this;
+			$.get("api/v1/mediaconnectors").done(function(data){
+				var connections=$('<select>').append('<option value=0>&nbsp;</option>');
+				if(!data.error){
+					for(var i in data.mediaconnectors){
+						var conn=data.mediaconnectors[i];
+						connections.append('<option value='+conn.ConnectorID+'>'+conn.ConnectorType+'</option>');
+						row.dctype.data('label'+conn.ConnectorID,conn.ConnectorType);
+					}
+				}
+				row.dctype.html(connections).find('select').val(row.dctype.data('default'));
+			});
+		},
+
 		getdevices: function(target){
 			if(target==undefined){
 				target=this.cdevice;
@@ -2760,6 +2781,21 @@ function LameLogDisplay(){
 				devlist.change();
 			});
 
+		},
+
+		getmediarate: function(){
+			var row=this;
+			$.get("api/v1/mediadatarates").done(function(data){
+				var connections=$('<select>').append('<option value=0>&nbsp;</option>');
+				if(!data.error){
+					for(var i in data.mediadatarates){
+						var conn=data.mediadatarates[i];
+						connections.append('<option value='+conn.RateID+'>'+conn.RateText+'</option>');
+						row.mediarate.data('label'+conn.RateID,conn.RateText);
+					}
+				}
+				row.mediarate.html(connections).find('select').val(row.mediarate.data('default'));
+			});
 		},
 
 		getports: function(e){
@@ -2808,6 +2844,21 @@ function LameLogDisplay(){
 				portlist.combobox();
 			});
 
+		},
+
+		getprotocol: function(){
+			var row=this;
+			$.get("api/v1/mediaprotocols").done(function(data){
+				var connections=$('<select>').append('<option value=0>&nbsp;</option>');
+				if(!data.error){
+					for(var i in data.mediaprotocols){
+						var conn=data.mediaprotocols[i];
+						connections.append('<option value='+conn.ProtocolID+'>'+conn.ProtocolName+'</option>');
+						row.protocol.data('label'+conn.ProtocolID,conn.ProtocolName);
+					}
+				}
+				row.protocol.html(connections).find('select').val(row.protocol.data('default'));
+			});
 		},
 
 		delete: function(e) {
@@ -2939,7 +2990,10 @@ function LameLogDisplay(){
 					cdeviceport: deviceport.children('select').val(),
 					cnotes: notes.children('input').val(),
 					porttype: (row.porttype.children('select').length==0)?row.porttype.data('default'):row.porttype.children('select').val(),
-					portcolor: (row.portcolor.length==0)?row.porttype.data('color'):row.portcolor.children('select').val()
+					portcolor: (row.portcolor.length==0)?row.porttype.data('color'):row.portcolor.children('select').val(),
+					connectorid: row.dctype.children('select').val(),
+					protocolid: row.protocol.children('select').val(),
+					rateid: row.mediarate.children('select').val()
 				}).done(function(data){
 					if(data.trim()==1){
 						row.checkredraw(e);
@@ -3014,6 +3068,9 @@ function LameLogDisplay(){
 					row.cnotes.html(data.Notes).data('default',data.Notes);
 					row.porttype.html(data.MediaName).data('default',data.MediaID);
 					row.portcolor.html(data.ColorName).data('default',data.ColorID);
+					row.dctype.html((data.ConnectorID>0)?row.dctype.data('label'+data.ConnectorID):'').data('default',data.ConnectorID);
+					row.protocol.html((data.ProtocolID>0)?row.protocol.data('label'+data.ProtocolID):'').data('default',data.ProtocolID);
+					row.mediarate.html((data.RateID>0)?row.mediarate.data('label'+data.RateID):'').data('default',data.RateID);
 					$(row.element[0]).children('div ~ div:not([id^=sp])').removeAttr('style');
 					// Attempt to show mass edit controls
 					$('.switch.table, .patchpanel.table').massedit('show');
