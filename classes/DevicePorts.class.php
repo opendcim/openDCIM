@@ -40,9 +40,9 @@ class DevicePorts {
 		$this->DeviceID=intval($this->DeviceID);
 		$this->PortNumber=intval($this->PortNumber);
 		$this->Label=sanitize($this->Label);
-		$this->ConnectorID=sanitize($this->ConnectorID);
-		$this->ProtocolID=sanitize($this->ProtocolID);
-		$this->RateID=sanitize($this->RateID);
+		$this->ConnectorID=intval($this->ConnectorID);
+		$this->ProtocolID=intval($this->ProtocolID);
+		$this->RateID=intval($this->RateID);
 		$this->MediaID=intval($this->MediaID);
 		$this->ColorID=intval($this->ColorID);
 		$this->ConnectedDeviceID=intval($this->ConnectedDeviceID);
@@ -316,7 +316,7 @@ class DevicePorts {
 			}
 		}
 		// update port
-		$sql="UPDATE fac_Ports SET ConnectorID=$this->ConnectorID, ProtocolID=$this->ConnectorID,
+		$sql="UPDATE fac_Ports SET ConnectorID=$this->ConnectorID, ProtocolID=$this->ProtocolID,
 			RateID=$this->RateID, MediaID=$this->MediaID, ColorID=$this->ColorID, 
 			ConnectedDeviceID=$this->ConnectedDeviceID, Label=\"$this->Label\", 
 			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\" 
