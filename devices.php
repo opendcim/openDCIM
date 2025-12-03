@@ -2618,7 +2618,7 @@ print "<!--				<div>".__("Panel")."</div> -->
 					<div id=\"spn$i\">$port->Label</div>
 					<div id=\"d$i\" data-default=$port->ConnectedDeviceID><a href=\"devices.php?DeviceID=$port->ConnectedDeviceID\">$tmpDev->Label</a></div>
 					<div id=\"dp$i\" data-default=$port->ConnectedPort><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
-					<div id=\"dc$i\" data-default=$port->ConnectorID>{$mc}Connector</div>
+					<div id=\"dc$i\" data-default=$port->ConnectorID>{$mc}</div>
 					<div id=\"dpro$i\" data-default=$port->ProtocolID>$mp</div>
 					<div id=\"dr$i\" data-default=$port->RateID>$mr</div>
 					<div id=\"n$i\" data-default=\"$port->Notes\">$port->Notes</div>";
