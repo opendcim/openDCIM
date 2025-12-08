@@ -9,6 +9,7 @@ Ce document décrit la nouvelle page `DisposalProcessing.php`, disponible via le
 - **Colonne pivot** : `Serial/No` (ou équivalent). Cette colonne est obligatoire car elle identifie de façon unique chaque équipement dans OpenDCIM. Les autres colonnes peuvent être présentes mais ne sont pas utilisées par l’outil.
 
 > Conseil : vérifiez que tous les numéros de série sont bien renseignés dans OpenDCIM avant l’import, afin de limiter le nombre de créations minimales.
+il y a une fonction qui control si les SN sont présent dans opendcim.
 
 ## Étapes du workflow
 
@@ -16,7 +17,7 @@ Ce document décrit la nouvelle page `DisposalProcessing.php`, disponible via le
    - Charger le fichier Excel via le formulaire.  
    - L’outil lit la première ligne pour détecter les entêtes.
 2. **Sélection de la colonne Serial Number**  
-   - Choisir la colonne qui contient les numéros de série (ex : `Serial/No`).  
+   - Choisir la colonne qui contient les numéros de série (ex : `Serial/No` ou `S/N`).  
    - Les numéros détectés sont dédupliqués avant l’analyse.
 3. **Analyse & catégorisation**  
    Les équipements sont classés dans quatre catégories :
