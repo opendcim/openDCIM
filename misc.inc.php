@@ -1009,6 +1009,9 @@ if ($person->BulkOperations) {
 	$wamenu[__("Bulk Importer")][]='<a href="bulk_network.php"><span>'.__("Import Network Connections").'</span></a>';
 	$wamenu[__("Bulk Importer")][]='<a href="bulk_power.php"><span>'.__("Import Power Connections").'</span></a>';
 	$wamenu[__("Bulk Importer")][]='<a href="bulk_moves.php"><span>'.__("Process Bulk Moves").'</span></a>';
+	if($person->SiteAdmin){
+		$wamenu[__("Bulk Importer")][]='<a href="DisposalProcessing.php"><span>'.__("Process Scrap").'</span></a>';
+	}
 }
 if ( $person->SiteAdmin ) {
 	$samenu[__("Template Management")][]='<a href="device_manufacturers.php"><span>'.__("Edit Manufacturers").'</span></a>';

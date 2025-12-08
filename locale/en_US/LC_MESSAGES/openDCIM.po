@@ -6136,3 +6136,288 @@ msgstr "First port detection failed, please report to openDCIM developers"
 
 #~ msgid "People resource for UserID=%1$s updated successfully."
 #~ msgstr "People resource for UserID=%1$s updated successfully."
+
+#: DisposalProcessing.php
+msgid "Automated Disposal Processing"
+msgstr "Automated Disposal Processing"
+
+
+#: DisposalProcessing.php
+msgid "N/A"
+msgstr "N/A"
+
+
+#: DisposalProcessing.php
+msgid "Invalid file uploaded."
+msgstr "Invalid file uploaded."
+
+
+#: DisposalProcessing.php
+msgid "The uploaded file could not be read."
+msgstr "The uploaded file could not be read."
+
+
+#: DisposalProcessing.php
+msgid "File uploaded successfully. Please select the column that contains the serial numbers."
+msgstr "File uploaded successfully. Please select the column that contains the serial numbers."
+
+
+#: DisposalProcessing.php
+msgid "Please select a valid column."
+msgstr "Please select a valid column."
+
+
+#: DisposalProcessing.php
+msgid "No serial numbers were found in the selected column."
+msgstr "No serial numbers were found in the selected column."
+
+
+#: DisposalProcessing.php
+msgid "Serial numbers ready for processing."
+msgstr "Serial numbers ready for processing."
+
+
+#: DisposalProcessing.php
+msgid "Already disposed / Skipped"
+msgstr "Already disposed / Skipped"
+
+
+#: DisposalProcessing.php
+msgid "Unknown serial numbers have been ignored."
+msgstr "Unknown serial numbers have been ignored."
+
+
+#: DisposalProcessing.php
+msgid "Ignored unknown serial number %s"
+msgstr "Ignored unknown serial number %s"
+
+
+#: DisposalProcessing.php
+msgid "Created minimal storage record"
+msgstr "Created minimal storage record"
+
+
+#: DisposalProcessing.php
+msgid "Failed to create device for serial number %s."
+msgstr "Failed to create device for serial number %s."
+
+
+#: DisposalProcessing.php
+msgid "Minimal device entries created successfully."
+msgstr "Minimal device entries created successfully."
+
+
+#: DisposalProcessing.php
+msgid "Please select at least one device to move."
+msgstr "Please select at least one device to move."
+
+
+#: DisposalProcessing.php
+msgid "Moved to Storage Room"
+msgstr "Moved to Storage Room"
+
+
+#: DisposalProcessing.php
+msgid "Devices moved to the Storage Room."
+msgstr "Devices moved to the Storage Room."
+
+
+#: DisposalProcessing.php
+msgid "Storage Room devices confirmed. You may proceed with the final processing."
+msgstr "Storage Room devices confirmed. You may proceed with the final processing."
+
+
+#: DisposalProcessing.php
+msgid "Please confirm the Storage Room devices first."
+msgstr "Please confirm the Storage Room devices first."
+
+
+#: DisposalProcessing.php
+msgid "No devices are ready in the Storage Room."
+msgstr "No devices are ready in the Storage Room."
+
+
+#: DisposalProcessing.php
+msgid "Please select a valid disposal method."
+msgstr "Please select a valid disposal method."
+
+
+#: DisposalProcessing.php
+msgid "Please provide a valid operation date."
+msgstr "Please provide a valid operation date."
+
+
+#: DisposalProcessing.php
+msgid "Disposed from Storage Room"
+msgstr "Disposed from Storage Room"
+
+
+#: DisposalProcessing.php
+msgid "Devices disposed successfully."
+msgstr "Devices disposed successfully."
+
+
+#: DisposalProcessing.php
+msgid "Process completed."
+msgstr "Process completed."
+
+
+#: DisposalProcessing.php
+msgid "Operation cancelled."
+msgstr "Operation cancelled."
+
+
+#: DisposalProcessing.php
+msgid "Import disposal spreadsheet"
+msgstr "Import disposal spreadsheet"
+
+
+#: DisposalProcessing.php
+msgid "Upload Excel File"
+msgstr "Upload Excel File"
+
+
+#: DisposalProcessing.php
+msgid "Start Import"
+msgstr "Start Import"
+
+
+#: DisposalProcessing.php
+msgid "Select Serial Number Column"
+msgstr "Select Serial Number Column"
+
+
+#: DisposalProcessing.php
+msgid "Continue"
+msgstr "Continue"
+
+
+#: DisposalProcessing.php
+msgid "Cancel operation"
+msgstr "Cancel operation"
+
+
+#: DisposalProcessing.php
+msgid "Category 1: Unknown serial numbers"
+msgstr "Category 1: Unknown serial numbers"
+
+
+#: DisposalProcessing.php
+msgid "Proceed without processing unknown SN"
+msgstr "Proceed without processing unknown SN"
+
+
+#: DisposalProcessing.php
+msgid "Create minimal device entries automatically"
+msgstr "Create minimal device entries automatically"
+
+
+#: DisposalProcessing.php
+msgid "Category 2: Devices not in the Storage Room"
+msgstr "Category 2: Devices not in the Storage Room"
+
+
+#: DisposalProcessing.php
+msgid "Move selected devices to Storage Room"
+msgstr "Move selected devices to Storage Room"
+
+
+#: DisposalProcessing.php
+msgid "Category 3: Devices ready in the Storage Room"
+msgstr "Category 3: Devices ready in the Storage Room"
+
+
+#: DisposalProcessing.php
+msgid "Proceed with disposal method"
+msgstr "Proceed with disposal method"
+
+
+#: DisposalProcessing.php
+msgid "Category 4: Already processed"
+msgstr "Category 4: Already processed"
+
+
+#: DisposalProcessing.php
+msgid "Items already processed will be skipped."
+msgstr "Items already processed will be skipped."
+
+
+#: DisposalProcessing.php
+msgid "Final disposal method"
+msgstr "Final disposal method"
+
+
+#: DisposalProcessing.php
+msgid "Select disposition method"
+msgstr "Select disposition method"
+
+
+#: DisposalProcessing.php
+msgid "Operation date"
+msgstr "Operation date"
+
+
+#: DisposalProcessing.php
+msgid "Start Processing"
+msgstr "Start Processing"
+
+
+#: DisposalProcessing.php
+msgid "Processing log"
+msgstr "Processing log"
+
+
+#: DisposalProcessing.php
+msgid "Operation"
+msgstr "Operation"
+
+
+#: DisposalProcessing.php
+msgid "Timestamp"
+msgstr "Timestamp"
+
+
+#: DisposalProcessing.php
+msgid "Download full log"
+msgstr "Download full log"
+
+
+#: DisposalProcessing.php
+msgid "Undo last operation"
+msgstr "Undo last operation"
+
+
+#: DisposalProcessing.php
+msgid "Process Completed"
+msgstr "Process Completed"
+
+
+#: DisposalProcessing.php
+msgid "Before starting this automated disposal workflow, please perform a full database backup."
+msgstr "Before starting this automated disposal workflow, please perform a full database backup."
+
+
+#: DisposalProcessing.php
+msgid "No records found."
+msgstr "No records found."
+
+
+#: DisposalProcessing.php
+msgid "Process Scrap"
+msgstr "Process Scrap"
+
+
+#: DisposalProcessing.php
+msgid "No operations to rollback."
+msgstr "No operations to rollback."
+
+
+#: DisposalProcessing.php
+msgid "The rollback completed successfully."
+msgstr "The rollback completed successfully."
+
+
+#: DisposalProcessing.php
+msgid "Please select the column that contains the serial numbers."
+msgstr "Please select the column that contains the serial numbers."
+
