@@ -37,7 +37,8 @@
 			'log'=>array(),
 			'disposition_id'=>0,
 			'operation_date'=>date('Y-m-d'),
-			'completed'=>false
+			'completed'=>false,
+			'cleanup_selected'=>array()
 		);
 	}
 
@@ -183,6 +184,77 @@
 		}
 		$state['actions']['rollback_done']=true;
 		$messages[]=__("The rollback completed successfully.");
+	}
+
+	function disposalAvailableCleanupOptions(){
+		return array(
+			'power'=>array('label'=>__("Clean power connections (fac_PowerPorts)")),
+			'network'=>array('label'=>__("Clean network connections (fac_Ports)")),
+			'projects'=>array('label'=>__("Remove project assignments (fac_ProjectMembership)")),
+			'tags'=>array('label'=>__("Remove tags (fac_DeviceTags)")),
+			'custom'=>array('label'=>__("Remove custom attributes (fac_DeviceCustomAttribute)")),
+			'vm'=>array('label'=>__("Remove VM Inventory entries (fac_VMInventory)")),
+			'logs'=>array('label'=>__("Clean logs (fac_GenericLog)"),'note'=>__("Not recommended: removing logs erases historical traceability.")),
+			'rack'=>array('label'=>__("Clean rack request history (fac_RackRequest)"))
+		);
+	}
+
+	function disposalCleanupDevice($device,$options,&$state,$record){
+		global $dbh;
+
+		if(empty($options) || !is_array($options)){
+			return;
+		}
+
+		foreach($options as $option){
+			switch($option){
+				case 'power':
+					$st=$dbh->prepare("DELETE FROM fac_PowerPorts WHERE DeviceID=:DeviceID");
+					$st->execute(array(":DeviceID"=>$device->DeviceID));
+					disposalAppendLog($state,$record,__("Power connections cleaned"),'cleanup_power',array('cleanup_option'=>'power'));
+					break;
+				case 'network':
+					$st=$dbh->prepare("DELETE FROM fac_Ports WHERE DeviceID=:DeviceID");
+					$st->execute(array(":DeviceID"=>$device->DeviceID));
+					disposalAppendLog($state,$record,__("Network connections cleaned"),'cleanup_network',array('cleanup_option'=>'network'));
+					break;
+				case 'projects':
+					$st=$dbh->prepare("DELETE FROM fac_ProjectMembership WHERE MemberType='Device' AND MemberID=:DeviceID");
+					$st->execute(array(":DeviceID"=>$device->DeviceID));
+					disposalAppendLog($state,$record,__("Project assignments removed"),'cleanup_projects',array('cleanup_option'=>'projects'));
+					break;
+				case 'tags':
+					$st=$dbh->prepare("DELETE FROM fac_DeviceTags WHERE DeviceID=:DeviceID");
+					$st->execute(array(":DeviceID"=>$device->DeviceID));
+					disposalAppendLog($state,$record,__("Device tags removed"),'cleanup_tags',array('cleanup_option'=>'tags'));
+					break;
+				case 'custom':
+					$st=$dbh->prepare("DELETE FROM fac_DeviceCustomValue WHERE DeviceID=:DeviceID");
+					$st->execute(array(":DeviceID"=>$device->DeviceID));
+					disposalAppendLog($state,$record,__("Custom attributes removed"),'cleanup_custom',array('cleanup_option'=>'custom'));
+					break;
+				case 'vm':
+					$st=$dbh->prepare("DELETE FROM fac_VMInventory WHERE DeviceID=:DeviceID");
+					$st->execute(array(":DeviceID"=>$device->DeviceID));
+					disposalAppendLog($state,$record,__("VM inventory entries removed"),'cleanup_vm',array('cleanup_option'=>'vm'));
+					break;
+				case 'logs':
+					$st=$dbh->prepare("DELETE FROM fac_GenericLog WHERE Class='Device' AND ObjectID=:DeviceID");
+					$st->execute(array(":DeviceID"=>$device->DeviceID));
+					disposalAppendLog($state,$record,__("Device logs cleaned"),'cleanup_logs',array('cleanup_option'=>'logs'));
+					break;
+				case 'rack':
+					if($device->SerialNo!=''){
+						// RackRequest table tracks SerialNo instead of DeviceID
+						$st=$dbh->prepare("DELETE FROM fac_RackRequest WHERE SerialNo=:SerialNo");
+						$st->execute(array(":SerialNo"=>$device->SerialNo));
+					}
+					disposalAppendLog($state,$record,__("Rack request history cleaned"),'cleanup_rack',array('cleanup_option'=>'rack'));
+					break;
+				default:
+					break;
+			}
+		}
 	}
 
 	$messages=array();
@@ -401,6 +473,17 @@
 				if($state['actions']['final_processed']){
 					break;
 				}
+				$cleanupSelected=array();
+				if(isset($_POST['cleanup_options']) && is_array($_POST['cleanup_options'])){
+					foreach($_POST['cleanup_options'] as $optionKey){
+						$filtered=preg_replace('/[^a-z_]/','',$optionKey);
+						if($filtered!=''){
+							$cleanupSelected[$filtered]=$filtered;
+						}
+					}
+				}
+				$cleanupSelected=array_values($cleanupSelected);
+				$state['cleanup_selected']=$cleanupSelected;
 				if(!$state['actions']['storage_confirmed']){
 					$errors[]=__("Please confirm the Storage Room devices first.");
 					break;
@@ -426,6 +509,9 @@
 					$dev=new Device($deviceID);
 					if($dev->GetDevice()){
 						$prevState=array('cabinet'=>$dev->Cabinet,'position'=>$dev->Position,'status'=>$dev->Status);
+						if(!empty($cleanupSelected)){
+							disposalCleanupDevice($dev,$cleanupSelected,$state,$record);
+						}
 						$dev->Dispose($dispID);
 						$st=$dbh->prepare("UPDATE fac_DispositionMembership SET DispositionDate=:DispositionDate WHERE DeviceID=:DeviceID");
 						$st->execute(array(":DispositionDate"=>$operationDate,":DeviceID"=>$deviceID));
@@ -484,6 +570,23 @@
 		.dp-category-notstorage{border-color:#1e90ff;background:#f0f8ff;}
 		.dp-category-storage{border-color:#2e8b57;background:#f5fff7;}
 		.dp-category-disposed{border-color:#777;background:#f2f2f2;}
+		.dp-cleanup-warning{font-size:.9em;background:#fff8e1;border:1px solid #f0c36d;color:#8a6d3b;margin-bottom:10px;padding:8px;}
+		.dp-cleanup-block{border:1px dashed #d0d0d0;background:#fff;padding:10px;margin-bottom:15px;}
+		.dp-cleanup-title{font-weight:bold;margin-bottom:6px;}
+		.dp-cleanup-options{display:flex;flex-direction:column;gap:6px;}
+		.dp-cleanup-option{display:flex;flex-direction:column;font-size:.95em;}
+		.dp-cleanup-line{display:flex;align-items:center;gap:6px;}
+		.dp-cleanup-option input[type="checkbox"]{margin-right:6px;}
+		.dp-cleanup-option>span{margin-left:0;}
+		.dp-cleanup-note{font-size:.8em;color:#a94442;margin-left:24px;}
+		.dp-form-row{margin-bottom:12px;}
+		.dp-form-row label{display:block;font-weight:bold;margin-bottom:4px;}
+		.dp-form-row input[type="text"], .dp-form-row select{max-width:360px;width:100%;}
+		.dp-progress{margin-top:10px;display:none;}
+		.dp-progress-bar{height:18px;background:#eee;border-radius:4px;overflow:hidden;}
+		.dp-progress-fill{display:block;height:100%;width:0;background:#4caf50;transition:width .4s ease;}
+		.dp-progress-meta{display:flex;justify-content:space-between;font-size:.85em;margin-top:4px;}
+		.dp-progress-status{color:#2e8b57;}
 	</style>
 </head>
 <body>
@@ -681,9 +784,26 @@
 		<br>
 		<div class="dp-section">
 			<h3><?php echo __("Final disposal method"); ?></h3>
-			<form method="post">
+			<form method="post" id="dp-processing-form">
 				<input type="hidden" name="dp-action" value="start-processing">
-				<div>
+				<div class="notice dp-cleanup-warning"><?php echo __("Optional cleanups help remove related records before final processing."); ?></div>
+				<div class="dp-cleanup-block">
+					<div class="dp-cleanup-title"><?php echo __("Optional Cleanup Operations"); ?></div>
+					<div class="dp-cleanup-options">
+						<?php
+							$availableCleanup=disposalAvailableCleanupOptions();
+							foreach($availableCleanup as $optionKey=>$optionMeta){
+								$checked=(in_array($optionKey,$state['cleanup_selected']))?' checked':'';
+								echo '<label class="dp-cleanup-option"><span class="dp-cleanup-line"><input type="checkbox" name="cleanup_options[]" value="'.$optionKey.'"'.$checked.'><span>'.htmlspecialchars($optionMeta['label']).'</span></span>';
+								if(isset($optionMeta['note'])){
+									echo '<span class="dp-cleanup-note">'.htmlspecialchars($optionMeta['note']).'</span>';
+								}
+								echo '</label>';
+							}
+						?>
+					</div>
+				</div>
+				<div class="dp-form-row">
 					<label for="dispositionid"><?php echo __("Select disposition method"); ?></label>
 					<select name="dispositionid" id="dispositionid">
 						<?php
@@ -696,12 +816,22 @@
 						?>
 					</select>
 				</div>
-				<div>
+				<div class="dp-form-row">
 					<label for="operation_date"><?php echo __("Operation date"); ?></label>
 					<input type="text" name="operation_date" id="operation_date" class="dp-datepicker" value="<?php echo htmlspecialchars($state['operation_date']); ?>">
 				</div>
-				<div>
-					<button type="submit" <?php echo ($state['actions']['final_processed']?'disabled':''); ?>><?php echo __("Start Processing"); ?></button>
+				<?php $progressStyle=($state['completed'])?'display:block;':'display:none;'; ?>
+				<div id="dp-progress" class="dp-progress" style="<?php echo $progressStyle; ?>">
+					<div class="dp-progress-bar">
+						<span class="dp-progress-fill" style="width:<?php echo ($state['completed']?'100':'0'); ?>%;"></span>
+					</div>
+					<div class="dp-progress-meta">
+						<span class="dp-progress-value"><?php echo ($state['completed']?'100':'0'); ?>%</span>
+						<span class="dp-progress-status"><?php echo ($state['completed']?__("Processing completed successfully."):''); ?></span>
+					</div>
+				</div>
+				<div class="dp-form-row">
+					<button type="submit" class="dp-start-processing" <?php echo ($state['actions']['final_processed']?'disabled':''); ?>><?php echo __("Start Processing"); ?></button>
 				</div>
 			</form>
 		</div>
@@ -754,6 +884,44 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$(".dp-datepicker").datepicker({dateFormat:'yy-mm-dd'});
+	var progressTexts={
+		init:"<?php echo __("Initializing");?>",
+		running:"<?php echo __("Processing in progress...");?>",
+		done:"<?php echo __("Processing completed successfully.");?>"
+	};
+	$(".dp-start-processing").on("click",function(e){
+		var form=$(this).closest("form");
+		if(form.data("dp-processing")){
+			return;
+		}
+		e.preventDefault();
+		var progress=$("#dp-progress");
+		var fill=progress.find(".dp-progress-fill");
+		var value=progress.find(".dp-progress-value");
+		var status=progress.find(".dp-progress-status");
+		progress.show();
+		fill.css("width","0%");
+		value.text("0%");
+		status.text(progressTexts.init);
+		var steps=[10,25,40,60,80,100];
+		var index=0;
+		function advance(){
+			var current=steps[index++];
+			fill.css("width",current+"%");
+			value.text(current+"%");
+			if(current>=100){
+				status.text(progressTexts.done);
+				setTimeout(function(){
+					form.data("dp-processing",true);
+					form.submit();
+				},500);
+			}else{
+				status.text(progressTexts.running);
+				setTimeout(advance,500);
+			}
+		}
+		advance();
+	});
 });
 </script>
 </body>

@@ -6549,3 +6549,91 @@ msgstr "Le retour arrière a été effectué avec succès."
 msgid "Please select the column that contains the serial numbers."
 msgstr "Veuillez sélectionner la colonne contenant les numéros de série."
 
+#: DisposalProcessing.php
+msgid "Clean power connections (fac_PowerPorts)"
+msgstr "Nettoyer les connexions électriques (fac_PowerPorts)"
+
+#: DisposalProcessing.php
+msgid "Clean network connections (fac_Ports)"
+msgstr "Nettoyer les connexions réseau (fac_Ports)"
+
+#: DisposalProcessing.php
+msgid "Remove project assignments (fac_ProjectMembership)"
+msgstr "Supprimer les affectations de projet (fac_ProjectMembership)"
+
+#: DisposalProcessing.php
+msgid "Remove tags (fac_DeviceTags)"
+msgstr "Supprimer les tags (fac_DeviceTags)"
+
+#: DisposalProcessing.php
+msgid "Remove custom attributes (fac_DeviceCustomAttribute)"
+msgstr "Supprimer les attributs personnalisés (fac_DeviceCustomAttribute)"
+
+#: DisposalProcessing.php
+msgid "Remove VM Inventory entries (fac_VMInventory)"
+msgstr "Supprimer les entrées d'inventaire VM (fac_VMInventory)"
+
+#: DisposalProcessing.php
+msgid "Clean logs (fac_GenericLog)"
+msgstr "Nettoyer les journaux (fac_GenericLog)"
+
+#: DisposalProcessing.php
+msgid "Not recommended: removing logs erases historical traceability."
+msgstr "Non recommandé : supprimer les journaux efface la traçabilité historique."
+
+#: DisposalProcessing.php
+msgid "Clean rack request history (fac_RackRequest)"
+msgstr "Nettoyer l'historique des demandes de rack (fac_RackRequest)"
+
+#: DisposalProcessing.php
+msgid "Power connections cleaned"
+msgstr "Connexions électriques nettoyées"
+
+#: DisposalProcessing.php
+msgid "Network connections cleaned"
+msgstr "Connexions réseau nettoyées"
+
+#: DisposalProcessing.php
+msgid "Project assignments removed"
+msgstr "Affectations de projet supprimées"
+
+#: DisposalProcessing.php
+msgid "Device tags removed"
+msgstr "Tags de l'équipement supprimés"
+
+#: DisposalProcessing.php
+msgid "Custom attributes removed"
+msgstr "Attributs personnalisés supprimés"
+
+#: DisposalProcessing.php
+msgid "VM inventory entries removed"
+msgstr "Entrées d'inventaire VM supprimées"
+
+#: DisposalProcessing.php
+msgid "Device logs cleaned"
+msgstr "Journaux de l'équipement nettoyés"
+
+#: DisposalProcessing.php
+msgid "Rack request history cleaned"
+msgstr "Historique des demandes de rack nettoyé"
+
+#: DisposalProcessing.php
+msgid "Optional cleanups help remove related records before final processing."
+msgstr "Les nettoyages optionnels permettent de supprimer les données liées avant le traitement final."
+
+#: DisposalProcessing.php
+msgid "Optional Cleanup Operations"
+msgstr "Opérations de nettoyage optionnelles"
+
+#: DisposalProcessing.php
+msgid "Processing completed successfully."
+msgstr "Traitement achevé avec succès."
+
+#: DisposalProcessing.php
+msgid "Processing in progress..."
+msgstr "Traitement en cours..."
+
+#: DisposalProcessing.php
+msgid "Initializing"
+msgstr "Initialisation"
+

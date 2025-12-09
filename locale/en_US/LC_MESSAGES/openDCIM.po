@@ -6421,3 +6421,91 @@ msgstr "The rollback completed successfully."
 msgid "Please select the column that contains the serial numbers."
 msgstr "Please select the column that contains the serial numbers."
 
+#: DisposalProcessing.php
+msgid "Clean power connections (fac_PowerPorts)"
+msgstr "Clean power connections (fac_PowerPorts)"
+
+#: DisposalProcessing.php
+msgid "Clean network connections (fac_Ports)"
+msgstr "Clean network connections (fac_Ports)"
+
+#: DisposalProcessing.php
+msgid "Remove project assignments (fac_ProjectMembership)"
+msgstr "Remove project assignments (fac_ProjectMembership)"
+
+#: DisposalProcessing.php
+msgid "Remove tags (fac_DeviceTags)"
+msgstr "Remove tags (fac_DeviceTags)"
+
+#: DisposalProcessing.php
+msgid "Remove custom attributes (fac_DeviceCustomAttribute)"
+msgstr "Remove custom attributes (fac_DeviceCustomAttribute)"
+
+#: DisposalProcessing.php
+msgid "Remove VM Inventory entries (fac_VMInventory)"
+msgstr "Remove VM Inventory entries (fac_VMInventory)"
+
+#: DisposalProcessing.php
+msgid "Clean logs (fac_GenericLog)"
+msgstr "Clean logs (fac_GenericLog)"
+
+#: DisposalProcessing.php
+msgid "Not recommended: removing logs erases historical traceability."
+msgstr "Not recommended: removing logs erases historical traceability."
+
+#: DisposalProcessing.php
+msgid "Clean rack request history (fac_RackRequest)"
+msgstr "Clean rack request history (fac_RackRequest)"
+
+#: DisposalProcessing.php
+msgid "Power connections cleaned"
+msgstr "Power connections cleaned"
+
+#: DisposalProcessing.php
+msgid "Network connections cleaned"
+msgstr "Network connections cleaned"
+
+#: DisposalProcessing.php
+msgid "Project assignments removed"
+msgstr "Project assignments removed"
+
+#: DisposalProcessing.php
+msgid "Device tags removed"
+msgstr "Device tags removed"
+
+#: DisposalProcessing.php
+msgid "Custom attributes removed"
+msgstr "Custom attributes removed"
+
+#: DisposalProcessing.php
+msgid "VM inventory entries removed"
+msgstr "VM inventory entries removed"
+
+#: DisposalProcessing.php
+msgid "Device logs cleaned"
+msgstr "Device logs cleaned"
+
+#: DisposalProcessing.php
+msgid "Rack request history cleaned"
+msgstr "Rack request history cleaned"
+
+#: DisposalProcessing.php
+msgid "Optional cleanups help remove related records before final processing."
+msgstr "Optional cleanups help remove related records before final processing."
+
+#: DisposalProcessing.php
+msgid "Optional Cleanup Operations"
+msgstr "Optional Cleanup Operations"
+
+#: DisposalProcessing.php
+msgid "Processing completed successfully."
+msgstr "Processing completed successfully."
+
+#: DisposalProcessing.php
+msgid "Processing in progress..."
+msgstr "Processing in progress..."
+
+#: DisposalProcessing.php
+msgid "Initializing"
+msgstr "Initializing"
+
