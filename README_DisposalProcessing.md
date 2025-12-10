@@ -23,8 +23,8 @@ La page `DisposalProcessing.php`, accessible via **Bulk Importer > Process Scrap
 ---
 
 ## Workflow Steps (EN)
-1. **Upload** the Excel file; headers come from row 1.
-2. **Select** the serial-number column; deduped values feed the analysis.
+1. **Upload** the Excel file; headers can be detected up to row 20.  
+2. **Select** the worksheet tabs to include and confirm/adjust the detected Serial Number column (auto-mapped to labels like “SN”, “Serial Number”, etc.).  
 3. **Categorize** devices:
    - Category 1: unknown serials (not in DB).
    - Category 2: devices still installed (Cabinet > 0).
@@ -37,8 +37,8 @@ La page `DisposalProcessing.php`, accessible via **Bulk Importer > Process Scrap
 8. **Reset**: reloading the page resets the wizard for a new file.
 
 ## Étapes du workflow (FR)
-1. **Importer** le fichier Excel ; les en-têtes proviennent de la première ligne.
-2. **Sélectionner** la colonne contenant les numéros de série ; les valeurs sont dédupliquées.
+1. **Importer** le fichier Excel ; les en-têtes sont détectées jusqu’à la ligne 20.  
+2. **Sélectionner** les onglets à traiter et confirmer/ajuster la colonne de numéro de série détectée (SN, Serial Number, Numéro de série, etc.).  
 3. **Catégoriser** les équipements :
    - Catégorie 1 : numéros inconnus (absents de la base).
    - Catégorie 2 : équipements encore installés (Cabinet > 0).

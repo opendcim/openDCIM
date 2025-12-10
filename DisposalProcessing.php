@@ -17,8 +17,6 @@
 		return array(
 			'stage'=>'idle',
 			'file'=>'',
-			'headers'=>array(),
-			'selected_column'=>-1,
 			'serials'=>array(),
 			'categories'=>array(
 				'unknown'=>array(),
@@ -30,7 +28,6 @@
 				'unknown_ignored'=>false,
 				'unknown_created'=>false,
 				'not_storage_moved'=>false,
-				'storage_confirmed'=>false,
 				'final_processed'=>false,
 				'rollback_done'=>false
 			),
@@ -38,7 +35,10 @@
 			'disposition_id'=>0,
 			'operation_date'=>date('Y-m-d'),
 			'completed'=>false,
-			'cleanup_selected'=>array()
+			'cleanup_selected'=>array(),
+			'sheets'=>array(),
+			'selected_sheets'=>array(),
+			'sheet_columns'=>array()
 		);
 	}
 
@@ -257,6 +257,61 @@
 		}
 	}
 
+	function disposalNormalizeHeader($value){
+		$value=trim(mb_strtolower($value ?? ''));
+		if(function_exists('iconv')){
+			$converted=@iconv('UTF-8','ASCII//TRANSLIT//IGNORE',$value);
+			if($converted!==false){
+				$value=$converted;
+			}
+		}
+		$value=preg_replace('/[^a-z0-9]+/','',$value);
+		return $value;
+	}
+
+	function disposalGuessSerialColumn($headers){
+		$references=array('sn','serialno','serialnumber','serialnum','serialnumber','numerodeserie','numerodeserie','ndeserie');
+		foreach($headers as $index=>$header){
+			$normalized=disposalNormalizeHeader($header);
+			if($normalized=='' ){
+				continue;
+			}
+			if(in_array($normalized,$references)){
+				return $index;
+			}
+		}
+		return -1;
+	}
+
+	function disposalDetectSheetHeader($sheet){
+		$highestColumn=\PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($sheet->getHighestColumn());
+		$highestRow=min(20,$sheet->getHighestRow());
+		for($row=1;$row<=$highestRow;$row++){
+			$headers=array();
+			$nonEmpty=0;
+			$textCount=0;
+			for($col=1;$col<=$highestColumn;$col++){
+				$cell=$sheet->getCellByColumnAndRow($col,$row);
+				$value='';
+				if(!$cell->isInMergeRange()){
+					$value=trim((string)$cell->getCalculatedValue());
+				}
+				if($value!==''){
+					$nonEmpty++;
+					if(preg_match('/[A-Za-z]/u',$value)){
+						$textCount++;
+					}
+				}
+				$headers[]=$value;
+			}
+			if($nonEmpty>=2 && $textCount>=1){
+				$snIndex=disposalGuessSerialColumn($headers);
+				return array('row'=>$row,'headers'=>$headers,'sn_column'=>$snIndex);
+			}
+		}
+		return null;
+	}
+
 	$messages=array();
 	$errors=array();
 	$state=disposalLoadState();
@@ -303,10 +358,24 @@
 					$errors[]=__("The uploaded file could not be read.");
 					break;
 				}
-				$sheet=$spreadsheet->getSheet(0);
-				$highestColumn=$sheet->getHighestColumn();
-				$headerRow=$sheet->rangeToArray('A1:'.$highestColumn.'1');
-				$headers=(isset($headerRow[0]) && is_array($headerRow[0]))?$headerRow[0]:array();
+				$sheetDetails=array();
+				for($idx=0;$idx<$spreadsheet->getSheetCount();$idx++){
+					$currentSheet=$spreadsheet->getSheet($idx);
+					$headerInfo=disposalDetectSheetHeader($currentSheet);
+					if($headerInfo){
+						$sheetDetails[$idx]=array(
+							'name'=>$currentSheet->getTitle(),
+							'header_row'=>$headerInfo['row'],
+							'headers'=>$headerInfo['headers'],
+							'detected_column'=>$headerInfo['sn_column']
+						);
+					}
+				}
+				if(empty($sheetDetails)){
+					$errors[]=__("No valid worksheets were detected in the uploaded file.");
+					@unlink($target);
+					break;
+				}
 				$tmp=tempnam(sys_get_temp_dir(),'dp_');
 				@unlink($tmp);
 				$target=$tmp.'.xlsx';
@@ -315,20 +384,69 @@
 					break;
 				}
 				$state['file']=$target;
-				$state['headers']=$headers;
-				$state['stage']='select_column';
-				$messages[]=__("File uploaded successfully. Please select the column that contains the serial numbers.");
+				$state['sheets']=$sheetDetails;
+				$state['selected_sheets']=array_keys($sheetDetails);
+				$state['sheet_columns']=array();
+				$state['stage']='select_sheets';
+				$messages[]=__("File uploaded successfully. Please select the worksheets to process.");
 				break;
-			case 'select-column':
+			case 'select-sheets':
+				if(empty($_POST['sheets']) || !is_array($_POST['sheets'])){
+					$errors[]=__("Please select at least one worksheet.");
+					break;
+				}
+				$selected=array();
+				foreach($_POST['sheets'] as $sheetKey){
+					$sheetIndex=intval($sheetKey);
+					if(isset($state['sheets'][$sheetIndex])){
+						$selected[]=$sheetIndex;
+					}
+				}
+				if(empty($selected)){
+					$errors[]=__("Please select at least one worksheet.");
+					break;
+				}
+				$state['selected_sheets']=$selected;
+				$state['sheet_columns']=array();
+				foreach($selected as $sheetIndex){
+					$detected=$state['sheets'][$sheetIndex]['detected_column'];
+					if($detected>=0){
+						$state['sheet_columns'][$sheetIndex]=$detected;
+					}
+				}
+				$state['stage']='select_column';
+				break;
+			case 'set-columns':
 				if($state['file']=='' || !file_exists($state['file'])){
 					$errors[]=__("The uploaded file could not be read.");
 					break;
 				}
-				$columnIndex=isset($_POST['selected_column'])?intval($_POST['selected_column']):-1;
-				if($columnIndex<0 || $columnIndex>=count($state['headers'])){
-					$errors[]=__("Please select a valid column.");
+				if(empty($state['selected_sheets'])){
+					$errors[]=__("Please select at least one worksheet.");
 					break;
 				}
+				$requestedColumns=isset($_POST['sheet_columns']) && is_array($_POST['sheet_columns'])?$_POST['sheet_columns']:array();
+				$sheetColumns=array();
+				$columnError=false;
+				foreach($state['selected_sheets'] as $sheetIndex){
+					if(!isset($requestedColumns[$sheetIndex]) || $requestedColumns[$sheetIndex]===''){
+						$errors[]=sprintf(__("Please select a serial number column for sheet %s."),$state['sheets'][$sheetIndex]['name']);
+						$columnError=true;
+						break;
+					}
+					$colIndex=intval($requestedColumns[$sheetIndex]);
+					$headers=$state['sheets'][$sheetIndex]['headers'];
+					if($colIndex<0 || $colIndex>=count($headers) || trim($headers[$colIndex])===''){
+						$errors[]=sprintf(__("Invalid column selection for sheet %s."),$state['sheets'][$sheetIndex]['name']);
+						$columnError=true;
+						break;
+					}
+					$sheetColumns[$sheetIndex]=$colIndex;
+				}
+				if($columnError){
+					break;
+				}
+				$state['sheet_columns']=$sheetColumns;
 				try{
 					$inputType=\PhpOffice\PhpSpreadsheet\IOFactory::identify($state['file']);
 					$reader=\PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputType);
@@ -337,14 +455,19 @@
 					$errors[]=__("The uploaded file could not be read.");
 					break;
 				}
-				$sheet=$spreadsheet->getSheet(0);
-				$highestRow=$sheet->getHighestRow();
 				$serials=array();
-				for($row=2;$row<=$highestRow;$row++){
-					$value=$sheet->getCellByColumnAndRow($columnIndex+1,$row)->getCalculatedValue();
-					$serial=trim((string)$value);
-					if($serial!==''){
-						$serials[$serial]=$serial;
+				foreach($state['selected_sheets'] as $sheetIndex){
+					$sheet=$spreadsheet->getSheet($sheetIndex);
+					$headerRow=$state['sheets'][$sheetIndex]['header_row'];
+					$columnNumber=$sheetColumns[$sheetIndex]+1;
+					$highestRow=$sheet->getHighestRow();
+					for($row=$headerRow+1;$row<=$highestRow;$row++){
+						$cell=$sheet->getCellByColumnAndRow($columnNumber,$row);
+						$value=$cell->getCalculatedValue();
+						$serial=trim((string)$value);
+						if($serial!==''){
+							$serials[$serial]=$serial;
+						}
 					}
 				}
 				$serials=array_values($serials);
@@ -379,7 +502,6 @@
 				}
 				$state['serials']=$serials;
 				$state['categories']=$categories;
-				$state['selected_column']=$columnIndex;
 				$state['stage']='ready';
 				$messages[]=__("Serial numbers ready for processing.");
 				break;
@@ -465,10 +587,6 @@
 				$state['actions']['not_storage_moved']=true;
 				$messages[]=__("Devices moved to the Storage Room.");
 				break;
-			case 'confirm-storage':
-				$state['actions']['storage_confirmed']=true;
-				$messages[]=__("Storage Room devices confirmed. You may proceed with the final processing.");
-				break;
 			case 'start-processing':
 				if($state['actions']['final_processed']){
 					break;
@@ -484,10 +602,6 @@
 				}
 				$cleanupSelected=array_values($cleanupSelected);
 				$state['cleanup_selected']=$cleanupSelected;
-				if(!$state['actions']['storage_confirmed']){
-					$errors[]=__("Please confirm the Storage Room devices first.");
-					break;
-				}
 				if(empty($state['categories']['storage_ready'])){
 					$errors[]=__("No devices are ready in the Storage Room.");
 					break;
@@ -587,6 +701,7 @@
 		.dp-progress-fill{display:block;height:100%;width:0;background:#4caf50;transition:width .4s ease;}
 		.dp-progress-meta{display:flex;justify-content:space-between;font-size:.85em;margin-top:4px;}
 		.dp-progress-status{color:#2e8b57;}
+		.dp-sn-warning{font-size:.85em;color:#a94442;margin-top:4px;}
 	</style>
 </head>
 <body>
@@ -620,17 +735,55 @@
 				</div>
 				<div><button type="submit"><?php echo __("Start Import"); ?></button></div>
 			</form>
+			<?php }elseif($state['stage']=='select_sheets'){ ?>
+			<form method="post">
+				<input type="hidden" name="dp-action" value="select-sheets">
+				<div class="dp-cleanup-block">
+					<div class="dp-cleanup-title"><?php echo __("Select worksheets to process"); ?></div>
+					<div class="dp-cleanup-options">
+						<?php foreach($state['sheets'] as $sheetIndex=>$sheetInfo){ 
+							$checked=(in_array($sheetIndex,$state['selected_sheets']))?' checked':'';
+						?>
+						<label class="dp-cleanup-option dp-sheet-option">
+							<span class="dp-cleanup-line">
+								<input type="checkbox" name="sheets[]" value="<?php echo $sheetIndex;?>"<?php echo $checked;?>>
+								<span><?php printf(__('Sheet "%s"'),htmlspecialchars($sheetInfo['name'])); ?></span>
+							</span>
+						</label>
+						<?php } ?>
+					</div>
+				</div>
+				<div><button type="submit"><?php echo __("Continue"); ?></button></div>
+			</form>
+			<form method="post">
+				<input type="hidden" name="dp-action" value="cancel">
+				<button type="submit"><?php echo __("Cancel operation"); ?></button>
+			</form>
 			<?php }elseif($state['stage']=='select_column'){ ?>
 			<form method="post">
-				<input type="hidden" name="dp-action" value="select-column">
-				<div>
-					<label for="selected_column"><?php echo __("Select Serial Number Column"); ?></label>
-					<select name="selected_column" id="selected_column">
-						<?php foreach($state['headers'] as $idx=>$header){ ?>
-						<option value="<?php echo $idx; ?>"><?php echo htmlspecialchars($header); ?></option>
+				<input type="hidden" name="dp-action" value="set-columns">
+				<?php foreach($state['selected_sheets'] as $sheetIndex){
+					$sheetInfo=$state['sheets'][$sheetIndex];
+					$headers=$sheetInfo['headers'];
+					$selectedColumn=isset($state['sheet_columns'][$sheetIndex])?$state['sheet_columns'][$sheetIndex]:$sheetInfo['detected_column'];
+				?>
+				<div class="dp-form-row">
+					<label for="sheet_col_<?php echo $sheetIndex;?>"><?php printf(__('Sheet "%s" serial column'),htmlspecialchars($sheetInfo['name'])); ?></label>
+					<select name="sheet_columns[<?php echo $sheetIndex;?>]" id="sheet_col_<?php echo $sheetIndex;?>">
+						<option value=""><?php echo __("Select..."); ?></option>
+						<?php foreach($headers as $idx=>$header){
+							$trimmed=trim($header);
+							if($trimmed===''){ continue; }
+							$isSelected=($selectedColumn=== $idx)?' selected':'';
+						?>
+						<option value="<?php echo $idx; ?>"<?php echo $isSelected; ?>><?php echo htmlspecialchars($trimmed); ?></option>
 						<?php } ?>
 					</select>
+					<?php if($sheetInfo['detected_column']<0){ ?>
+					<div class="dp-sn-warning"><?php echo __("The serial number column could not be detected. Please select the correct column."); ?></div>
+					<?php } ?>
 				</div>
+				<?php } ?>
 				<div><button type="submit"><?php echo __("Continue"); ?></button></div>
 			</form>
 			<form method="post">
@@ -741,14 +894,7 @@
 					}
 				?>
 			</div>
-			<form method="post" class="dp-disabled">
-				<input type="hidden" name="dp-action" value="confirm-storage">
-				<button type="submit" <?php echo ($state['actions']['storage_confirmed']?'disabled':''); ?>><?php echo __("Proceed with disposal method"); ?></button>
-			</form>
-			<form method="post">
-				<input type="hidden" name="dp-action" value="cancel">
-				<button type="submit"><?php echo __("Cancel operation"); ?></button>
-			</form>
+			<p class="dp-muted"><?php echo __("Review these devices before running the final processing step."); ?></p>
 		</div>
 		<br>
 		<br>
@@ -839,6 +985,11 @@
 		<?php if(!empty($state['log'])){ ?>
 		<div class="dp-section">
 			<h3><?php echo __("Processing log"); ?></h3>
+			<div class="dp-actions" style="margin-bottom:10px;">
+				<form method="get">
+					<button type="submit" name="downloadlog" value="1"><?php echo __("Download full log"); ?></button>
+				</form>
+			</div>
 			<div class="dp-table">
 				<div class="title-row">
 					<div><?php echo __("Device ID"); ?></div>

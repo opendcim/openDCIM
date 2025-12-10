@@ -6550,6 +6550,46 @@ msgid "Please select the column that contains the serial numbers."
 msgstr "Veuillez sélectionner la colonne contenant les numéros de série."
 
 #: DisposalProcessing.php
+msgid "File uploaded successfully. Please select the worksheets to process."
+msgstr "Fichier importé avec succès. Veuillez sélectionner les feuilles de calcul à traiter."
+
+#: DisposalProcessing.php
+msgid "No valid worksheets were detected in the uploaded file."
+msgstr "Aucune feuille de calcul valide n'a été détectée dans le fichier importé."
+
+#: DisposalProcessing.php
+msgid "Please select at least one worksheet."
+msgstr "Veuillez sélectionner au moins une feuille de calcul."
+
+#: DisposalProcessing.php
+msgid "Please select a serial number column for sheet %s."
+msgstr "Veuillez sélectionner la colonne des numéros de série pour la feuille %s."
+
+#: DisposalProcessing.php
+msgid "Invalid column selection for sheet %s."
+msgstr "Sélection de colonne invalide pour la feuille %s."
+
+#: DisposalProcessing.php
+msgid "Select worksheets to process"
+msgstr "Sélectionnez les feuilles de calcul à traiter"
+
+#: DisposalProcessing.php
+msgid "Sheet \"%s\""
+msgstr "Feuille \"%s\""
+
+#: DisposalProcessing.php
+msgid "Sheet \"%s\" serial column"
+msgstr "Colonne de numéro de série pour la feuille \"%s\""
+
+#: DisposalProcessing.php
+msgid "The serial number column could not be detected. Please select the correct column."
+msgstr "La colonne des numéros de série n'a pas pu être détectée. Veuillez sélectionner la colonne appropriée."
+
+#: DisposalProcessing.php
+msgid "Review these devices before running the final processing step."
+msgstr "Vérifiez ces équipements avant de lancer l'étape de traitement final."
+
+#: DisposalProcessing.php
 msgid "Clean power connections (fac_PowerPorts)"
 msgstr "Nettoyer les connexions électriques (fac_PowerPorts)"
 

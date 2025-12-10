@@ -6422,6 +6422,46 @@ msgid "Please select the column that contains the serial numbers."
 msgstr "Please select the column that contains the serial numbers."
 
 #: DisposalProcessing.php
+msgid "File uploaded successfully. Please select the worksheets to process."
+msgstr "File uploaded successfully. Please select the worksheets to process."
+
+#: DisposalProcessing.php
+msgid "No valid worksheets were detected in the uploaded file."
+msgstr "No valid worksheets were detected in the uploaded file."
+
+#: DisposalProcessing.php
+msgid "Please select at least one worksheet."
+msgstr "Please select at least one worksheet."
+
+#: DisposalProcessing.php
+msgid "Please select a serial number column for sheet %s."
+msgstr "Please select a serial number column for sheet %s."
+
+#: DisposalProcessing.php
+msgid "Invalid column selection for sheet %s."
+msgstr "Invalid column selection for sheet %s."
+
+#: DisposalProcessing.php
+msgid "Select worksheets to process"
+msgstr "Select worksheets to process"
+
+#: DisposalProcessing.php
+msgid "Sheet \"%s\""
+msgstr "Sheet \"%s\""
+
+#: DisposalProcessing.php
+msgid "Sheet \"%s\" serial column"
+msgstr "Sheet \"%s\" serial column"
+
+#: DisposalProcessing.php
+msgid "The serial number column could not be detected. Please select the correct column."
+msgstr "The serial number column could not be detected. Please select the correct column."
+
+#: DisposalProcessing.php
+msgid "Review these devices before running the final processing step."
+msgstr "Review these devices before running the final processing step."
+
+#: DisposalProcessing.php
 msgid "Clean power connections (fac_PowerPorts)"
 msgstr "Clean power connections (fac_PowerPorts)"
 
