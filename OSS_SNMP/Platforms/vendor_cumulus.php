@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Copyright (c) 2012 - 2015, Open Source Solutions Limited, Dublin, Ireland
+    Copyright (c) 2012 - 2017, Open Source Solutions Limited, Dublin, Ireland
     All rights reserved.
 
     Contact: Barry O'Donovan - barry (at) opensolutions (dot) ie
@@ -33,30 +33,23 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-// Works with sysDescr such as:
-//
-// 'Dell Force10 OS Operating System Version: 1.0 Application Software Version: 8.3.12.1 Series: S4810 Copyright (c) 1999-2012 by Dell Inc. All Rights Reserved. Build Time: Sun Nov 18 11:05:15 2012'
-// 'Dell Force10 OS Operating System Version: 2.0 Application Software Version: 9.3(0.0) Series: S4810 Copyright (c) 1999-2014 by Dell Inc. All Rights Reserved. Build Time: Thu Jan 2 02:14:08 2014'
-// 'Dell Networking OS Operating System Version: 2.0 Application Software Version: 9.10(0.1P3) Series: S4810 Copyright (c) 1999-2016 by Dell Inc. All Rights Reserved. Build Time: Tue Jun 14 15:00:23 2016'
-
-if( substr( $sysDescr, 0, 5 ) == 'Dell ' )
+if( substr( $sysDescr, 0, 7 ) == 'Cumulus' )
 {
-    $sysDescr = preg_replace('/\R/',' ', $sysDescr );
-    if( preg_match( '/^Dell (Force10|Networking) OS Operating System Version: ([\d\.]+) Application Software Version:\s([A-Z0-9\(\)\.]+)\sSeries:\s([A-Z0-9]+)\sCopyright \(c\) \d+-\d+ by Dell Inc. All Rights Reserved. Build Time:\s[A-Za-z0-9]+\s(([a-zA-Z]+)\s+(\d+)\s((\d\d):(\d\d):(\d\d))\s(\d+))$/',
-           $sysDescr, $matches ) )
-    {
-        $this->setVendor( "Dell {$matches[1]}" );
-        $this->setModel( $matches[4] );
-        $this->setOs( "FTOS {$matches[2]}" );
-        $this->setOsVersion( $matches[3] );
-        $this->setOsDate( new \DateTime( "{$matches[7]}/{$matches[6]}/{$matches[12]}:{$matches[8]} +0000" ) );
-        $this->getOsDate()->setTimezone( new \DateTimeZone( 'UTC' ) );
-    }
+    $this->setVendor( 'Cumulus Networks' );
+    $this->setOs( 'Cumulus Linux' );
+    $this->setOsDate( null );
 
-    try {
-        $this->setSerialNumber( $this->getSNMPHost()->get( '.1.3.6.1.2.1.47.1.1.1.1.11.2' ) );
-    } catch( Exception $e ) {
-        $this->setSerialNumber( '(error)' );
-    }
+    // 'Cumulus Linux 3.4.0 (Linux Kernel 4.1.33-1+cl3u9)'
+    // 'Cumulus-Linux 4.2.0 (Linux Kernel 4.19.94-1+cl4u5)'
+    preg_match( '/Cumulus.Linux\s+([\d\.]+)\s+/', $sysDescr, $matches );
+    $this->setOsVersion( $matches[1] );
+    
+    // 'Edgecore x86_64-accton_as5812_54x-r0 5812-54X-O-AC-F Chassis'
+    // 'Mellanox x86_64-mlnx_x86-r0 MSN2100 Chassis'
+    preg_match( '/^(\S+)\s+.*\s+(\S+)\s+Chassis/',
+                $this->getSNMPHost()->get( '.1.3.6.1.2.1.47.1.1.1.1.2.1' ), $matches );
+
+    $this->setModel( $matches[1]." ".$matches[2] );
+
+    $this->setSerialNumber( $this->getSNMPHost()->get( '.1.3.6.1.2.1.47.1.1.1.1.11.1' ) );
 }

@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Copyright (c) 2012 - 2013, Open Source Solutions Limited, Dublin, Ireland
+    Copyright (c) 2012 - 2017, Open Source Solutions Limited, Dublin, Ireland
     All rights reserved.
 
     Contact: Barry O'Donovan - barry (at) opensolutions (dot) ie
@@ -39,10 +39,12 @@ namespace OSS_SNMP;
 /**
  * A class for parsing device / host / platform details
  *
- * @copyright Copyright (c) 2012 - 2013, Open Source Solutions Limited, Dublin, Ireland
+ * THIS IS TO BE USED BY PHPUNIT ONLY!!
+ *
+ * @copyright Copyright (c) 2012 - 2017, Open Source Solutions Limited, Dublin, Ireland
  * @author Barry O'Donovan <barry@opensolutions.ie>
  */
-class Platform
+class TestPlatform
 {
     /**
      * The platform vendor
@@ -87,11 +89,18 @@ class Platform
     protected $_serial = null;
 
     /**
-     * The \OSS_SNMP\SNMP object
+     * The system description
      *
-     * @var string The \OSS_SNMP\SNMP object
+     * @var string The system description
      */
-    protected $_snmpHost;
+    protected $_sysDesc;
+
+    /**
+     * The system object ID
+     *
+     * @var string The system object ID
+     */
+    protected $_sysObjId;
 
 
     /**
@@ -100,9 +109,10 @@ class Platform
      * @param SNMP $snmpHost The SNMP Host object
      * @return Platform An instance of $this (for fluent interfaces)
      */
-    public function __construct( $snmpHost )
+    public function __construct( $sysDesc, $sysObjId = '' )
     {
-        $this->setSNMPHost( $snmpHost );
+        $this->setSysDesc(  $sysDesc );
+        $this->setSysObjId( $sysObjId );
 
         $this->parse();
 
@@ -115,37 +125,57 @@ class Platform
     {
         // query the platform for it's description and parse it for details
 
-        if( $this->getSNMPHost()->iAmADummy() ) {
+        $sysDescr    = $this->getSysDesc();
+        $sysObjectId = $this->getSysObjId();
 
-            include( __DIR__ . '/Platforms/dummy.php' );
-
-        } else {
-            $sysDescr    = $this->getSNMPHost()->useSystem()->description();
-
-            try {
-                $sysObjectId =  $this->getSNMPHost()->useSystem()->systemObjectID();
-            } catch( Exception $e ){
-                $sysObjectId = null;
-            }
-
-            // there's possibly a better way to do this...?
-            foreach( glob(  __DIR__ . '/Platforms/vendor_*.php' ) as $f ) {
-                include( $f );
-            }
-        }
+        // there's possibly a better way to do this...?
+        foreach( glob(  __DIR__ . '/Platforms/vendor_*.php' ) as $f )
+            include( $f );
     }
 
-     /**
-      * Set the SNMPT Host
-      *
-      * @param \OSS_SNMP\SNMP $s The SNMP Host object
-      * @return \OSS_SNMP\Platform For fluent interfaces
-      */
-     public function setSNMPHost( $s )
-     {
-         $this->_snmpHost = $s;
-         return $this;
-     }
+    /**
+     * Set the system description
+     *
+     * @param string $s The system desc
+     * @return TestPlatform For fluent interfaces
+     */
+    public function setSysDesc( $s )
+    {
+        $this->_sysDesc = $s;
+        return $this;
+    }
+
+    /**
+     * Get the system description
+     *
+     * @return string The system description
+     */
+    public function getSysDesc()
+    {
+        return $this->_sysDesc;
+    }
+
+    /**
+     * Set the system obj ID
+     *
+     * @param string $s The system obj ID
+     * @return TestPlatform For fluent interfaces
+     */
+    public function setSysObjId( $s )
+    {
+        $this->_sysObjId = $s;
+        return $this;
+    }
+
+    /**
+     * Get the system obj ID
+     *
+     * @return string The system obj ID
+     */
+    public function getSysObjId()
+    {
+        return $this->_sysObjId;
+    }
 
     /**
      * Get the SNMPHost object
