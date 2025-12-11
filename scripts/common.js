@@ -2702,7 +2702,7 @@ function LameLogDisplay(){
 			row.portname.html('<input type="text" style="min-width: 60px;" value="'+row.portname.text()+'">');
 			row.dctype.html('<input type="text" style="min-width: 60px;" value="'+row.dctype.text()+'">');
 			row.protocol.html('<input type="text" style="min-width: 60px;" value="'+row.protocol.text()+'">');
-			row.mediarate.html('<input type="text" style="min-width: 60px;" value="'+row.mediarate.text()+'">find this');
+			row.mediarate.html('<input type="text" style="min-width: 60px;" value="'+row.mediarate.text()+'">');
 			row.getmediatypes();
 			row.getcolortypes();
 			row.getdctype();
