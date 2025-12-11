@@ -2866,13 +2866,17 @@ function LameLogDisplay(){
 			var rear=$(e.target.parentElement).data('rear');
 			// SUT updating the mediatype or color while deleting a connection was saving the new state
 			// set the media type and color values back to whatever they were at the start of the edit
-			row.porttype.find('select').val(row.porttype.data('default'));
-			row.portcolor.find('select').val(row.portcolor.data('default'));
+			row.porttype.find('select').val(0);
+			row.portcolor.find('select').val(0);
+			row.dctype.find('select').val(0);
+			row.protocol.find('select').val(0);
+			row.mediarate.find('select').val(0);
+			// Clear out the device and port selections
 			if(rear){
 				$(row.rdevice).find('input').val('');
 				row.rdevice.children('select').val(0).trigger('change');
 			}else{
-				$(row.cdevice).find('input').val('')
+				$(row.cdevice).find('input').val('');
 				row.cdevice.children('select').val(0).trigger('change');
 			}
 			$(e.currentTarget.parentNode.children[0]).click();
