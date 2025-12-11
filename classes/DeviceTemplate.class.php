@@ -22,6 +22,8 @@
 
 	For further details on the license, see http://www.gnu.org/licenses
 */
+
+#[AllowDynamicProperties]
 class DeviceTemplate {
 	var $TemplateID;
 	var $ManufacturerID;

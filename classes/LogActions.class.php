@@ -210,7 +210,7 @@ class LogActions {
 		$return=true;
 
 		// If a retention period has been set, trim the logs for this ObjectID prior to making this entry
-		if ( $config->ParameterArray["logretention"] > 0 ) {
+		if ( isset($config->ParameterArray["logretention"]) && $config->ParameterArray["logretention"] > 0 ) {
 			LogActions::Prune( $config->ParameterArray["logretention"], $log->ObjectID );
 		}
 
@@ -378,14 +378,14 @@ class LogActions {
 		// If we want to really sanitize this list uncomment the function below
 //		$this->UserID=(ArraySearchRecursive($this->UserID,$p->GetUserList(),'UserID'))?$this->UserID:'';
 		$this->UserID=sanitize($this->UserID);
-		$this->Class=(class_exists($this->Class,true))?$this->Class:'';
+		$this->Class=$this->Class===null?'':((class_exists($this->Class,true))?$this->Class:'');
 		$this->ObjectID=sanitize($this->ObjectID);
 		$this->ChildID=sanitize($this->ChildID);
 		$this->Action=sanitize($this->Action);
 		$this->Property=sanitize($this->Property);
 		$this->OldVal=sanitize($this->OldVal);
 		$this->NewVal=sanitize($this->NewVal);
-		$this->Time=date("Y-m-d", strtotime($this->Time));
+		$this->Time=$this->Time===null?'':date("Y-m-d H:i:s", strtotime($this->Time));
 	}
 
 	function ListUnique($sqlcolumn){
