@@ -20,7 +20,8 @@
 		$config->ParameterArray["SAMLidpx509cert"] = $IdPSettings['idp']['x509cert'];
 		error_log( "SAMLidpx509cert updated to " . $IdPSettings['idp']['x509cert']);
 	}
-	if ( $config->ParameterArray["SAMLidpslsURL"] != $IdPSettings['idp']['singleLogoutService']['url'] ) {
+	// Only set the SLS URL if it exists in the metadata
+	if ( array_key_exists( "singleLogoutService", $IdPSettings["idp"] && $config->ParameterArray["SAMLidpslsURL"] != $IdPSettings['idp']['singleLogoutService']['url'] ) {
 		$config->ParameterArray["SAMLidpslsURL"] = $IdPSettings['idp']['singleLogoutService']['url'];
 		error_log( "SAMLidpslsURL updated to " . $IdPSettings['idp']['singleLogoutService']['url']);
 	}
