@@ -408,7 +408,7 @@ function PortsPoopup(){
 		dialog({
 			closeOnEscape: false,
 			minHeight: 500,
-			width: 740,
+			width: 1000,
 			modal: true,
 			resizable: false,
 			dialogClass: 'hiddenports',
@@ -580,9 +580,12 @@ function buildsensortable(){
 }
 function buildportstable(){
 	var table=$('<div>').addClass('table');
-	table.append('<div><div>Port Number</div><div>Label</div><div>Media Type</div><div>Color</div><div>Notes</div></div>');
+	table.append('<div><div>Port Number</div><div>Label</div><div>Media Type</div><div>Color</div><div>Connector</div><div>Protocol</div><div>Data Rate</div><div>Notes</div></div>');
 	var colorcodes=$('<select>').append($('<option>').val(0));
 	var mediatypes=$('<select>').append($('<option>').val(0));
+	var connectortypes=$('<select>').append($('<option>').val(0));
+	var datarates=$('<select>').append($('<option>').val(0));
+	var protocols=$('<select>').append($('<option>').val(0));
 	var ports=[];
 
 	function buildrow(TemplatePortObj){
@@ -591,6 +594,7 @@ function buildportstable(){
 		var label=(rrow.data('change'))?rrow.find('input[name^=label]').val():(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
 		var mt=(rrow.data('change'))?rrow.find('select[name^=mt]').val():(typeof TemplatePortObj.MediaID=='undefined')?'0':TemplatePortObj.MediaID;
 		var c=(rrow.data('change'))?rrow.find('select[name^=cc]').val():(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
+		var mct=(rrow.data('change'))?rrow.find('select[name^=connector]').val():(typeof TemplatePortObj.ConnectorID=='undefined')?'0':TemplatePortObj.ConnectorID;
 		var n=(rrow.data('change'))?rrow.find('input[name^=notes]').val():(typeof TemplatePortObj.Notes=='undefined')?'':TemplatePortObj.Notes;
 
 		var row=$('<div>').
@@ -598,6 +602,9 @@ function buildportstable(){
 			append($('<div>').html($('<input>').val(label).text(label).attr('name','label'+pn))).
 			append($('<div>').html(mediatypes.clone().val(mt).attr('name','mt'+pn))).
 			append($('<div>').html(colorcodes.clone().val(c).attr('name','cc'+pn))).
+			append($('<div>').html(connectortypes.clone().val(mct).attr('name','connector'+pn))).
+			append($('<div>').html(protocols.clone().val(0).attr('name','protocol'+pn))).
+			append($('<div>').html(datarates.clone().val(0).attr('name','rate'+pn))).
 			append($('<div>').html($('<input>').val(n).text(n).attr('name','portnotes'+pn))).
 			data('change',((rrow.data('change'))?true:false));
 
@@ -634,6 +641,30 @@ function buildportstable(){
 		}
 	});
 
+	$.ajax({url: 'api/v1/mediaconnectors',type: "get",async: false,data: {connectortypes: ''},success: function(data){
+			for(var i in data.mediaconnectors){
+				var connectortype=data.mediaconnectors[i];
+				connectortypes.append($('<option>').val(connectortype.ConnectorID).text(connectortype.ConnectorType));
+			}
+		}
+	});
+
+	$.ajax({url: 'api/v1/mediadatarates',type: "get",async: false,data: {datarates: ''},success: function(data){
+			for(var i in data.mediadatarates){
+				var datarate=data.mediadatarates[i];
+				datarates.append($('<option>').val(datarate.DataRateID).text(datarate.RateText));
+			}
+		}
+	});
+
+	$.ajax({url: 'api/v1/mediaprotocols',type: "get",async: false,data: {protocols: ''},success: function(data){
+			for(var i in data.mediaprotocols){
+				var protocol=data.mediaprotocols[i];
+				protocols.append($('<option>').val(protocol.ProtocolID).text(protocol.ProtocolName));
+			}
+		}
+	});
+
 	$.ajax({url: '',type: "post",async: false,data: {TemplateID: $('#TemplateID').val(), getports: ''},
 		success: function(data){
 			ports=data;
@@ -649,6 +680,9 @@ function buildportstable(){
 function buildpowerportstable(){
 	var table=$('<div>').addClass('table');
 	table.append('<div><div>Port Number</div><div>Label</div><div>Connector</div><div>Voltage</div><div>Phase</div><div>Notes</div></div>');
+	var connectortypes=$('<select>').append($('<option>').val(0));
+	var voltages=$('<select>').append($('<option>').val(0));
+	var phases=$('<select>').append($('<option>').val(0));
 	var ports=[];
 
 	function buildrow(TemplatePortObj){
@@ -656,13 +690,16 @@ function buildpowerportstable(){
 		var pn=TemplatePortObj.PortNumber;
 		var label=(rrow.data('change'))?rrow.find('input[name^=powerlabel]').val():(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
 		var n=(rrow.data('change'))?rrow.find('input[name^=powerportnotes]').val():(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
+		var pct=(rrow.data('change'))?rrow.find('select[name^=connector]').val():(typeof TemplatePortObj.ConnectorTypeID=='undefined')?'0':TemplatePortObj.ConnectorTypeID;
+		var pv=(rrow.data('change'))?rrow.find('select[name^=voltage]').val():(typeof TemplatePortObj.VoltageID=='undefined')?'0':TemplatePortObj.VoltageID;
+		var pp=(rrow.data('change'))?rrow.find('select[name^=phase]').val():(typeof TemplatePortObj.PhaseID=='undefined')?'0':TemplatePortObj.PhaseID;
 
 		var row=$('<div>').
 			append($('<div>').html(pn)).
 			append($('<div>').html($('<input>').val(label).text(label).attr('name','powerlabel'+pn))).
-			append($('<div>').html($('<select>').attr('name','connector'+pn))).
-			append($('<div>').html($('<select>').attr('name','voltage'+pn))).
-			append($('<div>').html($('<select>').attr('name','phase'+pn))).
+			append($('<div>').html(connectortypes.clone().val(pct).attr('name','connector'+pn))).
+			append($('<div>').html(voltages.clone().val(pv).attr('name','voltage'+pn))).
+			append($('<div>').html(phases.clone().val(pp).attr('name','phase'+pn))).
 			append($('<div>').html($('<input>').val(n).text(n).attr('name','powerportnotes'+pn))).
 			data('change',((rrow.data('change'))?true:false));
 
@@ -687,6 +724,30 @@ function buildpowerportstable(){
 	$.ajax({url: '',type: "post",async: false,data: {TemplateID: $('#TemplateID').val(), getpowerports: ''},
 		success: function(data){
 			ports=data;
+		}
+	});
+
+	$.ajax({url: 'api/v1/powerconnectortypes',type: "get",async: false,data: {connectortypes: ''},success: function(data){
+			for(var i in data.powerconnectortypes){
+				var connectortype=data.powerconnectortypes[i];
+				connectortypes.append($('<option>').val(connectortype.ConnectorID).text(connectortype.ConnectorName));
+			}
+		}
+	});
+
+	$.ajax({url: 'api/v1/powervoltages',type: "get",async: false,data: {voltagetypes: ''},success: function(data){
+			for(var i in data.powervoltages){
+				var voltage=data.powervoltages[i];
+				voltages.append($('<option>').val(voltage.VoltageID).text(voltage.VoltageName));
+			}
+		}
+	});
+
+	$.ajax({url: 'api/v1/powerphases',type: "get",async: false,data: {phasetypes: ''},success: function(data){
+			for(var i in data.powerphases){
+				var phasetype=data.powerphases[i];
+				phases.append($('<option>').val(phasetype.PhaseID).text(phasetype.PhaseName));
+			}
 		}
 	});
 
