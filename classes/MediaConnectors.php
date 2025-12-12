@@ -58,9 +58,8 @@ class MediaConnectors {
 
 		$result = array();
 		while ( $row = $st->fetch() ) {
-			$result[] = $row;
+			$result[$row->ConnectorID] = $row;
 		}
-
 		return $result;
 	}
 

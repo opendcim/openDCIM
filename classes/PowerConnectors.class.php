@@ -58,7 +58,7 @@ class PowerConnectors {
 
 		$result = array();
 		while ( $row = $st->fetch() ) {
-			$result[] = $row;
+			$result[$row->ConnectorID] = $row;
 		}
 
 		return $result;
