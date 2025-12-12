@@ -408,7 +408,7 @@ function PortsPoopup(){
 		dialog({
 			closeOnEscape: false,
 			minHeight: 500,
-			width: 740,
+			width: 1000,
 			modal: true,
 			resizable: false,
 			dialogClass: 'hiddenports',
@@ -580,9 +580,12 @@ function buildsensortable(){
 }
 function buildportstable(){
 	var table=$('<div>').addClass('table');
-	table.append('<div><div>Port Number</div><div>Label</div><div>Media Type</div><div>Color</div><div>Notes</div></div>');
+	table.append('<div><div>Port Number</div><div>Label</div><div>Media Type</div><div>Color</div><div>Connector</div><div>Protocol</div><div>Data Rate</div><div>Notes</div></div>');
 	var colorcodes=$('<select>').append($('<option>').val(0));
 	var mediatypes=$('<select>').append($('<option>').val(0));
+	var connectortypes=$('<select>').append($('<option>').val(0));
+	var datarates=$('<select>').append($('<option>').val(0));
+	var protocols=$('<select>').append($('<option>').val(0));
 	var ports=[];
 
 	function buildrow(TemplatePortObj){
@@ -591,6 +594,7 @@ function buildportstable(){
 		var label=(rrow.data('change'))?rrow.find('input[name^=label]').val():(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
 		var mt=(rrow.data('change'))?rrow.find('select[name^=mt]').val():(typeof TemplatePortObj.MediaID=='undefined')?'0':TemplatePortObj.MediaID;
 		var c=(rrow.data('change'))?rrow.find('select[name^=cc]').val():(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
+		var mct=(rrow.data('change'))?rrow.find('select[name^=connector]').val():(typeof TemplatePortObj.ConnectorID=='undefined')?'0':TemplatePortObj.ConnectorID;
 		var n=(rrow.data('change'))?rrow.find('input[name^=notes]').val():(typeof TemplatePortObj.Notes=='undefined')?'':TemplatePortObj.Notes;
 
 		var row=$('<div>').
@@ -598,6 +602,9 @@ function buildportstable(){
 			append($('<div>').html($('<input>').val(label).text(label).attr('name','label'+pn))).
 			append($('<div>').html(mediatypes.clone().val(mt).attr('name','mt'+pn))).
 			append($('<div>').html(colorcodes.clone().val(c).attr('name','cc'+pn))).
+			append($('<div>').html(connectortypes.clone().val(mct).attr('name','connector'+pn))).
+			append($('<div>').html(protocols.clone().val(0).attr('name','protocol'+pn))).
+			append($('<div>').html(datarates.clone().val(0).attr('name','rate'+pn))).
 			append($('<div>').html($('<input>').val(n).text(n).attr('name','portnotes'+pn))).
 			data('change',((rrow.data('change'))?true:false));
 
@@ -634,6 +641,30 @@ function buildportstable(){
 		}
 	});
 
+	$.ajax({url: 'api/v1/mediaconnectors',type: "get",async: false,data: {connectortypes: ''},success: function(data){
+			for(var i in data.mediaconnectors){
+				var connectortype=data.mediaconnectors[i];
+				connectortypes.append($('<option>').val(connectortype.ConnectorID).text(connectortype.ConnectorType));
+			}
+		}
+	});
+
+	$.ajax({url: 'api/v1/mediadatarates',type: "get",async: false,data: {datarates: ''},success: function(data){
+			for(var i in data.mediadatarates){
+				var datarate=data.mediadatarates[i];
+				datarates.append($('<option>').val(datarate.DataRateID).text(datarate.RateText));
+			}
+		}
+	});
+
+	$.ajax({url: 'api/v1/mediaprotocols',type: "get",async: false,data: {protocols: ''},success: function(data){
+			for(var i in data.mediaprotocols){
+				var protocol=data.mediaprotocols[i];
+				protocols.append($('<option>').val(protocol.ProtocolID).text(protocol.ProtocolName));
+			}
+		}
+	});
+
 	$.ajax({url: '',type: "post",async: false,data: {TemplateID: $('#TemplateID').val(), getports: ''},
 		success: function(data){
 			ports=data;
@@ -648,7 +679,10 @@ function buildportstable(){
 
 function buildpowerportstable(){
 	var table=$('<div>').addClass('table');
-	table.append('<div><div>Port Number</div><div>Label</div><div>Notes</div></div>');
+	table.append('<div><div>Port Number</div><div>Label</div><div>Connector</div><div>Voltage</div><div>Phase</div><div>Notes</div></div>');
+	var connectortypes=$('<select>').append($('<option>').val(0));
+	var voltages=$('<select>').append($('<option>').val(0));
+	var phases=$('<select>').append($('<option>').val(0));
 	var ports=[];
 
 	function buildrow(TemplatePortObj){
@@ -656,10 +690,16 @@ function buildpowerportstable(){
 		var pn=TemplatePortObj.PortNumber;
 		var label=(rrow.data('change'))?rrow.find('input[name^=powerlabel]').val():(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
 		var n=(rrow.data('change'))?rrow.find('input[name^=powerportnotes]').val():(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
+		var pct=(rrow.data('change'))?rrow.find('select[name^=connector]').val():(typeof TemplatePortObj.ConnectorTypeID=='undefined')?'0':TemplatePortObj.ConnectorTypeID;
+		var pv=(rrow.data('change'))?rrow.find('select[name^=voltage]').val():(typeof TemplatePortObj.VoltageID=='undefined')?'0':TemplatePortObj.VoltageID;
+		var pp=(rrow.data('change'))?rrow.find('select[name^=phase]').val():(typeof TemplatePortObj.PhaseID=='undefined')?'0':TemplatePortObj.PhaseID;
 
 		var row=$('<div>').
 			append($('<div>').html(pn)).
 			append($('<div>').html($('<input>').val(label).text(label).attr('name','powerlabel'+pn))).
+			append($('<div>').html(connectortypes.clone().val(pct).attr('name','connector'+pn))).
+			append($('<div>').html(voltages.clone().val(pv).attr('name','voltage'+pn))).
+			append($('<div>').html(phases.clone().val(pp).attr('name','phase'+pn))).
 			append($('<div>').html($('<input>').val(n).text(n).attr('name','powerportnotes'+pn))).
 			data('change',((rrow.data('change'))?true:false));
 
@@ -684,6 +724,30 @@ function buildpowerportstable(){
 	$.ajax({url: '',type: "post",async: false,data: {TemplateID: $('#TemplateID').val(), getpowerports: ''},
 		success: function(data){
 			ports=data;
+		}
+	});
+
+	$.ajax({url: 'api/v1/powerconnectortypes',type: "get",async: false,data: {connectortypes: ''},success: function(data){
+			for(var i in data.powerconnectortypes){
+				var connectortype=data.powerconnectortypes[i];
+				connectortypes.append($('<option>').val(connectortype.ConnectorID).text(connectortype.ConnectorName));
+			}
+		}
+	});
+
+	$.ajax({url: 'api/v1/powervoltages',type: "get",async: false,data: {voltagetypes: ''},success: function(data){
+			for(var i in data.powervoltages){
+				var voltage=data.powervoltages[i];
+				voltages.append($('<option>').val(voltage.VoltageID).text(voltage.VoltageName));
+			}
+		}
+	});
+
+	$.ajax({url: 'api/v1/powerphases',type: "get",async: false,data: {phasetypes: ''},success: function(data){
+			for(var i in data.powerphases){
+				var phasetype=data.powerphases[i];
+				phases.append($('<option>').val(phasetype.PhaseID).text(phasetype.PhaseName));
+			}
 		}
 	});
 
@@ -2316,7 +2380,11 @@ function LameLogDisplay(){
 			this.portname    = this.element.find('div:nth-child(3)');
 			this.cdevice     = this.element.find('div:nth-child(4)');
 			this.cdeviceport = this.element.find('div:nth-child(5)');
-			this.cnotes      = this.element.find('div:nth-child(6)');
+			this.conntype    = this.element.find('div:nth-child(6)');
+			this.voltage     = this.element.find('div:nth-child(7)');
+			this.phase       = this.element.find('div:nth-child(8)');
+			this.cnotes      = this.element.find('div:nth-child(9)');
+
 			// As we only track power connections on the primary chassis but display them 
 			// on children we need a common place to check for the correct device id
 			this.deviceid    = (typeof $('select[name=ParentDevice]').val()=='undefined')?$('#DeviceID').val():$('select[name=ParentDevice]').val();
@@ -2352,6 +2420,9 @@ function LameLogDisplay(){
 
 			row.getdevices(this.cdevice);
 			row.portname.html('<input type="text" style="min-width: 60px;" value="'+row.portname.text()+'">');
+			row.getConnectors(this.conntype);
+			row.getVoltages(this.voltage);
+			row.getPhases(this.phase);
 			row.cnotes.html('<input type="text" style="min-width: 200px;" value="'+row.cnotes.text()+'">');
 
 //			this.element.append(this.controls.clone(true));
@@ -2365,6 +2436,50 @@ function LameLogDisplay(){
 			row.element.data('edit',true);
 			// Hide mass edit controls
 			$('.power.table').massedit('hide');
+		},
+		getConnectors: function(target){
+			var row=this;
+			$.get("api/v1/powerconnectortypes").done(function(data){
+				var connections=$('<select>').append('<option value=0>&nbsp;</option>');
+				if(!data.error){
+					for(var i in data.powerconnectortypes){
+						var conn=data.powerconnectortypes[i];
+						connections.append('<option value='+conn.ConnectorID+'>'+conn.ConnectorName+'</option>');
+						row.conntype.data('label'+conn.ConnectorID,conn.ConnectorName);
+					}
+				}
+				row.conntype.html(connections).find('select').val(target.data('default'));
+			});
+		},
+		getVoltages: function(target){
+			var row=this;
+
+			$.get("api/v1/powervoltages").done(function(data){
+				var voltages=$('<select>').append('<option value=0>&nbsp;</option>');
+				if(!data.error){
+					for(var i in data.powervoltages){
+						var volt=data.powervoltages[i];
+						voltages.append('<option value='+volt.VoltageID+'>'+volt.VoltageName+'</option>');
+						row.voltage.data('label'+volt.VoltageID,volt.VoltageName);
+					}
+				}
+				row.voltage.html(voltages).find('select').val(target.data('default'));
+			});
+		},
+		getPhases: function(target){
+			var row=this;
+
+			$.get("api/v1/powerphases").done(function(data){
+				var phases=$('<select>').append('<option value=0>&nbsp;</option>');
+				if(!data.error){
+					for(var i in data.powerphases){
+						var phase=data.powerphases[i];
+						phases.append('<option value='+phase.PhaseID+'>'+phase.PhaseName+'</option>');
+						row.phase.data('label'+phase.PhaseID,phase.PhaseName);
+					}
+				}
+				row.phase.html(phases).find('select').val(target.data('default'));
+			});
 		},
 		getdevices: function(target){
 			var row=this;
@@ -2458,6 +2573,9 @@ function LameLogDisplay(){
 				Label: (row.portname.children('input').length==0)?row.portname.data('default'):row.portname.children('input').val(),
 				ConnectedDeviceID: row.cdevice.children('select').val(),
 				ConnectedPort: row.cdeviceport.children('select').val(),
+				ConnectorID: row.conntype.children('select').val(),
+				VoltageID: row.voltage.children('select').val(),
+				PhaseID: row.phase.children('select').val(),
 				Notes: row.cnotes.children('input').val(),
 			}).done(function(data){
 				if(!data.error){
@@ -2479,6 +2597,9 @@ function LameLogDisplay(){
 					port.ConnectedPortLabel=(port.ConnectedPortLabel==null)?'':port.ConnectedPortLabel;
 					row.cdevice.html('<a href="devices.php?DeviceID='+port.ConnectedDeviceID+'">'+port.ConnectedDeviceLabel+'</a>').data('default',port.ConnectedDeviceID);
 					row.cdeviceport.html(port.ConnectedPortLabel).data('default',port.ConnectedPort);
+					row.conntype.html((port.ConnectorID==null)?'':row.conntype.data('label'+port.ConnectorID)).data('default',port.ConnectorID);
+					row.voltage.html((port.VoltageID==null)?'':row.voltage.data('label'+port.VoltageID)).data('default',port.VoltageID);
+					row.phase.html((port.PhaseID==null)?'':row.phase.data('label'+port.PhaseID)).data('default',port.PhaseName);
 					row.cnotes.html(port.Notes).data('default',port.Notes);
 					row.ct.css('padding','');
 					$(row.element[0]).children('div:nth-child(2) ~ div').removeAttr('style');
@@ -2514,8 +2635,11 @@ function LameLogDisplay(){
 			this.ct			 = ct;
 			this.portnum     = this.element.data('port');
 			this.portname    = this.element.find('div[id^=spn],div[id^=pp]');
-			this.cdevice     = this.element.find('div[id^=d]:not([id^=dp]),div[id^=fd]');
-			this.cdeviceport = this.element.find('div[id^=dp],div[id^=fp]');
+			this.cdevice     = this.element.find('div[id^=d]:not([id^=dp]):not([id^=dc]):not([id^=dr]),div[id^=fd]');
+			this.cdeviceport = this.element.find('div[id^=dp]:not([id^=dpro]),div[id^=fp]');
+			this.dctype	     = this.element.find('div[id^=dc]');
+			this.protocol    = this.element.find('div[id^=dpro]');
+			this.mediarate   = this.element.find('div[id^=dr]');
 			this.cnotes      = this.element.find('div[id^=n],div[id^=fn]');
 			this.rdevice     = this.element.find('div[id^=rd]');
 			this.rdeviceport = this.element.find('div[id^=rp]');
@@ -2576,8 +2700,14 @@ function LameLogDisplay(){
 			row.getdevices(this.cdevice);
 			row.cnotes.html('<input type="text" style="min-width: 200px;" value="'+row.cnotes.text()+'">');
 			row.portname.html('<input type="text" style="min-width: 60px;" value="'+row.portname.text()+'">');
+			row.dctype.html('<input type="text" style="min-width: 60px;" value="'+row.dctype.text()+'">');
+			row.protocol.html('<input type="text" style="min-width: 60px;" value="'+row.protocol.text()+'">');
+			row.mediarate.html('<input type="text" style="min-width: 60px;" value="'+row.mediarate.text()+'">');
 			row.getmediatypes();
 			row.getcolortypes();
+			row.getdctype();
+			row.getprotocol();
+			row.getmediarate();
 
 			// rear panel edit
 			if(portrights.admin && row.rdevice.length>0){
@@ -2657,6 +2787,21 @@ function LameLogDisplay(){
 			},500);
 		},
 
+		getdctype: function(){
+			var row=this;
+			$.get("api/v1/mediaconnectors").done(function(data){
+				var connections=$('<select>').append('<option value=0>&nbsp;</option>');
+				if(!data.error){
+					for(var i in data.mediaconnectors){
+						var conn=data.mediaconnectors[i];
+						connections.append('<option value='+conn.ConnectorID+'>'+conn.ConnectorType+'</option>');
+						row.dctype.data('label'+conn.ConnectorID,conn.ConnectorType);
+					}
+				}
+				row.dctype.html(connections).find('select').val(row.dctype.data('default'));
+			});
+		},
+
 		getdevices: function(target){
 			if(target==undefined){
 				target=this.cdevice;
@@ -2697,6 +2842,21 @@ function LameLogDisplay(){
 				devlist.change();
 			});
 
+		},
+
+		getmediarate: function(){
+			var row=this;
+			$.get("api/v1/mediadatarates").done(function(data){
+				var connections=$('<select>').append('<option value=0>&nbsp;</option>');
+				if(!data.error){
+					for(var i in data.mediadatarates){
+						var conn=data.mediadatarates[i];
+						connections.append('<option value='+conn.RateID+'>'+conn.RateText+'</option>');
+						row.mediarate.data('label'+conn.RateID,conn.RateText);
+					}
+				}
+				row.mediarate.html(connections).find('select').val(row.mediarate.data('default'));
+			});
 		},
 
 		getports: function(e){
@@ -2747,18 +2907,37 @@ function LameLogDisplay(){
 
 		},
 
+		getprotocol: function(){
+			var row=this;
+			$.get("api/v1/mediaprotocols").done(function(data){
+				var connections=$('<select>').append('<option value=0>&nbsp;</option>');
+				if(!data.error){
+					for(var i in data.mediaprotocols){
+						var conn=data.mediaprotocols[i];
+						connections.append('<option value='+conn.ProtocolID+'>'+conn.ProtocolName+'</option>');
+						row.protocol.data('label'+conn.ProtocolID,conn.ProtocolName);
+					}
+				}
+				row.protocol.html(connections).find('select').val(row.protocol.data('default'));
+			});
+		},
+
 		delete: function(e) {
 			var row=this;
 			var rear=$(e.target.parentElement).data('rear');
 			// SUT updating the mediatype or color while deleting a connection was saving the new state
 			// set the media type and color values back to whatever they were at the start of the edit
-			row.porttype.find('select').val(row.porttype.data('default'));
-			row.portcolor.find('select').val(row.portcolor.data('default'));
+			row.porttype.find('select').val(0);
+			row.portcolor.find('select').val(0);
+			row.dctype.find('select').val(0);
+			row.protocol.find('select').val(0);
+			row.mediarate.find('select').val(0);
+			// Clear out the device and port selections
 			if(rear){
 				$(row.rdevice).find('input').val('');
 				row.rdevice.children('select').val(0).trigger('change');
 			}else{
-				$(row.cdevice).find('input').val('')
+				$(row.cdevice).find('input').val('');
 				row.cdevice.children('select').val(0).trigger('change');
 			}
 			$(e.currentTarget.parentNode.children[0]).click();
@@ -2876,7 +3055,10 @@ function LameLogDisplay(){
 					cdeviceport: deviceport.children('select').val(),
 					cnotes: notes.children('input').val(),
 					porttype: (row.porttype.children('select').length==0)?row.porttype.data('default'):row.porttype.children('select').val(),
-					portcolor: (row.portcolor.length==0)?row.porttype.data('color'):row.portcolor.children('select').val()
+					portcolor: (row.portcolor.length==0)?row.porttype.data('color'):row.portcolor.children('select').val(),
+					connectorid: row.dctype.children('select').val(),
+					protocolid: row.protocol.children('select').val(),
+					rateid: row.mediarate.children('select').val()
 				}).done(function(data){
 					if(data.trim()==1){
 						row.checkredraw(e);
@@ -2951,6 +3133,9 @@ function LameLogDisplay(){
 					row.cnotes.html(data.Notes).data('default',data.Notes);
 					row.porttype.html(data.MediaName).data('default',data.MediaID);
 					row.portcolor.html(data.ColorName).data('default',data.ColorID);
+					row.dctype.html((data.ConnectorID>0)?row.dctype.data('label'+data.ConnectorID):'').data('default',data.ConnectorID);
+					row.protocol.html((data.ProtocolID>0)?row.protocol.data('label'+data.ProtocolID):'').data('default',data.ProtocolID);
+					row.mediarate.html((data.RateID>0)?row.mediarate.data('label'+data.RateID):'').data('default',data.RateID);
 					$(row.element[0]).children('div ~ div:not([id^=sp])').removeAttr('style');
 					// Attempt to show mass edit controls
 					$('.switch.table, .patchpanel.table').massedit('show');

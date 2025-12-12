@@ -4,13 +4,10 @@ namespace PhpOffice\PhpSpreadsheet;
 
 use JsonSerializable;
 use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx as XlsxReader;
-use PhpOffice\PhpSpreadsheet\Shared\File;
 use PhpOffice\PhpSpreadsheet\Shared\StringHelper;
 use PhpOffice\PhpSpreadsheet\Style\Style;
 use PhpOffice\PhpSpreadsheet\Worksheet\Iterator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx as XlsxWriter;
 
 class Spreadsheet implements JsonSerializable
 {
@@ -599,7 +596,7 @@ class Spreadsheet implements JsonSerializable
     public function createSheet($sheetIndex = null)
     {
         $newSheet = new Worksheet($this);
-        $this->addSheet($newSheet, $sheetIndex);
+        $this->addSheet($newSheet, $sheetIndex, true);
 
         return $newSheet;
     }
@@ -621,11 +618,24 @@ class Spreadsheet implements JsonSerializable
      *
      * @param Worksheet $worksheet The worksheet to add
      * @param null|int $sheetIndex Index where sheet should go (0,1,..., or null for last)
+     * @param bool $retitleIfNeeded add suffix if title exists in spreadsheet
      *
      * @return Worksheet
      */
-    public function addSheet(Worksheet $worksheet, $sheetIndex = null)
+    public function addSheet(Worksheet $worksheet, $sheetIndex = null, $retitleIfNeeded = false)
     {
+        if ($retitleIfNeeded) {
+            $title = $worksheet->getTitle();
+            if ($this->sheetNameExists($title)) {
+                $i = 1;
+                $newTitle = "$title $i";
+                while ($this->sheetNameExists($newTitle)) {
+                    ++$i;
+                    $newTitle = "$title $i";
+                }
+                $worksheet->setTitle($newTitle);
+            }
+        }
         if ($this->sheetNameExists($worksheet->getTitle())) {
             throw new Exception(
                 "Workbook already contains a worksheet named '{$worksheet->getTitle()}'. Rename this worksheet first."
@@ -750,12 +760,16 @@ class Spreadsheet implements JsonSerializable
      *
      * @return int index
      */
-    public function getIndex(Worksheet $worksheet)
+    public function getIndex(Worksheet $worksheet, bool $noThrow = false)
     {
+        $wsHash = $worksheet->getHashInt();
         foreach ($this->workSheetCollection as $key => $value) {
-            if ($value->getHashCode() === $worksheet->getHashCode()) {
+            if ($value->getHashInt() === $wsHash) {
                 return $key;
             }
+        }
+        if ($noThrow) {
+            return -1;
         }
 
         throw new Exception('Sheet does not exist.');
@@ -1144,17 +1158,7 @@ class Spreadsheet implements JsonSerializable
      */
     public function copy()
     {
-        $filename = File::temporaryFilename();
-        $writer = new XlsxWriter($this);
-        $writer->setIncludeCharts(true);
-        $writer->save($filename);
-
-        $reader = new XlsxReader();
-        $reader->setIncludeCharts(true);
-        $reloadedSpreadsheet = $reader->load($filename);
-        unlink($filename);
-
-        return $reloadedSpreadsheet;
+        return unserialize(serialize($this));
     }
 
     public function __clone()
@@ -1644,16 +1648,6 @@ class Spreadsheet implements JsonSerializable
     public function getSharedComponent(): Style
     {
         return new Style();
-    }
-
-    /**
-     * @throws Exception
-     *
-     * @return mixed
-     */
-    public function __serialize()
-    {
-        throw new Exception('Spreadsheet objects cannot be serialized');
     }
 
     /**
