@@ -25,6 +25,9 @@
 class TemplatePowerPorts {
 	var $TemplateID;
 	var $PortNumber;
+	var $ConnectorID;
+	var $VoltageID;
+	var $PhaseID;
 	var $Label;
 	var $PortNotes;
 	
@@ -38,6 +41,9 @@ class TemplatePowerPorts {
 	function MakeSafe() {
 		$this->TemplateID=intval($this->TemplateID);
 		$this->PortNumber=intval($this->PortNumber);
+		$this->ConnectorID=intval($this->ConnectorID);
+		$this->VoltageID=intval($this->VoltageID);
+		$this->PhaseID=intval($this->PhaseID);
 		$this->Label=sanitize($this->Label);
 		$this->PortNotes=sanitize($this->PortNotes);
 	}
@@ -51,6 +57,9 @@ class TemplatePowerPorts {
 		$tp=new TemplatePorts();
 		$tp->TemplateID=$dbRow['TemplateID'];
 		$tp->PortNumber=$dbRow['PortNumber'];
+		$tp->ConnectorID=$dbRow['ConnectorID'];
+		$tp->VoltageID=$dbRow['VoltageID'];
+		$tp->PhaseID=$dbRow['PhaseID'];
 		$tp->Label=$dbRow['Label'];
 		$tp->PortNotes=$dbRow['PortNotes'];
 
@@ -104,7 +113,8 @@ class TemplatePowerPorts {
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_TemplatePowerPorts SET TemplateID=$this->TemplateID, 
-			PortNumber=$this->PortNumber, Label=\"$this->Label\", 
+			PortNumber=$this->PortNumber, ConnectorID=$this->ConnectorID, VoltageID=$this->VoltageID, 
+			PhaseID=$this->PhaseID, Label=\"$this->Label\", 
 			PortNotes=\"$this->PortNotes\";";
 			
 		if(!$dbh->query($sql)){
@@ -129,7 +139,8 @@ class TemplatePowerPorts {
 		$oldport->getPort();
 
 		// update port
-		$sql="UPDATE fac_TemplatePowerPorts SET Label=\"$this->Label\", 
+		$sql="UPDATE fac_TemplatePowerPorts SET Label=\"$this->Label\", ConnectorID=$this->ConnectorID, 
+			VoltageID=$this->VoltageID, PhaseID=$this->PhaseID,
 			PortNotes=\"$this->PortNotes\", WHERE TemplateID=$this->TemplateID AND 
 			PortNumber=$this->PortNumber;";
 

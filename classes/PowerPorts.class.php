@@ -108,7 +108,8 @@ class PowerPorts {
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_PowerPorts SET DeviceID=$this->DeviceID, 
-			PortNumber=$this->PortNumber, Label=\"$this->Label\", 
+			PortNumber=$this->PortNumber, Label=\"$this->Label\", ConnectorID=$this->ConnectorID, 
+			PhaseID=$this->PhaseID, VoltageID=$this->VoltageID,
 			ConnectedDeviceID=$this->ConnectedDeviceID, ConnectedPort=$this->ConnectedPort, 
 			Notes=\"$this->Notes\";";
 

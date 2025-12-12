@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-02 18:42-0600\n"
+"POT-Creation-Date: 2025-12-12 06:14-0600\n"
 "Language: en-gb\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -131,14 +131,14 @@ msgid "Cabinet"
 msgstr "Cabinet"
 
 #: bulk_importer.php:234 cdu_templates.php:101 connections_spreadsheet.php:48
-#: device_manufacturers.php:177 device_templates.php:748
+#: device_manufacturers.php:177 device_templates.php:754
 #: report_vendor_model.php:44
 msgid "Manufacturer"
 msgstr "Manufacturer"
 
 #: bulk_importer.php:245 cabaudit.php:510 cabinets.php:315 cabnavigator.php:50
 #: cdu_templates.php:113 connections_spreadsheet.php:50
-#: device_templates.php:760
+#: device_templates.php:766
 msgid "Model"
 msgstr "Model"
 
@@ -381,11 +381,11 @@ msgstr "Data Center Cabinet Inventory"
 
 #: cabinets.php:79 /home/runner/openDCIM/cabrow.php:41 cdu_templates.php:48
 #: container.php:32 datacenter.php:51 device_manufacturers.php:58
-#: device_templates.php:255 device_templates.php:256 device_templates.php:259
-#: device_templates.php:262 device_templates.php:271 device_templates.php:272
-#: device_templates.php:275 device_templates.php:278 device_templates.php:282
-#: device_templates.php:283 device_templates.php:288 device_templates.php:289
-#: device_templates.php:292 device_templates.php:295 device_templates.php:299
+#: device_templates.php:261 device_templates.php:262 device_templates.php:265
+#: device_templates.php:268 device_templates.php:277 device_templates.php:278
+#: device_templates.php:281 device_templates.php:284 device_templates.php:288
+#: device_templates.php:289 device_templates.php:294 device_templates.php:295
+#: device_templates.php:298 device_templates.php:301 device_templates.php:305
 #: disposition.php:28 escalations.php:27 supplybin.php:36 timeperiods.php:27
 #: usermgr.php:66 /home/runner/openDCIM/zone.php:44
 msgid "Updated"
@@ -460,7 +460,7 @@ msgid "Tags"
 msgstr "Tags"
 
 #: cabinets.php:341 conflicts.php:608 connections_spreadsheet.php:23
-#: device_templates.php:915 devices.php:1206 devices.php:1990 devices.php:2513
+#: device_templates.php:921 devices.php:1206 devices.php:1990 devices.php:2513
 #: devices.php:2579 devices.php:2634 pathmaker.php:393 report_tags.php:37
 #: sidebar.inc.php:26
 msgid "Notes"
@@ -493,8 +493,8 @@ msgstr "Map Coordinates"
 
 #: cabinets.php:352 /home/runner/openDCIM/cabrow.php:192 cdu_templates.php:238
 #: container.php:309 datacenter.php:354 departments.php:220
-#: device_manufacturers.php:206 device_templates.php:390
-#: device_templates.php:923 devices.php:2695 disposition.php:117
+#: device_manufacturers.php:206 device_templates.php:396
+#: device_templates.php:929 devices.php:2695 disposition.php:117
 #: escalations.php:89 power_panel.php:349 project_mgr.php:176
 #: rackrequest.php:486 report_logging.php:67 supplybin.php:165
 #: timeperiods.php:89 usermgr.php:339 /home/runner/openDCIM/zone.php:175
@@ -507,7 +507,7 @@ msgstr "Return to Navigator"
 
 #: cabinets.php:362 /home/runner/openDCIM/cabrow.php:204 cdu_templates.php:245
 #: configuration.php:2886 container.php:320 datacenter.php:378
-#: departments.php:229 device_manufacturers.php:218 device_templates.php:1128
+#: departments.php:229 device_manufacturers.php:218 device_templates.php:1134
 #: disposition.php:121 escalations.php:96 image_management.php:163
 #: pathmaker.php:523 /home/runner/openDCIM/paths.php:617 power_panel.php:438
 #: project_mgr.php:185 rackrequest.php:494 reports.php:118
@@ -588,7 +588,7 @@ msgid "Space"
 msgstr "Space"
 
 #: cabnavigator.php:271 dc_dashboard.php:85 dc_stats.php:298
-#: device_templates.php:768 devices.php:2067 zone_stats.php:287
+#: device_templates.php:774 devices.php:2067 zone_stats.php:287
 #: scripts/ajax_tooltip.php:155
 msgid "Weight"
 msgstr "Weight"
@@ -739,16 +739,16 @@ msgstr "Data Centre Zone"
 msgid "Data Center Cabinet Distribution Unit Templates"
 msgstr "Data Centre Cabinet Distribution Unit Templates"
 
-#: cdu_templates.php:87 device_templates.php:736 search_export.php:158
+#: cdu_templates.php:87 device_templates.php:742 search_export.php:158
 #: search_export_storage_room.php:72
 msgid "Template"
 msgstr "Template"
 
-#: cdu_templates.php:89 device_templates.php:738
+#: cdu_templates.php:89 device_templates.php:744
 msgid "New Template"
 msgstr "New Template"
 
-#: cdu_templates.php:117 device_templates.php:981
+#: cdu_templates.php:117 device_templates.php:987
 msgid "Managed"
 msgstr "Managed"
 
@@ -756,44 +756,44 @@ msgstr "Managed"
 msgid "Automatic Transfer Switch"
 msgstr "Automatic Transfer Switch"
 
-#: cdu_templates.php:129 configuration.php:2324 device_templates.php:796
+#: cdu_templates.php:129 configuration.php:2324 device_templates.php:802
 #: devices.php:2152
 msgid "SNMP Version"
 msgstr "SNMP Version"
 
-#: cdu_templates.php:142 device_templates.php:987
+#: cdu_templates.php:142 device_templates.php:993
 msgid "Firmware Version OID"
 msgstr "Firmware Version OID"
 
-#: cdu_templates.php:146 device_templates.php:991
+#: cdu_templates.php:146 device_templates.php:997
 msgid "Outlet Factory Name"
 msgstr "Outlet Factory Name"
 
 #: cdu_templates.php:146 cdu_templates.php:150 cdu_templates.php:154
-#: cdu_templates.php:158 device_templates.php:991 device_templates.php:995
-#: device_templates.php:999 device_templates.php:1003
+#: cdu_templates.php:158 device_templates.php:997 device_templates.php:1001
+#: device_templates.php:1005 device_templates.php:1009
 msgid "OID"
 msgstr "OID"
 
-#: cdu_templates.php:150 device_templates.php:995
+#: cdu_templates.php:150 device_templates.php:1001
 #, fuzzy
 msgid "Outlet User Description"
 msgstr "Description"
 
-#: cdu_templates.php:154 device_templates.php:999
+#: cdu_templates.php:154 device_templates.php:1005
 #, fuzzy
 msgid "Outlet Count"
 msgstr "DC Count"
 
-#: cdu_templates.php:158 device_templates.php:1003
+#: cdu_templates.php:158 device_templates.php:1009
 msgid "Outlet State (On/Off)"
 msgstr "Outlet State (On/Off)"
 
-#: cdu_templates.php:162 device_templates.php:1007
+#: cdu_templates.php:162 device_templates.php:1013
 msgid "Outlet State (On)"
 msgstr "Outlet State (On)"
 
-#: cdu_templates.php:166 device_templates.php:1011
+#: cdu_templates.php:166 device_templates.php:1017
 msgid "Multiplier"
 msgstr "Multiplier"
 
@@ -809,23 +809,23 @@ msgstr "OID2"
 msgid "OID3"
 msgstr "OID3"
 
-#: cdu_templates.php:202 device_templates.php:1058
+#: cdu_templates.php:202 device_templates.php:1064
 msgid "ATS Status OID"
 msgstr "ATS Status OID"
 
-#: cdu_templates.php:206 device_templates.php:1062
+#: cdu_templates.php:206 device_templates.php:1068
 msgid "ATS Desired Result"
 msgstr "ATS Desired Result"
 
-#: cdu_templates.php:210 device_templates.php:1035
+#: cdu_templates.php:210 device_templates.php:1041
 msgid "Processing Scheme"
 msgstr "Processing Scheme"
 
-#: cdu_templates.php:222 device_templates.php:1046 devices.php:2511
+#: cdu_templates.php:222 device_templates.php:1052 devices.php:2511
 msgid "Voltage"
 msgstr "Voltage"
 
-#: cdu_templates.php:226 device_templates.php:1050
+#: cdu_templates.php:226 device_templates.php:1056
 msgid "Amperage"
 msgstr "Amperage"
 
@@ -842,7 +842,7 @@ msgid "Current selection"
 msgstr "Current selection"
 
 #: configuration.php:843 configuration.php:881 container.php:118
-#: datacenter.php:143 device_templates.php:407 rackrequest.php:334
+#: datacenter.php:143 device_templates.php:413 rackrequest.php:334
 #: rackrequest.php:450
 msgid "Select"
 msgstr "Select"
@@ -863,7 +863,7 @@ msgstr "Replace"
 
 #: configuration.php:978 configuration.php:1173 configuration.php:1384
 #: configuration.php:1411 configuration.php:1498 configuration.php:1526
-#: device_templates.php:467
+#: device_templates.php:473
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -1950,7 +1950,7 @@ msgstr "Asset Tag"
 msgid "Target Cabinet"
 msgstr "Target Cabinet"
 
-#: connections_spreadsheet.php:120 classes/PowerPorts.class.php:160
+#: connections_spreadsheet.php:120 classes/PowerPorts.class.php:161
 msgid "Power Connection"
 msgstr "Power Connection"
 
@@ -2195,7 +2195,7 @@ msgstr "Minimum Cooling Tonnage (Based on Computed Watts)"
 msgid "openDCIM Data Center Information Management"
 msgstr "openDCIM Data Centre Information Management"
 
-#: dc_stats.php:201 device_templates.php:921
+#: dc_stats.php:201 device_templates.php:927
 msgid "Export"
 msgstr "Export"
 
@@ -2399,161 +2399,161 @@ msgstr "Error updating front slots"
 msgid "Error updating rear slots"
 msgstr "Error updating rear slots"
 
-#: device_templates.php:141
+#: device_templates.php:144
 msgid "Error updating template ports"
 msgstr "Error updating template ports"
 
-#: device_templates.php:151
+#: device_templates.php:157
 msgid "Error updating template power connections"
 msgstr "Error updating template power connections"
 
-#: device_templates.php:173 device_templates.php:188
+#: device_templates.php:179 device_templates.php:194
 msgid "Error updating device template custom values"
 msgstr "Error updating device template custom values"
 
-#: device_templates.php:206 device_templates.php:233
+#: device_templates.php:212 device_templates.php:239
 msgid "Error updating cdu attributes"
 msgstr "Error updating cdu attributes"
 
-#: device_templates.php:251
+#: device_templates.php:257
 msgid "An error has occured, template not created"
 msgstr "An error has occured, template not created"
 
-#: device_templates.php:255 device_templates.php:271
+#: device_templates.php:261 device_templates.php:277
 msgid "Error updating template"
 msgstr "Error updating template"
 
-#: device_templates.php:283
+#: device_templates.php:289
 msgid "Error updating devices"
 msgstr "Error updating devices"
 
-#: device_templates.php:288 device_templates.php:300 paths.php:164
+#: device_templates.php:294 device_templates.php:306 paths.php:164
 #: scripts/ajax_tooltip.php:23 classes/Device.class.php:2651
 msgid "Error"
 msgstr "Error"
 
-#: device_templates.php:300
+#: device_templates.php:306
 msgid "Exported"
 msgstr "Exported"
 
-#: device_templates.php:377
+#: device_templates.php:383
 msgid "This value must be different than"
 msgstr "This value must be different than"
 
-#: device_templates.php:463 device_templates.php:925
+#: device_templates.php:469 device_templates.php:931
 msgid "Import"
 msgstr "Import"
 
-#: device_templates.php:481
+#: device_templates.php:487
 msgid "Close"
 msgstr "Close"
 
-#: device_templates.php:519
+#: device_templates.php:525
 msgid "Custom"
 msgstr "Custom"
 
-#: device_templates.php:520 devices.php:147
+#: device_templates.php:526 devices.php:147
 #: /home/runner/openDCIM/devices.php:151 devices.php:204
 msgid "Invert Port Labels"
 msgstr "Invert Port Labels"
 
-#: device_templates.php:764 devices.php:2038 devices.php:2379
+#: device_templates.php:770 devices.php:2038 devices.php:2379
 #: rackrequest.php:426 search_export.php:152 search_export_storage_room.php:66
 msgid "Height"
 msgstr "Height"
 
-#: device_templates.php:765
+#: device_templates.php:771
 msgid "0 for a vertical mounting"
 msgstr "0 for a vertical mounting"
 
-#: device_templates.php:772 devices.php:2304
+#: device_templates.php:778 devices.php:2304
 msgid "Wattage"
 msgstr "Wattage"
 
-#: device_templates.php:776 devices.php:2092 devices.php:2381
+#: device_templates.php:782 devices.php:2092 devices.php:2381
 #: rackrequest.php:447 report_vendor_model.php:53 search_export.php:157
 #: search_export_storage_room.php:71
 msgid "Device Type"
 msgstr "Device Type"
 
-#: device_templates.php:788
+#: device_templates.php:794
 msgid "No. Power Connections"
 msgstr "No. Power Connections"
 
-#: device_templates.php:789 device_templates.php:793
+#: device_templates.php:795 device_templates.php:799
 msgid "Edit Ports"
 msgstr "Edit Ports"
 
-#: device_templates.php:792
+#: device_templates.php:798
 msgid "No. Ports"
 msgstr "No. Ports"
 
-#: device_templates.php:814
+#: device_templates.php:820
 msgid "Front Picture File"
 msgstr "Front Picture File"
 
-#: device_templates.php:818
+#: device_templates.php:824
 msgid "Rear Picture File"
 msgstr "Rear Picture File"
 
-#: device_templates.php:822
+#: device_templates.php:828
 msgid "Chassis Slots"
 msgstr "Chassis Slots"
 
-#: device_templates.php:823 device_templates.php:827
+#: device_templates.php:829 device_templates.php:833
 msgid "Edit Coordinates"
 msgstr "Edit Coordinates"
 
-#: device_templates.php:826
+#: device_templates.php:832
 msgid "Rear Chassis Slots"
 msgstr "Rear Chassis Slots"
 
-#: device_templates.php:859
+#: device_templates.php:865
 msgid "Default:"
 msgstr "Default:"
 
-#: device_templates.php:873
+#: device_templates.php:879
 msgid "Revert to default value from configuration page"
 msgstr "Revert to default value from configuration page"
 
-#: device_templates.php:873
+#: device_templates.php:879
 msgid "Revert"
 msgstr "Revert"
 
-#: device_templates.php:883
+#: device_templates.php:889
 msgid "Enabled?"
 msgstr "Enabled?"
 
-#: device_templates.php:884
+#: device_templates.php:890
 msgid "Required?"
 msgstr "Required?"
 
-#: device_templates.php:910
+#: device_templates.php:916
 msgid "Number of Devices Using This Template:"
 msgstr "Number of Devices Using This Template:"
 
-#: device_templates.php:921
+#: device_templates.php:927
 msgid "Update Template"
 msgstr "Update Template"
 
-#: device_templates.php:921
+#: device_templates.php:927
 msgid "Clone Template"
 msgstr "Clone Template"
 
-#: device_templates.php:921
+#: device_templates.php:927
 msgid "Delete Template"
 msgstr "Delete Template"
 
-#: device_templates.php:921
+#: device_templates.php:927
 msgid "Update Devices"
 msgstr "Update Devices"
 
-#: device_templates.php:939 devices.php:2364 devices.php:2634
+#: device_templates.php:945 devices.php:2364 devices.php:2634
 #: classes/DeviceTemplate.class.php:592 classes/DeviceTemplate.class.php:596
 msgid "Front"
 msgstr "Front"
 
-#: device_templates.php:944 devices.php:437
+#: device_templates.php:950 devices.php:437
 #: /home/runner/openDCIM/devices.php:2365 devices.php:2667 misc.inc.php:1142
 #: report_cabinets.php:180 report_cabinets.php:252 report_cabinets.php:293
 #: rowview.php:92 classes/Device.class.php:2192 classes/Device.class.php:2196
@@ -2562,47 +2562,47 @@ msgstr "Front"
 msgid "Rear"
 msgstr "Rear"
 
-#: device_templates.php:1023
+#: device_templates.php:1029
 msgid "OID for Phase1"
 msgstr "OID for Phase1"
 
-#: device_templates.php:1027
+#: device_templates.php:1033
 msgid "OID for Phase2"
 msgstr "OID for Phase2"
 
-#: device_templates.php:1031
+#: device_templates.php:1037
 msgid "OID for Phase3"
 msgstr "OID for Phase3"
 
-#: device_templates.php:1074
+#: device_templates.php:1080
 msgid "Temperature OID"
 msgstr "Temperature OID"
 
-#: device_templates.php:1078
+#: device_templates.php:1084
 msgid "Humidity OID"
 msgstr "Humidity OID"
 
-#: device_templates.php:1082
+#: device_templates.php:1088
 msgid "Temperature Multiplier"
 msgstr "Temperature Multiplier"
 
-#: device_templates.php:1093
+#: device_templates.php:1099
 msgid "Humidity Multiplier"
 msgstr "Humidity Multiplier"
 
-#: device_templates.php:1104
+#: device_templates.php:1110
 msgid "Temperature Units"
 msgstr "Temperature Units"
 
-#: device_templates.php:1130
+#: device_templates.php:1136
 msgid "Image file selector"
 msgstr "Image file selector"
 
-#: device_templates.php:1139
+#: device_templates.php:1145
 msgid "Import Template From File"
 msgstr "Import Template From File"
 
-#: device_templates.php:1147
+#: device_templates.php:1153
 msgid "Import log"
 msgstr "Import log"
 
