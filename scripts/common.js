@@ -596,6 +596,8 @@ function buildportstable(){
 		var c=(rrow.data('change'))?rrow.find('select[name^=cc]').val():(typeof TemplatePortObj.ColorID=='undefined')?'0':TemplatePortObj.ColorID;
 		var mct=(rrow.data('change'))?rrow.find('select[name^=connector]').val():(typeof TemplatePortObj.ConnectorID=='undefined')?'0':TemplatePortObj.ConnectorID;
 		var n=(rrow.data('change'))?rrow.find('input[name^=notes]').val():(typeof TemplatePortObj.Notes=='undefined')?'':TemplatePortObj.Notes;
+		var pid=(rrow.data('change'))?rrow.find('input[name^=protocol]').val():(typeof TemplatePortObj.ProtocolID=='undefined')?'0':TemplatePortObj.ProtocolID;
+		var rid=(rrow.data('change'))?rrow.find('input[name^=rate]').val():(typeof TemplatePortObj.RateID=='undefined')?'0':TemplatePortObj.RateID;
 
 		var row=$('<div>').
 			append($('<div>').html(pn)).
@@ -603,8 +605,8 @@ function buildportstable(){
 			append($('<div>').html(mediatypes.clone().val(mt).attr('name','mt'+pn))).
 			append($('<div>').html(colorcodes.clone().val(c).attr('name','cc'+pn))).
 			append($('<div>').html(connectortypes.clone().val(mct).attr('name','connector'+pn))).
-			append($('<div>').html(protocols.clone().val(0).attr('name','protocol'+pn))).
-			append($('<div>').html(datarates.clone().val(0).attr('name','rate'+pn))).
+			append($('<div>').html(protocols.clone().val(pid).attr('name','protocol'+pn))).
+			append($('<div>').html(datarates.clone().val(rid).attr('name','rate'+pn))).
 			append($('<div>').html($('<input>').val(n).text(n).attr('name','portnotes'+pn))).
 			data('change',((rrow.data('change'))?true:false));
 
@@ -652,7 +654,7 @@ function buildportstable(){
 	$.ajax({url: 'api/v1/mediadatarates',type: "get",async: false,data: {datarates: ''},success: function(data){
 			for(var i in data.mediadatarates){
 				var datarate=data.mediadatarates[i];
-				datarates.append($('<option>').val(datarate.DataRateID).text(datarate.RateText));
+				datarates.append($('<option>').val(datarate.RateID).text(datarate.RateText));
 			}
 		}
 	});
@@ -690,14 +692,14 @@ function buildpowerportstable(){
 		var pn=TemplatePortObj.PortNumber;
 		var label=(rrow.data('change'))?rrow.find('input[name^=powerlabel]').val():(typeof TemplatePortObj.Label=='undefined')?'':TemplatePortObj.Label;
 		var n=(rrow.data('change'))?rrow.find('input[name^=powerportnotes]').val():(typeof TemplatePortObj.PortNotes=='undefined')?'':TemplatePortObj.PortNotes;
-		var pct=(rrow.data('change'))?rrow.find('select[name^=connector]').val():(typeof TemplatePortObj.ConnectorTypeID=='undefined')?'0':TemplatePortObj.ConnectorTypeID;
+		var pct=(rrow.data('change'))?rrow.find('select[name^=pconnector]').val():(typeof TemplatePortObj.ConnectorID=='undefined')?'0':TemplatePortObj.ConnectorID;
 		var pv=(rrow.data('change'))?rrow.find('select[name^=voltage]').val():(typeof TemplatePortObj.VoltageID=='undefined')?'0':TemplatePortObj.VoltageID;
 		var pp=(rrow.data('change'))?rrow.find('select[name^=phase]').val():(typeof TemplatePortObj.PhaseID=='undefined')?'0':TemplatePortObj.PhaseID;
 
 		var row=$('<div>').
 			append($('<div>').html(pn)).
 			append($('<div>').html($('<input>').val(label).text(label).attr('name','powerlabel'+pn))).
-			append($('<div>').html(connectortypes.clone().val(pct).attr('name','connector'+pn))).
+			append($('<div>').html(connectortypes.clone().val(pct).attr('name','pconnector'+pn))).
 			append($('<div>').html(voltages.clone().val(pv).attr('name','voltage'+pn))).
 			append($('<div>').html(phases.clone().val(pp).attr('name','phase'+pn))).
 			append($('<div>').html($('<input>').val(n).text(n).attr('name','powerportnotes'+pn))).
