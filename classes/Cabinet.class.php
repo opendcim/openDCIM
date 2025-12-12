@@ -40,6 +40,7 @@ class Cabinet {
 	var $CabRowID;      //JMGA: Row of this cabinet
 	var $CabinetHeight;
 	var $Model;
+	var $SerialNo;
 	var $Keylock;
 	var $MaxKW;
 	var $MaxWeight;
@@ -62,6 +63,7 @@ class Cabinet {
 		$this->CabRowID=intval($this->CabRowID);
 		$this->CabinetHeight=intval($this->CabinetHeight);
 		$this->Model=sanitize($this->Model);
+		$this->SerialNo=sanitize($this->SerialNo);
 		$this->Keylock=sanitize($this->Keylock);
 		$this->MaxKW=float_sqlsafe(floatval($this->MaxKW));
 		$this->MaxWeight=intval($this->MaxWeight);
@@ -98,6 +100,7 @@ class Cabinet {
 		$cab->CabRowID=$dbRow["CabRowID"];
 		$cab->CabinetHeight=$dbRow["CabinetHeight"];
 		$cab->Model=$dbRow["Model"];
+		$cab->SerialNo=$dbRow["SerialNo"];
 		$cab->Keylock=$dbRow["Keylock"];
 		$cab->MaxKW=$dbRow["MaxKW"];
 		$cab->MaxWeight=$dbRow["MaxWeight"];
@@ -189,7 +192,7 @@ class Cabinet {
 		$sql="INSERT INTO fac_Cabinet SET DataCenterID=$this->DataCenterID, 
 			Location=\"$this->Location\", LocationSortable=\"$this->LocationSortable\",
 			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
-			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
+			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", SerialNo=\"$this->SerialNo\", 
 			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
 			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
 			MapX1=$this->MapX1, MapY1=$this->MapY1, 
@@ -226,7 +229,7 @@ class Cabinet {
 		$sql="UPDATE fac_Cabinet SET DataCenterID=$this->DataCenterID, 
 			Location=\"$this->Location\", LocationSortable=\"$this->LocationSortable\",
 			AssignedTo=$this->AssignedTo, ZoneID=$this->ZoneID, CabRowID=$this->CabRowID, 
-			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", 
+			CabinetHeight=$this->CabinetHeight, Model=\"$this->Model\", SerialNo=\"$this->SerialNo\", 
 			Keylock=\"$this->Keylock\", MaxKW=$this->MaxKW, MaxWeight=$this->MaxWeight, 
 			InstallationDate=\"".date("Y-m-d", strtotime($this->InstallationDate))."\", 
 			MapX1=$this->MapX1, MapY1=$this->MapY1, 
