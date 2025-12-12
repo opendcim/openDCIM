@@ -38,9 +38,9 @@ class PowerPorts {
 		$this->DeviceID=intval($this->DeviceID);
 		$this->PortNumber=intval($this->PortNumber);
 		$this->Label=sanitize($this->Label);
-		$this->ConnectorID=sanitize($this->ConnectorID);
-		$this->PhaseID=sanitize($this->PhaseID);
-		$this->VoltageID=sanitize($this->VoltageID);
+		$this->ConnectorID=intval($this->ConnectorID);
+		$this->PhaseID=intval($this->PhaseID);
+		$this->VoltageID=intval($this->VoltageID);
 		$this->ConnectedDeviceID=intval($this->ConnectedDeviceID);
 		$this->ConnectedPort=intval($this->ConnectedPort);
 		$this->Notes=sanitize($this->Notes);
@@ -61,6 +61,9 @@ class PowerPorts {
 		$pp->DeviceID=$dbRow['DeviceID'];
 		$pp->PortNumber=$dbRow['PortNumber'];
 		$pp->Label=$dbRow['Label'];
+		$pp->ConnectorID=$dbRow['ConnectorID'];
+		$pp->PhaseID=$dbRow['PhaseID'];
+		$pp->VoltageID=$dbRow['VoltageID'];
 		$pp->ConnectedDeviceID=$dbRow['ConnectedDeviceID'];
 		$pp->ConnectedPort=$dbRow['ConnectedPort'];
 		$pp->Notes=$dbRow['Notes'];
@@ -285,9 +288,11 @@ class PowerPorts {
 
 		// update port
 		$sql="UPDATE fac_PowerPorts SET ConnectedDeviceID=$this->ConnectedDeviceID,
-			Label=\"$this->Label\", ConnectedPort=$this->ConnectedPort, 
+			Label=\"$this->Label\", ConnectedPort=$this->ConnectedPort, ConnectorID=$this->ConnectorID,
+			PhaseID=$this->PhaseID, VoltageID=$this->VoltageID,
 			Notes=\"$this->Notes\" WHERE DeviceID=$this->DeviceID AND 
 			PortNumber=$this->PortNumber;";
+		error_log( "SQL: ${sql}" );
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
@@ -309,16 +314,18 @@ class PowerPorts {
 		$port2->MakeSafe();
 
 		$sql="UPDATE fac_PowerPorts SET ConnectedDeviceID=$port2->DeviceID, 
-			ConnectedPort=$port2->PortNumber, Notes=\"$port2->Notes\" WHERE 
+			ConnectedPort=$port2->PortNumber, ConnectorID=$port2->ConnectorID,
+			PhaseID=$port2->PhaseID, VoltageID=$port2->VoltageID, Notes=\"$port2->Notes\" WHERE 
 			DeviceID=$port1->DeviceID AND PortNumber=$port1->PortNumber;
 			UPDATE fac_PowerPorts SET ConnectedDeviceID=$port1->DeviceID, 
-			ConnectedPort=$port1->PortNumber, Notes=\"$port1->Notes\" WHERE 
+			ConnectedPort=$port1->PortNumber, ConnectorID=$port1->ConnectorID, 
+			PhaseID=$port1->PhaseID, VoltageID=$port1->VoltageID, Notes=\"$port1->Notes\" WHERE 
 			DeviceID=$port2->DeviceID AND PortNumber=$port2->PortNumber;";
 
-		if(!$dbh->exec($sql)){
-			$info=$dbh->errorInfo();
-
-			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
+		try {
+			$dbh->exec($sql);
+		} catch (PDOException $e) {
+			error_log("updatePort::PDO Error: {$e->getMessage()} SQL=$sql");
 			return false;
 		}
 
