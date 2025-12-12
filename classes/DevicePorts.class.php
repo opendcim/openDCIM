@@ -40,9 +40,9 @@ class DevicePorts {
 		$this->DeviceID=intval($this->DeviceID);
 		$this->PortNumber=intval($this->PortNumber);
 		$this->Label=sanitize($this->Label);
-		$this->ConnectorID=sanitize($this->ConnectorID);
-		$this->ProtocolID=sanitize($this->ProtocolID);
-		$this->RateID=sanitize($this->RateID);
+		$this->ConnectorID=intval($this->ConnectorID);
+		$this->ProtocolID=intval($this->ProtocolID);
+		$this->RateID=intval($this->RateID);
 		$this->MediaID=intval($this->MediaID);
 		$this->ColorID=intval($this->ColorID);
 		$this->ConnectedDeviceID=intval($this->ConnectedDeviceID);
@@ -67,7 +67,7 @@ class DevicePorts {
 		$dp->Label=$dbRow['Label'];
 		$dp->ConnectorID=$dbRow['ConnectorID'];
 		$dp->ProtocolID=$dbRow['ProtocolID'];
-		$db->RateID=$dbRow['RateID'];
+		$dp->RateID=$dbRow['RateID'];
 		$dp->MediaID=$dbRow['MediaID'];
 		$dp->ColorID=$dbRow['ColorID'];
 		$dp->ConnectedDeviceID=(int)$dbRow['ConnectedDeviceID'];
@@ -316,10 +316,11 @@ class DevicePorts {
 			}
 		}
 		// update port
-		$sql="UPDATE fac_Ports SET ConnectorID=$this->ConnectorID, ProtocolID=$this->ConnectorID,
+		$sql="UPDATE fac_Ports SET ConnectorID=$this->ConnectorID, ProtocolID=$this->ProtocolID,
 			RateID=$this->RateID, MediaID=$this->MediaID, ColorID=$this->ColorID, 
 			ConnectedDeviceID=$this->ConnectedDeviceID, Label=\"$this->Label\", 
-			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\" 
+			ConnectedPort=$this->ConnectedPort, Notes=\"$this->Notes\", ConnectorID=$this->ConnectorID,
+			MediaID=$this->MediaID, RateID=$this->RateID
 			WHERE DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){
@@ -411,7 +412,8 @@ class DevicePorts {
 
 		$this->getPort();
 
-		$sql="UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL WHERE
+		$sql="UPDATE fac_Ports SET ConnectedDeviceID=NULL, ConnectedPort=NULL, ConnectorID=0,
+			ProtocolID=0, RateID=0, MediaID=0, ColorID=0 WHERE
 			(DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber) OR 
 			(ConnectedDeviceID=$this->DeviceID AND ConnectedPort=$this->PortNumber);";
 

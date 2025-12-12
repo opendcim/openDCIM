@@ -1466,4 +1466,52 @@ $app->get( '/pollers/sensors', function(Request $request, Response $response) {
 
 });
 
+$app->get( '/powerconnectortypes', function(Request $request, Response $response) {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['powerconnectortypes'] = PowerConnectors::getConnectorList();
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+$app->get( '/powervoltages', function(Request $request, Response $response) {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['powervoltages'] = PowerVoltages::getVoltageList();
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+$app->get( '/powerphases', function(Request $request, Response $response) {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['powerphases'] = PowerPhases::getPhaseList();
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+$app->get( '/mediaconnectors', function(Request $request, Response $response) {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['mediaconnectors'] = MediaConnectors::getConnectorList();
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+$app->get( '/mediaprotocols', function(Request $request, Response $response) {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['mediaprotocols'] = MediaProtocols::getProtocolList();
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+$app->get( '/mediadatarates', function(Request $request, Response $response) {
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['mediadatarates'] = MediaDataRates::getRateList();
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
 ?>

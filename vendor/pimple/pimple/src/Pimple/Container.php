@@ -174,7 +174,7 @@ class Container implements \ArrayAccess
             throw new ExpectedInvokableException('Service definition is not a Closure or invokable object.');
         }
 
-        $this->factories->attach($callable);
+        $this->factories->offsetSet($callable);
 
         return $callable;
     }
