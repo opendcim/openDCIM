@@ -243,8 +243,8 @@ function upgrade(){
                 $config->rebuild();
         }
         if($version=="23.04"){
-                error_log("Applying database update from 23.04 to 24.01");
-                $results[]=applyupdate("db-23.04-to-24.01.sql");
+                error_log("Applying database update from 23.04 to 25.01");
+                $results[]=applyupdate("db-23.04-to-25.01.sql");
 
                 $config->rebuild();
         }        
