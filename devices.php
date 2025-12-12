@@ -317,6 +317,9 @@
 				$dp->Notes=$_POST['cnotes'];
 				$dp->ConnectedDeviceID=$_POST['cdevice'];
 				$dp->ConnectedPort=$_POST['cdeviceport'];
+				$dp->ConnectorID=$_POST['connectorid'];
+				$dp->ProtocolID=$_POST['protocolid'];
+				$dp->RateID=$_POST['rateid'];
 
 				if($dp->updatePort()){
 					// when updating the media type on a rear port update the mediatype on the front port as well to make sure they match.
@@ -951,6 +954,9 @@
 	$connectorTypes=PowerConnectors::getConnectorList();
 	$voltageLevels=PowerVoltages::getVoltageList();
 	$pwrPhases=PowerPhases::getPhaseList();
+	$mediaConns=MediaConnectors::getConnectorList();
+	$mediaProto=MediaProtocols::getProtocolList();
+	$mediaRates=MediaDataRates::getRateList();
 	$templateList=$templ->GetTemplateList();
 	$escTimeList=$escTime->GetEscalationTimeList();
 	$escList=$esc->GetEscalationList();
@@ -2567,6 +2573,9 @@ print "<!--				<div>".__("Panel")."</div> -->
 				<div id=\"spn\">".__("Port Name")."</div>
 				<div>".__("Device")."</div>
 				<div>".__("Device Port")."</div>
+				<div>".__("Connector")."</div>
+				<div>".__("Protocol")."</div>
+				<div>".__("Rate")."</div>
 				<div>".__("Notes")."</div>";
 		if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st\">".__("Status")."</div>";}
 		print "\t\t\t\t<div id=\"mt\">".__("Media Type")."</div>
@@ -2597,6 +2606,9 @@ print "<!--				<div>".__("Panel")."</div> -->
 
 			$mt=(isset($mediaTypes[$port->MediaID]))?$mediaTypes[$port->MediaID]->MediaType:'';
 			$cc=(isset($colorCodes[$port->ColorID]))?$colorCodes[$port->ColorID]->Name:'';
+			$mc=($port->ConnectorID>0)?$mediaConns[$port->ConnectorID]->ConnectorType:'';
+			$mp=($port->ProtocolID>0)?$mediaProto[$port->ProtocolID]->ProtocolName:'';
+			$mr=($port->RateID>0)?$mediaRates[$port->RateID]->RateText:'';
 
 			if($dev->DeviceType=='Switch'){$linkList[$i]=(isset($linkList[$i]))?$linkList[$i]:'err';}
 
@@ -2606,6 +2618,9 @@ print "<!--				<div>".__("Panel")."</div> -->
 					<div id=\"spn$i\">$port->Label</div>
 					<div id=\"d$i\" data-default=$port->ConnectedDeviceID><a href=\"devices.php?DeviceID=$port->ConnectedDeviceID\">$tmpDev->Label</a></div>
 					<div id=\"dp$i\" data-default=$port->ConnectedPort><a href=\"paths.php?deviceid=$port->ConnectedDeviceID&portnumber=$port->ConnectedPort\">$cp->Label</a></div>
+					<div id=\"dc$i\" data-default=$port->ConnectorID>{$mc}</div>
+					<div id=\"dpro$i\" data-default=$port->ProtocolID>$mp</div>
+					<div id=\"dr$i\" data-default=$port->RateID>$mr</div>
 					<div id=\"n$i\" data-default=\"$port->Notes\">$port->Notes</div>";
 			if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st$i\"><span class=\"ui-icon status {$linkList[$i]}\"></span></div>";}
 			print "\t\t\t\t<div id=\"mt$i\" data-default=$port->MediaID>$mt</div>

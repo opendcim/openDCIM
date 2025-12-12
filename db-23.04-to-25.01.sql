@@ -103,4 +103,12 @@ ALTER TABLE fac_PowerPorts ADD COLUMN ConnectorID int(11) DEFAULT NULL AFTER Lab
 ALTER TABLE fac_PowerPorts ADD COLUMN PhaseID int(11) DEFAULT NULL AFTER ConnectorID;
 ALTER TABLE fac_PowerPorts ADD COLUMN VoltageID int(11) DEFAULT NULL AFTER PhaseID;
 
+ALTER TABLE fac_TemplatePorts ADD COLUMN ConnectorID int(11) NOT NULL DEFAULT 0 AFTER Label;
+ALTER TABLE fac_TemplatePorts ADD COLUMN ProtocolID int(11) NOT NULL DEFAULT 0 AFTER ConnectorID;
+ALTER TABLE fac_TemplatePorts ADD COLUMN RateID int(11) NOT NULL DEFAULT 0 AFTER ProtocolID;
+
+ALTER TABLE fac_TemplatePowerPorts ADD COLUMN ConnectorID int(11) DEFAULT NULL AFTER Label;
+ALTER TABLE fac_TemplatePowerPorts ADD COLUMN PhaseID int(11) DEFAULT NULL AFTER ConnectorID;
+ALTER TABLE fac_TemplatePowerPorts ADD COLUMN VoltageID int(11) DEFAULT NULL AFTER PhaseID;
+
 UPDATE fac_Config set Value="25.01" WHERE Parameter="Version";

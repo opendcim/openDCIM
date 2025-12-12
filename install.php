@@ -242,12 +242,12 @@ function upgrade(){
 
                 $config->rebuild();
         }
-#        if($version=="23.04"){
-#                error_log("Applying database update from 23.04 to 25.01");
-#                $results[]=applyupdate("db-23.04-to-25.01.sql");
-#
-#                $config->rebuild();
-#        }        
+        if($version=="23.04"){
+                error_log("Applying database update from 23.04 to 25.01");
+                $results[]=applyupdate("db-23.04-to-25.01.sql");
+
+                $config->rebuild();
+        }        
 }
 
 	if($upgrade==true){ //If we're doing an upgrade don't call the rest of the installer.
