@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-12 06:09-0600\n"
+"POT-Creation-Date: 2025-12-12 06:14-0600\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1965,7 +1965,7 @@ msgstr "Etiqueta do Activo"
 msgid "Target Cabinet"
 msgstr "Armario Destino"
 
-#: connections_spreadsheet.php:120 classes/PowerPorts.class.php:160
+#: connections_spreadsheet.php:120 classes/PowerPorts.class.php:161
 msgid "Power Connection"
 msgstr "Conexión Eléctrica"
 

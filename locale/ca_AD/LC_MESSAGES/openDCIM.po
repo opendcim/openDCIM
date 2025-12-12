@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-12 06:09-0600\n"
+"POT-Creation-Date: 2025-12-12 06:14-0600\n"
 "PO-Revision-Date: 2014-08-04 13:57-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -1965,7 +1965,7 @@ msgstr ""
 msgid "Target Cabinet"
 msgstr ""
 
-#: connections_spreadsheet.php:120 classes/PowerPorts.class.php:160
+#: connections_spreadsheet.php:120 classes/PowerPorts.class.php:161
 #, fuzzy
 msgid "Power Connection"
 msgstr "Edit Pow'r Panels"
