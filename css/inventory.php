@@ -1129,6 +1129,7 @@ div.cabinet {
 #pandn.table .custom-combobox input {width: calc(100% - 18px);}
 #pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;} 
 #pandn.table .custom-combobox a {margin: 0; vertical-align: top; border-left: 0px; border-right: 2px; position: absolute;} 
+div#pandn.table div[id^="ppn"] { min-width: 200px; }
 
 #olog > div:first-child { border-bottom: 2px solid black; }
 #olog > div > div:first-child { width: 100px; padding-right: 5px; white-space: nowrap; }
