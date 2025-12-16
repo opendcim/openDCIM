@@ -247,6 +247,10 @@
 				$port->ConnectorID=(($_POST['setall']=='true' || $port->ConnectorID==0) && isset($_POST['mc']) && ($_POST['setall']=='true' || intval($_POST['mc'])>0))?$_POST['mc']:$port->ConnectorID;
 				$port->ProtocolID=(($_POST['setall']=='true' || $port->ProtocolID==0) && isset($_POST['mp']) && ($_POST['setall']=='true' || intval($_POST['mp'])>0))?$_POST['mp']:$port->ProtocolID;
 				$port->RateID=(($_POST['setall']=='true' || $port->RateID==0) && isset($_POST['mr']) && ($_POST['setall']=='true' || intval($_POST['mr'])>0))?$_POST['mr']:$port->RateID;
+			}else{
+				$port->ConnectorID=(($_POST['setall']=='true' || $port->ConnectorID==0) && isset($_POST['powc']) && ($_POST['setall']=='true' || intval($_POST['powc'])>0))?$_POST['powc']:$port->ConnectorID;
+				$port->VoltageID=(($_POST['setall']=='true' || $port->VoltageID==0) && isset($_POST['powv']) && ($_POST['setall']=='true' || intval($_POST['powv'])>0))?$_POST['powv']:$port->VoltageID;
+				$port->PhaseID=(($_POST['setall']=='true' || $port->PhaseID==0) && isset($_POST['powp']) && ($_POST['setall']=='true' || intval($_POST['powp'])>0))?$_POST['powp']:$port->PhaseID;
 			}
 			$port->updatePort();
 			// Update the other side to keep media types in sync if it is connected same
@@ -2510,9 +2514,9 @@ $connectioncontrols.=($dev->DeviceID>0 && !empty($portList))?'
 					<div id=\"ppcn\">".__("Port Name")."</div>
 					<div>".__("Device")."</div>
 					<div>".__("Device Port")."</div>
-					<div>".__("Connector Type")."</div>
-					<div>".__("Voltage")."</div>
-					<div>".__("Phase")."</div>
+					<div id=\"powc\">".__("Connector Type")."</div>
+					<div id=\"powv\">".__("Voltage")."</div>
+					<div id=\"powp\">".__("Phase")."</div>
 					<div id=\"ppn\">".__("Notes")."</div>";
 					if($dev->DeviceType=='CDU'){print "\t\t\t\t<div id=\"ppst\">".__("Status")."</div>";}
 print "<!--				<div>".__("Panel")."</div> -->

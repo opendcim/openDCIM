@@ -2093,7 +2093,7 @@ function LameLogDisplay(){
 				}
 			});
 
-			// Populate port protocol type choices
+			// Populate port rate choices
 			function massedit_mr(){
 				$.get('api/v1/mediadatarates').done(function(data){
 					$.each(data.mediadatarates, function(key,mr){
@@ -2103,6 +2103,159 @@ function LameLogDisplay(){
 					});
 				});
 				$('#mr').append(setmediarate);
+			}
+
+			// mass power connector change controls
+			setpowerconnector=$('<select>').append($('<option>'));
+			setpowerconnector.append($('<option>').val('clear').text('Clear'));
+			setpowerconnector.change(function(){
+				var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all power connectors?</div>');
+				dialog.dialog({
+					resizable: false,
+					modal: true,
+					dialogClass: "no-close",
+					buttons: {
+						Yes: function(){
+							$(this).dialog("destroy");
+							doit(true);
+						},
+						No: function(){
+							$(this).dialog("destroy");
+							doit(false);
+						},
+						Cancel: function(){
+							$(this).dialog("destroy");
+							setpowerconnector.val('');
+						}
+					}
+				});
+				function doit(override){
+					// set all the media types to the one selected from the drop down
+					$.post('',{
+						setall: override,
+						devid: ($('select[name=ParentDevice]').val())?$('select[name=ParentDevice]').val():$('#DeviceID').val(),
+						power: '',
+						powc: setpowerconnector.val()
+					}).done(function(data){
+						// setall kicked back every port run through them all and update note, media type, and color code
+						redrawpowerports(data);
+					});
+					setpowerconnector.val('');
+				}
+			}).css('z-index','3');
+
+			// Populate power conenctor choices
+			function massedit_powc(){
+				$.get('api/v1/powerconnectortypes').done(function(data){
+					$.each(data.powerconnectortypes, function(key,powc){
+						var option=$("<option>",({'value':powc.ConnectorID})).append(powc.ConnectorName);
+						setpowerconnector.append(option).data(powc.ConnectorID,powc.ConnectorName);
+						$('#powc').data('label'+powc.ConnectorID,powc.ConnectorName);
+					});
+					$('#powc').append(setpowerconnector);
+				});
+			}
+
+			// mass power voltage change controls
+			setpowervoltage=$('<select>').append($('<option>'));
+			setpowervoltage.append($('<option>').val('clear').text('Clear'));
+			setpowervoltage.change(function(){
+				var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all power phases?</div>');
+				dialog.dialog({
+					resizable: false,
+					modal: true,
+					dialogClass: "no-close",
+					buttons: {
+						Yes: function(){
+							$(this).dialog("destroy");
+							doit(true);
+						},
+						No: function(){
+							$(this).dialog("destroy");
+							doit(false);
+						},
+						Cancel: function(){
+							$(this).dialog("destroy");
+							setpowervoltage.val('');
+						}
+					}
+				});
+				function doit(override){
+					// set all the media types to the one selected from the drop down
+					$.post('',{
+						setall: override,
+						devid: ($('select[name=ParentDevice]').val())?$('select[name=ParentDevice]').val():$('#DeviceID').val(),
+						power: '',
+						powv: setpowervoltage.val()
+					}).done(function(data){
+						// setall kicked back every port run through them all and update note, media type, and color code
+						redrawpowerports(data);
+					});
+					setpowervoltage.val('');
+				}
+			}).css('z-index','3');
+
+			// Populate power voltage choices
+			function massedit_powv(){
+				$.get('api/v1/powervoltages').done(function(data){
+					$.each(data.powervoltages, function(key,powv){
+						var option=$("<option>",({'value':powv.VoltageID})).append(powv.VoltageName);
+						setpowervoltage.append(option).data(powv.VoltageID,powv.VoltageName);
+						$('#powv').data('label'+powv.VoltageID,powv.VoltageName);
+					});
+					$('#powv').append(setpowervoltage);
+				});
+			}
+
+			// mass power phase change controls
+			setpowerphase=$('<select>').append($('<option>'));
+			setpowerphase.append($('<option>').val('clear').text('Clear'));
+			setpowerphase.change(function(){
+				var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all power phases?</div>');
+				dialog.dialog({
+					resizable: false,
+					modal: true,
+					dialogClass: "no-close",
+					buttons: {
+						Yes: function(){
+							$(this).dialog("destroy");
+							doit(true);
+						},
+						No: function(){
+							$(this).dialog("destroy");
+							doit(false);
+						},
+						Cancel: function(){
+							$(this).dialog("destroy");
+							setpowerphase.val('');
+						}
+					}
+				});
+				function doit(override){
+					// set all the media types to the one selected from the drop down
+					$.post('',{
+						setall: override, 
+						devid: ($('select[name=ParentDevice]').val())?$('select[name=ParentDevice]').val():$('#DeviceID').val(),
+						power: '',
+						powp: setpowerphase.val() 
+					}).done(function(data){
+						// setall kicked back every port run through them all and update note, media type, and color code
+						redrawpowerports(data);
+					});
+					setpowerphase.val('');
+				}
+			}).css('z-index','3');
+
+			// Populate power phase choices
+			function massedit_powp(){
+				$.get('api/v1/powerphases').done(function(data){
+					$.each(data.powerphases, function(key,powp){
+						var option=$("<option>",({'value':powp.PhaseID})).append(powp.PhaseName);
+						setpowerphase.append(option).data(powp.PhaseID,powp.PhaseName);
+						$('#powp').data('label'+powp.PhaseID,powp.PhaseName);
+					});
+					$('#powp').append(setpowerphase);
+				});
 			}
 
 			// color codes change controls
@@ -2329,6 +2482,13 @@ function LameLogDisplay(){
 				});
 			}
 
+			function redrawpowerports(portsarr){
+				$.each(portsarr.ports, function(key,p){
+					var row=$('#ppv'+p.PortNumber).parent('div');
+					row.power('destroy');
+				});
+			}
+
 			// Add controls the page
 			if(this.element.hasClass('switch') || this.element.hasClass('patchpanel')){
 				massedit_mt();
@@ -2342,6 +2502,9 @@ function LameLogDisplay(){
 				}
 			}else if(this.element.hasClass('power')){
 				massedit_ppn();
+				massedit_powc();
+				massedit_powv();
+				massedit_powp();
 			}
 
 			// Nest the mass edit buttons inside of divs so they won't have to moved around
@@ -2742,7 +2905,6 @@ function LameLogDisplay(){
 		},
 		destroy: function(check) {
 			var row=this;
-
 			$.get("api/v1/powerport/"+row.deviceid+"?PortNumber="+this.portnum).done(function(data){
 				if(!data.error){
 					var port=data.powerport[row.portnum];
@@ -2752,9 +2914,9 @@ function LameLogDisplay(){
 					port.ConnectedPortLabel=(port.ConnectedPortLabel==null)?'':port.ConnectedPortLabel;
 					row.cdevice.html('<a href="devices.php?DeviceID='+port.ConnectedDeviceID+'">'+port.ConnectedDeviceLabel+'</a>').data('default',port.ConnectedDeviceID);
 					row.cdeviceport.html(port.ConnectedPortLabel).data('default',port.ConnectedPort);
-					row.conntype.html((port.ConnectorID==null)?'':row.conntype.data('label'+port.ConnectorID)).data('default',port.ConnectorID);
-					row.voltage.html((port.VoltageID==null)?'':row.voltage.data('label'+port.VoltageID)).data('default',port.VoltageID);
-					row.phase.html((port.PhaseID==null)?'':row.phase.data('label'+port.PhaseID)).data('default',port.PhaseName);
+					row.conntype.html((port.ConnectorID==null || port.ConnectorID==0)?'':$('#powc').data('label'+port.ConnectorID)).data('default',port.ConnectorID);
+					row.voltage.html((port.VoltageID==null || port.VoltageID==0)?'':$('#powv').data('label'+port.VoltageID)).data('default',port.VoltageID);
+					row.phase.html((port.PhaseID==null || port.PhaseID==0)?'':$('#powp').data('label'+port.PhaseID)).data('default',port.PhaseName);
 					row.cnotes.html(port.Notes).data('default',port.Notes);
 					row.ct.css('padding','');
 					$(row.element[0]).children('div:nth-child(2) ~ div').removeAttr('style');
