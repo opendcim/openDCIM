@@ -244,6 +244,9 @@
 			if(!isset($_POST['power'])){
 				$port->MediaID=(($_POST['setall']=='true' || $port->MediaID==0) && isset($_POST['mt']) && ($_POST['setall']=='true' || intval($_POST['mt'])>0))?$_POST['mt']:$port->MediaID;
 				$port->ColorID=(($_POST['setall']=='true' || $port->ColorID==0) && isset($_POST['cc']) && ($_POST['setall']=='true' || intval($_POST['cc'])>0))?$_POST['cc']:$port->ColorID;
+				$port->ConnectorID=(($_POST['setall']=='true' || $port->ConnectorID==0) && isset($_POST['mc']) && ($_POST['setall']=='true' || intval($_POST['mc'])>0))?$_POST['mc']:$port->ConnectorID;
+				$port->ProtocolID=(($_POST['setall']=='true' || $port->ProtocolID==0) && isset($_POST['mp']) && ($_POST['setall']=='true' || intval($_POST['mp'])>0))?$_POST['mp']:$port->ProtocolID;
+				$port->RateID=(($_POST['setall']=='true' || $port->RateID==0) && isset($_POST['mr']) && ($_POST['setall']=='true' || intval($_POST['mr'])>0))?$_POST['mr']:$port->RateID;
 			}
 			$port->updatePort();
 			// Update the other side to keep media types in sync if it is connected same
@@ -2573,9 +2576,9 @@ print "<!--				<div>".__("Panel")."</div> -->
 				<div id=\"spn\">".__("Port Name")."</div>
 				<div>".__("Device")."</div>
 				<div>".__("Device Port")."</div>
-				<div>".__("Connector")."</div>
-				<div>".__("Protocol")."</div>
-				<div>".__("Rate")."</div>
+				<div id=\"mc\">".__("Connector")."</div>
+				<div id=\"mp\">".__("Protocol")."</div>
+				<div id=\"mr\">".__("Rate")."</div>
 				<div>".__("Notes")."</div>";
 		if($dev->DeviceType=='Switch'){print "\t\t\t\t<div id=\"st\">".__("Status")."</div>";}
 		print "\t\t\t\t<div id=\"mt\">".__("Media Type")."</div>

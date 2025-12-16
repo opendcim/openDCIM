@@ -1955,6 +1955,156 @@ function LameLogDisplay(){
 				$('#mt').append(setmediatype);
 			}
 
+			// port media connector change controls
+			setmediaconnector=$('<select>').append($('<option>'));
+			setmediaconnector.append($('<option>').val('clear').text('Clear'));
+			setmediaconnector.change(function(){
+				var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the port connector types?</div>');
+				dialog.dialog({
+					resizable: false,
+					modal: true,
+					dialogClass: "no-close",
+					buttons: {
+						Yes: function(){
+							$(this).dialog("destroy");
+							doit(true);
+						},
+						No: function(){
+							$(this).dialog("destroy");
+							doit(false);
+						},
+						Cancel: function(){
+							$(this).dialog("destroy");
+							setmediaconnector.val('');
+						}
+					}
+				});
+				function doit(override){
+					// set all the color codes to the one selected from the drop down
+					$.post('',{
+						setall: override,
+						devid: $('#DeviceID').val(),
+						mc: setmediaconnector.val()
+					}).done(function(data){
+						// setall kicked back every port run through them all and update note, media type, and color code
+						redrawports(data);
+					});
+					setmediaconnector.val('');
+				}
+			});
+
+			// Populate port connector type choices
+			function massedit_mc(){
+				$.get('api/v1/mediaconnectors').done(function(data){
+					$.each(data.mediaconnectors, function(key,mc){
+						var option=$("<option>",({'value':mc.ConnectorID})).append(mc.ConnectorType);
+						setmediaconnector.append(option).data(mc.ConnectorID,mc.ConnectorType);
+						$('#mc').data('label'+mc.ConnectorID,mc.ConnectorType);
+					});
+				});
+				$('#mc').append(setmediaconnector);
+			}
+
+			// port protocol change controls
+			setmediaprotocol=$('<select>').append($('<option>'));
+			setmediaprotocol.append($('<option>').val('clear').text('Clear'));
+			setmediaprotocol.change(function(){
+				var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the port protocol types?</div>');
+				dialog.dialog({
+					resizable: false,
+					modal: true,
+					dialogClass: "no-close",
+					buttons: {
+						Yes: function(){
+							$(this).dialog("destroy");
+							doit(true);
+						},
+						No: function(){
+							$(this).dialog("destroy");
+							doit(false);
+						},
+						Cancel: function(){
+							$(this).dialog("destroy");
+							setmediaprotocol.val('');
+						}
+					}
+				});
+				function doit(override){
+					// set all the color codes to the one selected from the drop down
+					$.post('',{
+						setall: override,
+						devid: $('#DeviceID').val(),
+						mp: setmediaprotocol.val()
+					}).done(function(data){
+						// setall kicked back every port run through them all and update note, media type, and color code
+						redrawports(data);
+					});
+					setmediaprotocol.val('');
+				}
+			});
+
+			// Populate port protocol type choices
+			function massedit_mp(){
+				$.get('api/v1/mediaprotocols').done(function(data){
+					$.each(data.mediaprotocols, function(key,mp){
+						var option=$("<option>",({'value':mp.ProtocolID})).append(mp.ProtocolName);
+						setmediaprotocol.append(option).data(mp.ProtocolID,mp.ProtocolName);
+						$('#mp').data('label'+mp.ProtocolID,mp.ProtocolName);
+					});
+				});
+				$('#mp').append(setmediaprotocol);
+			}
+
+			// port rate controls
+			setmediarate=$('<select>').append($('<option>'));
+			setmediarate.append($('<option>').val('clear').text('Clear'));
+			setmediarate.change(function(){
+				var dialog=$('<div />', {id: 'modal', title: 'Override all types?'}).html('<div id="modaltext"></div><br><div id="modalstatus" class="warning">Do you want to override all the port rate types?</div>');
+				dialog.dialog({
+					resizable: false,
+					modal: true,
+					dialogClass: "no-close",
+					buttons: {
+						Yes: function(){
+							$(this).dialog("destroy");
+							doit(true);
+						},
+						No: function(){
+							$(this).dialog("destroy");
+							doit(false);
+						},
+						Cancel: function(){
+							$(this).dialog("destroy");
+							setmediarate.val('');
+						}
+					}
+				});
+				function doit(override){
+					// set all the color codes to the one selected from the drop down
+					$.post('',{
+						setall: override,
+						devid: $('#DeviceID').val(),
+						mr: setmediarate.val()
+					}).done(function(data){
+						// setall kicked back every port run through them all and update note, media type, and color code
+						redrawports(data);
+					});
+					setmediarate.val('');
+				}
+			});
+
+			// Populate port protocol type choices
+			function massedit_mr(){
+				$.get('api/v1/mediadatarates').done(function(data){
+					$.each(data.mediadatarates, function(key,mr){
+						var option=$("<option>",({'value':mr.RateID})).append(mr.RateText);
+						setmediarate.append(option).data(mr.RateID,mr.RateText);
+						$('#mr').data('label'+mr.RateID,mr.RateText);
+					});
+				});
+				$('#mr').append(setmediarate);
+			}
+
 			// color codes change controls
 			setcolorcode=$('<select>').append($('<option>'));
 			setcolorcode.append($('<option>').val('clear').text('Clear'));
@@ -2184,6 +2334,9 @@ function LameLogDisplay(){
 				massedit_mt();
 				massedit_cc();
 				massedit_pn();
+				massedit_mc();
+				massedit_mp();
+				massedit_mr();
 				if(this.element.hasClass('patchpanel')){
 					massedit_rear();
 				}
@@ -2415,7 +2568,7 @@ function LameLogDisplay(){
 			var row=this;
 
 			// Each time we invoke an edit, clone the control then add it back to the row model
-			//  this way we can just destory the row.controlsdiv and not have to try to see if they
+			//  this way we can just destroy the row.controlsdiv and not have to try to see if they
 			//  exist first.
 			this.controlsdiv=this.controls.clone(true);
 			this.element.append(this.controlsdiv);
@@ -2798,6 +2951,7 @@ function LameLogDisplay(){
 						var conn=data.mediaconnectors[i];
 						connections.append('<option value='+conn.ConnectorID+'>'+conn.ConnectorType+'</option>');
 						row.dctype.data('label'+conn.ConnectorID,conn.ConnectorType);
+						$('#pc').data('label'+conn.ConnectorID,conn.ConnectorType);
 					}
 				}
 				row.dctype.html(connections).find('select').val(row.dctype.data('default'));
@@ -3135,9 +3289,9 @@ function LameLogDisplay(){
 					row.cnotes.html(data.Notes).data('default',data.Notes);
 					row.porttype.html(data.MediaName).data('default',data.MediaID);
 					row.portcolor.html(data.ColorName).data('default',data.ColorID);
-					row.dctype.html((data.ConnectorID>0)?row.dctype.data('label'+data.ConnectorID):'').data('default',data.ConnectorID);
-					row.protocol.html((data.ProtocolID>0)?row.protocol.data('label'+data.ProtocolID):'').data('default',data.ProtocolID);
-					row.mediarate.html((data.RateID>0)?row.mediarate.data('label'+data.RateID):'').data('default',data.RateID);
+					row.dctype.html((data.ConnectorID>0)?$('#mc').data('label'+data.ConnectorID):'').data('default',data.ConnectorID);
+					row.protocol.html((data.ProtocolID>0)?$('#mp').data('label'+data.ProtocolID):'').data('default',data.ProtocolID);
+					row.mediarate.html((data.RateID>0)?$('#mr').data('label'+data.RateID):'').data('default',data.RateID);
 					$(row.element[0]).children('div ~ div:not([id^=sp])').removeAttr('style');
 					// Attempt to show mass edit controls
 					$('.switch.table, .patchpanel.table').massedit('show');
