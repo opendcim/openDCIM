@@ -1075,8 +1075,8 @@
 			});
 		}
 
-		var blankgenericrow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text"></div>');
 		function genericbindrow(row){
+			var blankgenericrow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text"></div>');
 			var choices;
 			var addrem=row.find('div:first-child');
 			var datapath=row.parent('.table').data('path');
@@ -1084,41 +1084,12 @@
 			var rowinput=row.find('div:nth-child(2) input');
 			var defaultbutton={
 				"Clear All": function(){
-					$.ajax({
-						url: 'api/v1/' + datapath + '/' + rowinput.data('id'),
-						method: 'DELETE'
-					}).done(function(data){
-						// close the modal
-						modal.dialog("destroy");
-						// delete was successful, remove the row
-						row.effect('explode', {}, 500, function(){
-							row.remove();
-						});
-					}).fail(function(data){
-						$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>")
-						modal.dialog('option','buttons',cancelbutton);
-					});
-
+					ajaxdelete();
 				}
 			}
 			var replacebutton={
 				"Replace": function(){
-					$.ajax({
-						url: 'api/v1/' + datapath + '/' + rowinput.data('id'),
-						data: { NewConnectorID: choices.val() },
-						method: 'DELETE'
-					}).done(function(data){
-						// close the modal
-						modal.dialog("destroy");
-						// delete was successful, remove the row
-						row.effect('explode', {}, 500, function(){
-							row.remove();
-						});
-					}).fail(function(data){
-						$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>")
-						modal.dialog('option','buttons',cancelbutton);
-					});
-
+					ajaxdelete();
 				}
 			}
 			var cancelbutton={
@@ -1140,18 +1111,33 @@
 					rowinput.change();
 				}
 			});
+			function ajaxdelete(){
+				var modalactive = !!modal.data('ui-dialog');
+				var newConnectorId = (choices && choices.length)?choices.val():undefined;
+				$.ajax({
+					url: 'api/v1/' + datapath + '/' + rowinput.data('id'),
+					data: newConnectorId === undefined ? undefined : { NewConnectorID: newConnectorId },
+					method: 'DELETE'
+				}).done(function(data){
+					if(modalactive){
+						// close the modal
+						modal.dialog("destroy");
+					}
+					// delete was successful, remove the row
+					row.effect('explode', {}, 500, function(){
+						row.remove();
+					});
+				}).fail(function(data){
+					if(modalactive){
+						$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>")
+						modal.dialog('option','buttons',cancelbutton);
+					}
+				});
+			}
 			function remove(){
 				$.get('api/v1/' + datapath + '/' + rowinput.data('id') + '/count').done(function(data){
 					if (data.count == 0) {
-						$.ajax({
-							url: 'api/v1/' + datapath + '/' + rowinput.data('id'),
-							method: 'DELETE'
-						}).done(function(data){
-							// delete was successful, remove the row
-							row.effect('explode', {}, 500, function(){
-								row.remove();
-							});
-						});
+						ajaxdelete();
 					} else {
 						$.get('api/v1/' + datapath).done(function(data){
 							choices=$('<select />');
@@ -1236,6 +1222,7 @@
 			});
 		}
 
+		// bind update controls to single element parameters
 		const connectorSelector =`
 			#powerconnectors > div:not(:first-child),
 			#powerphases > div:not(:first-child),
