@@ -130,7 +130,7 @@ class MediaTypes {
 		$mediaid=intval($mediaid);
 		$tomediaid=intval($tomediaid); // it will always be 0 unless otherwise set
 
-		$sql="UPDATE fac_DevicePorts SET MediaID='$tomediaid' WHERE MediaID='$mediaid';";
+		$sql="UPDATE fac_Ports SET MediaID='$tomediaid' WHERE MediaID='$mediaid';";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
@@ -144,7 +144,7 @@ class MediaTypes {
 	static function TimesUsed($mediaid){
 		global $dbh;
 
-		$count=$dbh->prepare('SELECT * FROM fac_DevicePorts WHERE MediaID='.intval($mediaid));
+		$count=$dbh->prepare('SELECT * FROM fac_Ports WHERE MediaID='.intval($mediaid));
 		$count->execute();
 
 		return $count->rowCount();
