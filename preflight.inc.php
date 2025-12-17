@@ -296,6 +296,7 @@ function get_base_url() {
 		$tests['EncodedSlashes']['message']='Apache does not appear to be rewriting URLs correctly. Check your AllowEncodedSlashes directive and change to "AllowEncodedSlashes On"<br><br><b>READ THE FAQ</b> <a href="https://github.com/opendcim/openDCIM/wiki/FAQ#getting-404-trying-to-access-some-linksimages" target="_blank">https://github.com/opendcim/openDCIM/wiki/FAQ#getting-404-trying-to-access-some-linksimages</a>';
 	}else{
 		$tests['EncodedSlashes']['state']="good";
+		$tests['EncodedSlashes']['message']="";
 	}
 
 
