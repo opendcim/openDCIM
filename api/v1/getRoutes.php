@@ -762,6 +762,7 @@ $app->get( '/powerport/{deviceid}', function( Request $request, Response $respon
 	$pp->DeviceID=$deviceid;
 
 	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = (is_null($vars)) ? array() : $vars;
 
 	foreach($vars as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
