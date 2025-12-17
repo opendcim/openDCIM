@@ -1077,8 +1077,10 @@
 
 		var blankgenericrow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text"></div>');
 		function genericbindrow(row){
+			var choices;
 			var addrem=row.find('div:first-child');
 			var datapath=row.parent('.table').data('path');
+			var title=row.parent('.table').data('title');
 			var rowinput=row.find('div:nth-child(2) input');
 			var defaultbutton={
 				"Clear All": function(){
@@ -1087,11 +1089,34 @@
 						method: 'DELETE'
 					}).done(function(data){
 						// close the modal
-						modal.dialog("destory");
+						modal.dialog("destroy");
 						// delete was successful, remove the row
 						row.effect('explode', {}, 500, function(){
 							row.remove();
 						});
+					}).fail(function(data){
+						$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>")
+						modal.dialog('option','buttons',cancelbutton);
+					});
+
+				}
+			}
+			var replacebutton={
+				"Replace": function(){
+					$.ajax({
+						url: 'api/v1/' + datapath + '/' + rowinput.data('id'),
+						data: { NewConnectorID: choices.val() },
+						method: 'DELETE'
+					}).done(function(data){
+						// close the modal
+						modal.dialog("destroy");
+						// delete was successful, remove the row
+						row.effect('explode', {}, 500, function(){
+							row.remove();
+						});
+					}).fail(function(data){
+						$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>")
+						modal.dialog('option','buttons',cancelbutton);
 					});
 
 				}
@@ -1101,12 +1126,11 @@
 					modal.dialog("destroy");
 				}
 			}
-			var modal=$('<div />', {id: 'modal', title: 'Need something generic here'}).html('<div id="modaltext">This value is in use on <span id="inuseportcount"></span> objects. Select an alternate type to assign to all the records to or choose clear all.<select id="replaceme"></select></div>');
+			var modal=$('<div />', {id: 'modal', title: title}).html('<div id="modaltext">This value is in use on <span id="inuseportcount"></span> objects. Select an alternate type to assign to all the records to or choose clear all.<select id="replaceme"></select></div>');
 			// store current value on object
 			rowinput.data('default',rowinput.val());
 			if(rowinput.val().trim()!='' && addrem.attr('id')!='newline'){
 				addrem.click(function(){
-//					removemedia(row);
 					remove();
 				});
 			}
@@ -1130,7 +1154,8 @@
 						});
 					} else {
 						$.get('api/v1/' + datapath).done(function(data){
-							var choices=$('<select />');
+							choices=$('<select />');
+							$("<option>",{'value':''}).appendTo(choices);
 							$.each(data[datapath], function(key,item){
 								let value, label;
 
@@ -1145,6 +1170,13 @@
 								// skip the current value because we can't reassign things to it
 								if ( rowinput.data('id') != value ){
 									$("<option>",{'value':value}).text(label).appendTo(choices);
+								}
+							});
+							choices.change(function(){
+								if($(this).val()==''){ // clear all
+									modal.dialog('option','buttons',$.extend({}, defaultbutton, cancelbutton));
+								}else{
+									modal.dialog('option','buttons',$.extend({}, replacebutton, cancelbutton));
 								}
 							});
 							$('#modal #modaltext select#replaceme').replaceWith(choices);
@@ -2615,7 +2647,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Media Protocols"),'</h3>
-			<div class="table" id="mediaprotocols" data-path="mediaprotocols">
+			<div class="table" id="mediaprotocols" data-path="mediaprotocols" data-title="Media Protocols Delete Override">
 				<div>
 					<div></div>
 					<div>',__("Protocol Name"),'</div>
@@ -2627,7 +2659,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Media Connectors"),'</h3>
-			<div class="table" id="mediaconnectors" data-path="mediaconnectors">
+			<div class="table" id="mediaconnectors" data-path="mediaconnectors" data-title="Media Connector Delete Override">
 				<div>
 					<div></div>
 					<div>',__("Connector Type"),'</div>
@@ -2639,7 +2671,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Media Data Rates"),'</h3>
-			<div class="table" id="mediadatarates" data-path="mediadatarates">
+			<div class="table" id="mediadatarates" data-path="mediadatarates" data-title="Media Data Rates Delete Override">
 				<div>
 					<div></div>
 					<div>',__("Data Rate"),'</div>
@@ -2651,7 +2683,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Power Connectors"),'</h3>
-			<div class="table" id="powerconnectors" data-path="powerconnectortypes">
+			<div class="table" id="powerconnectors" data-path="powerconnectortypes" data-title="Power Connectors Delete Override">
 				<div>
 					<div></div>
 					<div>',__("Connector Type"),'</div>
@@ -2663,7 +2695,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Power Voltages"),'</h3>
-			<div class="table" id="powervoltages" data-path="powervoltages">
+			<div class="table" id="powervoltages" data-path="powervoltages" data-title="Power Voltages Delete Override">
 				<div>
 					<div></div>
 					<div>',__("Voltage Value"),'</div>
@@ -2675,7 +2707,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Power Phases"),'</h3>
-			<div class="table" id="powerphases" data-path="powerphases">
+			<div class="table" id="powerphases" data-path="powerphases" data-title="Power Phases Delete Override">
 				<div>
 					<div></div>
 					<div>',__("Phase Name"),'</div>

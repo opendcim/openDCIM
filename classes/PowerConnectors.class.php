@@ -64,14 +64,15 @@ class PowerConnectors {
 		return $result;
 	}
 
-	static function deleteConnector( $ConnectorID ) {
+	static function deleteConnector( $ConnectorID,$NewConnectorID=0 ) {
 		global $dbh;
 
+		$NewConnectorID = (intval($NewConnectorID) == 0) ? 'NULL' : intval($NewConnectorID);
 		$oldConnector = PowerConnectors::getConnector( $ConnectorID );
 
 		// Set any connections using this ConnectorID to have NULL instead
-		$st = $dbh->prepare( "update fac_Ports set ConnectorID=NULL where ConnectorID=:ConnectorID" );
-		$st->execute( array( ":ConnectorID"=>$ConnectorID ));
+		$st = $dbh->prepare( "update fac_PowerPorts set ConnectorID=:NewConnectorID where ConnectorID=:ConnectorID" );
+		$st->execute( array( ":ConnectorID"=>$ConnectorID, ":NewConnectorID"=>$NewConnectorID ));
 
 		$st = $dbh->prepare( "delete from fac_PowerConnectors where ConnectorID=:ConnectorID" );
 		if ( $st->execute( array( ":ConnectorID"=>$ConnectorID ))) {
@@ -116,20 +117,6 @@ class PowerConnectors {
 			return false;
 		}
 	}
-
-	static function RowToObject($dbRow){
-		/*
-		 * Generic function that will take any row returned from the fac_PowerCOnnectors
-		 * table and convert it to an object for use in array or other
-		 */
-
-		$pc=new PowerConnectors();
-		$pc->ConnectorID=$dbRow["ConnectorID"];
-		$pc->ConnectorName=$dbRow["ConnectorName"];
-
-		return $pc;
-	}
-
 
 	static function TimesUsed($id){
 		global $dbh;
