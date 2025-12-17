@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-17 10:09-0600\n"
+"POT-Creation-Date: 2025-12-17 10:18-0600\n"
 "Language: zh-CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -5630,39 +5630,39 @@ msgstr "Cabinet not found"
 msgid "Device is not a sensor or is missing a template"
 msgstr "Device is not a sensor or is missing a template"
 
-#: api/v1/getRoutes.php:831
+#: api/v1/getRoutes.php:832
 msgid "No color code found with ColorID"
 msgstr "No color code found with ColorID"
 
-#: api/v1/getRoutes.php:915
+#: api/v1/getRoutes.php:916
 msgid "No template found with TemplateID: "
 msgstr "No template found with TemplateID: "
 
-#: api/v1/getRoutes.php:940 api/v1/getRoutes.php:992
+#: api/v1/getRoutes.php:941 api/v1/getRoutes.php:993
 msgid "No ports found for TemplateID: "
 msgstr "No ports found for TemplateID: "
 
-#: api/v1/getRoutes.php:967
+#: api/v1/getRoutes.php:968
 msgid "Port not found for TemplateID: "
 msgstr "Port not found for TemplateID: "
 
-#: api/v1/getRoutes.php:1015
+#: api/v1/getRoutes.php:1016
 msgid "No slots found for TemplateID: "
 msgstr "No slots found for TemplateID: "
 
-#: api/v1/getRoutes.php:1174
+#: api/v1/getRoutes.php:1175
 msgid "No sensor readings found with SensorID "
 msgstr "No sensor readings found with SensorID "
 
-#: api/v1/getRoutes.php:1226
+#: api/v1/getRoutes.php:1227
 msgid "No PDU Stats found with PDUID "
 msgstr "No PDU Stats found with PDUID "
 
-#: api/v1/getRoutes.php:1278
+#: api/v1/getRoutes.php:1279
 msgid "No VM information found with VMIndex "
 msgstr "No VM information found with VMIndex "
 
-#: api/v1/getRoutes.php:1330
+#: api/v1/getRoutes.php:1331
 msgid "No Powerpanel information found for PanelID "
 msgstr "No Powerpanel information found for PanelID "
 
