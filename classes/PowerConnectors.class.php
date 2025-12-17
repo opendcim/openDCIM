@@ -67,7 +67,7 @@ class PowerConnectors {
 	static function deleteConnector( $ConnectorID ) {
 		global $dbh;
 
-		$oldConnector = getConnector( $connectorID );
+		$oldConnector = PowerConnectors::getConnector( $ConnectorID );
 
 		// Set any connections using this ConnectorID to have NULL instead
 		$st = $dbh->prepare( "update fac_Ports set ConnectorID=NULL where ConnectorID=:ConnectorID" );
@@ -82,7 +82,15 @@ class PowerConnectors {
 		}
 	}
 
-	function createConnector( $ConnectorName ) {
+	function createConnector( $ConnectorName = null ) {
+		// Use the passed value, or fallback to $this->ConnectorName
+		$ConnectorName = $ConnectorName ?? $this->ConnectorName;
+
+		// prevent this from creating a blank connection
+		if (trim($ConnectorName) === '') {
+			return false;
+		}
+
 		$st = $this->prepare( "insert into fac_PowerConnectors set ConnectorName=:ConnectorName" );
 		$st->execute( array( 	":ConnectorName"=>$ConnectorName ) );
 		$this->ConnectorID = $this->lastID();
@@ -92,9 +100,14 @@ class PowerConnectors {
 	}
 
 	function updateConnector() {
-		$oldConnector = getConnector( $this->ConnectorID );
+		// prevent this from renaming a connection to blank.
+		if (trim($this->ConnectorName) === '') {
+			return false;
+		}
+
+		$oldConnector = PowerConnectors::getConnector( $this->ConnectorID );
 		
-		$st = $this->prepare( "fac_PowerConnectors set ConnectorName=:ConnectorName where ConnectorID=:ConnectorID" );
+		$st = $this->prepare( "update fac_PowerConnectors set ConnectorName=:ConnectorName where ConnectorID=:ConnectorID" );
 
 		if( $st->execute( array( ":ConnectorID"=>$this->ConnectorID, ":ConnectorName"=>$this->ConnectorName ) ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this, $oldConnector):'';
@@ -102,6 +115,29 @@ class PowerConnectors {
 		} else {
 			return false;
 		}
+	}
+
+	static function RowToObject($dbRow){
+		/*
+		 * Generic function that will take any row returned from the fac_PowerCOnnectors
+		 * table and convert it to an object for use in array or other
+		 */
+
+		$pc=new PowerConnectors();
+		$pc->ConnectorID=$dbRow["ConnectorID"];
+		$pc->ConnectorName=$dbRow["ConnectorName"];
+
+		return $pc;
+	}
+
+
+	static function TimesUsed($id){
+		global $dbh;
+
+		$count=$dbh->prepare('SELECT * FROM fac_PowerPorts WHERE ConnectorID='.intval($id));
+		$count->execute();
+
+		return $count->rowCount();
 	}
 }
 ?>

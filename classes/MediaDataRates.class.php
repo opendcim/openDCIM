@@ -103,5 +103,14 @@ class MediaDataRates {
 			return false;
 		}
 	}
+
+	static function TimesUsed($id){
+		global $dbh;
+
+		$count=$dbh->prepare('SELECT * FROM fac_Ports WHERE RateID='.intval($id));
+		$count->execute();
+
+		return $count->rowCount();
+	}
 }
 ?>

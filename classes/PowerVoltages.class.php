@@ -103,5 +103,14 @@ class PowerVoltages {
 			return false;
 		}
 	}
+
+	static function TimesUsed($id){
+		global $dbh;
+
+		$count=$dbh->prepare('SELECT * FROM fac_PowerPorts WHERE VoltageID='.intval($id));
+		$count->execute();
+
+		return $count->rowCount();
+	}
 }
 ?>
