@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-17 10:59-0600\n"
+"POT-Creation-Date: 2025-12-24 08:16-0600\n"
 "PO-Revision-Date: 2014-08-04 13:57-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -119,19 +119,19 @@ msgstr ""
 #: report_power_utilization.php:163 report_project_outage_simulator.php:46
 #: report_project_outage_simulator.php:277 report_projects.php:145
 #: report_sensors.php:23 report_tags.php:33 report_xml_CFD.php:61
-#: search_export.php:149 zone.php:138 classes/Device.class.php:2613
+#: search_export.php:149 zone.php:138 classes/Device.class.php:2633
 #: classes/PowerDistribution.class.php:553
 msgid "Data Center"
 msgstr ""
 
 #: bulk_importer.php:223 bulk_moves.php:230 cabinets.php:246 dc_stats.php:317
-#: devices.php:2007 pathmaker.php:227 pathmaker.php:304 pathmaker.php:470
+#: devices.php:2008 pathmaker.php:227 pathmaker.php:304 pathmaker.php:470
 #: /home/runner/openDCIM/paths.php:221 paths.php:296
 #: /home/runner/openDCIM/paths.php:380 report_cabinets.php:187
 #: report_contact.php:486 report_cost.php:469 report_exception.php:165
 #: report_exception.php:235 report_network_map.php:620
 #: report_project_outage_simulator.php:346 report_projects.php:144
-#: workorder.php:156 zone_stats.php:305 classes/Device.class.php:2613
+#: workorder.php:156 zone_stats.php:305 classes/Device.class.php:2633
 #: classes/PowerDistribution.class.php:553
 msgid "Cabinet"
 msgstr ""
@@ -155,7 +155,7 @@ msgstr ""
 msgid "Department"
 msgstr ""
 
-#: bulk_importer.php:269 devices.php:986 /home/runner/openDCIM/devices.php:1965
+#: bulk_importer.php:269 devices.php:987 /home/runner/openDCIM/devices.php:1966
 #: report_aging.php:425 report_aging.php:460
 #: report_project_outage_simulator.php:354 report_warranty.php:439
 #: report_warranty.php:472 search_export.php:161
@@ -279,7 +279,7 @@ msgstr "Computar Matees"
 msgid "Cabinet Audit Report"
 msgstr ""
 
-#: cabaudit.php:53 /home/runner/openDCIM/devices.php:2482 report_aging.php:95
+#: cabaudit.php:53 /home/runner/openDCIM/devices.php:2486 report_aging.php:95
 #: report_asset.php:29 report_audit.php:321 report_audit.php:417
 #: report_audit_frequency.php:33 report_contact.php:42 report_cost.php:46
 #: report_department.php:36 report_diverse_power_exceptions.php:35
@@ -310,7 +310,7 @@ msgstr ""
 msgid "Cabinet Location"
 msgstr ""
 
-#: cabaudit.php:404 cabaudit.php:510 configuration.php:2740 devices.php:1878
+#: cabaudit.php:404 cabaudit.php:510 configuration.php:2742 devices.php:1879
 #: rackrequest.php:351 report_aging.php:425 report_aging.php:460
 #: report_asset.php:54 report_warranty.php:439 report_warranty.php:472
 #: sidebar.inc.php:18 workorder.php:156
@@ -325,7 +325,7 @@ msgstr ""
 msgid "AssetTag"
 msgstr ""
 
-#: cabaudit.php:404 connections_spreadsheet.php:58 devices.php:2049
+#: cabaudit.php:404 connections_spreadsheet.php:58 devices.php:2050
 #: rackrequest.php:471 report_asset.php:54 report_contact.php:486
 #: report_cost.php:469 report_diverse_power_exceptions.php:167
 #: report_exception.php:165 report_exception.php:235
@@ -454,21 +454,21 @@ msgstr ""
 msgid "Date of Installation"
 msgstr "Date o' Installation"
 
-#: cabinets.php:335 cabnavigator.php:66 devices.php:1985 search_export.php:159
+#: cabinets.php:335 cabnavigator.php:66 devices.php:1986 search_export.php:159
 #: search_export_storage_room.php:73
 msgid "Tags"
 msgstr ""
 
 #: cabinets.php:341 conflicts.php:608 connections_spreadsheet.php:23
-#: device_templates.php:921 devices.php:1213 devices.php:1997 devices.php:2520
-#: devices.php:2586 devices.php:2641 pathmaker.php:393 report_tags.php:37
+#: device_templates.php:921 devices.php:1214 devices.php:1998 devices.php:2524
+#: devices.php:2590 devices.php:2645 pathmaker.php:393 report_tags.php:37
 #: sidebar.inc.php:26
 msgid "Notes"
 msgstr ""
 
 #: cabinets.php:347 /home/runner/openDCIM/cabrow.php:196 cdu_templates.php:236
-#: configuration.php:3043 container.php:306 datacenter.php:352
-#: departments.php:218 device_manufacturers.php:203 devices.php:2698
+#: configuration.php:3045 container.php:306 datacenter.php:352
+#: departments.php:218 device_manufacturers.php:203 devices.php:2702
 #: disposition.php:115 escalations.php:86 power_panel.php:345
 #: project_mgr.php:174 report_logging.php:73 timeperiods.php:86 usermgr.php:337
 #: /home/runner/openDCIM/zone.php:180
@@ -477,7 +477,7 @@ msgstr ""
 
 #: cabinets.php:348 /home/runner/openDCIM/cabrow.php:197 container.php:307
 #: datacenter.php:358 datacenter.php:373 departments.php:218
-#: device_manufacturers.php:204 devices.php:2707 escalations.php:87
+#: device_manufacturers.php:204 devices.php:2711 escalations.php:87
 #: power_panel.php:346 project_mgr.php:174 report_logging.php:70
 #: timeperiods.php:87 /home/runner/openDCIM/zone.php:181
 msgid "Delete"
@@ -494,19 +494,19 @@ msgstr ""
 #: cabinets.php:352 /home/runner/openDCIM/cabrow.php:192 cdu_templates.php:238
 #: container.php:309 datacenter.php:354 departments.php:220
 #: device_manufacturers.php:206 device_templates.php:396
-#: device_templates.php:929 devices.php:2702 disposition.php:117
+#: device_templates.php:929 devices.php:2706 disposition.php:117
 #: escalations.php:89 power_panel.php:349 project_mgr.php:176
 #: rackrequest.php:486 report_logging.php:67 supplybin.php:165
 #: timeperiods.php:89 usermgr.php:339 /home/runner/openDCIM/zone.php:175
 msgid "Create"
 msgstr ""
 
-#: cabinets.php:360 devices.php:2724 devices.php:2726
+#: cabinets.php:360 devices.php:2728 devices.php:2730
 msgid "Return to Navigator"
 msgstr "Return t' Navigator"
 
 #: cabinets.php:362 /home/runner/openDCIM/cabrow.php:204 cdu_templates.php:245
-#: configuration.php:3048 container.php:320 datacenter.php:378
+#: configuration.php:3050 container.php:320 datacenter.php:378
 #: departments.php:229 device_manufacturers.php:218 device_templates.php:1134
 #: disposition.php:121 escalations.php:96 image_management.php:163
 #: pathmaker.php:523 /home/runner/openDCIM/paths.php:617 power_panel.php:438
@@ -531,18 +531,18 @@ msgstr ""
 "strips, an' connections?"
 
 #: cabinets.php:384 /home/runner/openDCIM/cabrow.php:122 container.php:169
-#: datacenter.php:182 devices.php:1618 devices.php:1771 power_panel.php:451
+#: datacenter.php:182 devices.php:1619 devices.php:1772 power_panel.php:451
 #: project_mgr.php:103 report_exception.php:261 zone.php:245
 msgid "Yes"
 msgstr ""
 
 #: cabinets.php:395 /home/runner/openDCIM/cabrow.php:127 container.php:174
-#: datacenter.php:194 devices.php:1622 devices.php:1777 power_panel.php:463
+#: datacenter.php:194 devices.php:1623 devices.php:1778 power_panel.php:463
 #: project_mgr.php:114 report_exception.php:263 zone.php:250
 msgid "No"
 msgstr ""
 
-#: cabnavigator.php:52 devices.php:1902
+#: cabnavigator.php:52 devices.php:1903
 msgid "Install Date"
 msgstr ""
 
@@ -590,7 +590,7 @@ msgid "Space"
 msgstr ""
 
 #: cabnavigator.php:271 dc_dashboard.php:85 dc_stats.php:298
-#: device_templates.php:774 devices.php:2074 zone_stats.php:287
+#: device_templates.php:774 devices.php:2075 zone_stats.php:287
 #: scripts/ajax_tooltip.php:155
 msgid "Weight"
 msgstr ""
@@ -639,11 +639,11 @@ msgstr ""
 msgid "Add Sensor"
 msgstr ""
 
-#: cabnavigator.php:395 devices.php:2700
+#: cabnavigator.php:395 devices.php:2704
 msgid "Certify Audit"
 msgstr ""
 
-#: cabnavigator.php:396 devices.php:2403
+#: cabnavigator.php:396 devices.php:2407
 msgid "Add Device"
 msgstr ""
 
@@ -759,12 +759,12 @@ msgstr ""
 msgid "Managed"
 msgstr "Mates Rights"
 
-#: cdu_templates.php:123 devices.php:2322
+#: cdu_templates.php:123 devices.php:2326
 msgid "Automatic Transfer Switch"
 msgstr ""
 
 #: cdu_templates.php:129 configuration.php:2486 device_templates.php:802
-#: devices.php:2159
+#: devices.php:2160
 msgid "SNMP Version"
 msgstr ""
 
@@ -831,7 +831,7 @@ msgstr ""
 msgid "Processing Scheme"
 msgstr ""
 
-#: cdu_templates.php:222 device_templates.php:1052 devices.php:2518
+#: cdu_templates.php:222 device_templates.php:1052 devices.php:2522
 msgid "Voltage"
 msgstr ""
 
@@ -962,7 +962,7 @@ msgstr ""
 msgid "Cabling"
 msgstr ""
 
-#: configuration.php:1994 configuration.php:2736
+#: configuration.php:1994 configuration.php:2738
 msgid "Custom Device Attributes"
 msgstr ""
 
@@ -1027,7 +1027,7 @@ msgstr ""
 msgid "Log Retention (Days)"
 msgstr ""
 
-#: configuration.php:2048 devices.php:1897 rackrequest.php:372
+#: configuration.php:2048 devices.php:1898 rackrequest.php:372
 msgid "Manufacture Date"
 msgstr ""
 
@@ -1095,17 +1095,17 @@ msgstr ""
 #: configuration.php:2095 configuration.php:2169 configuration.php:2180
 #: configuration.php:2191 configuration.php:2199 configuration.php:2300
 #: configuration.php:2308 configuration.php:2360 configuration.php:2368
-#: configuration.php:2434 configuration.php:2442 configuration.php:2573
-#: configuration.php:2586 configuration.php:2601 configuration.php:2713
-#: configuration.php:2906 configuration.php:2927 usermgr.php:331
+#: configuration.php:2434 configuration.php:2442 configuration.php:2575
+#: configuration.php:2588 configuration.php:2603 configuration.php:2715
+#: configuration.php:2908 configuration.php:2929 usermgr.php:331
 msgid "Disabled"
 msgstr "Broken"
 
 #: configuration.php:2096 configuration.php:2170 configuration.php:2181
 #: configuration.php:2192 configuration.php:2200 configuration.php:2301
 #: configuration.php:2309 configuration.php:2361 configuration.php:2369
-#: configuration.php:2435 configuration.php:2443 configuration.php:2574
-#: configuration.php:2587 configuration.php:2907 configuration.php:2928
+#: configuration.php:2435 configuration.php:2443 configuration.php:2576
+#: configuration.php:2589 configuration.php:2909 configuration.php:2930
 #, fuzzy
 msgid "Enabled"
 msgstr "Broken"
@@ -1435,452 +1435,452 @@ msgstr ""
 msgid "Default SNMP Community"
 msgstr ""
 
-#: configuration.php:2496 devices.php:2176
+#: configuration.php:2496 devices.php:2177
 msgid "SNMPv3 Security Level"
 msgstr ""
 
-#: configuration.php:2506 devices.php:2189
+#: configuration.php:2506 devices.php:2190
 msgid "SNMPv3 AuthProtocol"
 msgstr ""
 
-#: configuration.php:2515 devices.php:2202
+#: configuration.php:2515 devices.php:2203
 msgid "SNMPv3 Passphrase"
 msgstr ""
 
-#: configuration.php:2519 devices.php:2206
+#: configuration.php:2519 devices.php:2207
 msgid "SNMPv3 PrivProtocol"
 msgstr ""
 
-#: configuration.php:2528 devices.php:2219
+#: configuration.php:2530 devices.php:2223
 msgid "SNMPv3 PrivPassphrase"
 msgstr ""
 
-#: configuration.php:2532
+#: configuration.php:2534
 #, fuzzy
 msgid "Capacity Reporting"
 msgstr "R'ports"
 
-#: configuration.php:2535
+#: configuration.php:2537
 msgid "Switches"
 msgstr ""
 
-#: configuration.php:2538
+#: configuration.php:2540
 msgid "OptIn"
 msgstr ""
 
-#: configuration.php:2539
+#: configuration.php:2541
 msgid "OptOut"
 msgstr ""
 
-#: configuration.php:2544
+#: configuration.php:2546
 msgid "Switch Capacity Threshold"
 msgstr ""
 
-#: configuration.php:2548
+#: configuration.php:2550
 msgid "Utilities"
 msgstr ""
 
-#: configuration.php:2551
+#: configuration.php:2553
 msgid "snmpget"
 msgstr ""
 
-#: configuration.php:2555
+#: configuration.php:2557
 msgid "snmpwalk"
 msgstr ""
 
-#: configuration.php:2559
+#: configuration.php:2561
 msgid "cut"
 msgstr ""
 
-#: configuration.php:2563
+#: configuration.php:2565
 msgid "dot"
 msgstr ""
 
-#: configuration.php:2571
+#: configuration.php:2573
 msgid "Cabinet ToolTips"
 msgstr ""
 
-#: configuration.php:2584
+#: configuration.php:2586
 msgid "CDU ToolTips"
 msgstr ""
 
-#: configuration.php:2596
+#: configuration.php:2598
 msgid "Media Types"
 msgstr ""
 
-#: configuration.php:2599
+#: configuration.php:2601
 msgid "Media Type Matching"
 msgstr ""
 
-#: configuration.php:2602 configuration.php:2714
+#: configuration.php:2604 configuration.php:2716
 msgid "Enforce"
 msgstr ""
 
-#: configuration.php:2612 devices.php:2588 devices.php:2641
+#: configuration.php:2614 devices.php:2592 devices.php:2645
 msgid "Media Type"
 msgstr ""
 
-#: configuration.php:2613
+#: configuration.php:2615
 msgid "Default Color"
 msgstr ""
 
-#: configuration.php:2617 configuration.php:2631 configuration.php:2644
-#: configuration.php:2656 configuration.php:2668 configuration.php:2680
-#: configuration.php:2692 configuration.php:2704 configuration.php:2748
-#: configuration.php:2765
+#: configuration.php:2619 configuration.php:2633 configuration.php:2646
+#: configuration.php:2658 configuration.php:2670 configuration.php:2682
+#: configuration.php:2694 configuration.php:2706 configuration.php:2750
+#: configuration.php:2767
 msgid "Add new row"
 msgstr ""
 
-#: configuration.php:2622
+#: configuration.php:2624
 msgid "Cable Colors"
 msgstr ""
 
-#: configuration.php:2626 connections_spreadsheet.php:25
+#: configuration.php:2628 connections_spreadsheet.php:25
 msgid "Color"
 msgstr ""
 
-#: configuration.php:2627
+#: configuration.php:2629
 msgid "Default Note"
 msgstr ""
 
-#: configuration.php:2636
+#: configuration.php:2638
 msgid "Media Protocols"
 msgstr ""
 
-#: configuration.php:2640
+#: configuration.php:2642
 #, fuzzy
 msgid "Protocol Name"
 msgstr "Pow'r"
 
-#: configuration.php:2648
+#: configuration.php:2650
 #, fuzzy
 msgid "Media Connectors"
 msgstr "Edit Pow'r Panels"
 
-#: configuration.php:2652 configuration.php:2676 devices.php:2517
+#: configuration.php:2654 configuration.php:2678 devices.php:2521
 msgid "Connector Type"
 msgstr ""
 
-#: configuration.php:2660
+#: configuration.php:2662
 msgid "Media Data Rates"
 msgstr ""
 
-#: configuration.php:2664
+#: configuration.php:2666
 #, fuzzy
 msgid "Data Rate"
 msgstr "Data Center Yardage"
 
-#: configuration.php:2672
+#: configuration.php:2674
 #, fuzzy
 msgid "Power Connectors"
 msgstr "Edit Pow'r Panels"
 
-#: configuration.php:2684
+#: configuration.php:2686
 #, fuzzy
 msgid "Power Voltages"
 msgstr "Edit Pow'r Sources"
 
-#: configuration.php:2688
+#: configuration.php:2690
 msgid "Voltage Value"
 msgstr ""
 
-#: configuration.php:2696
+#: configuration.php:2698
 #, fuzzy
 msgid "Power Phases"
 msgstr "Edit Pow'r Panels"
 
-#: configuration.php:2700
+#: configuration.php:2702
 #, fuzzy
 msgid "Phase Name"
 msgstr "Mate"
 
-#: configuration.php:2708
+#: configuration.php:2710
 msgid "Connection Filtering"
 msgstr ""
 
-#: configuration.php:2711
+#: configuration.php:2713
 msgid "Patch panel rear connection filtering"
 msgstr ""
 
-#: configuration.php:2719
+#: configuration.php:2721
 msgid "Connection Pathing"
 msgstr ""
 
-#: configuration.php:2722
+#: configuration.php:2724
 msgid "Cabinet Weight"
 msgstr ""
 
-#: configuration.php:2726
+#: configuration.php:2728
 msgid "Weight for rear connections between panels"
 msgstr ""
 
-#: configuration.php:2730
+#: configuration.php:2732
 msgid "Weight for patches in the same row"
 msgstr ""
 
-#: configuration.php:2741
+#: configuration.php:2743
 msgid "Type"
 msgstr ""
 
-#: configuration.php:2742
+#: configuration.php:2744
 msgid "Required"
 msgstr ""
 
-#: configuration.php:2743
+#: configuration.php:2745
 msgid "Apply to<br>All Devices"
 msgstr ""
 
-#: configuration.php:2744
+#: configuration.php:2746
 msgid "Default Value"
 msgstr ""
 
-#: configuration.php:2756 search_export.php:164
+#: configuration.php:2758 search_export.php:164
 #, fuzzy
 msgid "Device Status"
 msgstr "Pow'r"
 
-#: configuration.php:2771
+#: configuration.php:2773
 #, fuzzy
 msgid "Authentication Attribute Mapping"
 msgstr "Data Center Configuration"
 
-#: configuration.php:2774
+#: configuration.php:2776
 msgid "FirstName"
 msgstr ""
 
-#: configuration.php:2778 usermgr.php:267
+#: configuration.php:2780 usermgr.php:267
 msgid "Last Name"
 msgstr ""
 
-#: configuration.php:2782 report_contact.php:451 report_cost.php:435
+#: configuration.php:2784 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Email"
 msgstr ""
 
-#: configuration.php:2786 report_contact.php:451 report_cost.php:435
+#: configuration.php:2788 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Phone1"
 msgstr ""
 
-#: configuration.php:2790 report_contact.php:451 report_cost.php:435
+#: configuration.php:2792 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Phone2"
 msgstr ""
 
-#: configuration.php:2794 container.php:250 datacenter.php:283 usermgr.php:283
+#: configuration.php:2796 container.php:250 datacenter.php:283 usermgr.php:283
 msgid "Country"
 msgstr ""
 
-#: configuration.php:2798
+#: configuration.php:2800
 msgid "Username Transformations"
 msgstr ""
 
-#: configuration.php:2801
+#: configuration.php:2803
 msgid "Remove Account Prefix"
 msgstr ""
 
-#: configuration.php:2805
+#: configuration.php:2807
 msgid "Remove Account Suffix"
 msgstr ""
 
-#: configuration.php:2809
+#: configuration.php:2811
 msgid "Group/Scope Mapping"
 msgstr ""
 
-#: configuration.php:2812
+#: configuration.php:2814
 msgid "SAML Attribute containing Groups"
 msgstr ""
 
-#: configuration.php:2816
+#: configuration.php:2818
 msgid "Site Access"
 msgstr ""
 
-#: configuration.php:2820
+#: configuration.php:2822
 msgid "Global Read"
 msgstr ""
 
-#: configuration.php:2824
+#: configuration.php:2826
 msgid "Global Write"
 msgstr ""
 
-#: configuration.php:2828
+#: configuration.php:2830
 msgid "Global Delete"
 msgstr ""
 
-#: configuration.php:2832
+#: configuration.php:2834
 msgid "Admin Owned Devices"
 msgstr ""
 
-#: configuration.php:2836
+#: configuration.php:2838
 #, fuzzy
 msgid "Enter Rack Request"
 msgstr "Sink Request"
 
-#: configuration.php:2840
+#: configuration.php:2842
 #, fuzzy
 msgid "Complete Rack Request"
 msgstr "Sink Request"
 
-#: configuration.php:2844
+#: configuration.php:2846
 msgid "Contact Admin"
 msgstr ""
 
-#: configuration.php:2848
+#: configuration.php:2850
 #, fuzzy
 msgid "Bulk Operations"
 msgstr "Contact R'ports"
 
-#: configuration.php:2852
+#: configuration.php:2854
 msgid "Site Admin"
 msgstr ""
 
-#: configuration.php:2858
+#: configuration.php:2860
 #, fuzzy
 msgid "OIDC Connection Configuration"
 msgstr "Data Center Configuration"
 
-#: configuration.php:2861
+#: configuration.php:2863
 #, fuzzy
 msgid "OIDC Authorization Endpoint"
 msgstr "R'ports"
 
-#: configuration.php:2865
+#: configuration.php:2867
 msgid "OIDC Client ID"
 msgstr ""
 
-#: configuration.php:2869
+#: configuration.php:2871
 msgid "OIDC Client Secret"
 msgstr ""
 
-#: configuration.php:2873
+#: configuration.php:2875
 msgid "OIDC UserID Attribute"
 msgstr ""
 
-#: configuration.php:2877
+#: configuration.php:2879
 msgid "LDAP Authentication and Authorization Configuration"
 msgstr ""
 
-#: configuration.php:2880
+#: configuration.php:2882
 msgid "LDAP Server URI"
 msgstr ""
 
-#: configuration.php:2884
+#: configuration.php:2886
 msgid "Base DN"
 msgstr ""
 
-#: configuration.php:2888
+#: configuration.php:2890
 msgid "Base Search"
 msgstr ""
 
-#: configuration.php:2889
+#: configuration.php:2891
 msgid "Leave blank for Active Directory"
 msgstr ""
 
-#: configuration.php:2892
+#: configuration.php:2894
 msgid "Bind DN"
 msgstr ""
 
-#: configuration.php:2896
+#: configuration.php:2898
 msgid "User Search"
 msgstr ""
 
-#: configuration.php:2900
+#: configuration.php:2902
 msgid "LDAP Session Expiration (Seconds)"
 msgstr ""
 
-#: configuration.php:2904
+#: configuration.php:2906
 msgid "LDAP Debugging"
 msgstr ""
 
-#: configuration.php:2912
+#: configuration.php:2914
 msgid "Emergency Bypass Password"
 msgstr ""
 
-#: configuration.php:2918
+#: configuration.php:2920
 #, fuzzy
 msgid "SAML Authentication Configuration"
 msgstr "Data Center Configuration"
 
-#: configuration.php:2921
+#: configuration.php:2923
 msgid "Base URL"
 msgstr ""
 
-#: configuration.php:2925
+#: configuration.php:2927
 msgid "Show Success Page"
 msgstr ""
 
-#: configuration.php:2933
+#: configuration.php:2935
 msgid "SAML SP Information and Certificate Generation"
 msgstr ""
 
-#: configuration.php:2937
+#: configuration.php:2939
 msgid "Entity ID"
 msgstr ""
 
-#: configuration.php:2941
+#: configuration.php:2943
 msgid "Country (2 Character)"
 msgstr ""
 
-#: configuration.php:2945
+#: configuration.php:2947
 msgid "State or Province"
 msgstr ""
 
-#: configuration.php:2949
+#: configuration.php:2951
 msgid "Organization"
 msgstr ""
 
-#: configuration.php:2962
+#: configuration.php:2964
 #, fuzzy
 msgid "Certificate Expiration"
 msgstr "Data Exceptions R'port"
 
-#: configuration.php:2966
+#: configuration.php:2968
 msgid "SP Private Key"
 msgstr ""
 
-#: configuration.php:2970
+#: configuration.php:2972
 msgid "SP x509 Certificate"
 msgstr ""
 
-#: configuration.php:2975
+#: configuration.php:2977
 msgid "Generate/Renew Certificate"
 msgstr ""
 
-#: configuration.php:2980
+#: configuration.php:2982
 #, fuzzy
 msgid "SAML Identity Provider Configuration"
 msgstr "Data Center Configuration"
 
-#: configuration.php:2984
+#: configuration.php:2986
 msgid "IdP entityId"
 msgstr ""
 
-#: configuration.php:2988
+#: configuration.php:2990
 msgid "IdP Metadata URL"
 msgstr ""
 
-#: configuration.php:2992
+#: configuration.php:2994
 msgid "SSO URL"
 msgstr ""
 
-#: configuration.php:2996
+#: configuration.php:2998
 msgid "SLS URL"
 msgstr ""
 
-#: configuration.php:3000
+#: configuration.php:3002
 msgid "IdP x509 Certificate"
 msgstr ""
 
-#: configuration.php:3005
+#: configuration.php:3007
 msgid "Refresh IdP Metadata"
 msgstr ""
 
-#: configuration.php:3048
+#: configuration.php:3050
 #, fuzzy
 msgid "Reserved"
 msgstr "R'ports"
 
-#: configuration.php:3048
+#: configuration.php:3050
 msgid "Disposed"
 msgstr ""
 
@@ -1896,7 +1896,7 @@ msgstr ""
 msgid "Power Supply"
 msgstr ""
 
-#: conflicts.php:608 devices.php:923 /home/runner/openDCIM/devices.php:937
+#: conflicts.php:608 devices.php:924 /home/runner/openDCIM/devices.php:938
 #: rackrequest.php:454
 msgid "Switch"
 msgstr ""
@@ -1905,7 +1905,7 @@ msgstr ""
 msgid "Switch Port"
 msgstr ""
 
-#: conflicts.php:608 devices.php:2516 devices.php:2582 devices.php:2641
+#: conflicts.php:608 devices.php:2520 devices.php:2586 devices.php:2645
 msgid "Device Port"
 msgstr ""
 
@@ -1938,7 +1938,7 @@ msgstr ""
 msgid "MediaType"
 msgstr ""
 
-#: connections_spreadsheet.php:28 devices.php:2578 devices.php:2641
+#: connections_spreadsheet.php:28 devices.php:2582 devices.php:2645
 #: pathmaker.php:199
 msgid "Connections"
 msgstr ""
@@ -1947,14 +1947,14 @@ msgstr ""
 msgid "Device Label"
 msgstr ""
 
-#: connections_spreadsheet.php:52 devices.php:1882 rackrequest.php:368
+#: connections_spreadsheet.php:52 devices.php:1883 rackrequest.php:368
 #: report_asset.php:54 report_contact.php:486 report_cost.php:469
 #: report_exception.php:165 report_exception.php:235 search_export.php:154
 #: search_export_storage_room.php:68 sidebar.inc.php:20
 msgid "Serial Number"
 msgstr ""
 
-#: connections_spreadsheet.php:54 devices.php:1887 rackrequest.php:376
+#: connections_spreadsheet.php:54 devices.php:1888 rackrequest.php:376
 #: report_asset.php:54 report_contact.php:486 report_cost.php:469
 #: search_export.php:155 search_export_storage_room.php:69 sidebar.inc.php:21
 #: storageroom.php:77
@@ -2268,12 +2268,12 @@ msgid "Measured Power"
 msgstr ""
 
 #: dc_stats.php:301 report_sensors.php:26 zone_stats.php:290
-#: classes/Device.class.php:2553 classes/Device.class.php:2555
+#: classes/Device.class.php:2573 classes/Device.class.php:2575
 msgid "Temperature"
 msgstr ""
 
 #: dc_stats.php:302 report_sensors.php:27 zone_stats.php:291
-#: classes/Device.class.php:2559 classes/Device.class.php:2561
+#: classes/Device.class.php:2579 classes/Device.class.php:2581
 msgid "Humidity"
 msgstr ""
 
@@ -2370,7 +2370,7 @@ msgstr "Department/Contact R'port"
 msgid "Group to Administer"
 msgstr ""
 
-#: dept_groups.php:66 devices.php:2312 login_ldap.php:271 people_depts.php:66
+#: dept_groups.php:66 devices.php:2316 login_ldap.php:271 people_depts.php:66
 #: project_members.php:140 supplybin.php:207
 msgid "Submit"
 msgstr ""
@@ -2460,7 +2460,7 @@ msgid "Error updating devices"
 msgstr ""
 
 #: device_templates.php:294 device_templates.php:306 paths.php:164
-#: scripts/ajax_tooltip.php:23 classes/Device.class.php:2651
+#: scripts/ajax_tooltip.php:23 classes/Device.class.php:2671
 msgid "Error"
 msgstr ""
 
@@ -2486,12 +2486,12 @@ msgstr ""
 msgid "Custom"
 msgstr ""
 
-#: device_templates.php:526 devices.php:147
-#: /home/runner/openDCIM/devices.php:151 devices.php:204
+#: device_templates.php:526 devices.php:148
+#: /home/runner/openDCIM/devices.php:152 devices.php:205
 msgid "Invert Port Labels"
 msgstr ""
 
-#: device_templates.php:770 devices.php:2045 devices.php:2386
+#: device_templates.php:770 devices.php:2046 devices.php:2390
 #: rackrequest.php:426 search_export.php:152 search_export_storage_room.php:66
 msgid "Height"
 msgstr ""
@@ -2500,11 +2500,11 @@ msgstr ""
 msgid "0 for a vertical mounting"
 msgstr ""
 
-#: device_templates.php:778 devices.php:2311
+#: device_templates.php:778 devices.php:2315
 msgid "Wattage"
 msgstr ""
 
-#: device_templates.php:782 devices.php:2099 devices.php:2388
+#: device_templates.php:782 devices.php:2100 devices.php:2392
 #: rackrequest.php:447 report_vendor_model.php:53 search_export.php:157
 #: search_export_storage_room.php:71
 msgid "Device Type"
@@ -2588,16 +2588,16 @@ msgstr "Sink Request"
 msgid "Update Devices"
 msgstr ""
 
-#: device_templates.php:945 devices.php:2371 devices.php:2641
+#: device_templates.php:945 devices.php:2375 devices.php:2645
 #: classes/DeviceTemplate.class.php:592 classes/DeviceTemplate.class.php:596
 msgid "Front"
 msgstr ""
 
-#: device_templates.php:950 devices.php:444
-#: /home/runner/openDCIM/devices.php:2372 devices.php:2674 misc.inc.php:1142
+#: device_templates.php:950 devices.php:445
+#: /home/runner/openDCIM/devices.php:2376 devices.php:2678 misc.inc.php:1142
 #: report_cabinets.php:180 report_cabinets.php:252 report_cabinets.php:293
-#: rowview.php:92 classes/Device.class.php:2192 classes/Device.class.php:2196
-#: classes/Device.class.php:2297 classes/Device.class.php:2300
+#: rowview.php:92 classes/Device.class.php:2212 classes/Device.class.php:2216
+#: classes/Device.class.php:2317 classes/Device.class.php:2320
 #: classes/DeviceTemplate.class.php:592 classes/DeviceTemplate.class.php:596
 msgid "Rear"
 msgstr ""
@@ -2651,78 +2651,78 @@ msgstr ""
 msgid "Data Center Device Detail"
 msgstr ""
 
-#: devices.php:68
+#: devices.php:69
 msgid "Something isn't working correctly"
 msgstr ""
 
-#: devices.php:147 /home/runner/openDCIM/devices.php:151 devices.php:204
-#: /home/runner/openDCIM/devices.php:207 report_exception.php:165
+#: devices.php:148 /home/runner/openDCIM/devices.php:152 devices.php:205
+#: /home/runner/openDCIM/devices.php:208 report_exception.php:165
 #: report_exception.php:235
 msgid "From Template"
 msgstr ""
 
-#: devices.php:296
+#: devices.php:297
 msgid "ERROR: No ports found"
 msgstr ""
 
-#: devices.php:642
+#: devices.php:643
 msgid ""
 "This device is a copy of an existing device.  Remember to set the new "
 "location before saving."
 msgstr ""
 
-#: devices.php:790
+#: devices.php:791
 msgid "Device did not copy.  Error."
 msgstr ""
 
-#: devices.php:920 /home/runner/openDCIM/devices.php:934 rackrequest.php:451
+#: devices.php:921 /home/runner/openDCIM/devices.php:935 rackrequest.php:451
 msgid "Server"
 msgstr ""
 
-#: devices.php:921 /home/runner/openDCIM/devices.php:935 rackrequest.php:452
+#: devices.php:922 /home/runner/openDCIM/devices.php:936 rackrequest.php:452
 msgid "Appliance"
 msgstr ""
 
-#: devices.php:922 /home/runner/openDCIM/devices.php:936 rackrequest.php:453
+#: devices.php:923 /home/runner/openDCIM/devices.php:937 rackrequest.php:453
 msgid "Storage Array"
 msgstr ""
 
-#: devices.php:924 /home/runner/openDCIM/devices.php:938 rackrequest.php:455
+#: devices.php:925 /home/runner/openDCIM/devices.php:939 rackrequest.php:455
 msgid "Chassis"
 msgstr ""
 
-#: devices.php:925 /home/runner/openDCIM/devices.php:939 rackrequest.php:456
+#: devices.php:926 /home/runner/openDCIM/devices.php:940 rackrequest.php:456
 msgid "Patch Panel"
 msgstr ""
 
-#: devices.php:926 /home/runner/openDCIM/devices.php:942
-#: classes/Device.class.php:2613
+#: devices.php:927 /home/runner/openDCIM/devices.php:943
+#: classes/Device.class.php:2633
 msgid "Sensor"
 msgstr ""
 
-#: devices.php:940 /home/runner/openDCIM/devices.php:2004 rackrequest.php:457
+#: devices.php:941 /home/runner/openDCIM/devices.php:2005 rackrequest.php:457
 msgid "Physical Infrastructure"
 msgstr ""
 
-#: devices.php:941 classes/PowerDistribution.class.php:553
+#: devices.php:942 classes/PowerDistribution.class.php:553
 msgid "CDU"
 msgstr ""
 
-#: devices.php:979
+#: devices.php:980
 msgid "openDCIM Device Maintenance"
 msgstr ""
 
-#: devices.php:986 vmnamecheck.php:43 vmnamecheck.php:81
+#: devices.php:987 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "VM Name"
 msgstr ""
 
-#: devices.php:986 /home/runner/openDCIM/devices.php:1866 devices.php:2521
-#: devices.php:2587 disposition.php:102 report_project_outage_simulator.php:350
+#: devices.php:987 /home/runner/openDCIM/devices.php:1867 devices.php:2525
+#: devices.php:2591 disposition.php:102 report_project_outage_simulator.php:350
 #: report_surplus.php:136 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Status"
 msgstr ""
 
-#: devices.php:986 report_aging.php:425 report_aging.php:460
+#: devices.php:987 report_aging.php:425 report_aging.php:460
 #: report_diverse_power_exceptions.php:167 report_power_utilization.php:167
 #: report_project_outage_simulator.php:356 report_tags.php:35
 #: report_warranty.php:439 report_warranty.php:472 search_export.php:160
@@ -2731,432 +2731,432 @@ msgstr ""
 msgid "Owner"
 msgstr ""
 
-#: devices.php:986 vmnamecheck.php:43 vmnamecheck.php:81
+#: devices.php:987 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Last Updated"
 msgstr ""
 
-#: devices.php:994 /home/runner/openDCIM/devices.php:1002
+#: devices.php:995 /home/runner/openDCIM/devices.php:1003
 #: report_exception.php:158 vmnamecheck.php:53 vmnamecheck.php:91
 msgid "Unknown"
 msgstr ""
 
-#: devices.php:1072
+#: devices.php:1073
 msgid "Open"
 msgstr ""
 
-#: devices.php:1161
+#: devices.php:1162
 msgid "Landscape"
 msgstr ""
 
-#: devices.php:1171 devices.php:1851
+#: devices.php:1172 devices.php:1852
 msgid "Portrait"
 msgstr ""
 
-#: devices.php:1216
+#: devices.php:1217
 msgid "Network & Power"
 msgstr ""
 
-#: devices.php:1603
+#: devices.php:1604
 msgid "Verify Delete Device"
 msgstr ""
 
-#: devices.php:1612
+#: devices.php:1613
 msgid ""
 "If this device has blades installed they will be deleted and there is no "
 "undo. Are you sure?"
 msgstr ""
 
-#: devices.php:1766
+#: devices.php:1767
 msgid "This device will be deleted and there is no undo. Are you sure?"
 msgstr ""
 
-#: devices.php:1859
+#: devices.php:1860
 msgid "Asset Tracking"
 msgstr ""
 
-#: devices.php:1862
+#: devices.php:1863
 msgid "Device ID"
 msgstr ""
 
-#: devices.php:1884 devices.php:1889
+#: devices.php:1885 devices.php:1890
 msgid "Scan Barcode"
 msgstr ""
 
-#: devices.php:1892 search_export.php:156 search_export_storage_room.php:70
+#: devices.php:1893 search_export.php:156 search_export_storage_room.php:70
 msgid "Primary IP / Host Name"
 msgstr ""
 
-#: devices.php:1906
+#: devices.php:1907
 msgid "Warranty Company"
 msgstr ""
 
-#: devices.php:1910 search_export.php:162 search_export_storage_room.php:76
+#: devices.php:1911 search_export.php:162 search_export_storage_room.php:76
 msgid "Warranty Expiration"
 msgstr ""
 
-#: devices.php:1914
+#: devices.php:1915
 msgid "Last Audit Completed"
 msgstr ""
 
-#: devices.php:1918 rackrequest.php:390
+#: devices.php:1919 rackrequest.php:390
 msgid "Departmental Owner"
 msgstr ""
 
-#: devices.php:1921 devices.php:1967 rackrequest.php:393 search_export.php:62
+#: devices.php:1922 devices.php:1968 rackrequest.php:393 search_export.php:62
 #: search_export.php:196 scripts/ajax_tooltip.php:318
 msgid "Unassigned"
 msgstr ""
 
-#: devices.php:1929
+#: devices.php:1930
 msgid "Show Contacts"
 msgstr ""
 
-#: devices.php:1935
+#: devices.php:1936
 msgid "Escalation Information"
 msgstr ""
 
-#: devices.php:1938
+#: devices.php:1939
 msgid "Time Period"
 msgstr ""
 
-#: devices.php:1940 devices.php:1952 devices.php:2101
+#: devices.php:1941 devices.php:1953 devices.php:2102
 msgid "Select..."
 msgstr ""
 
-#: devices.php:1950 escalations.php:80
+#: devices.php:1951 escalations.php:80
 msgid "Details"
 msgstr ""
 
-#: devices.php:1979
+#: devices.php:1980
 msgid "Contact Lookup"
 msgstr ""
 
-#: devices.php:1991
+#: devices.php:1992
 msgid "Custom Attributes"
 msgstr ""
 
-#: devices.php:2015
+#: devices.php:2016
 msgid "Parent Device"
 msgstr ""
 
-#: devices.php:2027 rackrequest.php:406
+#: devices.php:2028 rackrequest.php:406
 msgid "Device Class"
 msgstr ""
 
-#: devices.php:2029
+#: devices.php:2030
 msgid "Select a template..."
 msgstr ""
 
-#: devices.php:2045
+#: devices.php:2046
 msgid "Number of slots"
 msgstr ""
 
-#: devices.php:2057 search_export.php:165
+#: devices.php:2058 search_export.php:165
 msgid "Half Depth"
 msgstr ""
 
-#: devices.php:2062 search_export.php:166
+#: devices.php:2063 search_export.php:166
 msgid "Back Side"
 msgstr ""
 
-#: devices.php:2066
+#: devices.php:2067
 msgid "Number of Data Ports"
 msgstr ""
 
-#: devices.php:2070
+#: devices.php:2071
 msgid "Nominal Draw (Watts)"
 msgstr ""
 
-#: devices.php:2081 devices.php:2509
+#: devices.php:2082 devices.php:2513
 msgid "Power Connections"
 msgstr ""
 
-#: devices.php:2089
+#: devices.php:2090
 msgid "Chassis Total Draw"
 msgstr ""
 
-#: devices.php:2093
+#: devices.php:2094
 msgid "Chassis Total Weight"
 msgstr ""
 
-#: devices.php:2115
+#: devices.php:2116
 msgid "Sensor Readings"
 msgstr ""
 
-#: devices.php:2122
+#: devices.php:2123
 msgid "Device Images"
 msgstr ""
 
-#: devices.php:2135
+#: devices.php:2136
 #, fuzzy
 msgid "ProxMox Configuration"
 msgstr "Data Center Configuration"
 
-#: devices.php:2138
+#: devices.php:2139
 #, fuzzy
 msgid "API Username"
 msgstr "Mate"
 
-#: devices.php:2142
+#: devices.php:2143
 msgid "API Password"
 msgstr ""
 
-#: devices.php:2146
+#: devices.php:2147
 msgid "API Port"
 msgstr ""
 
-#: devices.php:2150
+#: devices.php:2151
 msgid "ProxMox Realm"
 msgstr ""
 
-#: devices.php:2156
+#: devices.php:2157
 #, fuzzy
 msgid "SNMP Configuration"
 msgstr "Data Center Configuration"
 
-#: devices.php:2162 devices.php:2179 devices.php:2192 devices.php:2209
+#: devices.php:2163 devices.php:2180 devices.php:2193 devices.php:2210
 msgid "Configuration Default"
 msgstr ""
 
-#: devices.php:2172
+#: devices.php:2173
 msgid "SNMP Read Only Community"
 msgstr ""
 
-#: devices.php:2173
+#: devices.php:2174
 msgid "Test SNMP"
 msgstr ""
 
-#: devices.php:2223
+#: devices.php:2227
 msgid "Consecutive SNMP Failures"
 msgstr ""
 
-#: devices.php:2227
+#: devices.php:2231
 msgid "Polling is disabled after three consecutive failures."
 msgstr ""
 
-#: devices.php:2230
+#: devices.php:2234
 #, fuzzy
 msgid "Power Specifications"
 msgstr "Pow'r Distribution"
 
-#: devices.php:2233
+#: devices.php:2237
 msgid "Source Panel"
 msgstr ""
 
-#: devices.php:2236 devices.php:2332
+#: devices.php:2240 devices.php:2336
 msgid "Select Panel"
 msgstr ""
 
-#: devices.php:2249
+#: devices.php:2253
 #, fuzzy
 msgid "Goto Panel"
 msgstr "Edit Pow'r Panels"
 
-#: devices.php:2254
+#: devices.php:2258
 msgid "Voltages:"
 msgstr ""
 
-#: devices.php:2268
+#: devices.php:2272
 msgid "Breaker Size (# of Poles)"
 msgstr ""
 
-#: devices.php:2282
+#: devices.php:2286
 msgid "Panel Pole Number"
 msgstr ""
 
-#: devices.php:2289
+#: devices.php:2293
 msgid "All Breaker Poles"
 msgstr ""
 
-#: devices.php:2295
+#: devices.php:2299
 msgid "Input Amperage"
 msgstr ""
 
-#: devices.php:2303
+#: devices.php:2307
 msgid "Uptime"
 msgstr ""
 
-#: devices.php:2307
+#: devices.php:2311
 msgid "Firmware Version"
 msgstr "Programmin' Version"
 
-#: devices.php:2312
+#: devices.php:2316
 msgid "Manual Entry"
 msgstr ""
 
-#: devices.php:2315
+#: devices.php:2319
 msgid "Last Update"
 msgstr ""
 
-#: devices.php:2325
+#: devices.php:2329
 msgid "Fail Safe Switch?"
 msgstr ""
 
-#: devices.php:2329
+#: devices.php:2333
 msgid "Source Panel (Secondary Source)"
 msgstr ""
 
-#: devices.php:2344
+#: devices.php:2348
 msgid "Panel Pole Number (Secondary Source)"
 msgstr ""
 
-#: devices.php:2353
+#: devices.php:2357
 msgid "Switch SNMP"
 msgstr ""
 
-#: devices.php:2354
+#: devices.php:2358
 msgid ""
 "Use these buttons to set the first port for the switch, check the status of "
 "the ports again, or attempt to load the Port Name Labels from the switch "
 "device."
 msgstr ""
 
-#: devices.php:2354
+#: devices.php:2358
 msgid "Set First Port"
 msgstr ""
 
-#: devices.php:2354 devices.php:2358
+#: devices.php:2358 devices.php:2362
 msgid "Refresh Status"
 msgstr ""
 
-#: devices.php:2354 devices.php:2358
+#: devices.php:2358 devices.php:2362
 msgid "Refresh Port Names"
 msgstr ""
 
-#: devices.php:2354 devices.php:2358
+#: devices.php:2358 devices.php:2362
 msgid "Refresh Port Notes"
 msgstr ""
 
-#: devices.php:2357
+#: devices.php:2361
 msgid "CDU SNMP"
 msgstr ""
 
-#: devices.php:2358
+#: devices.php:2362
 msgid ""
 "Use these buttons to set the first power outlet for the CDU, check the "
 "status of the oultets again, or attempt to load the Outlet Name Labels from "
 "the CDU device."
 msgstr ""
 
-#: devices.php:2358
+#: devices.php:2362
 msgid "Set First Outlet"
 msgstr ""
 
-#: devices.php:2367
+#: devices.php:2371
 msgid "Chassis Contents"
 msgstr ""
 
-#: devices.php:2375
+#: devices.php:2379
 msgid "Number of Slots in Chassis:"
 msgstr ""
 
-#: devices.php:2385
+#: devices.php:2389
 msgid "Slot #"
 msgstr ""
 
-#: devices.php:2387 report_contact.php:486 report_cost.php:469
+#: devices.php:2391 report_contact.php:486 report_cost.php:469
 #: report_diverse_power_exceptions.php:167 report_exception.php:165
 #: report_exception.php:235 report_power_distribution.php:202
 #: report_power_utilization.php:167
 msgid "Device Name"
 msgstr ""
 
-#: devices.php:2410
+#: devices.php:2414
 msgid ""
 "You must first define how many slots are in the chassis before you can add "
 "devices."
 msgstr ""
 
-#: devices.php:2421
+#: devices.php:2425
 msgid "Hypervisor Server Information"
 msgstr ""
 
-#: devices.php:2427 search_export.php:167
+#: devices.php:2431 search_export.php:167
 msgid "Hypervisor"
 msgstr ""
 
-#: devices.php:2453
+#: devices.php:2457
 msgid "Limit device type selection to"
 msgstr ""
 
-#: devices.php:2467
+#: devices.php:2471
 msgid "Limit device selection to"
 msgstr ""
 
-#: devices.php:2482
+#: devices.php:2486
 #, fuzzy
 msgid "Operational Log"
 msgstr "Contact R'ports"
 
-#: devices.php:2514 devices.php:2580
+#: devices.php:2518 devices.php:2584
 msgid "Port Name"
 msgstr ""
 
-#: devices.php:2515 devices.php:2581 pathmaker.php:465 report_cabinets.php:188
+#: devices.php:2519 devices.php:2585 pathmaker.php:465 report_cabinets.php:188
 #: report_sensors.php:25 storageroom.php:76
 msgid "Device"
 msgstr ""
 
-#: devices.php:2519
+#: devices.php:2523
 #, fuzzy
 msgid "Phase"
 msgstr "Mate"
 
-#: devices.php:2522 report_power_distribution.php:186
+#: devices.php:2526 report_power_distribution.php:186
 #: report_power_distribution.php:202
 msgid "Panel"
 msgstr ""
 
-#: devices.php:2583
+#: devices.php:2587
 #, fuzzy
 msgid "Connector"
 msgstr "Edit Pow'r Panels"
 
-#: devices.php:2584
+#: devices.php:2588
 #, fuzzy
 msgid "Protocol"
 msgstr "Pow'r"
 
-#: devices.php:2585
+#: devices.php:2589
 #, fuzzy
 msgid "Rate"
 msgstr "Data Center Yardage"
 
-#: devices.php:2589
+#: devices.php:2593
 msgid "Color Code"
 msgstr ""
 
-#: devices.php:2641
+#: devices.php:2645
 msgid "Patch Port"
 msgstr ""
 
-#: devices.php:2641
+#: devices.php:2645
 msgid "Back"
 msgstr ""
 
-#: devices.php:2699 classes/Device.class.php:505
+#: devices.php:2703 classes/Device.class.php:525
 msgid "Copy"
 msgstr ""
 
-#: devices.php:2710 workorder.php:193
+#: devices.php:2714 workorder.php:193
 #, fuzzy
 msgid "Export Connections"
 msgstr "Edit Pow'r Panels"
 
-#: devices.php:2723
+#: devices.php:2727
 msgid "Return to Parent Device"
 msgstr ""
 
-#: devices.php:2729
+#: devices.php:2733
 #, fuzzy
 msgid "Return to Storage Room"
 msgstr "Return t' Navigator"
 
-#: devices.php:2731
+#: devices.php:2735
 msgid "Return to General Storage Room"
 msgstr ""
 
-#: devices.php:2736
+#: devices.php:2740
 #, fuzzy
 msgid "Do you certify that you have completed an audit of this device?"
 msgstr "Do ye certify that ye have completed an audit o' th' selected cabinet?"
@@ -6104,41 +6104,41 @@ msgstr ""
 msgid "Row "
 msgstr ""
 
-#: classes/Device.class.php:2553 classes/Device.class.php:2559
+#: classes/Device.class.php:2573 classes/Device.class.php:2579
 #: classes/PowerDistribution.class.php:489
 #, fuzzy
 msgid "Critical"
 msgstr "Danger Pow'r"
 
-#: classes/Device.class.php:2555 classes/Device.class.php:2561
+#: classes/Device.class.php:2575 classes/Device.class.php:2581
 #: classes/PowerDistribution.class.php:491
 #, fuzzy
 msgid "Warning"
 msgstr "R'ports"
 
-#: classes/Device.class.php:2582
+#: classes/Device.class.php:2602
 #, fuzzy
 msgid "Data Center Sensor Alerts Report"
 msgstr "Data Center Asset R'port"
 
-#: classes/Device.class.php:2588 classes/PowerDistribution.class.php:528
+#: classes/Device.class.php:2608 classes/PowerDistribution.class.php:528
 msgid "MailFrom"
 msgstr ""
 
-#: classes/Device.class.php:2595 classes/PowerDistribution.class.php:535
+#: classes/Device.class.php:2615 classes/PowerDistribution.class.php:535
 msgid "Facility Manager email address"
 msgstr ""
 
-#: classes/Device.class.php:2611
+#: classes/Device.class.php:2631
 #, fuzzy
 msgid "Data Center Sensor Alerts"
 msgstr "Data Center Yardage"
 
-#: classes/Device.class.php:2613 classes/PowerDistribution.class.php:553
+#: classes/Device.class.php:2633 classes/PowerDistribution.class.php:553
 msgid "Value"
 msgstr ""
 
-#: classes/Device.class.php:2613 classes/PowerDistribution.class.php:553
+#: classes/Device.class.php:2633 classes/PowerDistribution.class.php:553
 msgid "Alert Level"
 msgstr ""
 
