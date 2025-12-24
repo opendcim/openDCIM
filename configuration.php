@@ -419,7 +419,7 @@
 		foreach($mediaConnectorList as $mc){
 			$mediaconnectors.='<div>
 					<div><img src="images/del.gif"></div>
-					<div><input type="text" name="connector_type[]" data='.$mc->ConnectorID.' value="'.$mc->ConnectorType.'"></div>
+					<div><input type="text" name="connector_type[]" data-id='.$mc->ConnectorID.' value="'.$mc->ConnectorType.'"></div>
 				</div>';
 		}
 	}
@@ -431,7 +431,7 @@
 		foreach($mediaProtocolList as $mp){
 			$mediaprotocols.='<div>
 					<div><img src="images/del.gif"></div>
-					<div><input type="text" name="protocol_name[]" data='.$mp->ProtocolID.' value="'.$mp->ProtocolName.'"></div>
+					<div><input type="text" name="protocol_name[]" data-id='.$mp->ProtocolID.' value="'.$mp->ProtocolName.'"></div>
 				</div>';
 		}
 	}
@@ -443,7 +443,7 @@
 		foreach($mediaDataRateList as $mdr){
 			$mediadatarates.='<div>
 					<div><img src="images/del.gif"></div>
-					<div><input type="text" name="rate_text[]" data='.$mdr->RateID.' value="'.$mdr->RateText.'"></div>
+					<div><input type="text" name="rate_text[]" data-id='.$mdr->RateID.' value="'.$mdr->RateText.'"></div>
 				</div>';
 		}
 	}
@@ -472,7 +472,7 @@
 		foreach($powerConnectorList as $pc){
 			$powerconnectors.='<div>
 					<div><img src="images/del.gif"></div>
-					<div><input type="text" name="connector_type[]" data='.$pc->ConnectorID.' value="'.$pc->ConnectorName.'"></div>
+					<div><input type="text" name="connector_type[]" data-id='.$pc->ConnectorID.' value="'.$pc->ConnectorName.'"></div>
 				</div>';
 		}
 	}
@@ -484,7 +484,7 @@
 		foreach($powerVoltageList as $pv){
 			$powervoltages.='<div>
 					<div><img src="images/del.gif"></div>
-					<div><input type="text" name="voltage_type[]" data='.$pv->VoltageID.' value="'.$pv->VoltageName.'"></div>
+					<div><input type="text" name="voltage_type[]" data-id='.$pv->VoltageID.' value="'.$pv->VoltageName.'"></div>
 				</div>';
 		}
 	}
@@ -496,7 +496,7 @@
 		foreach($powerPhaseList as $pp){
 			$powerphases.='<div>
 					<div><img src="images/del.gif"></div>
-					<div><input type="text" name="phase_type[]" data='.$pp->PhaseID.' value="'.$pp->PhaseName.'"></div>
+					<div><input type="text" name="phase_type[]" data-id='.$pp->PhaseID.' value="'.$pp->PhaseName.'"></div>
 				</div>';
 		}
 	}
@@ -1074,6 +1074,168 @@
 				}
 			});
 		}
+
+		function genericbindrow(row){
+			var blankgenericrow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text"></div>');
+			var choices;
+			var addrem=row.find('div:first-child');
+			var datapath=row.parent('.table').data('path');
+			var title=row.parent('.table').data('title');
+			var rowinput=row.find('div:nth-child(2) input');
+			var defaultbutton={
+				"Clear All": function(){
+					ajaxdelete();
+				}
+			}
+			var replacebutton={
+				"Replace": function(){
+					ajaxdelete();
+				}
+			}
+			var cancelbutton={
+				"Cancel": function(){
+					modal.dialog("destroy");
+				}
+			}
+			var modal=$('<div />', {id: 'modal', title: title}).html('<div id="modaltext">This value is in use on <span id="inuseportcount"></span> objects. Select an alternate type to assign to all the records to or choose clear all.<select id="replaceme"></select></div>');
+			// store current value on object
+			rowinput.data('default',rowinput.val());
+			if(rowinput.val().trim()!='' && addrem.attr('id')!='newline'){
+				addrem.click(function(){
+					remove();
+				});
+			}
+			rowinput.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					rowinput.change();
+				}
+			});
+			function ajaxdelete(){
+				var modalactive = !!modal.data('ui-dialog');
+				var newConnectorId = (choices && choices.length)?choices.val():undefined;
+				$.ajax({
+					url: 'api/v1/' + datapath + '/' + rowinput.data('id'),
+					data: newConnectorId === undefined ? undefined : { NewConnectorID: newConnectorId },
+					method: 'DELETE'
+				}).done(function(data){
+					if(modalactive){
+						// close the modal
+						modal.dialog("destroy");
+					}
+					// delete was successful, remove the row
+					row.effect('explode', {}, 500, function(){
+						row.remove();
+					});
+				}).fail(function(data){
+					if(modalactive){
+						$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>")
+						modal.dialog('option','buttons',cancelbutton);
+					}
+				});
+			}
+			function remove(){
+				$.get('api/v1/' + datapath + '/' + rowinput.data('id') + '/count').done(function(data){
+					if (data.count == 0) {
+						ajaxdelete();
+					} else {
+						$.get('api/v1/' + datapath).done(function(data){
+							choices=$('<select />');
+							$("<option>",{'value':''}).appendTo(choices);
+							$.each(data[datapath], function(key,item){
+								let value, label;
+
+								$.each(item, function(k,v){
+									if (k.endsWith('ID')) {
+										value = v;
+									}else{
+										label = v;
+									}
+								});
+
+								// skip the current value because we can't reassign things to it
+								if ( rowinput.data('id') != value ){
+									$("<option>",{'value':value}).text(label).appendTo(choices);
+								}
+							});
+							choices.change(function(){
+								if($(this).val()==''){ // clear all
+									modal.dialog('option','buttons',$.extend({}, defaultbutton, cancelbutton));
+								}else{
+									modal.dialog('option','buttons',$.extend({}, replacebutton, cancelbutton));
+								}
+							});
+							$('#modal #modaltext select#replaceme').replaceWith(choices);
+						});
+						// open the modal
+						modal.dialog({
+							dialogClass: 'no-close',
+							appendTo: 'body',
+							modal: true,
+							buttons: $.extend({}, defaultbutton, cancelbutton)
+						});
+						$('#inuseportcount').text(data.count);
+					}
+				});
+			}
+			function update(){
+				if(rowinput.val().trim()==''){
+					// reset value to previous
+					rowinput.val(rowinput.data('default'));
+					mt.effect('highlight', {color: 'salmon'}, 1500);
+				}else{
+					var putpost=(addrem.attr('id')!='newline')?'post':'put';
+					// attempt to update
+					$.ajax({
+						url: 'api/v1/' + datapath + (putpost=='post' ? '/'+rowinput.data('id') : ''),
+						data: { name: rowinput.val() },
+						method: putpost.toUpperCase()
+					}).done(function(data){
+						if(!data.error){
+							// record updated so update the data value to match
+							rowinput.data('default',rowinput.val());
+							rowinput.effect('highlight', {color: 'lightgreen'}, 2500);
+							if(putpost=='put'){
+								// make new row
+								var newitem=blankgenericrow.clone();
+								// set value to current
+								newitem.find('div:nth-child(2) input').val(rowinput.val()).data('id',data.id);
+								row.before(newitem);
+								newitem.find('div:nth-child(2) input').focus();
+								// reset blank
+								rowinput.val('');
+								// bind controls to new row
+								genericbindrow(newitem);
+							}
+						}else{
+							rowinput.val(rowinput.data('default'));
+							rowinput.effect('highlight', {color: 'salmon'}, 1500);
+						}
+					}).fail(function(){
+						rowinput.val(rowinput.data('default'));
+						rowinput.effect('highlight', {color: 'salmon'}, 1500);
+					});;
+				}
+			}
+			rowinput.change(function(){
+				update();
+			});
+		}
+
+		// bind update controls to single element parameters
+		const connectorSelector =`
+			#powerconnectors > div:not(:first-child),
+			#powerphases > div:not(:first-child),
+			#powervoltages> div:not(:first-child),
+			#mediaconnectors > div:not(:first-child),
+			#mediaprotocols > div:not(:first-child),
+			#mediadatarates > div:not(:first-child)
+		`;
+
+		$(connectorSelector).each(function(){
+			genericbindrow($(this));
+		});
+
 
 		// Add a new blank row
 		$('#mediatypes > div ~ div > div:first-child').each(function(){
@@ -2474,7 +2636,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Media Protocols"),'</h3>
-			<div class="table" id="mediaprotocols">
+			<div class="table" id="mediaprotocols" data-path="mediaprotocols" data-title="Media Protocols Delete Override">
 				<div>
 					<div></div>
 					<div>',__("Protocol Name"),'</div>
@@ -2486,7 +2648,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Media Connectors"),'</h3>
-			<div class="table" id="mediaconnectors">
+			<div class="table" id="mediaconnectors" data-path="mediaconnectors" data-title="Media Connector Delete Override">
 				<div>
 					<div></div>
 					<div>',__("Connector Type"),'</div>
@@ -2498,7 +2660,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Media Data Rates"),'</h3>
-			<div class="table" id="mediadatarates">
+			<div class="table" id="mediadatarates" data-path="mediadatarates" data-title="Media Data Rates Delete Override">
 				<div>
 					<div></div>
 					<div>',__("Data Rate"),'</div>
@@ -2510,7 +2672,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Power Connectors"),'</h3>
-			<div class="table" id="powerconnectors">
+			<div class="table" id="powerconnectors" data-path="powerconnectortypes" data-title="Power Connectors Delete Override">
 				<div>
 					<div></div>
 					<div>',__("Connector Type"),'</div>
@@ -2522,7 +2684,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Power Voltages"),'</h3>
-			<div class="table" id="powervoltages">
+			<div class="table" id="powervoltages" data-path="powervoltages" data-title="Power Voltages Delete Override">
 				<div>
 					<div></div>
 					<div>',__("Voltage Value"),'</div>
@@ -2534,7 +2696,7 @@ echo '<div class="main">
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Power Phases"),'</h3>
-			<div class="table" id="powerphases">
+			<div class="table" id="powerphases" data-path="powerphases" data-title="Power Phases Delete Override">
 				<div>
 					<div></div>
 					<div>',__("Phase Name"),'</div>
