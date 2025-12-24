@@ -37,6 +37,7 @@
 		$v3AuthProtocol=($_POST['v3AuthProtocol']=="")?$config->ParameterArray["v3AuthProtocol"]:$_POST['v3AuthProtocol'];
 		$v3AuthPassphrase=($_POST['v3AuthPassphrase']=="")?$config->ParameterArray["v3AuthPassphrase"]:$_POST['v3AuthPassphrase'];
 		$v3PrivProtocol=($_POST['v3PrivProtocol']=="")?$config->ParameterArray["v3PrivProtocol"]:$_POST['v3PrivProtocol'];
+		$v3PrivProtocol=Device::NormalizeV3PrivProtocol($v3PrivProtocol);
 		$v3PrivPassphrase=($_POST['v3PrivPassphrase']=="")?$config->ParameterArray["v3PrivPassphrase"]:$_POST['v3PrivPassphrase'];
 
 		// Init the snmp handler
@@ -2200,9 +2201,12 @@ echo '
 		  <div>
 			<select name="v3PrivProtocol" id="v3PrivProtocol">
 				<option value="">'.__("Configuration Default").'</option>';
-			foreach(array('DES','AES') as $ver){
-				$selected=($dev->v3PrivProtocol==$ver)?' selected':'';
-				print "\n\t\t\t\t<option value=\"$ver\"$selected>$ver</options>";
+			$privProtocols=array('DES','AES128','AES192','AES256');
+			$currentPrivProtocol=($dev->v3PrivProtocol!='')?$dev->v3PrivProtocol:$config->ParameterArray["v3PrivProtocol"];
+			$currentPrivProtocol=Device::NormalizeV3PrivProtocol($currentPrivProtocol);
+			foreach($privProtocols as $ver){
+				$selected=($currentPrivProtocol==$ver)?' selected':'';
+				print "\n\t\t\t\t<option value=\"$ver\"$selected>$ver</option>";
 			}
 echo '
 			</select>

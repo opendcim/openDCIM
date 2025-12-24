@@ -2356,9 +2356,11 @@ echo '<div class="main">
 				<div>
 				  <div><label for="v3PrivProtocol">'.__("SNMPv3 PrivProtocol").'</label></div>
 				  <div>
-					<select id="v3PrivProtocol" defaultvalue="',$config->defaults["v3PrivProtocol"],'" name="v3PrivProtocol" data="',$config->ParameterArray["v3PrivProtocol"],'">
+					<select id="v3PrivProtocol" defaultvalue="',Device::NormalizeV3PrivProtocol($config->defaults["v3PrivProtocol"]),'" name="v3PrivProtocol" data="',Device::NormalizeV3PrivProtocol($config->ParameterArray["v3PrivProtocol"]), '">
 						<option value="DES">DES</option>
-						<option value="AES">AES</option>
+						<option value="AES128">AES128</option>
+						<option value="AES192">AES192</option>
+						<option value="AES256">AES256</option>
 					</select>
 				  </div>
 				</div>
