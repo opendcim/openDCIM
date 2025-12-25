@@ -352,4 +352,36 @@ $app->delete( '/powerpanel/{panelid}', function( Request $request, Response $res
 	return $response->withJson($r, $r['errorcode']);
 });
 
+
+//
+//	URL:      /api/v1/powerconnectortypes/:ConnectorID
+//	Method:   DELETE
+//	Params:
+//		Required: ConnectorID
+//		Optional: NewConnectorID
+//	Returns:  true/false on delete operation
+
+$app->delete( '/powerconnectortypes/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!PowerConnectors::deleteConnector($id,(isset($vars['NewConnectorID']))?$vars['NewConnectorID']:0)){
+			$r['message']=__("Connector deletion failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+
 ?>
