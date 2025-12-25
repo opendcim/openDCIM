@@ -21,3 +21,7 @@ assets/
 scripts/jquery-ui.min.js
 scripts/jquery.min.js
 css/jquery-ui.css
+
+# ignore vendor directory and composer phar
+/vendor/
+/composer.phar
