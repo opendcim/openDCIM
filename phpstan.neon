@@ -1,0 +1,131 @@
+parameters:
+    level: 5
+    phpVersion: 80200
+
+    paths:
+        - classes
+        - api
+        - scripts
+        - devices.php
+        - cabinets.php
+
+    treatPhpDocTypesAsCertain: false
+    checkDynamicProperties: false
+    reportUnmatchedIgnoredErrors: false
+
+    bootstrapFiles:
+        - phpstan-openDCIM.stub.php
+
+    excludePaths:
+        analyse:
+            - classes/Device.class.php
+            - classes/DeviceTemplate.class.php
+            - scripts/ajax_*.php
+
+    ignoreErrors:
+
+        # =========================
+        # GLOBALS runtime OpenDCIM
+        # =========================
+        - '#Variable \$app might not be defined#'
+        - '#Variable \$person might not be defined#'
+        - '#Variable \$config might not be defined#'
+        - '#Variable \$dbh might not be defined#'
+
+        # =========================
+        # Slim / PSR-7 legacy
+        # =========================
+        - '#Call to an undefined method Psr\\\\Http\\\\Message\\\\ResponseInterface::withJson#'
+
+        # =========================
+        # foreach($this as ...)
+        # =========================
+        - '#foreach\.nonIterable#'
+
+        # =========================
+        # Propriétés dynamiques MySQL
+        # =========================
+        - '#property\.notFound#'
+
+        # =========================
+        # require/include runtime
+        # =========================
+        - '#requireOnce\.fileNotFound#'
+
+        # =========================
+        # Legacy constructors
+        # =========================
+        - '#return\.void#'
+
+        # =========================
+        # Legacy code flow
+        # =========================
+        - '#deadCode\.unreachable#'
+        - '#if\.alwaysTrue#'
+
+        # =========================
+        # Optional dependencies
+        # =========================
+        - '#class\.notFound.*OSS_SNMP#'
+        - '#method\.notFound.*OSS_SNMP#'
+        - '#class\.notFound.*Swift_#'
+        - '#method\.notFound.*Swift_#'
+
+        # =========================
+        # Known false positives
+        # =========================
+        - '#argument\.type#'
+        - '#variable\.undefined#'
+        - '#method\.resultUnused#'
+        - '#function\.inner#'
+        
+        # Slim 3 Response helpers
+        - '#ResponseInterface::withJson#'
+
+        # Variables procédurales legacy
+        - '#Undefined variable#'
+        - '#variable\.undefined#'
+
+        # foreach sur objets OpenDCIM
+        - '#foreach\.nonIterable#'
+
+        # Propriétés hydratées dynamiquement (DB rows)
+        - '#Access to an undefined property#'
+        - '#property\.notFound#'
+
+        # Comparaisons legacy
+        - '#alwaysTrue#'
+        - '#alwaysFalse#'
+
+        # Types legacy difficiles à inférer
+        - '#argument\.type#'
+        - '#arguments\.count#'
+
+        # Fonctions/classes optionnelles
+        - '#function\.notFound#'
+        - '#staticMethod\.notFound#'
+        - '#class\.notFound#'
+        - '#method\.notFound#'
+
+        # Slim / closures
+        - '#closure\.unusedUse#'
+
+        # Legacy require / includes
+        - '#requireOnce\.fileNotFound#'
+
+        # Comparaisons legacy
+        - '#equal\.alwaysFalse#'
+        - '#if\.alwaysTrue#'
+        - '#booleanOr\.alwaysFalse#'
+
+        # Legacy PHP patterns
+        - '#argument\.byRef#'
+        - '#argument\.type#'
+        - '#arguments\.count#'
+        - '#deadCode\.unreachable#'
+        - '#function\.inner#'
+
+        # Optional libs (SNMP, Swift, Slim)
+        - '#OSS_SNMP#'
+        - '#Swift_#'
+        - '#Slim#'

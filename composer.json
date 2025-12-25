@@ -26,5 +26,11 @@
 	"platform": {
 	    "php": "8.0.0"
 	}
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1"
+    }
+    "scripts": {
+        "phpstan": "php -d memory_limit=1024M vendor/bin/phpstan analyse"
     }
 }
