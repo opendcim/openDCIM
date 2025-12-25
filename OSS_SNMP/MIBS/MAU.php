@@ -541,6 +541,365 @@ class MAU extends \OSS_SNMP\MIB
     const TYPE_100GBASEER4 = '.1.3.6.1.2.1.26.4.78';
 
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///// START: Extreme specific OIDs: http://www.circitor.fr/Mibs/Html/E/EXTREME-BASE-MIB.php#extremeMauType
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASESX = '.1.3.6.1.4.1.1916.3.1.1.1';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASELX = '.1.3.6.1.4.1.1916.3.1.1.2';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASECX = '.1.3.6.1.4.1.1916.3.1.1.3';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASESXFD = '.1.3.6.1.4.1.1916.3.1.1.4';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASELXFD = '.1.3.6.1.4.1.1916.3.1.1.5';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASECXFD = '.1.3.6.1.4.1.1916.3.1.1.6';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASEWDMHD = '.1.3.6.1.4.1.1916.3.1.1.7';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASEWDMFD = '.1.3.6.1.4.1.1916.3.1.1.8';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASELX70HD = '.1.3.6.1.4.1.1916.3.1.1.9';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASELX70FD = '.1.3.6.1.4.1.1916.3.1.1.10';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASEZXHD = '.1.3.6.1.4.1.1916.3.1.1.11';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASEZXFD = '.1.3.6.1.4.1.1916.3.1.1.12';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASELX100HD = '.1.3.6.1.4.1.1916.3.1.1.13';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_1000BASELX100FD = '.1.3.6.1.4.1.1916.3.1.1.14';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_10GBASECX4 = '.1.3.6.1.4.1.1916.3.1.1.15';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_10GBASEZR = '.1.3.6.1.4.1.1916.3.1.1.16';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_10GBASEDWDM = '.1.3.6.1.4.1.1916.3.1.1.17';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_10GBASECX = '.1.3.6.1.4.1.1916.3.1.1.18';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_10GBASET = '.1.3.6.1.4.1.1916.3.1.1.19';
+
+    /**
+     * Constant for MAU type (Extreme specific):
+     * @see types()
+     */
+    const TYPE_EXTREME_40GBASEX = '.1.3.6.1.4.1.1916.3.1.1.20';
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///// END: Extreme specific OIDs: http://www.circitor.fr/Mibs/Html/E/EXTREME-BASE-MIB.php#extremeMauType
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///// START: Arista specific OIDs: https://www.arista.com/assets/data/docs/MIBS/ARISTA-MAU-MIB.txt
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_10GBASECR = '.1.3.6.1.4.1.30065.3.4.1.1';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_10GBASEDWDMER = '.1.3.6.1.4.1.30065.3.4.1.2';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASESR4 = '.1.3.6.1.4.1.30065.3.4.1.3';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASELR4 = '.1.3.6.1.4.1.30065.3.4.1.4';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASECR4 = '.1.3.6.1.4.1.30065.3.4.1.5';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_10GBASEDWDMZR = '.1.3.6.1.4.1.30065.3.4.1.6';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_10GBASECRA = '.1.3.6.1.4.1.30065.3.4.1.7';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_10GBASEZR = '.1.3.6.1.4.1.30065.3.4.1.8';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_10GBASELRL = '.1.3.6.1.4.1.30065.3.4.1.9';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GBASESR10 = '.1.3.6.1.4.1.30065.3.4.1.10';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GBASELR4 = '.1.3.6.1.4.1.30065.3.4.1.11';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GBASEER4 = '.1.3.6.1.4.1.30065.3.4.1.12';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASEXSR4 = '.1.3.6.1.4.1.30065.3.4.1.13';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASEAR4 = '.1.3.6.1.4.1.30065.3.4.1.14';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASEPLR4 = '.1.3.6.1.4.1.30065.3.4.1.15';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASEPLRL4 = '.1.3.6.1.4.1.30065.3.4.1.16';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASEPSM4 = '.1.3.6.1.4.1.30065.3.4.1.17';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASELRL4 = '.1.3.6.1.4.1.30065.3.4.1.18';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GBASESR4 = '.1.3.6.1.4.1.30065.3.4.1.19';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASEUNIV = '.1.3.6.1.4.1.30065.3.4.1.20';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASEER4 = '.1.3.6.1.4.1.30065.3.4.1.21';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GBASEXSR10 = '.1.3.6.1.4.1.30065.3.4.1.22';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_10GBASEAR = '.1.3.6.1.4.1.30065.3.4.1.23';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GBASEAR4 = '.1.3.6.1.4.1.30065.3.4.1.24';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GBASECR4 = '.1.3.6.1.4.1.30065.3.4.1.25';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GBASELRL4 = '.1.3.6.1.4.1.30065.3.4.1.26';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GDWDMCOHERENT = '.1.3.6.1.4.1.30065.3.4.1.27';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_10GBASEDWDMZT = '.1.3.6.1.4.1.30065.3.4.1.28';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASESRBD = '.1.3.6.1.4.1.30065.3.4.1.29';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_40GBASESR4D = '.1.3.6.1.4.1.30065.3.4.1.30';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GBASEPSM4 = '.1.3.6.1.4.1.30065.3.4.1.31';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GBASECLR4 = '.1.3.6.1.4.1.30065.3.4.1.32';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GDWDMCOHERENTE = '.1.3.6.1.4.1.30065.3.4.1.33';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GBASECWDM4 = '.1.3.6.1.4.1.30065.3.4.1.35';
+
+    /**
+     * Constant for MAU type (Arista specific):
+     * @see types()
+     */
+    const TYPE_ARISTA_100GEDWDM2 = '.1.3.6.1.4.1.30065.3.4.1.36';
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///// END: Arista specific OIDs: https://www.arista.com/assets/data/docs/MIBS/ARISTA-MAU-MIB.txt
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
     /**
      * Text representation of MAU types
      *
@@ -625,7 +984,65 @@ class MAU extends \OSS_SNMP\MIB
         self::TYPE_100GBASECR10     => '100GbaseCR10',
         self::TYPE_100GBASESR10     => '100GbaseSR10',
         self::TYPE_100GBASELR4      => '100GbaseLR4',
-        self::TYPE_100GBASEER4      => '100GbaseER4'
+        self::TYPE_100GBASEER4      => '100GbaseER4',
+
+        self::TYPE_EXTREME_1000BASESX      => '1000BaseSX',
+        self::TYPE_EXTREME_1000BASELX      => '1000BaseLX',
+        self::TYPE_EXTREME_1000BASECX      => '1000BaseCX',
+        self::TYPE_EXTREME_1000BASESXFD    => '1000BaseSXFD',
+        self::TYPE_EXTREME_1000BASELXFD    => '1000BaseLXFD',
+        self::TYPE_EXTREME_1000BASECXFD    => '1000BaseCXFD',
+        self::TYPE_EXTREME_1000BASEWDMHD   => '1000BaseWDMHD',
+        self::TYPE_EXTREME_1000BASEWDMFD   => '1000BaseWDMFD',
+        self::TYPE_EXTREME_1000BASELX70HD  => '1000BaseLX70HD',
+        self::TYPE_EXTREME_1000BASELX70FD  => '1000BaseLX70FD',
+        self::TYPE_EXTREME_1000BASEZXHD    => '1000BaseZXHD',
+        self::TYPE_EXTREME_1000BASEZXFD    => '1000BaseZXFD',
+        self::TYPE_EXTREME_1000BASELX100HD => '1000BaseLX100HD',
+        self::TYPE_EXTREME_1000BASELX100FD => '1000BaseLX100FD',
+        self::TYPE_EXTREME_10GBASECX4      => '10GBaseCX4',
+        self::TYPE_EXTREME_10GBASEZR       => '10GBaseZR',
+        self::TYPE_EXTREME_10GBASEDWDM     => '10GBaseDWDM',
+        self::TYPE_EXTREME_10GBASECX       => '10GBaseCX',
+        self::TYPE_EXTREME_10GBASET        => '10GBaseT',
+        self::TYPE_EXTREME_40GBASEX        => '40GBaseX',
+
+        self::TYPE_ARISTA_10GBASECR      => '10GbaseCR',
+        self::TYPE_ARISTA_10GBASEDWDMER  => '10GbaseDwdmER',
+        self::TYPE_ARISTA_40GBASESR4     => '40GbaseSR4',
+        self::TYPE_ARISTA_40GBASELR4     => '40GbaseLR4',
+        self::TYPE_ARISTA_40GBASECR4     => '40GbaseCR4',
+        self::TYPE_ARISTA_10GBASEDWDMZR  => '10GbaseDwdmZR',
+        self::TYPE_ARISTA_10GBASECRA     => '10GbaseCRA',
+        self::TYPE_ARISTA_10GBASEZR      => '10GbaseZR',
+        self::TYPE_ARISTA_10GBASELRL     => '10GbaseLRL',
+        self::TYPE_ARISTA_100GBASESR10   => '100GbaseSR10',
+        self::TYPE_ARISTA_100GBASELR4    => '100GbaseLR4',
+        self::TYPE_ARISTA_100GBASEER4    => '100GbaseER4',
+        self::TYPE_ARISTA_40GBASEXSR4    => '40GbaseXSR4',
+        self::TYPE_ARISTA_40GBASEAR4     => '40GbaseAR4',
+        self::TYPE_ARISTA_40GBASEPLR4    => '40GbasePLR4',
+        self::TYPE_ARISTA_40GBASEPLRL4   => '40GbasePLRL4',
+        self::TYPE_ARISTA_40GBASEPSM4    => '40GbasePSM4',
+        self::TYPE_ARISTA_40GBASELRL4    => '40GbaseLRL4',
+        self::TYPE_ARISTA_100GBASESR4    => '100GbaseSR4',
+        self::TYPE_ARISTA_40GBASEUNIV    => '40GbaseUniv',
+        self::TYPE_ARISTA_40GBASEER4     => '40GbaseER4',
+        self::TYPE_ARISTA_100GBASEXSR10  => '100GbaseXSR10',
+        self::TYPE_ARISTA_10GBASEAR      => '10GbaseAR',
+        self::TYPE_ARISTA_100GBASEAR4    => '100GbaseAR4',
+        self::TYPE_ARISTA_100GBASECR4    => '100GbaseCR4',
+        self::TYPE_ARISTA_100GBASELRL4   => '100GbaseLRL4',
+        self::TYPE_ARISTA_100GDWDMCOHERENT => '100GDwdmCoherent',
+        self::TYPE_ARISTA_10GBASEDWDMZT  => '10GbaseDwdmZT',
+        self::TYPE_ARISTA_40GBASESRBD    => '40GbaseSRBD',
+        self::TYPE_ARISTA_40GBASESR4D    => '40GbaseSR4D',
+        self::TYPE_ARISTA_100GBASEPSM4   => '100GbasePSM4',
+        self::TYPE_ARISTA_100GBASECLR4   => '100GbaseCLR4',
+        self::TYPE_ARISTA_100GDWDMCOHERENTE => '100GDwdmCoherentE',
+        self::TYPE_ARISTA_100GBASECWDM4  => '100GbaseCWDM4',
+        self::TYPE_ARISTA_100GEDWDM2     => '100GEDwdm2',
+
     );
 
 
