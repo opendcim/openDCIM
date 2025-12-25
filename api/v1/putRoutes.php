@@ -797,4 +797,38 @@ $app->put( '/powerpanel/{panelname}', function( Request $request, Response $resp
 });
 
 
+
+//
+//	URL:      /api/v1/powerconnectortypes
+//	Method:   PUT
+//	Params:
+//	Required: name
+//	Returns:  new power connector id
+
+$app->put( '/powerconnectortypes', function( Request $request, Response $response ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+
+	$pc=new PowerConnectors();
+	$pc->ConnectorName=$vars["name"];
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!$pc->createConnector()){
+			$r['message']=__("Connector creation failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+			$r['id']=$pc->ConnectorID;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+
 ?>
