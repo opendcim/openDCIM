@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-26 08:13-0600\n"
+"POT-Creation-Date: 2025-12-26 08:15-0600\n"
 "Language: pt-br\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -116,7 +116,7 @@ msgstr ""
 #: report_outage_simulator.php:45 report_panel_schedule.php:52
 #: report_panel_schedule.php:170 report_power_distribution.php:164
 #: report_power_utilization.php:163 report_project_outage_simulator.php:46
-#: report_project_outage_simulator.php:277 report_projects.php:145
+#: report_project_outage_simulator.php:277 report_projects.php:154
 #: report_sensors.php:23 report_tags.php:33 report_xml_CFD.php:61
 #: search_export.php:149 zone.php:138 classes/Device.class.php:2632
 #: classes/PowerDistribution.class.php:553
@@ -129,7 +129,7 @@ msgstr "Data center"
 #: /home/runner/openDCIM/paths.php:380 report_cabinets.php:187
 #: report_contact.php:486 report_cost.php:469 report_exception.php:165
 #: report_exception.php:235 report_network_map.php:620
-#: report_project_outage_simulator.php:346 report_projects.php:144
+#: report_project_outage_simulator.php:346 report_projects.php:153
 #: workorder.php:156 zone_stats.php:305 classes/Device.class.php:2632
 #: classes/PowerDistribution.class.php:553
 msgid "Cabinet"
@@ -3817,7 +3817,8 @@ msgid "openDCIM Project Information"
 msgstr "Informações do Projeto openDCIM"
 
 #: project_mgr.php:138 report_network_map.php:625
-#: report_project_outage_simulator.php:342 sidebar.inc.php:23
+#: report_project_outage_simulator.php:342 report_projects.php:132
+#: sidebar.inc.php:23
 msgid "Project"
 msgstr "Projeto"
 
@@ -4772,53 +4773,53 @@ msgstr "Report of all cabinets and devices associated with Projects/Services."
 msgid "Criteria for Report:"
 msgstr "Critério para o Relatório:"
 
-#: report_projects.php:126 report_projects.php:234
+#: report_projects.php:135 report_projects.php:243
 msgid "Project Name:"
 msgstr "Nome do Projeto"
 
-#: report_projects.php:128
+#: report_projects.php:137
 #, fuzzy
 msgid "Project Sponsor:"
 msgstr "Patrocinador do Projeto"
 
-#: report_projects.php:130
+#: report_projects.php:139
 #, fuzzy
 msgid "Start Date:"
 msgstr "Data de Inicio do Projeto"
 
-#: report_projects.php:132
+#: report_projects.php:141
 #, fuzzy
 msgid "Expiration Date:"
 msgstr "Data de Vencimento do Projeto"
 
-#: report_projects.php:134
+#: report_projects.php:143
 msgid "Actual End:"
 msgstr "Actual End:"
 
-#: report_projects.php:140
+#: report_projects.php:149
 #, fuzzy
 msgid "Total Assigned Cabinets:"
 msgstr "Total de Racks"
 
-#: report_projects.php:179 search_export_storage_room.php:64
+#: report_projects.php:188 search_export_storage_room.php:64
 #: classes/DataCenter.class.php:710
 #, fuzzy
 msgid "Storage Room"
 msgstr "%s Sala de Armazenamento"
 
-#: report_projects.php:185
+#: report_projects.php:194
 msgid "Unspecified"
 msgstr "Não especificado"
 
-#: report_projects.php:236
+#: report_projects.php:245
 msgid "Select Project"
 msgstr "Projeto Selecionado"
 
-#: report_projects.php:237
+#: report_projects.php:246
 msgid "All Projects"
 msgstr "Todos os Projetos"
 
-#: report_projects.php:243
+#: report_projects.php:252
 msgid ""
 "Choose a specific project to report on, or all projects.  Output will be "
 "sent in Excel 2007 format."
