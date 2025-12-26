@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 08:16-0600\n"
+"POT-Creation-Date: 2025-12-26 08:13-0600\n"
 "Language: pt-br\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -118,7 +118,7 @@ msgstr ""
 #: report_power_utilization.php:163 report_project_outage_simulator.php:46
 #: report_project_outage_simulator.php:277 report_projects.php:145
 #: report_sensors.php:23 report_tags.php:33 report_xml_CFD.php:61
-#: search_export.php:149 zone.php:138 classes/Device.class.php:2633
+#: search_export.php:149 zone.php:138 classes/Device.class.php:2632
 #: classes/PowerDistribution.class.php:553
 msgid "Data Center"
 msgstr "Data center"
@@ -130,7 +130,7 @@ msgstr "Data center"
 #: report_contact.php:486 report_cost.php:469 report_exception.php:165
 #: report_exception.php:235 report_network_map.php:620
 #: report_project_outage_simulator.php:346 report_projects.php:144
-#: workorder.php:156 zone_stats.php:305 classes/Device.class.php:2633
+#: workorder.php:156 zone_stats.php:305 classes/Device.class.php:2632
 #: classes/PowerDistribution.class.php:553
 msgid "Cabinet"
 msgstr "Armário"
@@ -2007,8 +2007,8 @@ msgstr "Desenho na URL"
 msgid "Parent Container"
 msgstr "Container principal"
 
-#: container.php:273 datacenter.php:318 classes/Cabinet.class.php:391
-#: classes/Cabinet.class.php:459
+#: container.php:273 datacenter.php:318 classes/Cabinet.class.php:390
+#: classes/Cabinet.class.php:458
 msgid "None"
 msgstr "Nenhum"
 
@@ -2260,16 +2260,16 @@ msgid "Measured Power"
 msgstr "Potência Medida"
 
 #: dc_stats.php:301 report_sensors.php:26 zone_stats.php:290
-#: classes/Device.class.php:2573 classes/Device.class.php:2575
+#: classes/Device.class.php:2572 classes/Device.class.php:2574
 msgid "Temperature"
 msgstr "Temperatura"
 
 #: dc_stats.php:302 report_sensors.php:27 zone_stats.php:291
-#: classes/Device.class.php:2579 classes/Device.class.php:2581
+#: classes/Device.class.php:2578 classes/Device.class.php:2580
 msgid "Humidity"
 msgstr "Umidade"
 
-#: dc_stats.php:303 zone_stats.php:292 classes/DataCenter.class.php:580
+#: dc_stats.php:303 zone_stats.php:292 classes/DataCenter.class.php:579
 msgid "Air Flow"
 msgstr "Fluxo de Ar"
 
@@ -2443,7 +2443,7 @@ msgid "Error updating devices"
 msgstr "Erro atualizando equipamentos"
 
 #: device_templates.php:294 device_templates.php:306 paths.php:164
-#: scripts/ajax_tooltip.php:23 classes/Device.class.php:2671
+#: scripts/ajax_tooltip.php:23 classes/Device.class.php:2670
 msgid "Error"
 msgstr "Erro"
 
@@ -2564,16 +2564,16 @@ msgid "Update Devices"
 msgstr "Atualizar equipamentos"
 
 #: device_templates.php:945 devices.php:2375 devices.php:2645
-#: classes/DeviceTemplate.class.php:592 classes/DeviceTemplate.class.php:596
+#: classes/DeviceTemplate.class.php:591 classes/DeviceTemplate.class.php:595
 msgid "Front"
 msgstr "Frente"
 
 #: device_templates.php:950 devices.php:445
 #: /home/runner/openDCIM/devices.php:2376 devices.php:2678 misc.inc.php:1142
 #: report_cabinets.php:180 report_cabinets.php:252 report_cabinets.php:293
-#: rowview.php:92 classes/Device.class.php:2212 classes/Device.class.php:2216
-#: classes/Device.class.php:2317 classes/Device.class.php:2320
-#: classes/DeviceTemplate.class.php:592 classes/DeviceTemplate.class.php:596
+#: rowview.php:92 classes/Device.class.php:2211 classes/Device.class.php:2215
+#: classes/Device.class.php:2316 classes/Device.class.php:2319
+#: classes/DeviceTemplate.class.php:591 classes/DeviceTemplate.class.php:595
 msgid "Rear"
 msgstr "Traseira"
 
@@ -2672,7 +2672,7 @@ msgid "Patch Panel"
 msgstr "Painel de Conexões"
 
 #: devices.php:927 /home/runner/openDCIM/devices.php:943
-#: classes/Device.class.php:2633
+#: classes/Device.class.php:2632
 msgid "Sensor"
 msgstr "Sensor"
 
@@ -3117,7 +3117,7 @@ msgstr "Porta de conexão"
 msgid "Back"
 msgstr "Voltar"
 
-#: devices.php:2703 classes/Device.class.php:525
+#: devices.php:2703 classes/Device.class.php:524
 msgid "Copy"
 msgstr "Copiar"
 
@@ -4801,7 +4801,7 @@ msgid "Total Assigned Cabinets:"
 msgstr "Total de Racks"
 
 #: report_projects.php:179 search_export_storage_room.php:64
-#: classes/DataCenter.class.php:711
+#: classes/DataCenter.class.php:710
 #, fuzzy
 msgid "Storage Room"
 msgstr "%s Sala de Armazenamento"
@@ -5951,8 +5951,8 @@ msgstr "Falha na criação do Equipamento"
 
 #: scripts/ajax_tooltip.php:146 scripts/ajax_tooltip.php:147
 #: scripts/ajax_tooltip.php:148 scripts/ajax_tooltip.php:149
-#: scripts/ajax_tooltip.php:150 classes/DataCenter.class.php:577
-#: classes/DataCenter.class.php:578 classes/DataCenter.class.php:579
+#: scripts/ajax_tooltip.php:150 classes/DataCenter.class.php:576
+#: classes/DataCenter.class.php:577 classes/DataCenter.class.php:578
 msgid "no data"
 msgstr "sem dados"
 
@@ -6075,76 +6075,76 @@ msgstr "Token incompatível"
 msgid "God help us something has gone horribly wrong"
 msgstr "Que Deus nos ajude, alguma coisa está terrivelmente errada."
 
-#: classes/DataCenter.class.php:573
+#: classes/DataCenter.class.php:572
 #, fuzzy
 msgid "Composite View of Cabinets"
 msgstr "Importar Novos Racks"
 
-#: classes/DataCenter.class.php:574
+#: classes/DataCenter.class.php:573
 #, fuzzy
 msgid "Occupied Space"
 msgstr "Ocupado"
 
-#: classes/DataCenter.class.php:575
+#: classes/DataCenter.class.php:574
 #, fuzzy
 msgid "Calculated Weight"
 msgstr "Potência calculada"
 
-#: classes/DataCenter.class.php:576
+#: classes/DataCenter.class.php:575
 #, fuzzy
 msgid "Calculated Power Usage"
 msgstr "Potência calculada"
 
-#: classes/DataCenter.class.php:577 classes/DataCenter.class.php:578
-#: classes/DataCenter.class.php:579
+#: classes/DataCenter.class.php:576 classes/DataCenter.class.php:577
+#: classes/DataCenter.class.php:578
 #, fuzzy
 msgid "Measured on"
 msgstr "Potência Medida"
 
-#: classes/DataCenter.class.php:675
+#: classes/DataCenter.class.php:674
 msgid "Row "
 msgstr "Row "
 
-#: classes/Device.class.php:2573 classes/Device.class.php:2579
+#: classes/Device.class.php:2572 classes/Device.class.php:2578
 #: classes/PowerDistribution.class.php:489
 msgid "Critical"
 msgstr "Critical"
 
-#: classes/Device.class.php:2575 classes/Device.class.php:2581
+#: classes/Device.class.php:2574 classes/Device.class.php:2580
 #: classes/PowerDistribution.class.php:491
 msgid "Warning"
 msgstr "Warning"
 
-#: classes/Device.class.php:2602
+#: classes/Device.class.php:2601
 msgid "Data Center Sensor Alerts Report"
 msgstr "Data Center Sensor Alerts Report"
 
-#: classes/Device.class.php:2608 classes/PowerDistribution.class.php:528
+#: classes/Device.class.php:2607 classes/PowerDistribution.class.php:528
 msgid "MailFrom"
 msgstr "Remetente"
 
-#: classes/Device.class.php:2615 classes/PowerDistribution.class.php:535
+#: classes/Device.class.php:2614 classes/PowerDistribution.class.php:535
 msgid "Facility Manager email address"
 msgstr "Email do Gerente do Prédio"
 
-#: classes/Device.class.php:2631
+#: classes/Device.class.php:2630
 msgid "Data Center Sensor Alerts"
 msgstr "Data Center Sensor Alerts"
 
-#: classes/Device.class.php:2633 classes/PowerDistribution.class.php:553
+#: classes/Device.class.php:2632 classes/PowerDistribution.class.php:553
 msgid "Value"
 msgstr "Value"
 
-#: classes/Device.class.php:2633 classes/PowerDistribution.class.php:553
+#: classes/Device.class.php:2632 classes/PowerDistribution.class.php:553
 msgid "Alert Level"
 msgstr "Alert Level"
 
-#: classes/DeviceTemplate.class.php:573
+#: classes/DeviceTemplate.class.php:572
 #, fuzzy
 msgid "Import Error"
 msgstr "Registos de importação"
 
-#: classes/DeviceTemplate.class.php:574
+#: classes/DeviceTemplate.class.php:573
 msgid ""
 "An error has occurred creating the template.<br>Possibly there is already a "
 "template of the same manufacturer and model"
@@ -6152,40 +6152,40 @@ msgstr ""
 "An error has occurred creating the template.<br>Possibly there is already a "
 "template of the same manufacturer and model"
 
-#: classes/DeviceTemplate.class.php:591 classes/DeviceTemplate.class.php:595
-#: classes/DeviceTemplate.class.php:619 classes/DeviceTemplate.class.php:637
-#: classes/DeviceTemplate.class.php:648 classes/DeviceTemplate.class.php:652
-#: classes/DeviceTemplate.class.php:665 classes/DeviceTemplate.class.php:669
+#: classes/DeviceTemplate.class.php:590 classes/DeviceTemplate.class.php:594
+#: classes/DeviceTemplate.class.php:618 classes/DeviceTemplate.class.php:636
+#: classes/DeviceTemplate.class.php:647 classes/DeviceTemplate.class.php:651
+#: classes/DeviceTemplate.class.php:664 classes/DeviceTemplate.class.php:668
 #, fuzzy
 msgid "Import Warning"
 msgstr "Alerta de Energia"
 
-#: classes/DeviceTemplate.class.php:592
+#: classes/DeviceTemplate.class.php:591
 #, fuzzy, php-format
 msgid "An error has occurred creating the slot %s"
 msgstr "Ocorreu um erro, Modelo não foi criado"
 
-#: classes/DeviceTemplate.class.php:596
+#: classes/DeviceTemplate.class.php:595
 #, php-format
 msgid "Ignored slot %s"
 msgstr "Ignored slot %s"
 
-#: classes/DeviceTemplate.class.php:620
+#: classes/DeviceTemplate.class.php:619
 #, fuzzy, php-format
 msgid "An error has occurred creating the color code %s"
 msgstr "Ocorreu um erro, Modelo não foi criado"
 
-#: classes/DeviceTemplate.class.php:638
+#: classes/DeviceTemplate.class.php:637
 #, fuzzy, php-format
 msgid "An error has occurred creating the media type %s"
 msgstr "Ocorreu um erro, Modelo não foi criado"
 
-#: classes/DeviceTemplate.class.php:649 classes/DeviceTemplate.class.php:666
+#: classes/DeviceTemplate.class.php:648 classes/DeviceTemplate.class.php:665
 #, fuzzy, php-format
 msgid "An error has occurred creating the port %s"
 msgstr "Ocorreu um erro, Modelo não foi criado"
 
-#: classes/DeviceTemplate.class.php:653 classes/DeviceTemplate.class.php:670
+#: classes/DeviceTemplate.class.php:652 classes/DeviceTemplate.class.php:669
 #, fuzzy, php-format
 msgid "Ignored port %s"
 msgstr "Relatórios de inventário"
