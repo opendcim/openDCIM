@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-26 08:15-0600\n"
+"POT-Creation-Date: 2025-12-26 08:16-0600\n"
 "PO-Revision-Date: 2014-08-04 13:57-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -138,7 +138,7 @@ msgstr ""
 
 #: bulk_importer.php:234 cdu_templates.php:101 connections_spreadsheet.php:48
 #: device_manufacturers.php:177 device_templates.php:754
-#: report_vendor_model.php:44
+#: report_vendor_model.php:44 report_vendor_model.php:217
 msgid "Manufacturer"
 msgstr ""
 
