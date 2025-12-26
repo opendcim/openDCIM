@@ -37,7 +37,6 @@ class TemplatePorts {
 		if($templateid){
 			$this->TemplateID=$templateid;
 		}
-		return $this;
 	}
 
 	function MakeSafe() {
