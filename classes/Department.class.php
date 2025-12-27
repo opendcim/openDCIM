@@ -39,7 +39,6 @@ class Department {
 		if($deptid){
 			$this->DeptID=$deptid;
 		}
-		return $this;
 	}
 
 	function MakeSafe(){

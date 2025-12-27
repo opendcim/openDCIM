@@ -137,6 +137,9 @@
 				$tport->Label=isset($_POST["label".$i])?$_POST["label".$i]:"";
 				$tport->MediaID=(isset($_POST["mt".$i]) && $_POST["mt".$i]>0)?$_POST["mt".$i]:0;
 				$tport->ColorID=(isset($_POST["cc".$i]) && $_POST["cc".$i]>0)?$_POST["cc".$i]:0;
+				$tport->ConnectorID=(isset($_POST["connector".$i]) && $_POST["connector".$i]>0)?$_POST["connector".$i]:0;
+				$tport->ProtocolID=(isset($_POST["protocol".$i]) && $_POST["protocol".$i]>0)?$_POST["protocol".$i]:0;
+				$tport->RateID=(isset($_POST["rate".$i]) && $_POST["rate".$i]>0)?$_POST["rate".$i]:0;
 				$tport->Notes=isset($_POST["portnotes".$i])?$_POST["portnotes".$i]:"";
 				$status=($tport->CreatePort())?$status:__("Error updating template ports");
 			}
@@ -147,6 +150,9 @@
 				$tport->TemplateID=$template->TemplateID;
 				$tport->PortNumber=$i;
 				$tport->Label=isset($_POST["powerlabel".$i])?$_POST["powerlabel".$i]:"";
+				$tport->ConnectorID=(isset($_POST["pconnector".$i]) && $_POST["pconnector".$i]>0)?$_POST["pconnector".$i]:0;
+				$tport->VoltageID=(isset($_POST["voltage".$i]) && $_POST["voltage".$i]>0)?$_POST["voltage".$i]:0;
+				$tport->PhaseID=(isset($_POST["phase".$i]) && $_POST["phase".$i]>0)?$_POST["phase".$i]:0;
 				$tport->PortNotes=isset($_POST["powerportnotes".$i])?$_POST["powerportnotes".$i]:"";
 				$status=($tport->CreatePort())?$status:__("Error updating template power connections");
 			}
