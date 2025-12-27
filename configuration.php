@@ -412,6 +412,42 @@
 	}
 	$tzmenu.='</ul>';
 
+	// Build list of media connectors
+	$mediaconnectors="";
+	$mediaConnectorList=MediaConnectors::GetConnectorList();
+	if(count($mediaConnectorList)>0){
+		foreach($mediaConnectorList as $mc){
+			$mediaconnectors.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="connector_type[]" data-id='.$mc->ConnectorID.' value="'.$mc->ConnectorType.'"></div>
+				</div>';
+		}
+	}
+
+	// Build list of media protocols
+	$mediaprotocols="";
+	$mediaProtocolList=MediaProtocols::GetProtocolList();
+	if(count($mediaProtocolList)>0){
+		foreach($mediaProtocolList as $mp){
+			$mediaprotocols.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="protocol_name[]" data-id='.$mp->ProtocolID.' value="'.$mp->ProtocolName.'"></div>
+				</div>';
+		}
+	}
+
+	// Build list of media data rates
+	$mediadatarates="";
+	$mediaDataRateList=MediaDataRates::GetRateList();
+	if(count($mediaDataRateList)>0){
+		foreach($mediaDataRateList as $mdr){
+			$mediadatarates.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="rate_text[]" data-id='.$mdr->RateID.' value="'.$mdr->RateText.'"></div>
+				</div>';
+		}
+	}
+
 	// Build list of cable color codes
 	$cablecolors="";
 	$colorselector='<select name="mediacolorcode[]"><option value="0"></option>';
@@ -428,6 +464,42 @@
 		}
 	}
 	$colorselector.='</select>';
+
+	// Build list of power connectors
+	$powerconnectors="";
+	$powerConnectorList=PowerConnectors::GetConnectorList();
+	if(count($powerConnectorList)>0){
+		foreach($powerConnectorList as $pc){
+			$powerconnectors.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="connector_type[]" data-id='.$pc->ConnectorID.' value="'.$pc->ConnectorName.'"></div>
+				</div>';
+		}
+	}
+
+	// Build List of Power Voltages
+	$powervoltages="";
+	$powerVoltageList=PowerVoltages::GetVoltageList();
+	if(count($powerVoltageList)>0){
+		foreach($powerVoltageList as $pv){
+			$powervoltages.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="voltage_type[]" data-id='.$pv->VoltageID.' value="'.$pv->VoltageName.'"></div>
+				</div>';
+		}
+	}
+
+	// Build list of Power Phases
+	$powerphases="";
+	$powerPhaseList=PowerPhases::GetPhaseList();
+	if(count($powerPhaseList)>0){
+		foreach($powerPhaseList as $pp){
+			$powerphases.='<div>
+					<div><img src="images/del.gif"></div>
+					<div><input type="text" name="phase_type[]" data-id='.$pp->PhaseID.' value="'.$pp->PhaseName.'"></div>
+				</div>';
+		}
+	}
 
 	// Build list of media types
 	$mediatypes="";
@@ -1002,6 +1074,168 @@
 				}
 			});
 		}
+
+		function genericbindrow(row){
+			var blankgenericrow=$('<div />').html('<div><img src="images/del.gif"></div><div><input type="text"></div>');
+			var choices;
+			var addrem=row.find('div:first-child');
+			var datapath=row.parent('.table').data('path');
+			var title=row.parent('.table').data('title');
+			var rowinput=row.find('div:nth-child(2) input');
+			var defaultbutton={
+				"Clear All": function(){
+					ajaxdelete();
+				}
+			}
+			var replacebutton={
+				"Replace": function(){
+					ajaxdelete();
+				}
+			}
+			var cancelbutton={
+				"Cancel": function(){
+					modal.dialog("destroy");
+				}
+			}
+			var modal=$('<div />', {id: 'modal', title: title}).html('<div id="modaltext">This value is in use on <span id="inuseportcount"></span> objects. Select an alternate type to assign to all the records to or choose clear all.<select id="replaceme"></select></div>');
+			// store current value on object
+			rowinput.data('default',rowinput.val());
+			if(rowinput.val().trim()!='' && addrem.attr('id')!='newline'){
+				addrem.click(function(){
+					remove();
+				});
+			}
+			rowinput.keypress(function(event){
+				if(event.keyCode==10 || event.keyCode==13){
+					event.preventDefault();
+					rowinput.change();
+				}
+			});
+			function ajaxdelete(){
+				var modalactive = !!modal.data('ui-dialog');
+				var newConnectorId = (choices && choices.length)?choices.val():undefined;
+				$.ajax({
+					url: 'api/v1/' + datapath + '/' + rowinput.data('id'),
+					data: newConnectorId === undefined ? undefined : { NewConnectorID: newConnectorId },
+					method: 'DELETE'
+				}).done(function(data){
+					if(modalactive){
+						// close the modal
+						modal.dialog("destroy");
+					}
+					// delete was successful, remove the row
+					row.effect('explode', {}, 500, function(){
+						row.remove();
+					});
+				}).fail(function(data){
+					if(modalactive){
+						$('#modaltext').html("AAAAAAAAAAHHHHHHHHHH!!!  *crash* *fire* *chaos*<br><br><?php echo __("Something just went horribly wrong."); ?>")
+						modal.dialog('option','buttons',cancelbutton);
+					}
+				});
+			}
+			function remove(){
+				$.get('api/v1/' + datapath + '/' + rowinput.data('id') + '/count').done(function(data){
+					if (data.count == 0) {
+						ajaxdelete();
+					} else {
+						$.get('api/v1/' + datapath).done(function(data){
+							choices=$('<select />');
+							$("<option>",{'value':''}).appendTo(choices);
+							$.each(data[datapath], function(key,item){
+								let value, label;
+
+								$.each(item, function(k,v){
+									if (k.endsWith('ID')) {
+										value = v;
+									}else{
+										label = v;
+									}
+								});
+
+								// skip the current value because we can't reassign things to it
+								if ( rowinput.data('id') != value ){
+									$("<option>",{'value':value}).text(label).appendTo(choices);
+								}
+							});
+							choices.change(function(){
+								if($(this).val()==''){ // clear all
+									modal.dialog('option','buttons',$.extend({}, defaultbutton, cancelbutton));
+								}else{
+									modal.dialog('option','buttons',$.extend({}, replacebutton, cancelbutton));
+								}
+							});
+							$('#modal #modaltext select#replaceme').replaceWith(choices);
+						});
+						// open the modal
+						modal.dialog({
+							dialogClass: 'no-close',
+							appendTo: 'body',
+							modal: true,
+							buttons: $.extend({}, defaultbutton, cancelbutton)
+						});
+						$('#inuseportcount').text(data.count);
+					}
+				});
+			}
+			function update(){
+				if(rowinput.val().trim()==''){
+					// reset value to previous
+					rowinput.val(rowinput.data('default'));
+					mt.effect('highlight', {color: 'salmon'}, 1500);
+				}else{
+					var putpost=(addrem.attr('id')!='newline')?'post':'put';
+					// attempt to update
+					$.ajax({
+						url: 'api/v1/' + datapath + (putpost=='post' ? '/'+rowinput.data('id') : ''),
+						data: { name: rowinput.val() },
+						method: putpost.toUpperCase()
+					}).done(function(data){
+						if(!data.error){
+							// record updated so update the data value to match
+							rowinput.data('default',rowinput.val());
+							rowinput.effect('highlight', {color: 'lightgreen'}, 2500);
+							if(putpost=='put'){
+								// make new row
+								var newitem=blankgenericrow.clone();
+								// set value to current
+								newitem.find('div:nth-child(2) input').val(rowinput.val()).data('id',data.id);
+								row.before(newitem);
+								newitem.find('div:nth-child(2) input').focus();
+								// reset blank
+								rowinput.val('');
+								// bind controls to new row
+								genericbindrow(newitem);
+							}
+						}else{
+							rowinput.val(rowinput.data('default'));
+							rowinput.effect('highlight', {color: 'salmon'}, 1500);
+						}
+					}).fail(function(){
+						rowinput.val(rowinput.data('default'));
+						rowinput.effect('highlight', {color: 'salmon'}, 1500);
+					});;
+				}
+			}
+			rowinput.change(function(){
+				update();
+			});
+		}
+
+		// bind update controls to single element parameters
+		const connectorSelector =`
+			#powerconnectors > div:not(:first-child),
+			#powerphases > div:not(:first-child),
+			#powervoltages> div:not(:first-child),
+			#mediaconnectors > div:not(:first-child),
+			#mediaprotocols > div:not(:first-child),
+			#mediadatarates > div:not(:first-child)
+		`;
+
+		$(connectorSelector).each(function(){
+			genericbindrow($(this));
+		});
+
 
 		// Add a new blank row
 		$('#mediatypes > div ~ div > div:first-child').each(function(){
@@ -2284,9 +2518,11 @@ echo '<div class="main">
 				<div>
 				  <div><label for="v3PrivProtocol">'.__("SNMPv3 PrivProtocol").'</label></div>
 				  <div>
-					<select id="v3PrivProtocol" defaultvalue="',$config->defaults["v3PrivProtocol"],'" name="v3PrivProtocol" data="',$config->ParameterArray["v3PrivProtocol"],'">
+					<select id="v3PrivProtocol" defaultvalue="',Device::NormalizeV3PrivProtocol($config->defaults["v3PrivProtocol"]),'" name="v3PrivProtocol" data="',Device::NormalizeV3PrivProtocol($config->ParameterArray["v3PrivProtocol"]), '">
 						<option value="DES">DES</option>
-						<option value="AES">AES</option>
+						<option value="AES128">AES128</option>
+						<option value="AES192">AES192</option>
+						<option value="AES256">AES256</option>
 					</select>
 				  </div>
 				</div>
@@ -2397,6 +2633,78 @@ echo '<div class="main">
 					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
 					<div><input type="text" name="colorcode[]"></div>
 					<div><input type="text" name="ccdefaulttext[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Media Protocols"),'</h3>
+			<div class="table" id="mediaprotocols" data-path="mediaprotocols" data-title="Media Protocols Delete Override">
+				<div>
+					<div></div>
+					<div>',__("Protocol Name"),'</div>
+				</div>
+				',$mediaprotocols,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="protocol_name[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Media Connectors"),'</h3>
+			<div class="table" id="mediaconnectors" data-path="mediaconnectors" data-title="Media Connector Delete Override">
+				<div>
+					<div></div>
+					<div>',__("Connector Type"),'</div>
+				</div>
+				',$mediaconnectors,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="connector_type[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Media Data Rates"),'</h3>
+			<div class="table" id="mediadatarates" data-path="mediadatarates" data-title="Media Data Rates Delete Override">
+				<div>
+					<div></div>
+					<div>',__("Data Rate"),'</div>
+				</div>
+				',$mediadatarates,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="data_rate[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Power Connectors"),'</h3>
+			<div class="table" id="powerconnectors" data-path="powerconnectortypes" data-title="Power Connectors Delete Override">
+				<div>
+					<div></div>
+					<div>',__("Connector Type"),'</div>
+				</div>
+				',$powerconnectors,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="connector_type[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Power Voltages"),'</h3>
+			<div class="table" id="powervoltages" data-path="powervoltages" data-title="Power Voltages Delete Override">
+				<div>
+					<div></div>
+					<div>',__("Voltage Value"),'</div>
+				</div>
+				',$powervoltages,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="voltage_name[]"></div>
+				</div>
+			</div> <!-- end table -->
+			<h3>',__("Power Phases"),'</h3>
+			<div class="table" id="powerphases" data-path="powerphases" data-title="Power Phases Delete Override">
+				<div>
+					<div></div>
+					<div>',__("Phase Name"),'</div>
+				</div>
+				',$powerphases,'
+				<div>
+					<div id="newline"><img title="',__("Add new row"),'" src="images/add.gif"></div>
+					<div><input type="text" name="phase_name[]"></div>
 				</div>
 			</div> <!-- end table -->
 			<h3>',__("Connection Filtering"),'</h3>
