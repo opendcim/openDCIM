@@ -53,6 +53,7 @@
 		$cab->CabRowID=$_POST['cabrowid'];
 		$cab->CabinetHeight=$_POST['cabinetheight'];
 		$cab->Model=$_POST['model'];
+		$cab->SerialNo=isset($_POST['serialno'])?$_POST['serialno']:'';
 		$cab->Keylock=$_POST['keylock'];
 		$cab->MaxKW=$_POST['maxkw'];
 		$cab->MaxWeight=$_POST['maxweight'];
@@ -314,6 +315,10 @@ echo '</select></div>
 <div>
    <div>',__("Model"),'</div>
    <div><input type="text" name="model" size=30 maxlength=80 value="',$cab->Model,'"></div>
+</div>
+<div>
+   <div>',__("Cabinet Serial Number"),'</div>
+   <div><input type="text" name="serialno" size=30 maxlength=30 value="',$cab->SerialNo,'"></div>
 </div>
 <div>
    <div>',__("Key/Lock Information"),'</div>
