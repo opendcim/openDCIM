@@ -65,7 +65,6 @@ class DataCenter {
 		if($dcid){
 			$this->DataCenterID=intval($dcid);
 		}
-		return $this;
 	}
 
 	static function RowToObject($row){

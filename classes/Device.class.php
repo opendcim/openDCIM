@@ -84,7 +84,6 @@ class Device {
 		if($deviceid){
 			$this->DeviceID=$deviceid;
 		}
-		return $this;
 	}
 	
 	static public function NormalizeV3PrivProtocol($protocol){

@@ -35,7 +35,6 @@ class TemplatePowerPorts {
 		if($templateid){
 			$this->TemplateID=$templateid;
 		}
-		return $this;
 	}
 	
 	function MakeSafe() {
