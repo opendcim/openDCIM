@@ -1528,17 +1528,25 @@ class Device {
 	function LooseSearch($indexedbyid=false,$filterrights=false){
 		return $this->Search($indexedbyid,true,$filterrights);
 	}
-
-	function SearchDevicebySerialNo(){
+// Search device by SerialNo param bool, $exact if true a single device with exact match otherwise performs a partial search (LIKE)
+	function SearchDevicebySerialNo($exact = false){
 		global $dbh;
 
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_Device WHERE SerialNo LIKE \"%$this->SerialNo%\" ORDER BY Label;";
-
+		if($exact){
+			$sql = "SELECT * FROM fac_Device WHERE SerialNo = :serial LIMIT 1;";
+			$stmt = $dbh->prepare($sql);
+			$stmt->execute([':serial' => $this->SerialNo]);
+		}else{
+			$sql = "SELECT * FROM fac_Device WHERE SerialNo LIKE :serial ORDER BY Label;";
+			$stmt = $dbh->prepare($sql);
+			$stmt->execute([':serial' => $this->SerialNo]);
+		}
+	
 		$deviceList=array();
 
-		foreach($dbh->query($sql) as $deviceRow){
+		while($deviceRow=$stmt->fetch(PDO::FETCH_ASSOC)){
 			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 
