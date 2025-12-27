@@ -45,7 +45,6 @@ class DeviceTemplate {
 		if($dtid){
 			$this->TemplateID=intval($dtid);
 		}
-		return $this;
 	}
 
 	function MakeSafe(){
