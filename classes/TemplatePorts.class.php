@@ -28,13 +28,15 @@ class TemplatePorts {
 	var $Label;
 	var $MediaID;
 	var $ColorID;
+	var $ConnectorID;
+	var $ProtocolID;
+	var $RateID;
 	var $Notes;
 	
 	public function __construct($templateid=false){
 		if($templateid){
 			$this->TemplateID=$templateid;
 		}
-		return $this;
 	}
 
 	function MakeSafe() {
@@ -43,6 +45,9 @@ class TemplatePorts {
 		$this->Label=sanitize($this->Label);
 		$this->MediaID=intval($this->MediaID);
 		$this->ColorID=intval($this->ColorID);
+		$this->ConnectorID=intval($this->ConnectorID);
+		$this->ProtocolID=intval($this->ProtocolID);
+		$this->RateID=intval($this->RateID);
 		$this->Notes=sanitize($this->Notes);
 	}
 
@@ -58,6 +63,9 @@ class TemplatePorts {
 		$tp->Label=$dbRow['Label'];
 		$tp->MediaID=$dbRow['MediaID'];
 		$tp->ColorID=$dbRow['ColorID'];
+		$tp->ConnectorID=$dbRow['ConnectorID'];
+		$tp->ProtocolID=$dbRow['ProtocolID'];
+		$tp->RateID=$dbRow['RateID'];
 		$tp->Notes=$dbRow['Notes'];
 
 		$tp->MakeDisplay();
@@ -109,7 +117,8 @@ class TemplatePorts {
 		
 		$this->MakeSafe();
 		$sql="INSERT INTO fac_TemplatePorts SET TemplateID=$this->TemplateID, PortNumber=$this->PortNumber, 
-			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, 
+			Label=\"$this->Label\", MediaID=$this->MediaID, ColorID=$this->ColorID, ConnectorID=$this->ConnectorID, 
+			ProtocolID=$this->ProtocolID, RateID=$this->RateID,
 			Notes=\"$this->Notes\";";
 			
 		if(!$dbh->query($sql)){
@@ -135,7 +144,8 @@ class TemplatePorts {
 
 		// update port
 		$sql="UPDATE fac_TemplatePorts SET Label=\"$this->Label\", MediaID=$this->MediaID, 
-			ColorID=$this->ColorID,	Notes=\"$this->Notes\", 
+			ColorID=$this->ColorID,	Notes=\"$this->Notes\", ConnectorID=$this->ConnectorID, 
+			ProtocolID=$this->ProtocolID, RateID=$this->RateID
 			WHERE TemplateID=$this->TemplateID AND PortNumber=$this->PortNumber;";
 
 		if(!$dbh->query($sql)){

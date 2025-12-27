@@ -84,7 +84,23 @@ class Device {
 		if($deviceid){
 			$this->DeviceID=$deviceid;
 		}
-		return $this;
+	}
+	
+	static public function NormalizeV3PrivProtocol($protocol){
+		$protocol=strtoupper(trim($protocol));
+		$protocol=str_replace(array('-',' '),'',$protocol);
+		switch($protocol){
+			case 'AES':
+			case 'AES128':
+				return 'AES128';
+			case 'AES192':
+				return 'AES192';
+			case 'AES256':
+				return 'AES256';
+			case 'DES':
+			default:
+				return 'DES';
+		}
 	}
 
 	function MakeSafe() {
@@ -102,7 +118,7 @@ class Device {
 		$validSNMPVersions=array(1,'2c',3);
 		$validv3SecurityLevels=array('noAuthNoPriv','authNoPriv','authPriv');
 		$validv3AuthProtocols=array('MD5','SHA');
-		$validv3PrivProtocols=array('DES','AES');
+		$validv3PrivProtocols=array('DES','AES128','AES192','AES256');
 
 		$validStatus = DeviceStatus::getStatusNames();
 
@@ -116,7 +132,10 @@ class Device {
 		$this->v3SecurityLevel=(in_array($this->v3SecurityLevel, $validv3SecurityLevels))?$this->v3SecurityLevel:'noAuthNoPriv';
 		$this->v3AuthProtocol=(in_array($this->v3AuthProtocol, $validv3AuthProtocols))?$this->v3AuthProtocol:'MD5';
 		$this->v3AuthPassphrase=sanitize($this->v3AuthPassphrase);
-		$this->v3PrivProtocol=(in_array($this->v3PrivProtocol,$validv3PrivProtocols))?$this->v3PrivProtocol:'DES';
+		$this->v3PrivProtocol=self::NormalizeV3PrivProtocol($this->v3PrivProtocol);
+		if(!in_array($this->v3PrivProtocol,$validv3PrivProtocols)){
+			$this->v3PrivProtocol='DES';
+		}
 		$this->v3PrivPassphrase=sanitize($this->v3PrivPassphrase);
 		$this->SNMPFailureCount=intval($this->SNMPFailureCount);
 		$this->Hypervisor=(in_array($this->Hypervisor, $validHypervisors))?$this->Hypervisor:'None';
@@ -182,7 +201,7 @@ class Device {
 		$dev->v3SecurityLevel=$dbRow["v3SecurityLevel"];
 		$dev->v3AuthProtocol=$dbRow["v3AuthProtocol"];
 		$dev->v3AuthPassphrase=$dbRow["v3AuthPassphrase"];
-		$dev->v3PrivProtocol=$dbRow["v3PrivProtocol"];
+		$dev->v3PrivProtocol=self::NormalizeV3PrivProtocol($dbRow["v3PrivProtocol"]);
 		$dev->v3PrivPassphrase=$dbRow["v3PrivPassphrase"];
 		$dev->SNMPVersion=$dbRow["SNMPVersion"];
 		$dev->SNMPCommunity=$dbRow["SNMPCommunity"];
