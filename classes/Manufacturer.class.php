@@ -32,7 +32,6 @@ class Manufacturer {
 		if($manufacturerid){
 			$this->ManufacturerID=$manufacturerid;
 		}
-		return $this;
 	}
 
 	function MakeSafe(){
