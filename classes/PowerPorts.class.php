@@ -293,7 +293,6 @@ class PowerPorts {
 			PhaseID=$this->PhaseID, VoltageID=$this->VoltageID,
 			Notes=\"$this->Notes\" WHERE DeviceID=$this->DeviceID AND 
 			PortNumber=$this->PortNumber;";
-		error_log( "SQL: ${sql}" );
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 

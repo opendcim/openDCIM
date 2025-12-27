@@ -103,5 +103,14 @@ class PowerPhases {
 			return false;
 		}
 	}
+
+	static function TimesUsed($id){
+		global $dbh;
+
+		$count=$dbh->prepare('SELECT * FROM fac_PowerPorts WHERE PhaseID='.intval($id));
+		$count->execute();
+
+		return $count->rowCount();
+	}
 }
 ?>

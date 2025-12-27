@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-12 06:14-0600\n"
+"POT-Creation-Date: 2025-12-26 08:16-0600\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -118,28 +118,28 @@ msgstr ""
 #: report_outage_simulator.php:45 report_panel_schedule.php:52
 #: report_panel_schedule.php:170 report_power_distribution.php:164
 #: report_power_utilization.php:163 report_project_outage_simulator.php:46
-#: report_project_outage_simulator.php:277 report_projects.php:145
+#: report_project_outage_simulator.php:277 report_projects.php:154
 #: report_sensors.php:23 report_tags.php:33 report_xml_CFD.php:61
-#: search_export.php:149 zone.php:138 classes/Device.class.php:2613
+#: search_export.php:149 zone.php:138 classes/Device.class.php:2632
 #: classes/PowerDistribution.class.php:553
 msgid "Data Center"
 msgstr "ЦОД"
 
 #: bulk_importer.php:223 bulk_moves.php:230 cabinets.php:246 dc_stats.php:317
-#: devices.php:2000 pathmaker.php:227 pathmaker.php:304 pathmaker.php:470
+#: devices.php:2008 pathmaker.php:227 pathmaker.php:304 pathmaker.php:470
 #: /home/runner/openDCIM/paths.php:221 paths.php:296
 #: /home/runner/openDCIM/paths.php:380 report_cabinets.php:187
 #: report_contact.php:486 report_cost.php:469 report_exception.php:165
 #: report_exception.php:235 report_network_map.php:620
-#: report_project_outage_simulator.php:346 report_projects.php:144
-#: workorder.php:156 zone_stats.php:305 classes/Device.class.php:2613
+#: report_project_outage_simulator.php:346 report_projects.php:153
+#: workorder.php:156 zone_stats.php:305 classes/Device.class.php:2632
 #: classes/PowerDistribution.class.php:553
 msgid "Cabinet"
 msgstr "Шкаф"
 
 #: bulk_importer.php:234 cdu_templates.php:101 connections_spreadsheet.php:48
 #: device_manufacturers.php:177 device_templates.php:754
-#: report_vendor_model.php:44
+#: report_vendor_model.php:44 report_vendor_model.php:217
 msgid "Manufacturer"
 msgstr "Производитель"
 
@@ -156,7 +156,7 @@ msgstr "Модель"
 msgid "Department"
 msgstr "Департамент"
 
-#: bulk_importer.php:269 devices.php:979 /home/runner/openDCIM/devices.php:1958
+#: bulk_importer.php:269 devices.php:987 /home/runner/openDCIM/devices.php:1966
 #: report_aging.php:425 report_aging.php:460
 #: report_project_outage_simulator.php:354 report_warranty.php:439
 #: report_warranty.php:472 search_export.php:161
@@ -295,7 +295,7 @@ msgstr "Сервисы информационных технологий"
 msgid "Cabinet Audit Report"
 msgstr "Отчет по аудиту шкафа"
 
-#: cabaudit.php:53 /home/runner/openDCIM/devices.php:2475 report_aging.php:95
+#: cabaudit.php:53 /home/runner/openDCIM/devices.php:2486 report_aging.php:95
 #: report_asset.php:29 report_audit.php:321 report_audit.php:417
 #: report_audit_frequency.php:33 report_contact.php:42 report_cost.php:46
 #: report_department.php:36 report_diverse_power_exceptions.php:35
@@ -326,7 +326,7 @@ msgstr "Страница"
 msgid "Cabinet Location"
 msgstr "Расположение шкафа"
 
-#: cabaudit.php:404 cabaudit.php:510 configuration.php:2578 devices.php:1871
+#: cabaudit.php:404 cabaudit.php:510 configuration.php:2742 devices.php:1879
 #: rackrequest.php:351 report_aging.php:425 report_aging.php:460
 #: report_asset.php:54 report_warranty.php:439 report_warranty.php:472
 #: sidebar.inc.php:18 workorder.php:156
@@ -341,7 +341,7 @@ msgstr "Серийный номер"
 msgid "AssetTag"
 msgstr "Инвентарный номер"
 
-#: cabaudit.php:404 connections_spreadsheet.php:58 devices.php:2042
+#: cabaudit.php:404 connections_spreadsheet.php:58 devices.php:2050
 #: rackrequest.php:471 report_asset.php:54 report_contact.php:486
 #: report_cost.php:469 report_diverse_power_exceptions.php:167
 #: report_exception.php:165 report_exception.php:235
@@ -411,7 +411,7 @@ msgstr "Обновлено"
 msgid "New Cabinet"
 msgstr "Новый шкаф"
 
-#: cabinets.php:272 configuration.php:2155 report_sensors.php:24
+#: cabinets.php:272 configuration.php:2317 report_sensors.php:24
 #: report_supply_status.php:103 search_export.php:150 supplybin.php:159
 msgid "Location"
 msgstr "Местоположение"
@@ -440,12 +440,12 @@ msgstr "Высота шкафа (U)"
 msgid "U1 Position"
 msgstr "Позиция U1"
 
-#: cabinets.php:306 configuration.php:2107 dc_stats.php:321 dc_stats.php:329
+#: cabinets.php:306 configuration.php:2269 dc_stats.php:321 dc_stats.php:329
 #: mapmaker.php:172 zone_stats.php:309 zone_stats.php:317
 msgid "Bottom"
 msgstr "Снизу"
 
-#: cabinets.php:306 configuration.php:2108 dc_stats.php:319 dc_stats.php:327
+#: cabinets.php:306 configuration.php:2270 dc_stats.php:319 dc_stats.php:327
 #: mapmaker.php:170 zone_stats.php:307 zone_stats.php:315
 msgid "Top"
 msgstr "Сверху"
@@ -470,21 +470,21 @@ msgstr "Максимальный вес"
 msgid "Date of Installation"
 msgstr "Дата установки"
 
-#: cabinets.php:335 cabnavigator.php:66 devices.php:1978 search_export.php:159
+#: cabinets.php:335 cabnavigator.php:66 devices.php:1986 search_export.php:159
 #: search_export_storage_room.php:73
 msgid "Tags"
 msgstr "Теги"
 
 #: cabinets.php:341 conflicts.php:608 connections_spreadsheet.php:23
-#: device_templates.php:921 devices.php:1206 devices.php:1990 devices.php:2513
-#: devices.php:2579 devices.php:2634 pathmaker.php:393 report_tags.php:37
+#: device_templates.php:921 devices.php:1214 devices.php:1998 devices.php:2524
+#: devices.php:2590 devices.php:2645 pathmaker.php:393 report_tags.php:37
 #: sidebar.inc.php:26
 msgid "Notes"
 msgstr "Заметки"
 
 #: cabinets.php:347 /home/runner/openDCIM/cabrow.php:196 cdu_templates.php:236
-#: configuration.php:2881 container.php:306 datacenter.php:352
-#: departments.php:218 device_manufacturers.php:203 devices.php:2691
+#: configuration.php:3045 container.php:306 datacenter.php:352
+#: departments.php:218 device_manufacturers.php:203 devices.php:2702
 #: disposition.php:115 escalations.php:86 power_panel.php:345
 #: project_mgr.php:174 report_logging.php:73 timeperiods.php:86 usermgr.php:337
 #: /home/runner/openDCIM/zone.php:180
@@ -493,7 +493,7 @@ msgstr "Обновить"
 
 #: cabinets.php:348 /home/runner/openDCIM/cabrow.php:197 container.php:307
 #: datacenter.php:358 datacenter.php:373 departments.php:218
-#: device_manufacturers.php:204 devices.php:2700 escalations.php:87
+#: device_manufacturers.php:204 devices.php:2711 escalations.php:87
 #: power_panel.php:346 project_mgr.php:174 report_logging.php:70
 #: timeperiods.php:87 /home/runner/openDCIM/zone.php:181
 msgid "Delete"
@@ -510,19 +510,19 @@ msgstr "Координаты на карте"
 #: cabinets.php:352 /home/runner/openDCIM/cabrow.php:192 cdu_templates.php:238
 #: container.php:309 datacenter.php:354 departments.php:220
 #: device_manufacturers.php:206 device_templates.php:396
-#: device_templates.php:929 devices.php:2695 disposition.php:117
+#: device_templates.php:929 devices.php:2706 disposition.php:117
 #: escalations.php:89 power_panel.php:349 project_mgr.php:176
 #: rackrequest.php:486 report_logging.php:67 supplybin.php:165
 #: timeperiods.php:89 usermgr.php:339 /home/runner/openDCIM/zone.php:175
 msgid "Create"
 msgstr "Создать"
 
-#: cabinets.php:360 devices.php:2717 devices.php:2719
+#: cabinets.php:360 devices.php:2728 devices.php:2730
 msgid "Return to Navigator"
 msgstr "Вернуться в навигатор"
 
 #: cabinets.php:362 /home/runner/openDCIM/cabrow.php:204 cdu_templates.php:245
-#: configuration.php:2886 container.php:320 datacenter.php:378
+#: configuration.php:3050 container.php:320 datacenter.php:378
 #: departments.php:229 device_manufacturers.php:218 device_templates.php:1134
 #: disposition.php:121 escalations.php:96 image_management.php:163
 #: pathmaker.php:523 /home/runner/openDCIM/paths.php:617 power_panel.php:438
@@ -545,18 +545,18 @@ msgstr ""
 "<br><br><b>ЭТО НЕЛЬЗЯ ОТМЕНИТЬ</b>"
 
 #: cabinets.php:384 /home/runner/openDCIM/cabrow.php:122 container.php:169
-#: datacenter.php:182 devices.php:1611 devices.php:1764 power_panel.php:451
+#: datacenter.php:182 devices.php:1619 devices.php:1772 power_panel.php:451
 #: project_mgr.php:103 report_exception.php:261 zone.php:245
 msgid "Yes"
 msgstr "Да"
 
 #: cabinets.php:395 /home/runner/openDCIM/cabrow.php:127 container.php:174
-#: datacenter.php:194 devices.php:1615 devices.php:1770 power_panel.php:463
+#: datacenter.php:194 devices.php:1623 devices.php:1778 power_panel.php:463
 #: project_mgr.php:114 report_exception.php:263 zone.php:250
 msgid "No"
 msgstr "Нет"
 
-#: cabnavigator.php:52 devices.php:1895
+#: cabnavigator.php:52 devices.php:1903
 msgid "Install Date"
 msgstr "Дата установки"
 
@@ -604,7 +604,7 @@ msgid "Space"
 msgstr "Пространство"
 
 #: cabnavigator.php:271 dc_dashboard.php:85 dc_stats.php:298
-#: device_templates.php:774 devices.php:2067 zone_stats.php:287
+#: device_templates.php:774 devices.php:2075 zone_stats.php:287
 #: scripts/ajax_tooltip.php:155
 msgid "Weight"
 msgstr "Вес"
@@ -653,11 +653,11 @@ msgstr "Датчики окружающей среды"
 msgid "Add Sensor"
 msgstr "Добавить датчик"
 
-#: cabnavigator.php:395 devices.php:2693
+#: cabnavigator.php:395 devices.php:2704
 msgid "Certify Audit"
 msgstr "Удостоверить аудит"
 
-#: cabnavigator.php:396 devices.php:2396
+#: cabnavigator.php:396 devices.php:2407
 msgid "Add Device"
 msgstr "Добавить устройство"
 
@@ -768,12 +768,12 @@ msgstr "Новый шаблон"
 msgid "Managed"
 msgstr "Управляемое"
 
-#: cdu_templates.php:123 devices.php:2315
+#: cdu_templates.php:123 devices.php:2326
 msgid "Automatic Transfer Switch"
 msgstr "Автоматический ввод резерва (АВР)"
 
-#: cdu_templates.php:129 configuration.php:2324 device_templates.php:802
-#: devices.php:2152
+#: cdu_templates.php:129 configuration.php:2486 device_templates.php:802
+#: devices.php:2160
 msgid "SNMP Version"
 msgstr "Версия SNMP"
 
@@ -837,7 +837,7 @@ msgstr "Ожидаемый результат АВР"
 msgid "Processing Scheme"
 msgstr "Схема обработки"
 
-#: cdu_templates.php:222 device_templates.php:1052 devices.php:2511
+#: cdu_templates.php:222 device_templates.php:1052 devices.php:2522
 msgid "Voltage"
 msgstr "Напряжение"
 
@@ -863,22 +863,22 @@ msgstr "Current selection"
 msgid "Select"
 msgstr "Выбор"
 
-#: configuration.php:947 configuration.php:1135
+#: configuration.php:947 configuration.php:1297
 msgid "Clear all"
 msgstr "Очистить всё"
 
-#: configuration.php:955 configuration.php:971 configuration.php:1145
-#: configuration.php:1166 configuration.php:1389 configuration.php:1403
-#: configuration.php:1502 configuration.php:1519
+#: configuration.php:955 configuration.php:971 configuration.php:1132
+#: configuration.php:1307 configuration.php:1328 configuration.php:1551
+#: configuration.php:1565 configuration.php:1664 configuration.php:1681
 msgid "Something just went horribly wrong."
 msgstr "Что-то пошло просто ужасно неправильно."
 
-#: configuration.php:962 configuration.php:1152
+#: configuration.php:962 configuration.php:1314
 msgid "Replace"
 msgstr "Заменить"
 
-#: configuration.php:978 configuration.php:1173 configuration.php:1384
-#: configuration.php:1411 configuration.php:1498 configuration.php:1526
+#: configuration.php:978 configuration.php:1335 configuration.php:1546
+#: configuration.php:1573 configuration.php:1660 configuration.php:1688
 #: device_templates.php:473
 msgid "Cancel"
 msgstr "Отмена"
@@ -895,11 +895,11 @@ msgstr ""
 "Этот тип носителя где-то используется. Выберите альтернативный тип для "
 "назначения всем записям либо очистку этих записей."
 
-#: configuration.php:1177
+#: configuration.php:1339
 msgid "Code Delete Override"
 msgstr "Переопределение удаляемого кода"
 
-#: configuration.php:1177
+#: configuration.php:1339
 msgid ""
 "This code is in use somewhere. You can either choose to clear all instances "
 "of this color being used or choose to have them replaced with another color."
@@ -907,19 +907,19 @@ msgstr ""
 "Этот код где-то используется. Вы можете выбрать очистку всех ссылок, где "
 "используется этот цветовой код, либо заменить его на другой."
 
-#: configuration.php:1389
+#: configuration.php:1551
 msgid "Custom Device Attribute Type Change Error"
 msgstr "Ошибка изменения типа настраиваемого атрибута устройства"
 
-#: configuration.php:1397
+#: configuration.php:1559
 msgid "Change Type and Clear all uses"
 msgstr "Изменить тип и очистить все использования"
 
-#: configuration.php:1416
+#: configuration.php:1578
 msgid "Custom Device Attribute Type Change Override"
 msgstr "Переопределение изменения типа настраиваемого атрибута устройства"
 
-#: configuration.php:1416
+#: configuration.php:1578
 msgid ""
 "This custom device attribute is in use somewhere. If you choose to change "
 "the attribute type, it will be cleared from all devices and device templates."
@@ -928,19 +928,19 @@ msgstr ""
 "изменение типа атрибута, то это приведёт к очистке этого атрибута у всех "
 "устройств и шаблонов."
 
-#: configuration.php:1502
+#: configuration.php:1664
 msgid "Custom Device Attribute Delete Error"
 msgstr "Ошибка удаления настраиваемого атрибута устройства"
 
-#: configuration.php:1511
+#: configuration.php:1673
 msgid "Delete from All Devices/Templates"
 msgstr "Удалить изо всех устройств/шаблонов"
 
-#: configuration.php:1530
+#: configuration.php:1692
 msgid "Custom Device Attribute Delete Override"
 msgstr "Переопределение удаления настраиваемого атрибута устройства"
 
-#: configuration.php:1530
+#: configuration.php:1692
 msgid ""
 "This custom device attribute is in use somewhere. If you choose to delete "
 "the attribute, it will be removed from all devices and device templates."
@@ -949,946 +949,946 @@ msgstr ""
 "удаление атрибута, то это приведёт к удалению этого атрибута изо всех "
 "устройств и шаблонов."
 
-#: configuration.php:1737
+#: configuration.php:1899
 msgid "Verify directory rights"
 msgstr "Verify directory rights"
 
-#: configuration.php:1826
+#: configuration.php:1988
 msgid "General"
 msgstr "Общие"
 
-#: configuration.php:1827
+#: configuration.php:1989
 #, fuzzy
 msgid "Workflow/Style"
 msgstr "Рабочий процесс"
 
-#: configuration.php:1828
+#: configuration.php:1990
 msgid "Privacy/Email"
 msgstr ""
 
-#: configuration.php:1829
+#: configuration.php:1991
 msgid "Reporting"
 msgstr "Отчеты"
 
-#: configuration.php:1830
+#: configuration.php:1992
 msgid "ToolTips"
 msgstr "Подсказки"
 
-#: configuration.php:1831
+#: configuration.php:1993
 msgid "Cabling"
 msgstr "Кабели"
 
-#: configuration.php:1832 configuration.php:2574
+#: configuration.php:1994 configuration.php:2738
 msgid "Custom Device Attributes"
 msgstr "Настраиваемые атрибуты устройств"
 
-#: configuration.php:1833
+#: configuration.php:1995
 msgid "Attribute Mapping"
 msgstr "Attribute Mapping"
 
-#: configuration.php:1834
+#: configuration.php:1996
 #, fuzzy
 msgid "OIDC/LDAP"
 msgstr "LDAP"
 
-#: configuration.php:1835
+#: configuration.php:1997
 msgid "SAML"
 msgstr "SAML"
 
-#: configuration.php:1836
+#: configuration.php:1998
 msgid "Pre-Flight Check"
 msgstr "Предварительная проверка"
 
-#: configuration.php:1837
+#: configuration.php:1999
 #, fuzzy
 msgid "Credits"
 msgstr "Аудиты"
 
-#: configuration.php:1842
+#: configuration.php:2004
 msgid "Organization Name"
 msgstr "Название организации"
 
-#: configuration.php:1846
+#: configuration.php:2008
 msgid "Locale"
 msgstr "Локаль"
 
-#: configuration.php:1850
+#: configuration.php:2012
 msgid "Default Panel Voltage"
 msgstr "Напряжение электрощита по умолчанию"
 
-#: configuration.php:1854
+#: configuration.php:2016
 msgid "Site Specific Paths"
 msgstr "Site Specific Paths"
 
-#: configuration.php:1860
+#: configuration.php:2022
 msgid "Relative path for Drawings"
 msgstr "Relative path for Drawings"
 
-#: configuration.php:1864
+#: configuration.php:2026
 msgid "Relative path for Pictures"
 msgstr "Relative path for Pictures"
 
-#: configuration.php:1869
+#: configuration.php:2031
 msgid "Relative path for Local/Custom Reports"
 msgstr "Relative path for Local/Custom Reports"
 
-#: configuration.php:1874
+#: configuration.php:2036
 msgid "Time and Measurements"
 msgstr "Время и единицы измерения"
 
-#: configuration.php:1877
+#: configuration.php:2039
 msgid "Time Zone"
 msgstr "Часовой пояс"
 
-#: configuration.php:1882
+#: configuration.php:2044
 msgid "Log Retention (Days)"
 msgstr "Log Retention (Days)"
 
-#: configuration.php:1886 devices.php:1890 rackrequest.php:372
+#: configuration.php:2048 devices.php:1898 rackrequest.php:372
 msgid "Manufacture Date"
 msgstr "Дата изготовления"
 
-#: configuration.php:1888 configuration.php:1896
+#: configuration.php:2050 configuration.php:2058
 msgid "Blank"
 msgstr "Пусто"
 
-#: configuration.php:1889 configuration.php:1897 report_surplus.php:31
+#: configuration.php:2051 configuration.php:2059 report_surplus.php:31
 msgid "Now"
 msgstr "Сейчас"
 
-#: configuration.php:1894
+#: configuration.php:2056
 msgid "Warranty Date"
 msgstr "Дата гарантии"
 
-#: configuration.php:1902
+#: configuration.php:2064
 msgid "Measurement Units"
 msgstr "Система мер"
 
-#: configuration.php:1904
+#: configuration.php:2066
 msgid "English"
 msgstr "Английская"
 
-#: configuration.php:1905
+#: configuration.php:2067
 msgid "Metric"
 msgstr "Метрическая"
 
-#: configuration.php:1910
+#: configuration.php:2072
 msgid "Page Size"
 msgstr "Размер страницы"
 
-#: configuration.php:1912
+#: configuration.php:2074
 msgid "A4"
 msgstr "A4"
 
-#: configuration.php:1913
+#: configuration.php:2075
 msgid "A3"
 msgstr "A3"
 
-#: configuration.php:1914
+#: configuration.php:2076
 msgid "Letter"
 msgstr "Letter"
 
-#: configuration.php:1915
+#: configuration.php:2077
 msgid "Legal"
 msgstr "Legal"
 
-#: configuration.php:1920 departments.php:235
+#: configuration.php:2082 departments.php:235
 msgid "Users"
 msgstr "Пользователи"
 
-#: configuration.php:1923
+#: configuration.php:2085
 msgid "Department Types"
 msgstr "Типы департаментов"
 
-#: configuration.php:1927
+#: configuration.php:2089
 msgid "User Lookup URL"
 msgstr "URL для поиска пользователей"
 
-#: configuration.php:1931
+#: configuration.php:2093
 msgid "Block Undefined Users"
 msgstr "Блокировать неопределённых пользователей"
 
-#: configuration.php:1933 configuration.php:2007 configuration.php:2018
-#: configuration.php:2029 configuration.php:2037 configuration.php:2138
-#: configuration.php:2146 configuration.php:2198 configuration.php:2206
-#: configuration.php:2272 configuration.php:2280 configuration.php:2411
-#: configuration.php:2424 configuration.php:2439 configuration.php:2551
-#: configuration.php:2744 configuration.php:2765 usermgr.php:331
+#: configuration.php:2095 configuration.php:2169 configuration.php:2180
+#: configuration.php:2191 configuration.php:2199 configuration.php:2300
+#: configuration.php:2308 configuration.php:2360 configuration.php:2368
+#: configuration.php:2434 configuration.php:2442 configuration.php:2575
+#: configuration.php:2588 configuration.php:2603 configuration.php:2715
+#: configuration.php:2908 configuration.php:2929 usermgr.php:331
 msgid "Disabled"
 msgstr "Отключен"
 
-#: configuration.php:1934 configuration.php:2008 configuration.php:2019
-#: configuration.php:2030 configuration.php:2038 configuration.php:2139
-#: configuration.php:2147 configuration.php:2199 configuration.php:2207
-#: configuration.php:2273 configuration.php:2281 configuration.php:2412
-#: configuration.php:2425 configuration.php:2745 configuration.php:2766
+#: configuration.php:2096 configuration.php:2170 configuration.php:2181
+#: configuration.php:2192 configuration.php:2200 configuration.php:2301
+#: configuration.php:2309 configuration.php:2361 configuration.php:2369
+#: configuration.php:2435 configuration.php:2443 configuration.php:2576
+#: configuration.php:2589 configuration.php:2909 configuration.php:2930
 msgid "Enabled"
 msgstr "Включен"
 
-#: configuration.php:1939
+#: configuration.php:2101
 msgid "Rack Usage"
 msgstr "Использование стойки"
 
-#: configuration.php:1942
+#: configuration.php:2104
 msgid "Space Critical"
 msgstr "Пространство (критичное состояние)"
 
-#: configuration.php:1945
+#: configuration.php:2107
 msgid "Temperature Critical"
 msgstr "Температура (критичное состояние)"
 
-#: configuration.php:1949
+#: configuration.php:2111
 msgid "Space Warning"
 msgstr "Пространство (предупреждение)"
 
-#: configuration.php:1952
+#: configuration.php:2114
 msgid "Temperature Warning"
 msgstr "Температура (предупреждение)"
 
-#: configuration.php:1956
+#: configuration.php:2118
 msgid "Weight Critical"
 msgstr "Вес (критичное состояние)"
 
-#: configuration.php:1959
+#: configuration.php:2121
 msgid "High Humidity Critical"
 msgstr "Высокая влажность (критичное состояние)"
 
-#: configuration.php:1963
+#: configuration.php:2125
 msgid "Weight Warning"
 msgstr "Вес (предупреждение)"
 
-#: configuration.php:1966
+#: configuration.php:2128
 msgid "Low Humidity Critical"
 msgstr "Низкая влажность (критичное состояние)"
 
-#: configuration.php:1970
+#: configuration.php:2132
 msgid "Power Critical"
 msgstr "Мощность (критичное состояние)"
 
-#: configuration.php:1973
+#: configuration.php:2135
 msgid "High Humidity Caution"
 msgstr "Высокая влажность (предупреждение)"
 
-#: configuration.php:1977
+#: configuration.php:2139
 msgid "Power Warning"
 msgstr "Мощность (предупреждение)"
 
-#: configuration.php:1980
+#: configuration.php:2142
 msgid "Low Humidity Caution"
 msgstr "Низкая влажность (предупреждение)"
 
-#: configuration.php:1984
+#: configuration.php:2146
 msgid "RCI (Rack Cooling Index) High"
 msgstr "RCI (Индекс охлаждения стойки) верхний"
 
-#: configuration.php:1987
+#: configuration.php:2149
 msgid "RCI (Rack Cooling Index) Low"
 msgstr "RCI (Индекс охлаждения стойки) нижний"
 
-#: configuration.php:1991
+#: configuration.php:2153
 msgid "Expirations"
 msgstr "Expirations"
 
-#: configuration.php:1994
+#: configuration.php:2156
 msgid "Unseen Virtual Machines (Days)"
 msgstr "Unseen Virtual Machines (Days)"
 
-#: configuration.php:1997
+#: configuration.php:2159
 msgid "Uninstalled Reservations (Days)"
 msgstr "Uninstalled Reservations (Days)"
 
-#: configuration.php:2005
+#: configuration.php:2167
 msgid "Work Order Builder"
 msgstr "Построитель наряда на работу"
 
-#: configuration.php:2013
+#: configuration.php:2175
 msgid "Site Level Security Options"
 msgstr "Параметры безопасности уровня сайта"
 
-#: configuration.php:2016
+#: configuration.php:2178
 msgid "Filter Cabinet List"
 msgstr "Фильтровать список шкафов"
 
-#: configuration.php:2024 configuration.php:2027
+#: configuration.php:2186 configuration.php:2189
 msgid "Rack Requests"
 msgstr "Запросы на размещение в стойке"
 
-#: configuration.php:2035
+#: configuration.php:2197
 #, fuzzy
 msgid "Rack Requests Actions"
 msgstr "Запросы на размещение в стойке"
 
-#: configuration.php:2043
+#: configuration.php:2205
 msgid "Mail Subject"
 msgstr "Тема письма"
 
-#: configuration.php:2047
+#: configuration.php:2209
 msgid "Warning (Hours)"
 msgstr "Предупреждение (часы)"
 
-#: configuration.php:2051
+#: configuration.php:2213
 msgid "Critical (Hours)"
 msgstr "Критичное состояние (часы)"
 
-#: configuration.php:2072
+#: configuration.php:2234
 msgid "Racks & Maps"
 msgstr "Стойки & Карты"
 
-#: configuration.php:2075
+#: configuration.php:2237
 msgid "Critical Color"
 msgstr "Цвет критичного состояния"
 
-#: configuration.php:2081
+#: configuration.php:2243
 msgid "Caution Color"
 msgstr "Цвет предупреждения"
 
-#: configuration.php:2087
+#: configuration.php:2249
 msgid "Good Color"
 msgstr "Цвет благоприятного состояния"
 
-#: configuration.php:2099
+#: configuration.php:2261
 msgid "Unused Spaces"
 msgstr "Неиспользуемое пространство"
 
-#: configuration.php:2105
+#: configuration.php:2267
 msgid "Default U1 Position"
 msgstr "Позиция U1 по умолчанию"
 
-#: configuration.php:2112 departments.php:235
+#: configuration.php:2274 departments.php:235
 msgid "Devices"
 msgstr "Устройства"
 
-#: configuration.php:2115
+#: configuration.php:2277
 msgid "Device Labels"
 msgstr "Метки устройств"
 
-#: configuration.php:2117
+#: configuration.php:2279
 msgid "Uppercase"
 msgstr "Верхний регистр"
 
-#: configuration.php:2118
+#: configuration.php:2280
 msgid "Lowercase"
 msgstr "Нижний регистр"
 
-#: configuration.php:2119
+#: configuration.php:2281
 msgid "Initial caps"
 msgstr "Первая Буква в Верхнем Регистре"
 
-#: configuration.php:2120
+#: configuration.php:2282
 msgid "Don't touch my labels"
 msgstr "Не трогать мои метки"
 
-#: configuration.php:2125
+#: configuration.php:2287
 msgid "Device Lists"
 msgstr "Список устройтсв"
 
-#: configuration.php:2127
+#: configuration.php:2289
 msgid "Just Devices"
 msgstr "Только устройства"
 
-#: configuration.php:2128
+#: configuration.php:2290
 msgid "Show Datacenter and Cabinet"
 msgstr "Показать датаценры и шкафы"
 
-#: configuration.php:2133 departments.php:235 rowview.php:92
+#: configuration.php:2295 departments.php:235 rowview.php:92
 msgid "Cabinets"
 msgstr "Шкафы"
 
-#: configuration.php:2136
+#: configuration.php:2298
 msgid "Draw Cabinet Outlines"
 msgstr "Draw Cabinet Outlines"
 
-#: configuration.php:2144
+#: configuration.php:2306
 msgid "Add Cabinet Labels"
 msgstr "Add Cabinet Labels"
 
-#: configuration.php:2152
+#: configuration.php:2314
 msgid "Which Cabinet Label?"
 msgstr "Which Cabinet Label?"
 
-#: configuration.php:2156
+#: configuration.php:2318
 msgid "Owner Name"
 msgstr "Owner Name"
 
-#: configuration.php:2157
+#: configuration.php:2319
 msgid "Key Lock Information"
 msgstr "Key Lock Information"
 
-#: configuration.php:2158
+#: configuration.php:2320
 msgid "Model No"
 msgstr "Model No"
 
-#: configuration.php:2164
+#: configuration.php:2326
 msgid "Site"
 msgstr "Сайт"
 
-#: configuration.php:2167
+#: configuration.php:2329
 msgid "Header Color"
 msgstr "Цвет шапки"
 
-#: configuration.php:2173
+#: configuration.php:2335
 msgid "Body Color"
 msgstr "Основной цвет"
 
-#: configuration.php:2179
+#: configuration.php:2341
 msgid "Link Color"
 msgstr "Цвет ссылки"
 
-#: configuration.php:2185
+#: configuration.php:2347
 msgid "Viewed Link Color"
 msgstr "Цвет посещённой ссылки"
 
-#: configuration.php:2193
+#: configuration.php:2355
 #, fuzzy
 msgid "GDPR Enforcement"
 msgstr "Форсировать"
 
-#: configuration.php:2196
+#: configuration.php:2358
 msgid "GDPR Enforcement of Country Isolation"
 msgstr ""
 
-#: configuration.php:2204
+#: configuration.php:2366
 msgid "GPDR PII Privacy"
 msgstr ""
 
-#: configuration.php:2212
+#: configuration.php:2374
 #, fuzzy
 msgid "Default Country for Users"
 msgstr "Цвет по умолчанию"
 
-#: configuration.php:2222
+#: configuration.php:2384
 #, fuzzy
 msgid "SMTP Options"
 msgstr "Опции SNMP"
 
-#: configuration.php:2226
+#: configuration.php:2388
 msgid "SMTP Server"
 msgstr "Сервер SMTP"
 
-#: configuration.php:2230
+#: configuration.php:2392
 msgid "SMTP Port"
 msgstr "Порт SMTP"
 
-#: configuration.php:2234
+#: configuration.php:2396
 msgid "SMTP Helo"
 msgstr "SMTP Helo"
 
-#: configuration.php:2238
+#: configuration.php:2400
 msgid "SMTP Username"
 msgstr "Имя пользователя SMTP"
 
-#: configuration.php:2242
+#: configuration.php:2404
 msgid "SMTP Password"
 msgstr "Пароль SMTP"
 
-#: configuration.php:2246
+#: configuration.php:2408
 msgid "Mail To"
 msgstr "Получатель"
 
-#: configuration.php:2250
+#: configuration.php:2412
 msgid "Mail From"
 msgstr "Отправитель"
 
-#: configuration.php:2254
+#: configuration.php:2416
 msgid "Facility Manager"
 msgstr "Управляющий объектами"
 
-#: configuration.php:2258
+#: configuration.php:2420
 msgid "Facility Manager Email"
 msgstr "Адрес управляющего объектами"
 
-#: configuration.php:2263
+#: configuration.php:2425
 msgid "Test Settings"
 msgstr "Test Settings"
 
-#: configuration.php:2270
+#: configuration.php:2432
 msgid "Email Alerts on Power Poll"
 msgstr "Email Alerts on Power Poll"
 
-#: configuration.php:2278
+#: configuration.php:2440
 msgid "Email Alerts on Sensor Poll"
 msgstr "Email Alerts on Sensor Poll"
 
-#: configuration.php:2293 report_cost.php:397 report_cost.php:400
+#: configuration.php:2455 report_cost.php:397 report_cost.php:400
 msgid "Annual Cost Per Rack Unit (Year)"
 msgstr "Годовая стоимость на юнит стойки (год)"
 
-#: configuration.php:2297
+#: configuration.php:2459
 msgid "Cost Per KwHr"
 msgstr "Стоимость за кВт*ч"
 
-#: configuration.php:2301
+#: configuration.php:2463
 msgid "Logo file for headers"
 msgstr "Логотип для заголовков"
 
-#: configuration.php:2305
+#: configuration.php:2467
 msgid "Font"
 msgstr "Шрифт"
 
-#: configuration.php:2309
+#: configuration.php:2471
 msgid "New Installs Period"
 msgstr "Новый период установки"
 
-#: configuration.php:2313
+#: configuration.php:2475
 msgid "Base URL for install"
 msgstr "Базовый URL для установки"
 
-#: configuration.php:2317
+#: configuration.php:2479
 msgid "SNMP Options"
 msgstr "Опции SNMP"
 
-#: configuration.php:2320
+#: configuration.php:2482
 msgid "Default SNMP Community"
 msgstr "Сообщество SNMP по умолчанию"
 
-#: configuration.php:2334 devices.php:2169
+#: configuration.php:2496 devices.php:2177
 msgid "SNMPv3 Security Level"
 msgstr "Уровень безопасности SNMPv3"
 
-#: configuration.php:2344 devices.php:2182
+#: configuration.php:2506 devices.php:2190
 msgid "SNMPv3 AuthProtocol"
 msgstr "Протокол аутентификации SNMPv3"
 
-#: configuration.php:2353 devices.php:2195
+#: configuration.php:2515 devices.php:2203
 msgid "SNMPv3 Passphrase"
 msgstr "Парольная фраза SNMPv3"
 
-#: configuration.php:2357 devices.php:2199
+#: configuration.php:2519 devices.php:2207
 msgid "SNMPv3 PrivProtocol"
 msgstr "Протокол защиты SNMPv3"
 
-#: configuration.php:2366 devices.php:2212
+#: configuration.php:2530 devices.php:2223
 msgid "SNMPv3 PrivPassphrase"
 msgstr "Парольная фраза защиты SNMPv3"
 
-#: configuration.php:2370
+#: configuration.php:2534
 msgid "Capacity Reporting"
 msgstr "Отчет по ёмкости"
 
-#: configuration.php:2373
+#: configuration.php:2537
 msgid "Switches"
 msgstr "Коммутаторы"
 
-#: configuration.php:2376
+#: configuration.php:2540
 msgid "OptIn"
 msgstr "Выборочное включение (OptIn)"
 
-#: configuration.php:2377
+#: configuration.php:2541
 msgid "OptOut"
 msgstr "Выборочное исключение (OptOut)"
 
-#: configuration.php:2382
+#: configuration.php:2546
 msgid "Switch Capacity Threshold"
 msgstr "Порог ёмкости коммутатора"
 
-#: configuration.php:2386
+#: configuration.php:2550
 msgid "Utilities"
 msgstr "Утилиты"
 
-#: configuration.php:2389
+#: configuration.php:2553
 msgid "snmpget"
 msgstr "Путь к snmpget"
 
-#: configuration.php:2393
+#: configuration.php:2557
 msgid "snmpwalk"
 msgstr "Путь к snmpwalk"
 
-#: configuration.php:2397
+#: configuration.php:2561
 msgid "cut"
 msgstr "Путь к cut"
 
-#: configuration.php:2401
+#: configuration.php:2565
 msgid "dot"
 msgstr "Путь к dot"
 
-#: configuration.php:2409
+#: configuration.php:2573
 msgid "Cabinet ToolTips"
 msgstr "Всплывающие подсказки шкафа"
 
-#: configuration.php:2422
+#: configuration.php:2586
 msgid "CDU ToolTips"
 msgstr "Всплывающие подсказки CDU"
 
-#: configuration.php:2434
+#: configuration.php:2598
 msgid "Media Types"
 msgstr "Типы носителей"
 
-#: configuration.php:2437
+#: configuration.php:2601
 msgid "Media Type Matching"
 msgstr "Соответствие типа носителя"
 
-#: configuration.php:2440 configuration.php:2552
+#: configuration.php:2604 configuration.php:2716
 msgid "Enforce"
 msgstr "Форсировать"
 
-#: configuration.php:2450 devices.php:2581 devices.php:2634
+#: configuration.php:2614 devices.php:2592 devices.php:2645
 msgid "Media Type"
 msgstr "Тип носителя"
 
-#: configuration.php:2451
+#: configuration.php:2615
 msgid "Default Color"
 msgstr "Цвет по умолчанию"
 
-#: configuration.php:2455 configuration.php:2469 configuration.php:2482
-#: configuration.php:2494 configuration.php:2506 configuration.php:2518
-#: configuration.php:2530 configuration.php:2542 configuration.php:2586
-#: configuration.php:2603
+#: configuration.php:2619 configuration.php:2633 configuration.php:2646
+#: configuration.php:2658 configuration.php:2670 configuration.php:2682
+#: configuration.php:2694 configuration.php:2706 configuration.php:2750
+#: configuration.php:2767
 msgid "Add new row"
 msgstr "Добавить новый ряд"
 
-#: configuration.php:2460
+#: configuration.php:2624
 msgid "Cable Colors"
 msgstr "Цвет кабеля"
 
-#: configuration.php:2464 connections_spreadsheet.php:25
+#: configuration.php:2628 connections_spreadsheet.php:25
 msgid "Color"
 msgstr "Цвет"
 
-#: configuration.php:2465
+#: configuration.php:2629
 msgid "Default Note"
 msgstr "Заметка по умолчанию"
 
-#: configuration.php:2474
+#: configuration.php:2638
 msgid "Media Protocols"
 msgstr ""
 
-#: configuration.php:2478
+#: configuration.php:2642
 #, fuzzy
 msgid "Protocol Name"
 msgstr "Имя порта"
 
-#: configuration.php:2486
+#: configuration.php:2650
 #, fuzzy
 msgid "Media Connectors"
 msgstr "Тыльное подключение"
 
-#: configuration.php:2490 configuration.php:2514 devices.php:2510
+#: configuration.php:2654 configuration.php:2678 devices.php:2521
 #, fuzzy
 msgid "Connector Type"
 msgstr "Подключения"
 
-#: configuration.php:2498
+#: configuration.php:2662
 #, fuzzy
 msgid "Media Data Rates"
 msgstr "Центры обработки данных"
 
-#: configuration.php:2502
+#: configuration.php:2666
 #, fuzzy
 msgid "Data Rate"
 msgstr "ЦОД"
 
-#: configuration.php:2510
+#: configuration.php:2674
 #, fuzzy
 msgid "Power Connectors"
 msgstr "Подключения питания"
 
-#: configuration.php:2522
+#: configuration.php:2686
 #, fuzzy
 msgid "Power Voltages"
 msgstr "Напряжение электрощита"
 
-#: configuration.php:2526
+#: configuration.php:2690
 #, fuzzy
 msgid "Voltage Value"
 msgstr "Напряжение"
 
-#: configuration.php:2534
+#: configuration.php:2698
 #, fuzzy
 msgid "Power Phases"
 msgstr "Электрический щит"
 
-#: configuration.php:2538
+#: configuration.php:2702
 #, fuzzy
 msgid "Phase Name"
 msgstr "Имя электрощита"
 
-#: configuration.php:2546
+#: configuration.php:2710
 msgid "Connection Filtering"
 msgstr "Фильтрация подключений"
 
-#: configuration.php:2549
+#: configuration.php:2713
 msgid "Patch panel rear connection filtering"
 msgstr "Фильтрация подключений сзади для патч-панели:"
 
-#: configuration.php:2557
+#: configuration.php:2721
 msgid "Connection Pathing"
 msgstr "Пути подключений"
 
-#: configuration.php:2560
+#: configuration.php:2724
 msgid "Cabinet Weight"
 msgstr "Вес шкафа"
 
-#: configuration.php:2564
+#: configuration.php:2728
 msgid "Weight for rear connections between panels"
 msgstr "Вес для соединений сзади между патч-панелями"
 
-#: configuration.php:2568
+#: configuration.php:2732
 msgid "Weight for patches in the same row"
 msgstr "Вес для патч-кордов в одном ряду"
 
-#: configuration.php:2579
+#: configuration.php:2743
 msgid "Type"
 msgstr "Тип"
 
-#: configuration.php:2580
+#: configuration.php:2744
 msgid "Required"
 msgstr "Обязательный"
 
-#: configuration.php:2581
+#: configuration.php:2745
 msgid "Apply to<br>All Devices"
 msgstr "Применить ко<br>всем устройствам"
 
-#: configuration.php:2582
+#: configuration.php:2746
 msgid "Default Value"
 msgstr "Значение по умолчанию"
 
-#: configuration.php:2594 search_export.php:164
+#: configuration.php:2758 search_export.php:164
 #, fuzzy
 msgid "Device Status"
 msgstr "Список устройтсв"
 
-#: configuration.php:2609
+#: configuration.php:2773
 #, fuzzy
 msgid "Authentication Attribute Mapping"
 msgstr "Настройка аутентификации и авторизации LDAP"
 
-#: configuration.php:2612
+#: configuration.php:2776
 msgid "FirstName"
 msgstr "FirstName"
 
-#: configuration.php:2616 usermgr.php:267
+#: configuration.php:2780 usermgr.php:267
 msgid "Last Name"
 msgstr "Фамилия"
 
-#: configuration.php:2620 report_contact.php:451 report_cost.php:435
+#: configuration.php:2784 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Email"
 msgstr "Почта"
 
-#: configuration.php:2624 report_contact.php:451 report_cost.php:435
+#: configuration.php:2788 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Phone1"
 msgstr "Номер телефона 1"
 
-#: configuration.php:2628 report_contact.php:451 report_cost.php:435
+#: configuration.php:2792 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Phone2"
 msgstr "Номер телефона 2"
 
-#: configuration.php:2632 container.php:250 datacenter.php:283 usermgr.php:283
+#: configuration.php:2796 container.php:250 datacenter.php:283 usermgr.php:283
 #, fuzzy
 msgid "Country"
 msgstr "Количество"
 
-#: configuration.php:2636
+#: configuration.php:2800
 #, fuzzy
 msgid "Username Transformations"
 msgstr "Пользователи"
 
-#: configuration.php:2639
+#: configuration.php:2803
 msgid "Remove Account Prefix"
 msgstr "Remove Account Prefix"
 
-#: configuration.php:2643
+#: configuration.php:2807
 msgid "Remove Account Suffix"
 msgstr "Remove Account Suffix"
 
-#: configuration.php:2647
+#: configuration.php:2811
 msgid "Group/Scope Mapping"
 msgstr "Group/Scope Mapping"
 
-#: configuration.php:2650
+#: configuration.php:2814
 msgid "SAML Attribute containing Groups"
 msgstr "SAML Attribute containing Groups"
 
-#: configuration.php:2654
+#: configuration.php:2818
 msgid "Site Access"
 msgstr "Доступ к сайту"
 
-#: configuration.php:2658
+#: configuration.php:2822
 msgid "Global Read"
 msgstr "Глобальное чтение"
 
-#: configuration.php:2662
+#: configuration.php:2826
 msgid "Global Write"
 msgstr "Глобальная запись"
 
-#: configuration.php:2666
+#: configuration.php:2830
 msgid "Global Delete"
 msgstr "Глобальное удаление"
 
-#: configuration.php:2670
+#: configuration.php:2834
 msgid "Admin Owned Devices"
 msgstr "Администрирование собственных устройств"
 
-#: configuration.php:2674
+#: configuration.php:2838
 msgid "Enter Rack Request"
 msgstr "Запрос на размещение"
 
-#: configuration.php:2678
+#: configuration.php:2842
 msgid "Complete Rack Request"
 msgstr "Завершение запросов на размещение"
 
-#: configuration.php:2682
+#: configuration.php:2846
 msgid "Contact Admin"
 msgstr "Администрирование контактов"
 
-#: configuration.php:2686
+#: configuration.php:2850
 msgid "Bulk Operations"
 msgstr "Массовые операции"
 
-#: configuration.php:2690
+#: configuration.php:2854
 msgid "Site Admin"
 msgstr "Администрирование сайта"
 
-#: configuration.php:2696
+#: configuration.php:2860
 #, fuzzy
 msgid "OIDC Connection Configuration"
 msgstr "Конфигурация ЦОД"
 
-#: configuration.php:2699
+#: configuration.php:2863
 #, fuzzy
 msgid "OIDC Authorization Endpoint"
 msgstr "Массовый сетевой импортёр"
 
-#: configuration.php:2703
+#: configuration.php:2867
 msgid "OIDC Client ID"
 msgstr "OIDC Client ID"
 
-#: configuration.php:2707
+#: configuration.php:2871
 msgid "OIDC Client Secret"
 msgstr "OIDC Client Secret"
 
-#: configuration.php:2711
+#: configuration.php:2875
 #, fuzzy
 msgid "OIDC UserID Attribute"
 msgstr "Настраиваемые атрибуты"
 
-#: configuration.php:2715
+#: configuration.php:2879
 msgid "LDAP Authentication and Authorization Configuration"
 msgstr "Настройка аутентификации и авторизации LDAP"
 
-#: configuration.php:2718
+#: configuration.php:2882
 msgid "LDAP Server URI"
 msgstr "URI сервера LDAP"
 
-#: configuration.php:2722
+#: configuration.php:2886
 msgid "Base DN"
 msgstr "Базовый DN"
 
-#: configuration.php:2726
+#: configuration.php:2890
 msgid "Base Search"
 msgstr "База поиска"
 
-#: configuration.php:2727
+#: configuration.php:2891
 msgid "Leave blank for Active Directory"
 msgstr "Leave blank for Active Directory"
 
-#: configuration.php:2730
+#: configuration.php:2894
 msgid "Bind DN"
 msgstr "Bind DN"
 
-#: configuration.php:2734
+#: configuration.php:2898
 msgid "User Search"
 msgstr "Поиск пользователя"
 
-#: configuration.php:2738
+#: configuration.php:2902
 msgid "LDAP Session Expiration (Seconds)"
 msgstr "Таймаут сессии LDAP (секунд)"
 
-#: configuration.php:2742
+#: configuration.php:2906
 msgid "LDAP Debugging"
 msgstr "LDAP Debugging"
 
-#: configuration.php:2750
+#: configuration.php:2914
 msgid "Emergency Bypass Password"
 msgstr "Emergency Bypass Password"
 
-#: configuration.php:2756
+#: configuration.php:2920
 #, fuzzy
 msgid "SAML Authentication Configuration"
 msgstr "Настройка аутентификации и авторизации LDAP"
 
-#: configuration.php:2759
+#: configuration.php:2923
 #, fuzzy
 msgid "Base URL"
 msgstr "Базовый DN"
 
-#: configuration.php:2763
+#: configuration.php:2927
 msgid "Show Success Page"
 msgstr "Show Success Page"
 
-#: configuration.php:2771
+#: configuration.php:2935
 msgid "SAML SP Information and Certificate Generation"
 msgstr "SAML SP Information and Certificate Generation"
 
-#: configuration.php:2775
+#: configuration.php:2939
 msgid "Entity ID"
 msgstr "Entity ID"
 
-#: configuration.php:2779
+#: configuration.php:2943
 msgid "Country (2 Character)"
 msgstr "Country (2 Character)"
 
-#: configuration.php:2783
+#: configuration.php:2947
 msgid "State or Province"
 msgstr "State or Province"
 
-#: configuration.php:2787
+#: configuration.php:2951
 msgid "Organization"
 msgstr "Organization"
 
-#: configuration.php:2800
+#: configuration.php:2964
 msgid "Certificate Expiration"
 msgstr "Certificate Expiration"
 
-#: configuration.php:2804
+#: configuration.php:2968
 msgid "SP Private Key"
 msgstr "SP Private Key"
 
-#: configuration.php:2808
+#: configuration.php:2972
 msgid "SP x509 Certificate"
 msgstr "SP x509 Certificate"
 
-#: configuration.php:2813
+#: configuration.php:2977
 msgid "Generate/Renew Certificate"
 msgstr "Generate/Renew Certificate"
 
-#: configuration.php:2818
+#: configuration.php:2982
 #, fuzzy
 msgid "SAML Identity Provider Configuration"
 msgstr "Конфигурация ЦОД"
 
-#: configuration.php:2822
+#: configuration.php:2986
 msgid "IdP entityId"
 msgstr "IdP entityId"
 
-#: configuration.php:2826
+#: configuration.php:2990
 msgid "IdP Metadata URL"
 msgstr "IdP Metadata URL"
 
-#: configuration.php:2830
+#: configuration.php:2994
 msgid "SSO URL"
 msgstr "SSO URL"
 
-#: configuration.php:2834
+#: configuration.php:2998
 msgid "SLS URL"
 msgstr "SLS URL"
 
-#: configuration.php:2838
+#: configuration.php:3002
 msgid "IdP x509 Certificate"
 msgstr "IdP x509 Certificate"
 
-#: configuration.php:2843
+#: configuration.php:3007
 msgid "Refresh IdP Metadata"
 msgstr "Refresh IdP Metadata"
 
-#: configuration.php:2886
+#: configuration.php:3050
 #, fuzzy
 msgid "Reserved"
 msgstr "Зарезервированные устройства"
 
-#: configuration.php:2886
+#: configuration.php:3050
 msgid "Disposed"
 msgstr "Disposed"
 
@@ -1904,7 +1904,7 @@ msgstr "Номер штепселя"
 msgid "Power Supply"
 msgstr "Источник питания"
 
-#: conflicts.php:608 devices.php:916 /home/runner/openDCIM/devices.php:930
+#: conflicts.php:608 devices.php:924 /home/runner/openDCIM/devices.php:938
 #: rackrequest.php:454
 msgid "Switch"
 msgstr "Коммутатор"
@@ -1913,7 +1913,7 @@ msgstr "Коммутатор"
 msgid "Switch Port"
 msgstr "Порт коммутатора"
 
-#: conflicts.php:608 devices.php:2509 devices.php:2575 devices.php:2634
+#: conflicts.php:608 devices.php:2520 devices.php:2586 devices.php:2645
 msgid "Device Port"
 msgstr "Порт устройства"
 
@@ -1945,7 +1945,7 @@ msgstr "Порт назначения"
 msgid "MediaType"
 msgstr "Тип носителя"
 
-#: connections_spreadsheet.php:28 devices.php:2571 devices.php:2634
+#: connections_spreadsheet.php:28 devices.php:2582 devices.php:2645
 #: pathmaker.php:199
 msgid "Connections"
 msgstr "Подключения"
@@ -1954,14 +1954,14 @@ msgstr "Подключения"
 msgid "Device Label"
 msgstr "Метка устройства"
 
-#: connections_spreadsheet.php:52 devices.php:1875 rackrequest.php:368
+#: connections_spreadsheet.php:52 devices.php:1883 rackrequest.php:368
 #: report_asset.php:54 report_contact.php:486 report_cost.php:469
 #: report_exception.php:165 report_exception.php:235 search_export.php:154
 #: search_export_storage_room.php:68 sidebar.inc.php:20
 msgid "Serial Number"
 msgstr "Серийный номер"
 
-#: connections_spreadsheet.php:54 devices.php:1880 rackrequest.php:376
+#: connections_spreadsheet.php:54 devices.php:1888 rackrequest.php:376
 #: report_asset.php:54 report_contact.php:486 report_cost.php:469
 #: search_export.php:155 search_export_storage_room.php:69 sidebar.inc.php:21
 #: storageroom.php:77
@@ -2012,8 +2012,8 @@ msgstr "URL изображения"
 msgid "Parent Container"
 msgstr "Родительский контейнер"
 
-#: container.php:273 datacenter.php:318 classes/Cabinet.class.php:391
-#: classes/Cabinet.class.php:459
+#: container.php:273 datacenter.php:318 classes/Cabinet.class.php:390
+#: classes/Cabinet.class.php:458
 msgid "None"
 msgstr "Отсутствует"
 
@@ -2266,16 +2266,16 @@ msgid "Measured Power"
 msgstr "Измеренная мощность"
 
 #: dc_stats.php:301 report_sensors.php:26 zone_stats.php:290
-#: classes/Device.class.php:2553 classes/Device.class.php:2555
+#: classes/Device.class.php:2572 classes/Device.class.php:2574
 msgid "Temperature"
 msgstr "Температура"
 
 #: dc_stats.php:302 report_sensors.php:27 zone_stats.php:291
-#: classes/Device.class.php:2559 classes/Device.class.php:2561
+#: classes/Device.class.php:2578 classes/Device.class.php:2580
 msgid "Humidity"
 msgstr "Влажность"
 
-#: dc_stats.php:303 zone_stats.php:292 classes/DataCenter.class.php:580
+#: dc_stats.php:303 zone_stats.php:292 classes/DataCenter.class.php:579
 msgid "Air Flow"
 msgstr "Воздушный поток"
 
@@ -2363,7 +2363,7 @@ msgstr "Техническое обслуживание контакта деп�
 msgid "Group to Administer"
 msgstr "Администрируемая группа"
 
-#: dept_groups.php:66 devices.php:2305 login_ldap.php:271 people_depts.php:66
+#: dept_groups.php:66 devices.php:2316 login_ldap.php:271 people_depts.php:66
 #: project_members.php:140 supplybin.php:207
 msgid "Submit"
 msgstr "Отправить"
@@ -2449,7 +2449,7 @@ msgid "Error updating devices"
 msgstr "Ошибка обновления устройств"
 
 #: device_templates.php:294 device_templates.php:306 paths.php:164
-#: scripts/ajax_tooltip.php:23 classes/Device.class.php:2651
+#: scripts/ajax_tooltip.php:23 classes/Device.class.php:2670
 msgid "Error"
 msgstr "Ошибка"
 
@@ -2473,12 +2473,12 @@ msgstr "Закрыть"
 msgid "Custom"
 msgstr "Custom"
 
-#: device_templates.php:526 devices.php:147
-#: /home/runner/openDCIM/devices.php:151 devices.php:204
+#: device_templates.php:526 devices.php:148
+#: /home/runner/openDCIM/devices.php:152 devices.php:205
 msgid "Invert Port Labels"
 msgstr "Инвертировать метки портов"
 
-#: device_templates.php:770 devices.php:2038 devices.php:2379
+#: device_templates.php:770 devices.php:2046 devices.php:2390
 #: rackrequest.php:426 search_export.php:152 search_export_storage_room.php:66
 msgid "Height"
 msgstr "Высота"
@@ -2487,11 +2487,11 @@ msgstr "Высота"
 msgid "0 for a vertical mounting"
 msgstr "Для вертикального монтажа - 0"
 
-#: device_templates.php:778 devices.php:2304
+#: device_templates.php:778 devices.php:2315
 msgid "Wattage"
 msgstr "Мощность"
 
-#: device_templates.php:782 devices.php:2092 devices.php:2381
+#: device_templates.php:782 devices.php:2100 devices.php:2392
 #: rackrequest.php:447 report_vendor_model.php:53 search_export.php:157
 #: search_export_storage_room.php:71
 msgid "Device Type"
@@ -2569,17 +2569,17 @@ msgstr "Удалить шаблон"
 msgid "Update Devices"
 msgstr "Обновть устройства"
 
-#: device_templates.php:945 devices.php:2364 devices.php:2634
-#: classes/DeviceTemplate.class.php:592 classes/DeviceTemplate.class.php:596
+#: device_templates.php:945 devices.php:2375 devices.php:2645
+#: classes/DeviceTemplate.class.php:591 classes/DeviceTemplate.class.php:595
 msgid "Front"
 msgstr "Спереди"
 
-#: device_templates.php:950 devices.php:437
-#: /home/runner/openDCIM/devices.php:2365 devices.php:2667 misc.inc.php:1142
+#: device_templates.php:950 devices.php:445
+#: /home/runner/openDCIM/devices.php:2376 devices.php:2678 misc.inc.php:1142
 #: report_cabinets.php:180 report_cabinets.php:252 report_cabinets.php:293
-#: rowview.php:92 classes/Device.class.php:2192 classes/Device.class.php:2196
-#: classes/Device.class.php:2297 classes/Device.class.php:2300
-#: classes/DeviceTemplate.class.php:592 classes/DeviceTemplate.class.php:596
+#: rowview.php:92 classes/Device.class.php:2211 classes/Device.class.php:2215
+#: classes/Device.class.php:2316 classes/Device.class.php:2319
+#: classes/DeviceTemplate.class.php:591 classes/DeviceTemplate.class.php:595
 msgid "Rear"
 msgstr "Сзади"
 
@@ -2631,21 +2631,21 @@ msgstr "Журнал импорта"
 msgid "Data Center Device Detail"
 msgstr "Подробности об устройстве ЦОД"
 
-#: devices.php:68
+#: devices.php:69
 msgid "Something isn't working correctly"
 msgstr "Что-то работает некорректно"
 
-#: devices.php:147 /home/runner/openDCIM/devices.php:151 devices.php:204
-#: /home/runner/openDCIM/devices.php:207 report_exception.php:165
+#: devices.php:148 /home/runner/openDCIM/devices.php:152 devices.php:205
+#: /home/runner/openDCIM/devices.php:208 report_exception.php:165
 #: report_exception.php:235
 msgid "From Template"
 msgstr "Из шаблона"
 
-#: devices.php:289
+#: devices.php:297
 msgid "ERROR: No ports found"
 msgstr "ОШИБКА: Порты не найдены"
 
-#: devices.php:635
+#: devices.php:643
 msgid ""
 "This device is a copy of an existing device.  Remember to set the new "
 "location before saving."
@@ -2653,58 +2653,58 @@ msgstr ""
 "Это устройство является копией существующего. Не забудьте задать новое "
 "местоположение перед сохранением."
 
-#: devices.php:783
+#: devices.php:791
 msgid "Device did not copy.  Error."
 msgstr "Устройство не скопировано. Ошибка."
 
-#: devices.php:913 /home/runner/openDCIM/devices.php:927 rackrequest.php:451
+#: devices.php:921 /home/runner/openDCIM/devices.php:935 rackrequest.php:451
 msgid "Server"
 msgstr "Сервер"
 
-#: devices.php:914 /home/runner/openDCIM/devices.php:928 rackrequest.php:452
+#: devices.php:922 /home/runner/openDCIM/devices.php:936 rackrequest.php:452
 msgid "Appliance"
 msgstr "Прибор"
 
-#: devices.php:915 /home/runner/openDCIM/devices.php:929 rackrequest.php:453
+#: devices.php:923 /home/runner/openDCIM/devices.php:937 rackrequest.php:453
 msgid "Storage Array"
 msgstr "Массив хранения данных"
 
-#: devices.php:917 /home/runner/openDCIM/devices.php:931 rackrequest.php:455
+#: devices.php:925 /home/runner/openDCIM/devices.php:939 rackrequest.php:455
 msgid "Chassis"
 msgstr "Шасси"
 
-#: devices.php:918 /home/runner/openDCIM/devices.php:932 rackrequest.php:456
+#: devices.php:926 /home/runner/openDCIM/devices.php:940 rackrequest.php:456
 msgid "Patch Panel"
 msgstr "Патч-панель"
 
-#: devices.php:919 /home/runner/openDCIM/devices.php:935
-#: classes/Device.class.php:2613
+#: devices.php:927 /home/runner/openDCIM/devices.php:943
+#: classes/Device.class.php:2632
 msgid "Sensor"
 msgstr "Датчик"
 
-#: devices.php:933 /home/runner/openDCIM/devices.php:1997 rackrequest.php:457
+#: devices.php:941 /home/runner/openDCIM/devices.php:2005 rackrequest.php:457
 msgid "Physical Infrastructure"
 msgstr "Физическая инфраструктура"
 
-#: devices.php:934 classes/PowerDistribution.class.php:553
+#: devices.php:942 classes/PowerDistribution.class.php:553
 msgid "CDU"
 msgstr "CDU"
 
-#: devices.php:972
+#: devices.php:980
 msgid "openDCIM Device Maintenance"
 msgstr "Техническое обслуживание устройства openDCIM"
 
-#: devices.php:979 vmnamecheck.php:43 vmnamecheck.php:81
+#: devices.php:987 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "VM Name"
 msgstr "Имя ВМ"
 
-#: devices.php:979 /home/runner/openDCIM/devices.php:1859 devices.php:2514
-#: devices.php:2580 disposition.php:102 report_project_outage_simulator.php:350
+#: devices.php:987 /home/runner/openDCIM/devices.php:1867 devices.php:2525
+#: devices.php:2591 disposition.php:102 report_project_outage_simulator.php:350
 #: report_surplus.php:136 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Status"
 msgstr "Статус"
 
-#: devices.php:979 report_aging.php:425 report_aging.php:460
+#: devices.php:987 report_aging.php:425 report_aging.php:460
 #: report_diverse_power_exceptions.php:167 report_power_utilization.php:167
 #: report_project_outage_simulator.php:356 report_tags.php:35
 #: report_warranty.php:439 report_warranty.php:472 search_export.php:160
@@ -2713,36 +2713,36 @@ msgstr "Статус"
 msgid "Owner"
 msgstr "Владелец"
 
-#: devices.php:979 vmnamecheck.php:43 vmnamecheck.php:81
+#: devices.php:987 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Last Updated"
 msgstr "Последнее обновление"
 
-#: devices.php:987 /home/runner/openDCIM/devices.php:995
+#: devices.php:995 /home/runner/openDCIM/devices.php:1003
 #: report_exception.php:158 vmnamecheck.php:53 vmnamecheck.php:91
 msgid "Unknown"
 msgstr "Неизвестно"
 
-#: devices.php:1065
+#: devices.php:1073
 msgid "Open"
 msgstr "Открыть"
 
-#: devices.php:1154
+#: devices.php:1162
 msgid "Landscape"
 msgstr "Альбомный"
 
-#: devices.php:1164 devices.php:1844
+#: devices.php:1172 devices.php:1852
 msgid "Portrait"
 msgstr "Портретный"
 
-#: devices.php:1209
+#: devices.php:1217
 msgid "Network & Power"
 msgstr "Сеть & Питание"
 
-#: devices.php:1596
+#: devices.php:1604
 msgid "Verify Delete Device"
 msgstr "Подтверждение удаления устройства"
 
-#: devices.php:1605
+#: devices.php:1613
 msgid ""
 "If this device has blades installed they will be deleted and there is no "
 "undo. Are you sure?"
@@ -2750,242 +2750,242 @@ msgstr ""
 "Если это устройство содержит установленные лезвия, то они будут удалены, и "
 "это действие невозможно отменить. Вы уверены?"
 
-#: devices.php:1759
+#: devices.php:1767
 msgid "This device will be deleted and there is no undo. Are you sure?"
 msgstr ""
 "Это устройство будет удалено и это действие невозможно отменить. Вы уверены?"
 
-#: devices.php:1852
+#: devices.php:1860
 msgid "Asset Tracking"
 msgstr "Отслеживание активов"
 
-#: devices.php:1855
+#: devices.php:1863
 msgid "Device ID"
 msgstr "ID устройства"
 
-#: devices.php:1877 devices.php:1882
+#: devices.php:1885 devices.php:1890
 msgid "Scan Barcode"
 msgstr "Сканировать штрихкод"
 
-#: devices.php:1885 search_export.php:156 search_export_storage_room.php:70
+#: devices.php:1893 search_export.php:156 search_export_storage_room.php:70
 msgid "Primary IP / Host Name"
 msgstr "Основной IP / Имя хоста"
 
-#: devices.php:1899
+#: devices.php:1907
 msgid "Warranty Company"
 msgstr "Гарантийная компания"
 
-#: devices.php:1903 search_export.php:162 search_export_storage_room.php:76
+#: devices.php:1911 search_export.php:162 search_export_storage_room.php:76
 msgid "Warranty Expiration"
 msgstr "Гарантийный срок"
 
-#: devices.php:1907
+#: devices.php:1915
 msgid "Last Audit Completed"
 msgstr "Дата последнего аудита"
 
-#: devices.php:1911 rackrequest.php:390
+#: devices.php:1919 rackrequest.php:390
 msgid "Departmental Owner"
 msgstr "Департамент-владелец"
 
-#: devices.php:1914 devices.php:1960 rackrequest.php:393 search_export.php:62
+#: devices.php:1922 devices.php:1968 rackrequest.php:393 search_export.php:62
 #: search_export.php:196 scripts/ajax_tooltip.php:318
 msgid "Unassigned"
 msgstr "Не назначено"
 
-#: devices.php:1922
+#: devices.php:1930
 msgid "Show Contacts"
 msgstr "Показать контакты"
 
-#: devices.php:1928
+#: devices.php:1936
 msgid "Escalation Information"
 msgstr "Информация об эскалации"
 
-#: devices.php:1931
+#: devices.php:1939
 msgid "Time Period"
 msgstr "Временной период"
 
-#: devices.php:1933 devices.php:1945 devices.php:2094
+#: devices.php:1941 devices.php:1953 devices.php:2102
 msgid "Select..."
 msgstr "Выбрать"
 
-#: devices.php:1943 escalations.php:80
+#: devices.php:1951 escalations.php:80
 msgid "Details"
 msgstr "Подробности"
 
-#: devices.php:1972
+#: devices.php:1980
 msgid "Contact Lookup"
 msgstr "Поиск контакта"
 
-#: devices.php:1984
+#: devices.php:1992
 msgid "Custom Attributes"
 msgstr "Настраиваемые атрибуты"
 
-#: devices.php:2008
+#: devices.php:2016
 msgid "Parent Device"
 msgstr "Родительское устройство"
 
-#: devices.php:2020 rackrequest.php:406
+#: devices.php:2028 rackrequest.php:406
 msgid "Device Class"
 msgstr "Класс устройства"
 
-#: devices.php:2022
+#: devices.php:2030
 msgid "Select a template..."
 msgstr "Выбор шаблона"
 
-#: devices.php:2038
+#: devices.php:2046
 msgid "Number of slots"
 msgstr "Количество слотов"
 
-#: devices.php:2050 search_export.php:165
+#: devices.php:2058 search_export.php:165
 msgid "Half Depth"
 msgstr "Половинная глубина"
 
-#: devices.php:2055 search_export.php:166
+#: devices.php:2063 search_export.php:166
 msgid "Back Side"
 msgstr "Установка сзади"
 
-#: devices.php:2059
+#: devices.php:2067
 msgid "Number of Data Ports"
 msgstr "Количество портов данных"
 
-#: devices.php:2063
+#: devices.php:2071
 msgid "Nominal Draw (Watts)"
 msgstr "Номинальное потребление (Ватт)"
 
-#: devices.php:2074 devices.php:2502
+#: devices.php:2082 devices.php:2513
 msgid "Power Connections"
 msgstr "Подключения питания"
 
-#: devices.php:2082
+#: devices.php:2090
 msgid "Chassis Total Draw"
 msgstr "Общее потребление шасси"
 
-#: devices.php:2086
+#: devices.php:2094
 msgid "Chassis Total Weight"
 msgstr "Суммарный вес шасси"
 
-#: devices.php:2108
+#: devices.php:2116
 msgid "Sensor Readings"
 msgstr "Sensor Readings"
 
-#: devices.php:2115
+#: devices.php:2123
 msgid "Device Images"
 msgstr "Изображения устройств"
 
-#: devices.php:2128
+#: devices.php:2136
 msgid "ProxMox Configuration"
 msgstr "Конфигурация ProxMox"
 
-#: devices.php:2131
+#: devices.php:2139
 msgid "API Username"
 msgstr "Имя пользователя API"
 
-#: devices.php:2135
+#: devices.php:2143
 msgid "API Password"
 msgstr "Пароль API"
 
-#: devices.php:2139
+#: devices.php:2147
 msgid "API Port"
 msgstr "Порт API"
 
-#: devices.php:2143
+#: devices.php:2151
 msgid "ProxMox Realm"
 msgstr "Область ProxMox"
 
-#: devices.php:2149
+#: devices.php:2157
 msgid "SNMP Configuration"
 msgstr "Конфигурация SNMP"
 
-#: devices.php:2155 devices.php:2172 devices.php:2185 devices.php:2202
+#: devices.php:2163 devices.php:2180 devices.php:2193 devices.php:2210
 msgid "Configuration Default"
 msgstr "Конфигурация по умолчанию"
 
-#: devices.php:2165
+#: devices.php:2173
 msgid "SNMP Read Only Community"
 msgstr "Сообщество SNMP только для чтения"
 
-#: devices.php:2166
+#: devices.php:2174
 msgid "Test SNMP"
 msgstr "Тест SNMP"
 
-#: devices.php:2216
+#: devices.php:2227
 msgid "Consecutive SNMP Failures"
 msgstr "Ошибок SNMP подряд"
 
-#: devices.php:2220
+#: devices.php:2231
 msgid "Polling is disabled after three consecutive failures."
 msgstr "Опрос отключается после трёх ошибок подряд"
 
-#: devices.php:2223
+#: devices.php:2234
 msgid "Power Specifications"
 msgstr "Спецификация питания"
 
-#: devices.php:2226
+#: devices.php:2237
 msgid "Source Panel"
 msgstr "Электрический щит"
 
-#: devices.php:2229 devices.php:2325
+#: devices.php:2240 devices.php:2336
 msgid "Select Panel"
 msgstr "Выберите щит"
 
-#: devices.php:2242
+#: devices.php:2253
 #, fuzzy
 msgid "Goto Panel"
 msgstr "Патч-панель"
 
-#: devices.php:2247
+#: devices.php:2258
 msgid "Voltages:"
 msgstr "Напряжения:"
 
-#: devices.php:2261
+#: devices.php:2272
 msgid "Breaker Size (# of Poles)"
 msgstr "Размер выключателя (кол-во полюсов)"
 
-#: devices.php:2275
+#: devices.php:2286
 msgid "Panel Pole Number"
 msgstr "Номер полюса щита"
 
-#: devices.php:2282
+#: devices.php:2293
 msgid "All Breaker Poles"
 msgstr "Все полюсы выключателя"
 
-#: devices.php:2288
+#: devices.php:2299
 msgid "Input Amperage"
 msgstr "Входная сила тока"
 
-#: devices.php:2296
+#: devices.php:2307
 msgid "Uptime"
 msgstr "Время работы"
 
-#: devices.php:2300
+#: devices.php:2311
 msgid "Firmware Version"
 msgstr "Версия прошивки"
 
-#: devices.php:2305
+#: devices.php:2316
 msgid "Manual Entry"
 msgstr "Ручной ввод"
 
-#: devices.php:2308
+#: devices.php:2319
 msgid "Last Update"
 msgstr "Последнее обновление"
 
-#: devices.php:2318
+#: devices.php:2329
 msgid "Fail Safe Switch?"
 msgstr "Переключение на резервный источник питания?"
 
-#: devices.php:2322
+#: devices.php:2333
 msgid "Source Panel (Secondary Source)"
 msgstr "Электрический щит (вторичный источник)"
 
-#: devices.php:2337
+#: devices.php:2348
 msgid "Panel Pole Number (Secondary Source)"
 msgstr "Номер полюса щитка (вторичный источник)"
 
-#: devices.php:2346
+#: devices.php:2357
 msgid "Switch SNMP"
 msgstr "SNMP коммутатора"
 
-#: devices.php:2347
+#: devices.php:2358
 msgid ""
 "Use these buttons to set the first port for the switch, check the status of "
 "the ports again, or attempt to load the Port Name Labels from the switch "
@@ -2994,27 +2994,27 @@ msgstr ""
 "Используйте эти кнопки для установки первого порта коммутатора, повторной "
 "проверки статуса портов или попытки загрузить имена портов с устройства."
 
-#: devices.php:2347
+#: devices.php:2358
 msgid "Set First Port"
 msgstr "Установить первый порт"
 
-#: devices.php:2347 devices.php:2351
+#: devices.php:2358 devices.php:2362
 msgid "Refresh Status"
 msgstr "Обновить статус"
 
-#: devices.php:2347 devices.php:2351
+#: devices.php:2358 devices.php:2362
 msgid "Refresh Port Names"
 msgstr "Обновить имена портов"
 
-#: devices.php:2347 devices.php:2351
+#: devices.php:2358 devices.php:2362
 msgid "Refresh Port Notes"
 msgstr "Обновить примечания портов"
 
-#: devices.php:2350
+#: devices.php:2361
 msgid "CDU SNMP"
 msgstr "CDU SNMP"
 
-#: devices.php:2351
+#: devices.php:2362
 msgid ""
 "Use these buttons to set the first power outlet for the CDU, check the "
 "status of the oultets again, or attempt to load the Outlet Name Labels from "
@@ -3024,30 +3024,30 @@ msgstr ""
 "status of the oultets again, or attempt to load the Outlet Name Labels from "
 "the CDU device."
 
-#: devices.php:2351
+#: devices.php:2362
 msgid "Set First Outlet"
 msgstr "Set First Outlet"
 
-#: devices.php:2360
+#: devices.php:2371
 msgid "Chassis Contents"
 msgstr "Содержимое шасси"
 
-#: devices.php:2368
+#: devices.php:2379
 msgid "Number of Slots in Chassis:"
 msgstr "Количество слотов в шасси:"
 
-#: devices.php:2378
+#: devices.php:2389
 msgid "Slot #"
 msgstr "Слот #"
 
-#: devices.php:2380 report_contact.php:486 report_cost.php:469
+#: devices.php:2391 report_contact.php:486 report_cost.php:469
 #: report_diverse_power_exceptions.php:167 report_exception.php:165
 #: report_exception.php:235 report_power_distribution.php:202
 #: report_power_utilization.php:167
 msgid "Device Name"
 msgstr "Имя устройства"
 
-#: devices.php:2403
+#: devices.php:2414
 msgid ""
 "You must first define how many slots are in the chassis before you can add "
 "devices."
@@ -3055,93 +3055,93 @@ msgstr ""
 "Сначала вы должны определить сколько слотов в шасси, а затем сможете "
 "добавлять устройства."
 
-#: devices.php:2414
+#: devices.php:2425
 msgid "Hypervisor Server Information"
 msgstr "Информация о гипервизоре"
 
-#: devices.php:2420 search_export.php:167
+#: devices.php:2431 search_export.php:167
 msgid "Hypervisor"
 msgstr "Гипервизор"
 
-#: devices.php:2446
+#: devices.php:2457
 msgid "Limit device type selection to"
 msgstr "Ограничить выбор типа устройств по"
 
-#: devices.php:2460
+#: devices.php:2471
 msgid "Limit device selection to"
 msgstr "Ограничить выбор устройств по"
 
-#: devices.php:2475
+#: devices.php:2486
 msgid "Operational Log"
 msgstr "Журнал операций"
 
-#: devices.php:2507 devices.php:2573
+#: devices.php:2518 devices.php:2584
 msgid "Port Name"
 msgstr "Имя порта"
 
-#: devices.php:2508 devices.php:2574 pathmaker.php:465 report_cabinets.php:188
+#: devices.php:2519 devices.php:2585 pathmaker.php:465 report_cabinets.php:188
 #: report_sensors.php:25 storageroom.php:76
 msgid "Device"
 msgstr "Устройство"
 
-#: devices.php:2512
+#: devices.php:2523
 #, fuzzy
 msgid "Phase"
 msgstr "Имя электрощита"
 
-#: devices.php:2515 report_power_distribution.php:186
+#: devices.php:2526 report_power_distribution.php:186
 #: report_power_distribution.php:202
 msgid "Panel"
 msgstr "Электрощит"
 
-#: devices.php:2576
+#: devices.php:2587
 #, fuzzy
 msgid "Connector"
 msgstr "Подключения"
 
-#: devices.php:2577
+#: devices.php:2588
 #, fuzzy
 msgid "Protocol"
 msgstr "Имя порта"
 
-#: devices.php:2578
+#: devices.php:2589
 #, fuzzy
 msgid "Rate"
 msgstr "ЦОД"
 
-#: devices.php:2582
+#: devices.php:2593
 msgid "Color Code"
 msgstr "Цветовой код"
 
-#: devices.php:2634
+#: devices.php:2645
 msgid "Patch Port"
 msgstr "Порт"
 
-#: devices.php:2634
+#: devices.php:2645
 msgid "Back"
 msgstr "Сзади"
 
-#: devices.php:2692 classes/Device.class.php:505
+#: devices.php:2703 classes/Device.class.php:524
 msgid "Copy"
 msgstr "Копировать"
 
-#: devices.php:2703 workorder.php:193
+#: devices.php:2714 workorder.php:193
 msgid "Export Connections"
 msgstr "Экспорт подключений"
 
-#: devices.php:2716
+#: devices.php:2727
 msgid "Return to Parent Device"
 msgstr "Вернуться к родительскому устройству"
 
-#: devices.php:2722
+#: devices.php:2733
 msgid "Return to Storage Room"
 msgstr "Вернуться на склад"
 
-#: devices.php:2724
+#: devices.php:2735
 msgid "Return to General Storage Room"
 msgstr "Вернуться на основной склад"
 
-#: devices.php:2729
+#: devices.php:2740
 msgid "Do you certify that you have completed an audit of this device?"
 msgstr "Вы удостоверяете, что закончили аудит этого устройства?"
 
@@ -3820,7 +3820,8 @@ msgid "openDCIM Project Information"
 msgstr "Информация о проекте openDCIM"
 
 #: project_mgr.php:138 report_network_map.php:625
-#: report_project_outage_simulator.php:342 sidebar.inc.php:23
+#: report_project_outage_simulator.php:342 report_projects.php:132
+#: sidebar.inc.php:23
 msgid "Project"
 msgstr "Проект"
 
@@ -4775,53 +4776,53 @@ msgstr "Report of all cabinets and devices associated with Projects/Services."
 msgid "Criteria for Report:"
 msgstr "Criteria for Report:"
 
-#: report_projects.php:126 report_projects.php:234
+#: report_projects.php:135 report_projects.php:243
 msgid "Project Name:"
 msgstr "Имя проекта:"
 
-#: report_projects.php:128
+#: report_projects.php:137
 #, fuzzy
 msgid "Project Sponsor:"
 msgstr "Организатор проекта"
 
-#: report_projects.php:130
+#: report_projects.php:139
 #, fuzzy
 msgid "Start Date:"
 msgstr "Дата начала проекта"
 
-#: report_projects.php:132
+#: report_projects.php:141
 #, fuzzy
 msgid "Expiration Date:"
 msgstr "Дата окончания проекта"
 
-#: report_projects.php:134
+#: report_projects.php:143
 msgid "Actual End:"
 msgstr "Actual End:"
 
-#: report_projects.php:140
+#: report_projects.php:149
 #, fuzzy
 msgid "Total Assigned Cabinets:"
 msgstr "Всего шкафов"
 
-#: report_projects.php:179 search_export_storage_room.php:64
-#: classes/DataCenter.class.php:711
+#: report_projects.php:188 search_export_storage_room.php:64
+#: classes/DataCenter.class.php:710
 #, fuzzy
 msgid "Storage Room"
 msgstr "Склад %s "
 
-#: report_projects.php:185
+#: report_projects.php:194
 msgid "Unspecified"
 msgstr "Unspecified"
 
-#: report_projects.php:236
+#: report_projects.php:245
 msgid "Select Project"
 msgstr "Выберите проект"
 
-#: report_projects.php:237
+#: report_projects.php:246
 msgid "All Projects"
 msgstr "Все проекты"
 
-#: report_projects.php:243
+#: report_projects.php:252
 msgid ""
 "Choose a specific project to report on, or all projects.  Output will be "
 "sent in Excel 2007 format."
@@ -5603,19 +5604,20 @@ msgstr "Return to Row"
 #: api/v1/deleteRoutes.php:195 api/v1/deleteRoutes.php:225
 #: api/v1/deleteRoutes.php:254 api/v1/deleteRoutes.php:282
 #: api/v1/deleteRoutes.php:310 api/v1/deleteRoutes.php:338
-#: api/v1/postRoutes.php:36 api/v1/postRoutes.php:88 api/v1/postRoutes.php:146
-#: api/v1/postRoutes.php:177 api/v1/postRoutes.php:236
-#: api/v1/postRoutes.php:277 api/v1/postRoutes.php:314
-#: api/v1/postRoutes.php:353 api/v1/postRoutes.php:385
-#: api/v1/postRoutes.php:431 api/v1/postRoutes.php:479
-#: api/v1/postRoutes.php:525 api/v1/postRoutes.php:570
-#: api/v1/postRoutes.php:613 api/v1/postRoutes.php:647
-#: api/v1/postRoutes.php:685 api/v1/postRoutes.php:729 api/v1/putRoutes.php:96
+#: api/v1/deleteRoutes.php:373 api/v1/postRoutes.php:36
+#: api/v1/postRoutes.php:88 api/v1/postRoutes.php:146 api/v1/postRoutes.php:177
+#: api/v1/postRoutes.php:236 api/v1/postRoutes.php:277
+#: api/v1/postRoutes.php:314 api/v1/postRoutes.php:353
+#: api/v1/postRoutes.php:385 api/v1/postRoutes.php:431
+#: api/v1/postRoutes.php:479 api/v1/postRoutes.php:525
+#: api/v1/postRoutes.php:570 api/v1/postRoutes.php:613
+#: api/v1/postRoutes.php:647 api/v1/postRoutes.php:685
+#: api/v1/postRoutes.php:729 api/v1/postRoutes.php:777 api/v1/putRoutes.php:96
 #: api/v1/putRoutes.php:146 api/v1/putRoutes.php:197 api/v1/putRoutes.php:237
 #: api/v1/putRoutes.php:317 api/v1/putRoutes.php:365 api/v1/putRoutes.php:461
 #: api/v1/putRoutes.php:516 api/v1/putRoutes.php:565 api/v1/putRoutes.php:611
 #: api/v1/putRoutes.php:655 api/v1/putRoutes.php:698 api/v1/putRoutes.php:732
-#: api/v1/putRoutes.php:778
+#: api/v1/putRoutes.php:778 api/v1/putRoutes.php:819
 msgid "Access Denied"
 msgstr "Доступ запрещён"
 
@@ -5670,6 +5672,11 @@ msgstr "Invalid parameter (days)"
 msgid "Error removing Powerpanel with PanelID "
 msgstr "Error removing Powerpanel with PanelID "
 
+#: api/v1/deleteRoutes.php:376
+#, fuzzy
+msgid "Connector deletion failed"
+msgstr "Powerpanel creation failed"
+
 #: api/v1/getRoutes.php:305 api/v1/getRoutes.php:349 api/v1/getRoutes.php:441
 msgid "Unknown error"
 msgstr "Неизвестная ошибка"
@@ -5682,39 +5689,39 @@ msgstr "Шкаф не найден"
 msgid "Device is not a sensor or is missing a template"
 msgstr "Устройство не является датчиком либо отсутствует шаблон"
 
-#: api/v1/getRoutes.php:831
+#: api/v1/getRoutes.php:832
 msgid "No color code found with ColorID"
 msgstr "Не найден цветовой код с данным ColorID"
 
-#: api/v1/getRoutes.php:915
+#: api/v1/getRoutes.php:916
 msgid "No template found with TemplateID: "
 msgstr "Не найден шаблон с данным TemplateID:"
 
-#: api/v1/getRoutes.php:940 api/v1/getRoutes.php:992
+#: api/v1/getRoutes.php:941 api/v1/getRoutes.php:993
 msgid "No ports found for TemplateID: "
 msgstr "Не найдены порты для данного TemplateID:"
 
-#: api/v1/getRoutes.php:967
+#: api/v1/getRoutes.php:968
 msgid "Port not found for TemplateID: "
 msgstr "Не найден порт для данного TemplateID:"
 
-#: api/v1/getRoutes.php:1015
+#: api/v1/getRoutes.php:1016
 msgid "No slots found for TemplateID: "
 msgstr "Не найдено слотов для данного TemplateID:"
 
-#: api/v1/getRoutes.php:1174
+#: api/v1/getRoutes.php:1175
 msgid "No sensor readings found with SensorID "
 msgstr "No sensor readings found with SensorID "
 
-#: api/v1/getRoutes.php:1226
+#: api/v1/getRoutes.php:1227
 msgid "No PDU Stats found with PDUID "
 msgstr "No PDU Stats found with PDUID "
 
-#: api/v1/getRoutes.php:1278
+#: api/v1/getRoutes.php:1279
 msgid "No VM information found with VMIndex "
 msgstr "No VM information found with VMIndex "
 
-#: api/v1/getRoutes.php:1330
+#: api/v1/getRoutes.php:1331
 msgid "No Powerpanel information found for PanelID "
 msgstr "No Powerpanel information found for PanelID "
 
@@ -5833,6 +5840,11 @@ msgstr "No Powerpanel found with PanelID "
 msgid "Powerpanel update failed"
 msgstr "Powerpanel update failed"
 
+#: api/v1/postRoutes.php:780
+#, fuzzy
+msgid "Connector update failed"
+msgstr "Ошибка обновления"
+
 #: api/v1/putRoutes.php:47 api/v1/putRoutes.php:61
 msgid "Audit record added successfully."
 msgstr "Audit record added successfully."
@@ -5937,10 +5949,15 @@ msgstr "VM creation failed"
 msgid "Powerpanel creation failed"
 msgstr "Powerpanel creation failed"
 
+#: api/v1/putRoutes.php:822
+#, fuzzy
+msgid "Connector creation failed"
+msgstr "Ошибка создания устройства"
+
 #: scripts/ajax_tooltip.php:146 scripts/ajax_tooltip.php:147
 #: scripts/ajax_tooltip.php:148 scripts/ajax_tooltip.php:149
-#: scripts/ajax_tooltip.php:150 classes/DataCenter.class.php:577
-#: classes/DataCenter.class.php:578 classes/DataCenter.class.php:579
+#: scripts/ajax_tooltip.php:150 classes/DataCenter.class.php:576
+#: classes/DataCenter.class.php:577 classes/DataCenter.class.php:578
 msgid "no data"
 msgstr "нет данных"
 
@@ -6063,76 +6080,76 @@ msgstr "Токен не совпадает"
 msgid "God help us something has gone horribly wrong"
 msgstr "Да поможет нам Бог, что-то пошло ужасно неправильно"
 
-#: classes/DataCenter.class.php:573
+#: classes/DataCenter.class.php:572
 #, fuzzy
 msgid "Composite View of Cabinets"
 msgstr "Ряды шкафов"
 
-#: classes/DataCenter.class.php:574
+#: classes/DataCenter.class.php:573
 #, fuzzy
 msgid "Occupied Space"
 msgstr "Занято"
 
-#: classes/DataCenter.class.php:575
+#: classes/DataCenter.class.php:574
 #, fuzzy
 msgid "Calculated Weight"
 msgstr "Вычисленная мощность"
 
-#: classes/DataCenter.class.php:576
+#: classes/DataCenter.class.php:575
 #, fuzzy
 msgid "Calculated Power Usage"
 msgstr "Вычисленная мощность"
 
-#: classes/DataCenter.class.php:577 classes/DataCenter.class.php:578
-#: classes/DataCenter.class.php:579
+#: classes/DataCenter.class.php:576 classes/DataCenter.class.php:577
+#: classes/DataCenter.class.php:578
 #, fuzzy
 msgid "Measured on"
 msgstr "Измеренная мощность"
 
-#: classes/DataCenter.class.php:675
+#: classes/DataCenter.class.php:674
 msgid "Row "
 msgstr "Row "
 
-#: classes/Device.class.php:2553 classes/Device.class.php:2559
+#: classes/Device.class.php:2572 classes/Device.class.php:2578
 #: classes/PowerDistribution.class.php:489
 msgid "Critical"
 msgstr "Critical"
 
-#: classes/Device.class.php:2555 classes/Device.class.php:2561
+#: classes/Device.class.php:2574 classes/Device.class.php:2580
 #: classes/PowerDistribution.class.php:491
 msgid "Warning"
 msgstr "Warning"
 
-#: classes/Device.class.php:2582
+#: classes/Device.class.php:2601
 msgid "Data Center Sensor Alerts Report"
 msgstr "Data Center Sensor Alerts Report"
 
-#: classes/Device.class.php:2588 classes/PowerDistribution.class.php:528
+#: classes/Device.class.php:2607 classes/PowerDistribution.class.php:528
 msgid "MailFrom"
 msgstr "Отправитель"
 
-#: classes/Device.class.php:2595 classes/PowerDistribution.class.php:535
+#: classes/Device.class.php:2614 classes/PowerDistribution.class.php:535
 msgid "Facility Manager email address"
 msgstr "Адрес управляющего объектами"
 
-#: classes/Device.class.php:2611
+#: classes/Device.class.php:2630
 msgid "Data Center Sensor Alerts"
 msgstr "Data Center Sensor Alerts"
 
-#: classes/Device.class.php:2613 classes/PowerDistribution.class.php:553
+#: classes/Device.class.php:2632 classes/PowerDistribution.class.php:553
 msgid "Value"
 msgstr "Value"
 
-#: classes/Device.class.php:2613 classes/PowerDistribution.class.php:553
+#: classes/Device.class.php:2632 classes/PowerDistribution.class.php:553
 msgid "Alert Level"
 msgstr "Alert Level"
 
-#: classes/DeviceTemplate.class.php:573
+#: classes/DeviceTemplate.class.php:572
 #, fuzzy
 msgid "Import Error"
 msgstr "Журнал импорта"
 
-#: classes/DeviceTemplate.class.php:574
+#: classes/DeviceTemplate.class.php:573
 msgid ""
 "An error has occurred creating the template.<br>Possibly there is already a "
 "template of the same manufacturer and model"
@@ -6140,40 +6157,40 @@ msgstr ""
 "An error has occurred creating the template.<br>Possibly there is already a "
 "template of the same manufacturer and model"
 
-#: classes/DeviceTemplate.class.php:591 classes/DeviceTemplate.class.php:595
-#: classes/DeviceTemplate.class.php:619 classes/DeviceTemplate.class.php:637
-#: classes/DeviceTemplate.class.php:648 classes/DeviceTemplate.class.php:652
-#: classes/DeviceTemplate.class.php:665 classes/DeviceTemplate.class.php:669
+#: classes/DeviceTemplate.class.php:590 classes/DeviceTemplate.class.php:594
+#: classes/DeviceTemplate.class.php:618 classes/DeviceTemplate.class.php:636
+#: classes/DeviceTemplate.class.php:647 classes/DeviceTemplate.class.php:651
+#: classes/DeviceTemplate.class.php:664 classes/DeviceTemplate.class.php:668
 #, fuzzy
 msgid "Import Warning"
 msgstr "Мощность (предупреждение)"
 
-#: classes/DeviceTemplate.class.php:592
+#: classes/DeviceTemplate.class.php:591
 #, fuzzy, php-format
 msgid "An error has occurred creating the slot %s"
 msgstr "Произошла ошибка, шаблон не создан"
 
-#: classes/DeviceTemplate.class.php:596
+#: classes/DeviceTemplate.class.php:595
 #, php-format
 msgid "Ignored slot %s"
 msgstr "Ignored slot %s"
 
-#: classes/DeviceTemplate.class.php:620
+#: classes/DeviceTemplate.class.php:619
 #, fuzzy, php-format
 msgid "An error has occurred creating the color code %s"
 msgstr "Произошла ошибка, шаблон не создан"
 
-#: classes/DeviceTemplate.class.php:638
+#: classes/DeviceTemplate.class.php:637
 #, fuzzy, php-format
 msgid "An error has occurred creating the media type %s"
 msgstr "Произошла ошибка, шаблон не создан"
 
-#: classes/DeviceTemplate.class.php:649 classes/DeviceTemplate.class.php:666
+#: classes/DeviceTemplate.class.php:648 classes/DeviceTemplate.class.php:665
 #, fuzzy, php-format
 msgid "An error has occurred creating the port %s"
 msgstr "Произошла ошибка, шаблон не создан"
 
-#: classes/DeviceTemplate.class.php:653 classes/DeviceTemplate.class.php:670
+#: classes/DeviceTemplate.class.php:652 classes/DeviceTemplate.class.php:669
 #, fuzzy, php-format
 msgid "Ignored port %s"
 msgstr "Отчеты"
