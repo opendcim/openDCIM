@@ -1183,6 +1183,7 @@ div#pandn.table div[id^="ppn"] { min-width: 200px; }
 .switch.table input, .switch.table select, 
 .patchpanel.table input, .patchpanel.table select { padding: 0; background-color: transparent;}
 .switch.table div[id^=n] input { width:98%; }
+.power.table > div > div,[id^=pow] { position: relative; }
 
 .switch .status, .power .status, .patchpanel .down { background-image: url("../images/portstatus.png");}
 .switch .down, .patchpanel .down { background-position: left; }

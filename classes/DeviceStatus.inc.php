@@ -32,7 +32,6 @@ class DeviceStatus {
 		if($statusid){
 			$this->StatusID=$statusid;
 		}
-		return $this;
 	}
 
 	function MakeSafe(){

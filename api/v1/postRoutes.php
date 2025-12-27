@@ -753,4 +753,40 @@ $app->post( '/powerpanel/{panelid}', function( Request $request, Response $respo
 });
 
 
+
+//
+//	URL:      /api/v1/powerconnectortypes/:ConnectorID
+//	Method:   POST
+//	Params:
+//	Required: ConnectorID, name
+//	Returns:  true/false on update operation
+
+$app->post( '/powerconnectortypes/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$pc=new PowerConnectors();
+	$pc->ConnectorID=$id;
+	$pc->ConnectorName=$vars["name"];
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!$pc->updateConnector()){
+			$r['message']=__("Connector update failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+
+
 ?>

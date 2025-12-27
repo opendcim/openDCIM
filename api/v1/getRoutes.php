@@ -798,6 +798,7 @@ $app->get( '/powerport/{deviceid}', function( Request $request, Response $respon
 	$pp->DeviceID=$deviceid;
 
 	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = (is_null($vars)) ? array() : $vars;
 
 	foreach($vars as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
@@ -1474,12 +1475,44 @@ $app->get( '/powerconnectortypes', function(Request $request, Response $response
 	return $response->withJson($r, $r['errorcode']);
 });
 
+//
+//  URL:    /api/v1/powerconnectortypes/:id/count
+//  Method: GET
+//  Params: id
+//  Returns: Count of connections using this id
+
+$app->get( '/powerconnectortypes/{id}/count', function(Request $request, Response $response, $args) {
+    $id = intval($args["id"]);
+
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['count'] = PowerConnectors::TimesUsed($id);
+
+    return $response->withJson( $r, $r['errorcode'] );
+});
+
 $app->get( '/powervoltages', function(Request $request, Response $response) {
 	$r['error'] = false;
 	$r['errorcode'] = 200;
 	$r['powervoltages'] = PowerVoltages::getVoltageList();
 
 	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//  URL:    /api/v1/powervoltages/:id/count
+//  Method: GET
+//  Params: id
+//  Returns: Count of connections using this id
+
+$app->get( '/powervoltages/{id}/count', function(Request $request, Response $response, $args) {
+    $id = intval($args["id"]);
+
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['count'] = PowerVoltages::TimesUsed($id);
+
+    return $response->withJson( $r, $r['errorcode'] );
 });
 
 $app->get( '/powerphases', function(Request $request, Response $response) {
@@ -1490,12 +1523,44 @@ $app->get( '/powerphases', function(Request $request, Response $response) {
 	return $response->withJson($r, $r['errorcode']);
 });
 
+//
+//  URL:    /api/v1/powerphases/:id/count
+//  Method: GET
+//  Params: id
+//  Returns: Count of connections using this id
+
+$app->get( '/powerphases/{id}/count', function(Request $request, Response $response, $args) {
+    $id = intval($args["id"]);
+
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['count'] = PowerPhases::TimesUsed($id);
+
+    return $response->withJson( $r, $r['errorcode'] );
+});
+
 $app->get( '/mediaconnectors', function(Request $request, Response $response) {
 	$r['error'] = false;
 	$r['errorcode'] = 200;
 	$r['mediaconnectors'] = MediaConnectors::getConnectorList();
 
 	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//  URL:    /api/v1/mediaconnectors/:id/count
+//  Method: GET
+//  Params: id
+//  Returns: Count of connections using this id
+
+$app->get( '/mediaconnectors/{id}/count', function(Request $request, Response $response, $args) {
+    $id = intval($args["id"]);
+
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['count'] = MediaConnectors::TimesUsed($id);
+
+    return $response->withJson( $r, $r['errorcode'] );
 });
 
 $app->get( '/mediaprotocols', function(Request $request, Response $response) {
@@ -1506,12 +1571,44 @@ $app->get( '/mediaprotocols', function(Request $request, Response $response) {
 	return $response->withJson($r, $r['errorcode']);
 });
 
+//
+//  URL:    /api/v1/mediaprotocols/:id/count
+//  Method: GET
+//  Params: id
+//  Returns: Count of connections using this id
+
+$app->get( '/mediaprotocols/{id}/count', function(Request $request, Response $response, $args) {
+    $id = intval($args["id"]);
+
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['count'] = MediaProtocols::TimesUsed($id);
+
+    return $response->withJson( $r, $r['errorcode'] );
+});
+
 $app->get( '/mediadatarates', function(Request $request, Response $response) {
 	$r['error'] = false;
 	$r['errorcode'] = 200;
 	$r['mediadatarates'] = MediaDataRates::getRateList();
 
 	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//  URL:    /api/v1/mediadatarates/:id/count
+//  Method: GET
+//  Params: id
+//  Returns: Count of connections using this id
+
+$app->get( '/mediadatarates/{id}/count', function(Request $request, Response $response, $args) {
+    $id = intval($args["id"]);
+
+	$r['error'] = false;
+	$r['errorcode'] = 200;
+	$r['count'] = MediaDataRates::TimesUsed($id);
+
+    return $response->withJson( $r, $r['errorcode'] );
 });
 
 ?>

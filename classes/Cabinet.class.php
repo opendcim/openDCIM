@@ -79,7 +79,6 @@ class Cabinet {
 		if($cabinetid){
 			$this->CabinetID=$cabinetid;
 		}
-		return $this;
 	}
 
 	static function RowToObject($dbRow,$filterrights=true){
