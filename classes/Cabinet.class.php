@@ -172,9 +172,9 @@ class Cabinet {
 		if($this->Rights=='None'){
 			// ZoneID and CabRowID are probably both not important but meh
 			$publicfields=array('CabinetID','DataCenterID','Location','LocationSortable','ZoneID','CabRowID','Rights','AssignedTo','U1Position');
-			foreach($this as $prop => $value){
-				if(!in_array($prop,$publicfields)){
-					$this->$prop=null;
+			foreach (get_object_vars($this) as $prop => $value) {
+    			if (!in_array($prop, $publicfields, true)) {
+        		$this->$prop = null;
 				}
 			}
 		}
@@ -254,8 +254,9 @@ class Cabinet {
 		$sql="SELECT * FROM fac_Cabinet WHERE CabinetID=$this->CabinetID;";
 		
 		if($cabinetRow=$dbh->query($sql)->fetch()){
-			foreach(Cabinet::RowToObject($cabinetRow) as $prop => $value){
-				$this->$prop=$value;
+			$tmp = Cabinet::RowToObject($cabinetRow);
+			foreach (get_object_vars($tmp) as $prop => $value) {
+    			$this->$prop = $value;
 			}
 			return true;
 		}else{
@@ -539,7 +540,8 @@ class Cabinet {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		foreach($this as $prop => $val){
+		$epochDate=date("Y-m-d",0);
+		foreach (get_object_vars($this) as $prop => $val) {
 			// We force the following values to knowns in makesafe 
 			if($prop=="FrontEdge" && $val=="Top" && $ot!="Top"){
 				continue;
@@ -547,7 +549,7 @@ class Cabinet {
 			if($prop=="U1Position" && $val=="Default" && $op!="Default") {
 				continue;
 			}
-			if($val && $val!=date("Y-m-d", strtotime(0))){
+			if($val && $val !== $epochDate){
 				extendsql($prop,$val,$sqlextend,$loose);
 			}
 		}
