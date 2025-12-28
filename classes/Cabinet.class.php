@@ -580,9 +580,14 @@ class Cabinet {
 
 		$cabinetList=array();
 
-		foreach ( $dbh->query( $sql ) as $cabinetRow ) {
-			$cabID=$cabinetRow["CabinetID"];
-			$cabinetList[$cabID]=Cabinet::RowToObject($cabinetRow);
+		$stmt = $dbh->query($sql);
+			if ( $stmt === false ) {
+    		return $cabinetList;
+		}
+
+		foreach ( $stmt as $cabinetRow ) {
+    		$cabID = $cabinetRow['CabinetID'];
+    		$cabinetList[$cabID] = Cabinet::RowToObject($cabinetRow);
 		}
 		return $cabinetList;
 	}
@@ -594,9 +599,13 @@ class Cabinet {
 
 		$tags = array();
 
-		foreach ( $dbh->query( $sql ) as $row ) {
-			$tags[]=Tags::FindName($row[0]);
+		$stmt = $dbh->query($sql);
+    	if ( $stmt === false ) {
+        return $tags;
 		}
+		foreach ( $stmt as $row ) {
+        $tags[] = Tags::FindName($row[0]);
+    	}
 
 		return $tags;
 	}
