@@ -107,7 +107,7 @@ class DataCenter {
 
 		$o=new stdClass();
 		// Store any values that have been added before we make them safe 
-		foreach($this as $prop => $val){
+		foreach (get_object_vars($this) $prop => $val){
 			if(isset($val)){
 				$o->$prop=$val;
 			}
@@ -118,7 +118,7 @@ class DataCenter {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		foreach($this as $prop => $val){
+		foreach (get_object_vars($this) $prop => $val){
 			if($val){
 				extendsql($prop,$val,$sqlextend,$loose);
 			}
