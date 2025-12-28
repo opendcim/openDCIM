@@ -60,8 +60,8 @@ class ESX {
 				$vm->vmID=count($vmList);
 				$nameParts = explode(':', $name);
 				$stateParts = explode(':', $state);
-				$vm->vmName = trim(str_replace('"', '', end($nameParts)));
-				$vm->vmState = trim(str_replace('"', '', end($stateParts)));
+				$vm->vmName = trim(str_replace('"', '', $nameParts[count($nameParts) - 1]));
+				$vm->vmState = trim(str_replace('"', '', $stateParts[count($stateParts) - 1]));
 				$vmList[]=$vm;
 			}
 		}
