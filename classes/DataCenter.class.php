@@ -211,9 +211,11 @@ class DataCenter {
 		$zn->DataCenterID = $this->DataCenterID;
 		$zoneList = $zn->GetZonesByDC();
 		
+		if (is_iterable($zoneList) ) {
 		foreach ( $zoneList as $z ) {
 			// This function already deletes any rows within the zone
 			$z->DeleteZone();
+		  }
 		}
 		
 		// Time to deal with the crap in storage
