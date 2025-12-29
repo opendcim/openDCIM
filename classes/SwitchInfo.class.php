@@ -41,10 +41,10 @@ class SwitchInfo {
 		if($dev->PrimaryIP==""){return false;}
 
 		// If the device doesn't have an SNMP community set, check and see if we have a global one
-		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
+		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?($config->ParameterArray["SNMPCommunity"] ?? ''):$dev->SNMPCommunity;
 
 		// Make this false faster
-		$dev->SNMPCommunity=trim($dev->SNMPCommunity);
+		$dev->SNMPCommunity=trim((string)$dev->SNMPCommunity);
 		if($dev->SNMPCommunity==""){return false;}
 
 		// We've passed all the repeatable tests, return the device object for digging
@@ -54,8 +54,8 @@ class SwitchInfo {
 	// Making an attempt at reducing the lines that I was constantly repeating at a cost of making this a little more convoluted.
 	static private function OSS_SNMP_Lookup($dev,$snmplookup,$portid=null,$baseoid=null){
 		// This is find out the name of the function that called this to make the error logging more descriptive
-		$caller=debug_backtrace();
-		$caller=$caller[1]['function'];
+		$caller=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+		$caller=$caller[1]['function'] ?? '';
 
 		// Since we don't really let the user specify the version right now here's a stop gap
 		// Try the default version of 2c first
@@ -69,7 +69,7 @@ class SwitchInfo {
 
 		$snmpresult=false;
 		try {
-			$snmpresult=(is_null($portid))?$snmpHost->useIface()->$snmplookup(true):$snmpHost->get($baseOID.".$portid");
+			$snmpresult=(is_null($portid))?$snmpHost->useIface()->$snmplookup(true):$snmpHost->get($baseoid.".$portid");
 		}catch (Exception $e){
 			error_log("SwitchInfo::$caller($dev->DeviceID) ".$e->getMessage());
 		}
@@ -92,6 +92,9 @@ class SwitchInfo {
 		
 		$x=array();
 		$portlist=self::OSS_SNMP_Lookup($dev,"names");
+		if(!is_array($portlist)){
+			return $portlist;
+		}
 		foreach($portlist as $index => $portdesc ) {
 			if ( preg_match( "/([0-9]\:|bond|\"[A-Z]|swp|eth|ix|em|e|Ethernet|g|Port-Channel|X|\/)[0]{0,}?[01]$|[01]$/", $portdesc )) {
 				$x[$index] = $portdesc;
