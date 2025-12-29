@@ -161,7 +161,8 @@ class Container {
 			ORDER BY LENGTH(Name), Name ASC;";
 
 		if($row=$this->query($sql)->fetch()){
-			foreach(Container::RowToObject($row) as $prop => $value){
+			$tmp = Container::RowToObject($row);
+			foreach (get_object_vars($tmp) as $prop => $value) {
 				$this->$prop=$value;
 			}
 			return true;
