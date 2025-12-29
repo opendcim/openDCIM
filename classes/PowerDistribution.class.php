@@ -67,28 +67,28 @@ class PowerDistribution {
 	}
 
 	function MakeDisplay(){
-		$this->Label=stripslashes($this->Label);
-		$this->IPAddress=stripslashes($this->IPAddress);
-		$this->SNMPCommunity=stripslashes($this->SNMPCommunity);
-		$this->FirmwareVersion=stripslashes($this->FirmwareVersion);
+		$this->Label=stripslashes((string)$this->Label);
+		$this->IPAddress=stripslashes((string)$this->IPAddress);
+		$this->SNMPCommunity=stripslashes((string)$this->SNMPCommunity);
+		$this->FirmwareVersion=stripslashes((string)$this->FirmwareVersion);
 	}
 
 	static function RowToObject($row){
 		$PDU=new PowerDistribution();
-		$PDU->PDUID=$row["PDUID"];
-		$PDU->Label=$row["Label"];
-		$PDU->CabinetID=$row["CabinetID"];
-		$PDU->TemplateID=$row["TemplateID"];
-		$PDU->IPAddress=$row["IPAddress"];
-		$PDU->SNMPCommunity=$row["SNMPCommunity"];
-		$PDU->FirmwareVersion=$row["FirmwareVersion"];
-		$PDU->PanelID=$row["PanelID"];
-		$PDU->BreakerSize=$row["BreakerSize"];
-		$PDU->PanelPole=$row["PanelPole"];
-		$PDU->InputAmperage=$row["InputAmperage"];
-		$PDU->FailSafe=$row["FailSafe"];
-		$PDU->PanelID2=$row["PanelID2"];
-		$PDU->PanelPole2=$row["PanelPole2"];
+		$PDU->PDUID=$row["PDUID"] ?? null;
+		$PDU->Label=$row["Label"] ?? null;
+		$PDU->CabinetID=$row["CabinetID"] ?? null;
+		$PDU->TemplateID=$row["TemplateID"] ?? null;
+		$PDU->IPAddress=$row["IPAddress"] ?? null;
+		$PDU->SNMPCommunity=$row["SNMPCommunity"] ?? null;
+		$PDU->FirmwareVersion=$row["FirmwareVersion"] ?? null;
+		$PDU->PanelID=$row["PanelID"] ?? null;
+		$PDU->BreakerSize=$row["BreakerSize"] ?? null;
+		$PDU->PanelPole=$row["PanelPole"] ?? null;
+		$PDU->InputAmperage=$row["InputAmperage"] ?? null;
+		$PDU->FailSafe=$row["FailSafe"] ?? null;
+		$PDU->PanelID2=$row["PanelID2"] ?? null;
+		$PDU->PanelPole2=$row["PanelPole2"] ?? null;
 
 		$PDU->MakeDisplay();
 
@@ -122,7 +122,7 @@ class PowerDistribution {
 		if($dev->PrimaryIP==""){return false;}
 
 		// If the device doesn't have an SNMP community set, check and see if we have a global one
-		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
+		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?($config->ParameterArray["SNMPCommunity"] ?? ''):$dev->SNMPCommunity;
 
 		// We've passed all the repeatable tests, return the device object for digging
 		return $dev;
@@ -140,8 +140,8 @@ class PowerDistribution {
 	 */
 	static private function OSS_SNMP_Lookup($dev,$snmplookup,$oid=null){
 		// This is find out the name of the function that called this to make the error logging more descriptive
-		$caller=debug_backtrace();
-		$caller=$caller[1]['function'];
+		$trace=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+		$caller=$trace[1]['function'] ?? 'unknown';
 
 
         /*****************************************************************************************************
@@ -214,7 +214,7 @@ class PowerDistribution {
 		}else{
 			$info=$dbh->errorInfo();
 
-			error_log("CreatePDU::PDO Error: {$info[2]} SQL=$sql");
+			error_log("CreatePDU::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 
 			return false;
 		}
@@ -255,12 +255,13 @@ class PowerDistribution {
 
 		$sql="SELECT * FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
 
-		if($PDURow=$this->query($sql)->fetch()){
+		$stmt=$this->query($sql);
+		if($stmt && ($PDURow=$stmt->fetch())){
 			foreach(PowerDistribution::RowToObject($PDURow) as $prop => $value){
 				$this->$prop=$value;
 			}
 		}else{
-			foreach($this as $prop => $value){
+			foreach(get_object_vars($this) as $prop => $value){
 				if($prop!='PDUID'){
 					$this->$prop=null;
 				}
@@ -277,8 +278,10 @@ class PowerDistribution {
 			 OR PanelID2=$this->PanelID ORDER BY PanelPole ASC, CabinetID, Label";
 
 		$PDUList=array();
-		foreach($this->query($sql) as $PDURow){
-			$PDUList[]=PowerDistribution::RowToObject($PDURow);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $PDURow){
+				$PDUList[]=PowerDistribution::RowToObject($PDURow);
+			}
 		}
 
 		return $PDUList;
@@ -290,8 +293,10 @@ class PowerDistribution {
 		$sql="SELECT * FROM fac_PowerDistribution WHERE CabinetID=$this->CabinetID ORDER BY Label ASC;";
 
 		$PDUList=array();
-		foreach($this->query($sql) as $PDURow){
-			$PDUList[$PDURow["PDUID"]]=PowerDistribution::RowToObject($PDURow);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $PDURow){
+				$PDUList[$PDURow["PDUID"] ?? null]=PowerDistribution::RowToObject($PDURow);
+			}
 		}
 
 		return $PDUList;
@@ -303,8 +308,10 @@ class PowerDistribution {
 		$sql="SELECT * FROM fac_PowerDistribution WHERE Label LIKE \"%$this->Label%\";";
 
 		$PDUList=array();
-		foreach($this->query($sql) as $PDURow){
-			$PDUList[$PDURow["PDUID"]]=PowerDistribution::RowToObject($PDURow);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $PDURow){
+				$PDUList[$PDURow["PDUID"] ?? null]=PowerDistribution::RowToObject($PDURow);
+			}
 		}
 
 		return $PDUList;
@@ -318,10 +325,12 @@ class PowerDistribution {
 		$stats=new stdClass();
 		$stats->Wattage=0;
 		$stats->LastRead=date('Y-m-d G:i:s',0);
-		foreach($this->query($sql) as $row){
-			foreach($row as $prop => $value){
-				if(!is_int($prop)){
-					$stats->$prop=$value;
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				foreach($row as $prop => $value){
+					if(!is_int($prop)){
+						$stats->$prop=$value;
+					}
 				}
 			}
 		}
@@ -413,7 +422,8 @@ class PowerDistribution {
 			ORDER BY f.Name ASC, e.Location ASC";
 
 		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
-		foreach($this->query($sql) as $row){
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
 			if(!$dev=PowerDistribution::BasicTests($row['PDUID'])){
 				// if we fail the basic test on a single device we don't want to skip all the rest so continue instead of return false;
 				continue;
@@ -473,7 +483,7 @@ class PowerDistribution {
 
 			if(!$dbh->query($sql)){
 				$info=$dbh->errorInfo();
-				error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
+				error_log("PowerDistribution::UpdateStats::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			}
 
 			$maxWatts = $row["Voltage"] * $row["Amperage"];
@@ -484,10 +494,10 @@ class PowerDistribution {
 			// Derate everything 80% per standard
 			$maxWatts *= 0.8;
 
-			if ( $config->ParameterArray["PowerAlertsEmail"] == "enabled" ) {
-				if ( $watts >= $config->ParameterArray["PowerRed"] / 100 * $maxWatts ) {
+			if ( ($config->ParameterArray["PowerAlertsEmail"] ?? '') == "enabled" ) {
+				if ( $watts >= ($config->ParameterArray["PowerRed"] ?? 0) / 100 * $maxWatts ) {
 					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], $row["Label"], $watts, __("Critical"));
-				} elseif ( $watts >= $config->ParameterArray["PowerYellow"] / 100 * $maxWatts ) {
+				} elseif ( $watts >= ($config->ParameterArray["PowerYellow"] ?? 0) / 100 * $maxWatts ) {
 					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], $row["Label"], $watts, __("Warning"));
 				}
 			}
@@ -497,25 +507,26 @@ class PowerDistribution {
 				$sql="UPDATE fac_PowerDistribution SET FirmwareVersion=\"$ver\" WHERE PDUID=$this->PDUID;";
 				if(!$dbh->query($sql)){
 					$info=$dbh->errorInfo();
-					error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
+					error_log("PowerDistribution::UpdateStats::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 				}
 			}
 
+			}
 		}
 
-		if ( $config->ParameterArray["PowerAlertsEmail"] == "enabled" && $AlertList != "" ) {
+		if ( ($config->ParameterArray["PowerAlertsEmail"] ?? '') == "enabled" && $AlertList != "" ) {
 			// If any port other than 25 is specified, assume encryption and authentication
-			if($config->ParameterArray['SMTPPort']!= 25){
+			if(($config->ParameterArray['SMTPPort'] ?? 25)!= 25){
 				$transport=Swift_SmtpTransport::newInstance()
-					->setHost($config->ParameterArray['SMTPServer'])
-					->setPort($config->ParameterArray['SMTPPort'])
+					->setHost($config->ParameterArray['SMTPServer'] ?? '')
+					->setPort($config->ParameterArray['SMTPPort'] ?? 25)
 					->setEncryption('ssl')
-					->setUsername($config->ParameterArray['SMTPUser'])
-					->setPassword($config->ParameterArray['SMTPPassword']);
+					->setUsername($config->ParameterArray['SMTPUser'] ?? '')
+					->setPassword($config->ParameterArray['SMTPPassword'] ?? '');
 			}else{
 				$transport=Swift_SmtpTransport::newInstance()
-					->setHost($config->ParameterArray['SMTPServer'])
-					->setPort($config->ParameterArray['SMTPPort']);
+					->setHost($config->ParameterArray['SMTPServer'] ?? '')
+					->setPort($config->ParameterArray['SMTPPort'] ?? 25);
 			}
 
 			$mailer = Swift_Mailer::newInstance($transport);
@@ -523,19 +534,19 @@ class PowerDistribution {
 
 			// Set from address
 			try{		
-				$message->setFrom($config->ParameterArray['MailFromAddr']);
+				$message->setFrom($config->ParameterArray['MailFromAddr'] ?? '');
 			}catch(Swift_RfcComplianceException $e){
 				$error.=__("MailFrom").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 			}
 
 			// Add data center team to the list of recipients
 			try{		
-				$message->addTo($config->ParameterArray['FacMgrMail']);
+				$message->addTo($config->ParameterArray['FacMgrMail'] ?? '');
 			}catch(Swift_RfcComplianceException $e){
 				$error.=__("Facility Manager email address").": <span class=\"errmsg\">".$e->getMessage()."</span><br>\n";
 			}
 
-			$logofile=getcwd().'/'.$config->ParameterArray["PDFLogoFile"];
+			$logofile=getcwd().'/'.($config->ParameterArray["PDFLogoFile"] ?? '');
 			$logo=$message->embed(Swift_Image::fromPath($logofile)->setFilename($logofile));
 				
 			$style = "
@@ -548,7 +559,7 @@ class PowerDistribution {
 </style>";
 
 
-			$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Data Center Power Alerts"), $style, $config->ParameterArray["HeaderColor"], $logo  );
+			$htmlMessage = sprintf( "<!doctype html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>%s</title>%s</head><body><div id=\"header\" style=\"padding: 5px 0;background: %s;\"><center><img src=\"%s\"></center></div><div class=\"page\"><p>\n", __("Data Center Power Alerts"), $style, $config->ParameterArray["HeaderColor"] ?? '', $logo  );
 
 			$htmlMessage .= sprintf( "<table>\n<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n", __("Data Center"), __("Cabinet"), __("CDU"), __("Value"), __("Alert Level") );
 
