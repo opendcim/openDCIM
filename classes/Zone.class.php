@@ -48,7 +48,7 @@ class Zone {
 	}
 
 	static function RowToObject($row){
-		$zone=New Zone();
+		$zone=new Zone();
 		$zone->ZoneID=$row["ZoneID"];
 		$zone->DataCenterID=$row["DataCenterID"];
 		$zone->Description=$row["Description"];
@@ -192,7 +192,8 @@ class Zone {
 		
 		$sql="SELECT * FROM fac_Zone WHERE ZoneID=$this->ZoneID;";
 		if($row=$this->query($sql)->fetch()){
-			foreach(Zone::RowToObject($row) as $prop => $value){
+			$tmp = Zone::RowToObject($row);
+			foreach (get_object_vars($tmp) as $prop => $value) {
 				$this->$prop=$value;
 			}
 			return true;
@@ -296,8 +297,8 @@ class Zone {
 	function Search($indexedbyid=false,$loose=false){
 		$o=new stdClass();
 		// Store any values that have been added before we make them safe 
-		foreach($this as $prop => $val){
-			if(isset($val)){
+		foreach (get_object_vars($this) as $prop => $val) {
+			if ($val !== null) {
 				$o->$prop=$val;
 			}
 		}
