@@ -52,21 +52,21 @@ class PowerPorts {
 	}
 
 	function MakeDisplay(){
-		$this->Label=stripslashes(trim($this->Label));
-		$this->Notes=stripslashes(trim($this->Notes));
+		$this->Label=stripslashes(trim((string)$this->Label));
+		$this->Notes=stripslashes(trim((string)$this->Notes));
 	}
 
 	static function RowToObject($dbRow){
 		$pp=new PowerPorts();
-		$pp->DeviceID=$dbRow['DeviceID'];
-		$pp->PortNumber=$dbRow['PortNumber'];
-		$pp->Label=$dbRow['Label'];
-		$pp->ConnectorID=$dbRow['ConnectorID'];
-		$pp->PhaseID=$dbRow['PhaseID'];
-		$pp->VoltageID=$dbRow['VoltageID'];
-		$pp->ConnectedDeviceID=$dbRow['ConnectedDeviceID'];
-		$pp->ConnectedPort=$dbRow['ConnectedPort'];
-		$pp->Notes=$dbRow['Notes'];
+		$pp->DeviceID=$dbRow['DeviceID'] ?? null;
+		$pp->PortNumber=$dbRow['PortNumber'] ?? null;
+		$pp->Label=$dbRow['Label'] ?? null;
+		$pp->ConnectorID=$dbRow['ConnectorID'] ?? null;
+		$pp->PhaseID=$dbRow['PhaseID'] ?? null;
+		$pp->VoltageID=$dbRow['VoltageID'] ?? null;
+		$pp->ConnectedDeviceID=$dbRow['ConnectedDeviceID'] ?? null;
+		$pp->ConnectedPort=$dbRow['ConnectedPort'] ?? null;
+		$pp->Notes=$dbRow['Notes'] ?? null;
 
 		$pp->MakeDisplay();
 
@@ -79,7 +79,8 @@ class PowerPorts {
 
 		$sql="SELECT * FROM fac_PowerPorts WHERE DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
 
-		if(!$row=$dbh->query($sql)->fetch()){
+		$stmt=$dbh->query($sql);
+		if(!$stmt || !($row=$stmt->fetch())){
 			return false;
 		}else{
 			foreach(PowerPorts::RowToObject($row) as $prop => $value){
@@ -96,8 +97,10 @@ class PowerPorts {
 		$sql="SELECT * FROM fac_PowerPorts WHERE DeviceID=$this->DeviceID ORDER BY PortNumber ASC;";
 
 		$ports=array();
-		foreach($dbh->query($sql) as $row){
-			$ports[$row['PortNumber']]=PowerPorts::RowToObject($row);
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $row){
+				$ports[$row['PortNumber'] ?? null]=PowerPorts::RowToObject($row);
+			}
 		}	
 		return $ports;
 	}
@@ -422,7 +425,7 @@ class PowerPorts {
 	function Search($indexedbyid=false,$loose=false){
 		global $dbh;
 		// Store any values that have been added before we make them safe 
-		foreach($this as $prop => $val){
+		foreach(get_object_vars($this) as $prop => $val){
 			if(isset($val)){
 				$o[$prop]=$val;
 			}
@@ -440,11 +443,13 @@ class PowerPorts {
 
 		$portList=array();
 
-		foreach($dbh->query($sql) as $portRow){
-			if($indexedbyid){
-				$portList[$portRow["DeviceID"].$portRow["PortNumber"]]=PowerPorts::RowToObject($portRow);
-			}else{
-				$portList[]=PowerPorts::RowToObject($portRow);
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $portRow){
+				if($indexedbyid){
+					$portList[($portRow["DeviceID"] ?? '').($portRow["PortNumber"] ?? '')]=PowerPorts::RowToObject($portRow);
+				}else{
+					$portList[]=PowerPorts::RowToObject($portRow);
+				}
 			}
 		}
 
