@@ -56,23 +56,23 @@ class DevicePorts {
 	}
 
 	function MakeDisplay(){
-		$this->Label=stripslashes(trim($this->Label));
-		$this->Notes=stripslashes(trim($this->Notes));
+		$this->Label=stripslashes(trim((string)$this->Label));
+		$this->Notes=stripslashes(trim((string)$this->Notes));
 	}
 
 	static function RowToObject($dbRow){
 		$dp=new DevicePorts();
-		$dp->DeviceID=$dbRow['DeviceID'];
-		$dp->PortNumber=(int)$dbRow['PortNumber'];
-		$dp->Label=$dbRow['Label'];
-		$dp->ConnectorID=$dbRow['ConnectorID'];
-		$dp->ProtocolID=$dbRow['ProtocolID'];
-		$dp->RateID=$dbRow['RateID'];
-		$dp->MediaID=$dbRow['MediaID'];
-		$dp->ColorID=$dbRow['ColorID'];
-		$dp->ConnectedDeviceID=(int)$dbRow['ConnectedDeviceID'];
-		$dp->ConnectedPort=(int)$dbRow['ConnectedPort'];
-		$dp->Notes=$dbRow['Notes'];
+		$dp->DeviceID=$dbRow['DeviceID'] ?? null;
+		$dp->PortNumber=(int)($dbRow['PortNumber'] ?? 0);
+		$dp->Label=$dbRow['Label'] ?? null;
+		$dp->ConnectorID=$dbRow['ConnectorID'] ?? null;
+		$dp->ProtocolID=$dbRow['ProtocolID'] ?? null;
+		$dp->RateID=$dbRow['RateID'] ?? null;
+		$dp->MediaID=$dbRow['MediaID'] ?? null;
+		$dp->ColorID=$dbRow['ColorID'] ?? null;
+		$dp->ConnectedDeviceID=(int)($dbRow['ConnectedDeviceID'] ?? 0);
+		$dp->ConnectedPort=(int)($dbRow['ConnectedPort'] ?? 0);
+		$dp->Notes=$dbRow['Notes'] ?? null;
 
 		$dp->MakeDisplay();
 
@@ -84,7 +84,8 @@ class DevicePorts {
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$this->DeviceID AND PortNumber=$this->PortNumber;";
-		if(!$row=$dbh->query($sql)->fetch()){
+		$stmt=$dbh->query($sql);
+		if(!$stmt || !($row=$stmt->fetch())){
 			return false;
 		}else{
 			foreach(DevicePorts::RowToObject($row) as $prop => $value){
@@ -107,8 +108,10 @@ class DevicePorts {
 		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$this->DeviceID $clause ORDER BY PortNumber ASC;";
 
 		$ports=array();
-		foreach($dbh->query($sql) as $row){
-			$ports[$row['PortNumber']]=DevicePorts::RowToObject($row);
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $row){
+				$ports[$row['PortNumber'] ?? null]=DevicePorts::RowToObject($row);
+			}
 		}	
 		return $ports;
 	}
@@ -119,9 +122,10 @@ class DevicePorts {
 			
 		$sql = "select count(*) as ActivePorts from fac_Ports where DeviceID=$this->DeviceID and (ConnectedDeviceID>0 or Notes > '')";
 		
-		$row = $dbh->query($sql)->fetch();
+		$stmt = $dbh->query($sql);
+		$row = $stmt ? $stmt->fetch() : null;
 
-		return $row["ActivePorts"];
+		return $row["ActivePorts"] ?? 0;
 	}
 		
 	function createPort($update_existing=false) {
@@ -142,7 +146,7 @@ class DevicePorts {
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
+			error_log("createPort::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			return false;
 		}
 
@@ -326,7 +330,7 @@ class DevicePorts {
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
+			error_log("updatePort::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			
 			return false;
 		}
@@ -400,7 +404,7 @@ class DevicePorts {
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
+			error_log("updatePort::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			return false;
 		}
 
@@ -510,7 +514,7 @@ class DevicePorts {
 		if(!$dev->GetDevice()){return false;}
 
 		$mediaenforce="";
-		if($config->ParameterArray["MediaEnforce"]=='enabled' && !is_null($PortNum)){
+		if(($config->ParameterArray["MediaEnforce"] ?? null)=='enabled' && !is_null($PortNum)){
 			$dp=new DevicePorts();
 			$dp->DeviceID=$DeviceID;
 			$dp->PortNumber=$PortNum;
@@ -520,7 +524,7 @@ class DevicePorts {
 			$mt->GetType();
 
 			$mediaenforce=" AND MediaID=$mt->MediaID";
-		}elseif($config->ParameterArray["MediaEnforce"]=='enabled' && is_null($PortNum)){
+		}elseif(($config->ParameterArray["MediaEnforce"] ?? null)=='enabled' && is_null($PortNum)){
 			// Media Type Enforcing is enabled and you didn't supply a port to match type on
 			return false;
 		}
@@ -583,18 +587,22 @@ class DevicePorts {
 				Cabinet!=$cabinetID $rights$pp$limiter GROUP BY DeviceID ORDER BY Label ASC;";
 			
 			foreach(array($sqlSameCabDevice, $sqlDiffCabDevice) as $sql){
-				foreach($dbh->query($sql) as $row){
-					// false to skip rights check we filtered using sql above
-					$tmpDev=Device::RowToObject($row,false);
-					$candidates[]=array("DeviceID"=>$tmpDev->DeviceID,"Label"=>$tmpDev->Label,"CabinetID"=>$tmpDev->Cabinet);
+				if($stmt=$dbh->query($sql)){
+					foreach($stmt as $row){
+						// false to skip rights check we filtered using sql above
+						$tmpDev=Device::RowToObject($row,false);
+						$candidates[]=array("DeviceID"=>$tmpDev->DeviceID,"Label"=>$tmpDev->Label,"CabinetID"=>$tmpDev->Cabinet);
+					}
 				}
 			}
 		}else{
 			$sql="SELECT a.*, b.Cabinet as CabinetID FROM fac_Ports a, fac_Device b WHERE 
 				Ports>0 AND Cabinet>-1 AND a.DeviceID=b.DeviceID AND 
 				a.DeviceID!=$dev->DeviceID AND ConnectedDeviceID IS NULL$mediaenforce$pp;";
-			foreach($dbh->query($sql) as $row){
-				$candidates[]=array("DeviceID"=>$row["DeviceID"], "Label"=>$row["Label"], "CabinetID"=>$row["CabinetID"]);
+			if($stmt=$dbh->query($sql)){
+				foreach($stmt as $row){
+					$candidates[]=array("DeviceID"=>$row["DeviceID"] ?? null, "Label"=>$row["Label"] ?? null, "CabinetID"=>$row["CabinetID"] ?? null);
+				}
 			}
 		}
 
@@ -613,8 +621,10 @@ class DevicePorts {
 		$sql="SELECT * FROM fac_Ports WHERE DeviceID=$dev->DeviceID;";
 		
 		$portList=array();
-		foreach($dbh->query($sql) as $row){
-			$portList[$row['PortNumber']]=DevicePorts::RowToObject($row);
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $row){
+				$portList[$row['PortNumber'] ?? null]=DevicePorts::RowToObject($row);
+			}
 		}
 		
 		if( sizeof($portList)==0 && $dev->DeviceType!="Physical Infrastructure" ){
@@ -629,7 +639,7 @@ class DevicePorts {
 		global $dbh;
 		$o=array();
 		// Store any values that have been added before we make them safe 
-		foreach($this as $prop => $val){
+		foreach(get_object_vars($this) as $prop => $val){
 			if(isset($val)){
 				$o[$prop]=$val;
 			}
@@ -647,11 +657,13 @@ class DevicePorts {
 
 		$portList=array();
 
-		foreach($dbh->query($sql) as $portRow){
-			if($indexedbyid){
-				$portList[$portRow["DeviceID"].$portRow["PortNumber"]]=DevicePorts::RowToObject($portRow);
-			}else{
-				$portList[]=DevicePorts::RowToObject($portRow);
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $portRow){
+				if($indexedbyid){
+					$portList[($portRow["DeviceID"] ?? '').($portRow["PortNumber"] ?? '')]=DevicePorts::RowToObject($portRow);
+				}else{
+					$portList[]=DevicePorts::RowToObject($portRow);
+				}
 			}
 		}
 
