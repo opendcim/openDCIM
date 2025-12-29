@@ -38,17 +38,17 @@ class Supplies {
 	}
 
 	function MakeDisplay(){
-		$this->PartNum=stripslashes($this->PartNum);
-		$this->PartName=stripslashes($this->PartName);
+		$this->PartNum=stripslashes((string)$this->PartNum);
+		$this->PartName=stripslashes((string)$this->PartName);
 	}
 
 	static function RowToObject($row){
 		$supply=new Supplies();
-		$supply->SupplyID=$row['SupplyID'];
-		$supply->PartNum=$row['PartNum'];
-		$supply->PartName=$row['PartName'];
-		$supply->MinQty=$row['MinQty'];
-		$supply->MaxQty=$row['MaxQty'];
+		$supply->SupplyID=$row['SupplyID'] ?? null;
+		$supply->PartNum=$row['PartNum'] ?? null;
+		$supply->PartName=$row['PartName'] ?? null;
+		$supply->MinQty=$row['MinQty'] ?? null;
+		$supply->MaxQty=$row['MaxQty'] ?? null;
 		$supply->MakeDisplay();
 
 		return $supply;
@@ -83,8 +83,9 @@ class Supplies {
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_Supplies WHERE SupplyID=$this->SupplyID;";
-		if($row=$this->query($sql)->fetch()){
-			foreach(Supplies::RowToObject($row) as $prop => $value){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
+			foreach(get_object_vars(Supplies::RowToObject($row)) as $prop => $value){
 				$this->$prop=$value;
 			}
 			return true;
@@ -98,8 +99,9 @@ class Supplies {
 		
 		$sql = "select sum(Count) as TotalQty from fac_BinContents where SupplyID=" . intval( $SupplyID );
 		
-		if ( $row=$dbh->query($sql)->fetch()) {
-			return $row["TotalQty"];
+		$stmt=$dbh->query($sql);
+		if ($stmt && ($row=$stmt->fetch())) {
+			return $row["TotalQty"] ?? 0;
 		} else {
 			return 0;
 		}
@@ -109,9 +111,12 @@ class Supplies {
 		$sql="SELECT * FROM fac_Supplies ORDER BY PartNum ASC;";
 		
 		$supplyList=array();
-		foreach($this->query($sql) as $row){
-			$index=($indexbyid)?$row['SupplyID']:$row['PartNum'];
-			$supplyList[$index]=Supplies::RowToObject($row);
+		$stmt=$this->query($sql);
+		if($stmt){
+			foreach($stmt as $row){
+				$index=($indexbyid)?($row['SupplyID'] ?? null):($row['PartNum'] ?? null);
+				$supplyList[$index]=Supplies::RowToObject($row);
+			}
 		}
 		
 		return $supplyList;

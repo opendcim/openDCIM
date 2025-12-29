@@ -47,9 +47,9 @@ class RCI {
 		$st = $dbh->prepare( $countSQL );
 		$st->execute();
 		$row = $st->fetch();
-		$result["TotalCabinets"] = $row["TotalCabinets"];
+		$result["TotalCabinets"] = $row["TotalCabinets"] ?? 0;
 		
-		$lowSQL = "select c.Location, a.Temperature from fac_SensorReadings a, fac_Device b, fac_Cabinet c where a.DeviceID=b.DeviceID and b.BackSide=0 and b.Cabinet=c.CabinetID and a.Temperature<>0 and a.Temperature<'" . $config->ParameterArray["RCILow"] . "' $limitSQL order by Location ASC";
+		$lowSQL = "select c.Location, a.Temperature from fac_SensorReadings a, fac_Device b, fac_Cabinet c where a.DeviceID=b.DeviceID and b.BackSide=0 and b.Cabinet=c.CabinetID and a.Temperature<>0 and a.Temperature<'" . ($config->ParameterArray["RCILow"] ?? '') . "' $limitSQL order by Location ASC";
 		$RCILow = array();
 		$st = $dbh->prepare( $lowSQL );
 		$st->execute();
@@ -60,7 +60,7 @@ class RCI {
 		$result["RCILowCount"] = sizeof( $RCILow );
 		$result["RCILowList"] = $RCILow;
 		
-		$highSQL = "select c.Location, a.Temperature from fac_SensorReadings a, fac_Device b, fac_Cabinet c where a.DeviceID=b.DeviceID and b.BackSide=0 and b.Cabinet=c.CabinetID and a.Temperature<>0 and a.Temperature>'" . $config->ParameterArray["RCIHigh"] . "' $limitSQL order by Location ASC";
+		$highSQL = "select c.Location, a.Temperature from fac_SensorReadings a, fac_Device b, fac_Cabinet c where a.DeviceID=b.DeviceID and b.BackSide=0 and b.Cabinet=c.CabinetID and a.Temperature<>0 and a.Temperature>'" . ($config->ParameterArray["RCIHigh"] ?? '') . "' $limitSQL order by Location ASC";
 		$RCIHigh = array();
 		$st = $dbh->prepare( $highSQL );
 		$st->execute();

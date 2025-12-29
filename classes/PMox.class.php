@@ -56,15 +56,15 @@ class PMox {
 			exit;
 		}
 
-		if ( sizeof( $pveList ) > 0 ) {
+		if ( isset($pveList["data"]) && is_array($pveList["data"]) && sizeof( $pveList["data"] ) > 0 ) {
 			foreach( $pveList["data"] as $pve ) { 
 				$tmpVM = new VM;
 
 				$tmpVM->DeviceID = $d->DeviceID;
 				$tmpVM->LastUpdated = date( "Y-m-d H:i:s" );
-				$tmpVM->vmID = $pve["vmid"];
-				$tmpVM->vmName = $pve["name"];
-				$tmpVM->vmState = $pve["status"];
+				$tmpVM->vmID = $pve["vmid"] ?? null;
+				$tmpVM->vmName = $pve["name"] ?? null;
+				$tmpVM->vmState = $pve["status"] ?? null;
 
 				if ( $debug ) {
 					error_log( "VM: " . $tmpVM->vmName . " added to device " . $d->DeviceID );
@@ -135,7 +135,7 @@ class PMox {
 			}
 		}
 
-		$expire = "delete from fac_VMInventory where to_days(now())-to_days(LastUpdated)>" . intval( $config->ParameterArray['VMExpirationTime']);
+		$expire = "delete from fac_VMInventory where to_days(now())-to_days(LastUpdated)>" . intval( $config->ParameterArray['VMExpirationTime'] ?? 0);
 		$dbh->query( $expire );
 		
 		return $vmList;

@@ -39,7 +39,7 @@ class ColorCoding {
 		}else{
 			$info=$dbh->errorInfo();
 
-			error_log("PDO Error::CreateCode {$info[2]}");
+			error_log("PDO Error::CreateCode " . ($info[2] ?? 'Unknown error'));
 			return false;
 		}
 		
@@ -54,7 +54,7 @@ class ColorCoding {
 		
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
-			error_log("PDO Error: {$info[2]}");
+			error_log("PDO Error: " . ($info[2] ?? 'Unknown error'));
 			return false;
 		}else{		
 			return true;
@@ -71,7 +71,7 @@ class ColorCoding {
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("PDO Error: {$info[2]}");
+			error_log("PDO Error: " . ($info[2] ?? 'Unknown error'));
 			return false;
 		}
 		
@@ -83,9 +83,10 @@ class ColorCoding {
 		
 		$sql="SELECT * FROM fac_ColorCoding WHERE ColorID=".intval($this->ColorID);
 
-		if($row=$dbh->query($sql)->fetch()){
-			$this->Name=$row["Name"];
-			$this->DefaultNote=$row["DefaultNote"];
+		$stmt=$dbh->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
+			$this->Name=$row["Name"] ?? null;
+			$this->DefaultNote=$row["DefaultNote"] ?? null;
 		}else{
 			return false;
 		}
@@ -98,9 +99,10 @@ class ColorCoding {
 		
 		$sql="SELECT * FROM fac_ColorCoding WHERE ucase(Name)=ucase('".transform($this->Name)."');";
 
-		if($row=$dbh->query($sql)->fetch()){
-			$this->ColorID=$row["ColorID"];
-			$this->DefaultNote=$row["DefaultNote"];
+		$stmt=$dbh->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
+			$this->ColorID=$row["ColorID"] ?? null;
+			$this->DefaultNote=$row["DefaultNote"] ?? null;
 		}else{
 			return false;
 		}
@@ -115,12 +117,14 @@ class ColorCoding {
 		$sql="SELECT * FROM fac_ColorCoding ORDER BY Name ASC";
 		
 		$codeList=array();
-		foreach($dbh->query($sql) as $row){
-			$n=$row[$indexedby]; // index array by id
-			$codeList[$n]=new ColorCoding();
-			$codeList[$n]->ColorID=$row["ColorID"];
-			$codeList[$n]->Name=$row["Name"];
-			$codeList[$n]->DefaultNote=$row["DefaultNote"];
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $row){
+				$n=$row[$indexedby] ?? null; // index array by id
+				$codeList[$n]=new ColorCoding();
+				$codeList[$n]->ColorID=$row["ColorID"] ?? null;
+				$codeList[$n]->Name=$row["Name"] ?? null;
+				$codeList[$n]->DefaultNote=$row["DefaultNote"] ?? null;
+			}
 		}
 		
 		return $codeList;
@@ -148,7 +152,7 @@ class ColorCoding {
 
 		if($error){
 			$info=$dbh->errorInfo();
-			error_log("PDO Error: {$info[2]}");
+			error_log("PDO Error: " . ($info[2] ?? 'Unknown error'));
 			return false;
 		}else{		
 			return true;

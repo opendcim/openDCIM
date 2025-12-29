@@ -50,7 +50,7 @@ class PUEView {
 		// Instead of letting them pick ANY number of days, limit selection to 30, 90, 180, or 365
 		$validTimes = array( "30", "90", "180", "365" );
 		
-		$this->ViewID = int($this->ViewID);
+		$this->ViewID = intval($this->ViewID);
 		$this->Description = sanitize($this->Description);
 		$this->Category = (in_array( $this->Category, $validCategories ))?$this->Category:"1";
 		$this->TimePeriod = (in_array( $this->TimePeriod, $validTimes ))?$this->TimePeriod:"180";
@@ -59,7 +59,7 @@ class PUEView {
 	public function getView( $ViewID = false ) {
 		global $dbh;
 
-		if ( $viewID == false ) {
+		if ( $ViewID == false ) {
 			$sql = "select * from fac_PUEView order by Description ASC";
 			$args = array();
 		} else {
@@ -68,7 +68,7 @@ class PUEView {
 		}
 		$st = $dbh->prepare( $sql );
 		$st->setFetchMode( PDO::FETCH_CLASS, "PUEView" );
-		$st->exececute( $args );
+		$st->execute( $args );
 
 		$vList = array();
 		while ( $row = $st->fetch() ) {

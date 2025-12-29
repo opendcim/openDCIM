@@ -16,24 +16,24 @@ class DCIMMail extends PHPMailer {
 		$this->isHTML(true);
 
 		if ($this->From == ''){
-			$this->setFrom( $config->ParameterArray['MailFromAddr'] );
+			$this->setFrom( $config->ParameterArray['MailFromAddr'] ?? '' );
 		}
 		if ($this->Subject == ''){
-			$this->setFrom( $config->ParameterArray['MailSubject'] );
+			$this->setFrom( $config->ParameterArray['MailSubject'] ?? '' );
 		}
 
 		$this->SMTPDebug = SMTP::DEBUG_OFF;
 		$this->isSMTP();
-		$this->Host = $config->ParameterArray['SMTPServer'];
-		$this->Port = $config->ParameterArray['SMTPPort'];
+		$this->Host = $config->ParameterArray['SMTPServer'] ?? '';
+		$this->Port = $config->ParameterArray['SMTPPort'] ?? 25;
 		$this->SMTPAutoTLS = false;
 
 		// If any port other than 25 is specified, assume encryption and authentication
-		if($config->ParameterArray['SMTPPort']!= 25){
+		if(($config->ParameterArray['SMTPPort'] ?? 25) != 25){
 			$this->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 			$this->SMTPAuth = true;
-			$this->Username = $config->ParameterArray['SMTPUser'];
-			$this->Password = $config->ParameterArray['SMTPPassword'];
+			$this->Username = $config->ParameterArray['SMTPUser'] ?? '';
+			$this->Password = $config->ParameterArray['SMTPPassword'] ?? '';
 		}
 	}
 
@@ -41,7 +41,7 @@ class DCIMMail extends PHPMailer {
 		global $config;
 
 		if (count($this->all_recipients) == 0){
-			$this->addAddress($config->ParameterArray['FacMgrMail']);
+			$this->addAddress($config->ParameterArray['FacMgrMail'] ?? '');
 		}
 
 		parent::send();

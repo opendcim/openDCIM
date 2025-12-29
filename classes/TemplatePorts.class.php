@@ -52,21 +52,21 @@ class TemplatePorts {
 	}
 
 	function MakeDisplay(){
-		$this->Label=stripslashes(trim($this->Label));
-		$this->Notes=stripslashes(trim($this->Notes));
+		$this->Label=stripslashes(trim((string)$this->Label));
+		$this->Notes=stripslashes(trim((string)$this->Notes));
 	}
 
 	static function RowToObject($dbRow){
 		$tp=new TemplatePorts();
-		$tp->TemplateID=$dbRow['TemplateID'];
-		$tp->PortNumber=$dbRow['PortNumber'];
-		$tp->Label=$dbRow['Label'];
-		$tp->MediaID=$dbRow['MediaID'];
-		$tp->ColorID=$dbRow['ColorID'];
-		$tp->ConnectorID=$dbRow['ConnectorID'];
-		$tp->ProtocolID=$dbRow['ProtocolID'];
-		$tp->RateID=$dbRow['RateID'];
-		$tp->Notes=$dbRow['Notes'];
+		$tp->TemplateID=$dbRow['TemplateID'] ?? null;
+		$tp->PortNumber=$dbRow['PortNumber'] ?? null;
+		$tp->Label=$dbRow['Label'] ?? null;
+		$tp->MediaID=$dbRow['MediaID'] ?? null;
+		$tp->ColorID=$dbRow['ColorID'] ?? null;
+		$tp->ConnectorID=$dbRow['ConnectorID'] ?? null;
+		$tp->ProtocolID=$dbRow['ProtocolID'] ?? null;
+		$tp->RateID=$dbRow['RateID'] ?? null;
+		$tp->Notes=$dbRow['Notes'] ?? null;
 
 		$tp->MakeDisplay();
 
@@ -89,10 +89,11 @@ class TemplatePorts {
 
 		$sql="SELECT * FROM fac_TemplatePorts WHERE TemplateID=$this->TemplateID AND PortNumber=$this->PortNumber;";
 
-		if(!$row=$dbh->query($sql)->fetch()){
+		$stmt=$dbh->query($sql);
+		if(!$stmt || !($row=$stmt->fetch())){
 			return false;
 		}else{
-			foreach(TemplatePorts::RowToObject($row) as $prop => $value){
+			foreach(get_object_vars(TemplatePorts::RowToObject($row)) as $prop => $value){
 				$this->$prop=$value;
 			}
 			return true;
@@ -106,8 +107,11 @@ class TemplatePorts {
 		$sql="SELECT * FROM fac_TemplatePorts WHERE TemplateID=$this->TemplateID ORDER BY PortNumber ASC;";
 
 		$ports=array();
-		foreach($dbh->query($sql) as $row){
-			$ports[$row['PortNumber']]=TemplatePorts::RowToObject($row);
+		$stmt=$dbh->query($sql);
+		if($stmt){
+			foreach($stmt as $row){
+				$ports[$row['PortNumber'] ?? null]=TemplatePorts::RowToObject($row);
+			}
 		}	
 		return $ports;
 	}
@@ -124,7 +128,7 @@ class TemplatePorts {
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
+			error_log("createPort::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			return false;
 		}
 
@@ -151,7 +155,7 @@ class TemplatePorts {
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
+			error_log("updatePort::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			
 			return false;
 		}

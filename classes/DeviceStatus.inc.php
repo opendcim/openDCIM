@@ -45,9 +45,9 @@ class DeviceStatus {
 
 	static function RowToObject($row){
 		$ds=new DeviceStatus();
-		$ds->StatusID=$row["StatusID"];
-		$ds->Status=$row["Status"];
-		$ds->ColorCode=$row["ColorCode"];
+		$ds->StatusID=$row["StatusID"] ?? null;
+		$ds->Status=$row["Status"] ?? null;
+		$ds->ColorCode=$row["ColorCode"] ?? null;
 
 		return $ds;
 	}
@@ -82,7 +82,8 @@ class DeviceStatus {
 		
 		// See if this Status already exists.
 		$sql="SELECT 1 FROM fac_DeviceStatus WHERE Status=\"$this->Status\"";
-		if(is_array($this->query($sql)->fetch())){
+		$stmt=$this->query($sql);
+		if($stmt && is_array($stmt->fetch())){
 			// Do not allow a duplicate to be added.
 			return false;
 		}
@@ -95,7 +96,7 @@ class DeviceStatus {
 		}else{
 			$info=$dbh->errorInfo();
 
-			error_log("PDO Error::createStatus {$info[2]}");
+			error_log("PDO Error::createStatus " . ($info[2] ?? 'Unknown error'));
 			return false;
 		}
 		
@@ -107,7 +108,8 @@ class DeviceStatus {
 
 		$sql="SELECT * FROM fac_DeviceStatus WHERE StatusID=$this->StatusID;";
 
-        if($row=$this->query($sql)->fetch()){
+        $stmt=$this->query($sql);
+        if($stmt && ($row=$stmt->fetch())){
             foreach(DeviceStatus::RowToObject($row) as $prop=>$value){
                 $this->$prop=$value;
             }
@@ -115,7 +117,7 @@ class DeviceStatus {
             return true;
         }else{
             // Kick back a blank record if the StatusID was not found
-            foreach($this as $prop=>$value){
+            foreach(get_object_vars($this) as $prop=>$value){
                 if($prop!='StatusID'){
                     $this->$prop = '';
                 }

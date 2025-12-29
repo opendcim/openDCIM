@@ -80,12 +80,12 @@ class People {
 
 		$this->PersonID=intval($this->PersonID);
 		$this->UserID=sanitize($this->UserID);
-		$this->LastName=stripslashes($this->LastName);
-		$this->FirstName=stripslashes($this->FirstName);
-		$this->Phone1=stripslashes($this->Phone1);
-		$this->Phone2=stripslashes($this->Phone2);
-		$this->countryCode=stripslashes($this->countryCode);
-		$this->Email=stripslashes($this->Email);
+		$this->LastName=stripslashes((string)$this->LastName);
+		$this->FirstName=stripslashes((string)$this->FirstName);
+		$this->Phone1=stripslashes((string)$this->Phone1);
+		$this->Phone2=stripslashes((string)$this->Phone2);
+		$this->countryCode=stripslashes((string)$this->countryCode);
+		$this->Email=stripslashes((string)$this->Email);
 		$this->AdminOwnDevices=intval($this->AdminOwnDevices);
 		$this->ReadAccess=intval($this->ReadAccess);
 		$this->WriteAccess=intval($this->WriteAccess);
@@ -100,27 +100,27 @@ class People {
 
 	static function RowToObject($row){
 		$person=new People();
-		$person->PersonID=$row["PersonID"];
-		$person->UserID=$row["UserID"];
-		$person->LastName=$row["LastName"];
-		$person->FirstName=$row["FirstName"];
-		$person->Phone1=$row["Phone1"];
-		$person->Phone2=$row["Phone2"];
-		$person->countryCode=@$row["countryCode"];
-		$person->Email=$row["Email"];
-		$person->AdminOwnDevices=$row["AdminOwnDevices"];
-		$person->ReadAccess=$row["ReadAccess"];
-		$person->WriteAccess=$row["WriteAccess"];
-		$person->DeleteAccess=$row["DeleteAccess"];
-		$person->ContactAdmin=$row["ContactAdmin"];
-		$person->RackRequest=$row["RackRequest"];
-		$person->RackAdmin=$row["RackAdmin"];
-		$person->BulkOperations=$row["BulkOperations"];
-		$person->SiteAdmin=$row["SiteAdmin"];
-		$person->APIKey=$row["APIKey"];
-		$person->Disabled=$row["Disabled"];
-		$person->LastActivity=$row["LastActivity"];
-		$person->ExpirationDate=$row["ExpirationDate"];
+		$person->PersonID=$row["PersonID"] ?? null;
+		$person->UserID=$row["UserID"] ?? null;
+		$person->LastName=$row["LastName"] ?? null;
+		$person->FirstName=$row["FirstName"] ?? null;
+		$person->Phone1=$row["Phone1"] ?? null;
+		$person->Phone2=$row["Phone2"] ?? null;
+		$person->countryCode=$row["countryCode"] ?? null;
+		$person->Email=$row["Email"] ?? null;
+		$person->AdminOwnDevices=$row["AdminOwnDevices"] ?? null;
+		$person->ReadAccess=$row["ReadAccess"] ?? null;
+		$person->WriteAccess=$row["WriteAccess"] ?? null;
+		$person->DeleteAccess=$row["DeleteAccess"] ?? null;
+		$person->ContactAdmin=$row["ContactAdmin"] ?? null;
+		$person->RackRequest=$row["RackRequest"] ?? null;
+		$person->RackAdmin=$row["RackAdmin"] ?? null;
+		$person->BulkOperations=$row["BulkOperations"] ?? null;
+		$person->SiteAdmin=$row["SiteAdmin"] ?? null;
+		$person->APIKey=$row["APIKey"] ?? null;
+		$person->Disabled=$row["Disabled"] ?? null;
+		$person->LastActivity=$row["LastActivity"] ?? null;
+		$person->ExpirationDate=$row["ExpirationDate"] ?? null;
 
 		$person->MakeDisplay();
 
@@ -199,8 +199,8 @@ class People {
 		
 		$this->MakeSafe();
 
-		if ( $config->ParameterArray["GDPRCountryIsolation"] && $this->countryCode == "" ) {
-			$this->countryCode = $config->ParameterArray["DefaultCountry"];
+		if ( ($config->ParameterArray["GDPRCountryIsolation"] ?? false) && $this->countryCode == "" ) {
+			$this->countryCode = $config->ParameterArray["DefaultCountry"] ?? '';
 		}
 		
 		$sql="INSERT INTO fac_People SET UserID=\"$this->UserID\", LastName=\"$this->LastName\", 
@@ -214,7 +214,7 @@ class People {
 
 		if(!$this->query($sql)){
 			$info=$dbh->errorInfo();
-			error_log("CreatePerson::PDO Error: {$info[2]} SQL=$sql");
+			error_log("CreatePerson::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			return false;
 		}else{
 			$this->PersonID = $dbh->lastInsertId();
@@ -309,7 +309,8 @@ class People {
 		
 		$sql = "select * from fac_People where PersonID=\"". $this->PersonID . "\"";
 		
-		if ( $row = $this->query( $sql )->fetch() ) {
+		$stmt = $this->query( $sql );
+		if ( $stmt && ( $row = $stmt->fetch() ) ) {
 			foreach( People::RowToObject( $row ) as $prop=>$value ) {
 				$this->$prop=$value;
 			}
@@ -317,7 +318,7 @@ class People {
 			return true;
 		} else {
 			// Kick back a blank record if the PersonID was not found
-			foreach ( $this as $prop => $value ) {
+			foreach ( get_object_vars($this) as $prop => $value ) {
 				if ( $prop!='PersonID' ) {
 					$this->$prop = '';
 				}
@@ -331,8 +332,10 @@ class People {
 		$sql = "select * from fac_People where PersonID in (select ContactID from fac_DeptContacts where DeptID=$DeptID) order by LastName ASC, FirstName ASC";
 		
 		$personList=array();
-		foreach($this->query($sql) as $row){
-			$personList[]=People::RowToObject($row);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				$personList[]=People::RowToObject($row);
+			}
 		}
 
 		return $personList;
@@ -343,7 +346,8 @@ class People {
 		
 		$sql = "select * from fac_People where ucase(UserID)=ucase(\"" . $this->UserID . "\")";
 		
-		if ( $row = $this->query( $sql )->fetch() ) {
+		$stmt = $this->query( $sql );
+		if ( $stmt && ( $row = $stmt->fetch() ) ) {
 			foreach( People::RowToObject( $row ) as $prop=>$value ) {
 				$this->$prop=$value;
 			}
@@ -351,7 +355,7 @@ class People {
 			return true;
 		} else {
 			// Kick back a blank record if the UserID was not found
-			foreach ( $this as $prop => $value ) {
+			foreach ( get_object_vars($this) as $prop => $value ) {
 				if ( $prop!='UserID' ) {
 					$this->$prop = '';
 				}
@@ -365,11 +369,13 @@ class People {
 		$sql="SELECT * FROM fac_People ORDER BY LastName ASC, FirstName ASC";
 		
 		$userList=array();
-		foreach($this->query($sql) as $row){
-			if($indexed){
-				$userList[$row['PersonID']]=People::RowToObject($row);
-			}else{
-				$userList[]=People::RowToObject($row);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				if($indexed){
+					$userList[$row['PersonID'] ?? null]=People::RowToObject($row);
+				}else{
+					$userList[]=People::RowToObject($row);
+				}
 			}
 		}
 
@@ -380,7 +386,7 @@ class People {
 		$this->MakeSafe();
 		
 		/* Set all rights to false just in case the object being called is reused */
-		foreach($this as $prop => $value){
+		foreach(get_object_vars($this) as $prop => $value){
 			if($prop!='LastName' && $prop!='UserID'){
 				$this->$prop=false;
 			}
@@ -391,7 +397,8 @@ class People {
 
 		$sql="SELECT * FROM fac_People WHERE UserID=\"$this->UserID\";";
 		
-		if($row=$this->query($sql)->fetch()){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
 			foreach(People::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
@@ -411,7 +418,7 @@ class People {
 
 		/* Just in case someone disabled a user, but didn't remove all of their individual rights */
 		if($this->Disabled){
-			foreach($this as $prop => $value){
+			foreach(get_object_vars($this) as $prop => $value){
 				if($prop!='Name' && $prop!='UserID'){
 					$this->$prop=false;
 				}
@@ -440,8 +447,10 @@ class People {
 	
 	function UpdatePerson() {
 		$this->MakeSafe();
-		if ( $this->ExpirationDate != "" ) {
-			$formattedDate = date("Y-m-d", strtotime($this->ExpirationDate));
+		$expirationDate = (string)$this->ExpirationDate;
+		if ( $expirationDate !== "" ) {
+			$expirationTime = strtotime($expirationDate);
+			$formattedDate = ($expirationTime !== false) ? date("Y-m-d", $expirationTime) : null;
 		} else {
 			$formattedDate = null;
 		}
@@ -468,7 +477,7 @@ class People {
 	function Search($indexedbyid=false,$loose=false){
 		$o=array();
 		// Store any values that have been added before we make them safe 
-		foreach($this as $prop => $val){
+		foreach(get_object_vars($this) as $prop => $val){
 			if(isset($val)){
 				$o[$prop]=$val;
 			}
@@ -484,11 +493,13 @@ class People {
 		}
 		$sql="SELECT * FROM fac_People $sqlextend ORDER BY LastName ASC, FirstName ASC;";
 		$peopleList=array();
-		foreach($this->query($sql) as $peopleRow){
-			if($indexedbyid){
-				$peopleList[$peopleRow["PersonID"]]=People::RowToObject($peopleRow);
-			}else{
-				$peopleList[]=People::RowToObject($peopleRow);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $peopleRow){
+				if($indexedbyid){
+					$peopleList[$peopleRow["PersonID"] ?? null]=People::RowToObject($peopleRow);
+				}else{
+					$peopleList[]=People::RowToObject($peopleRow);
+				}
 			}
 		}
 
