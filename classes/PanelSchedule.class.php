@@ -41,7 +41,7 @@ class PanelSchedule {
 	}
 
 	function MakeDisplay(){
-		$this->Label=stripslashes($this->Label);
+		$this->Label=stripslashes((string)$this->Label);
 	}
 
 	function MakeConnection(){
@@ -71,19 +71,24 @@ class PanelSchedule {
 
 		$sql="SELECT * FROM fac_PanelSchedule WHERE PanelID=$this->PanelID ORDER BY PolePosition ASC;";
 
-		foreach($dbh->query($sql) as $row){
-			$sched[$row["PolePosition"]]="<td rowspan={$row["NumPoles"]}>{$row["Label"]}</td>";
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $row){
+				$polePosition=$row["PolePosition"] ?? null;
+				$numPoles=$row["NumPoles"] ?? 0;
+				$label=$row["Label"] ?? '';
+				$sched[$polePosition]="<td rowspan={$numPoles}>{$label}</td>";
 		  
-			if($row["NumPoles"] >1){
-				$sched[$row["PolePosition"] + 2] = "";
-			}
+				if($numPoles >1){
+					$sched[$polePosition + 2] = "";
+				}
 		  
-			if($row["NumPoles"] >2){
-				$sched[$row["PolePosition"] + 4] = "";
-			}
+				if($numPoles >2){
+					$sched[$polePosition + 4] = "";
+				}
 
-			for($i=1; $i< $pan->NumberOfPoles + 1; $i++){
-				$html .= "<tr><td>$i</td>{$sched[$i]}<td>".($i+1)."</td>{$sched[++$i]}</tr>\n";
+				for($i=1; $i< $pan->NumberOfPoles + 1; $i++){
+					$html .= "<tr><td>$i</td>{$sched[$i]}<td>".($i+1)."</td>{$sched[++$i]}</tr>\n";
+				}
 			}
 		}
 
