@@ -146,7 +146,7 @@ class Projects {
 		$projectList=array();
 		while( $row = $st->fetch() ) {
 			if($indexedbyid){
-				$projectList[$row->ProjectID ?? null]=$row;
+				$projectList[$row->ProjectID]=$row;
 			}else{
 				$projectList[]=$row;
 			}
