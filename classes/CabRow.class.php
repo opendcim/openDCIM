@@ -36,15 +36,15 @@ class CabRow {
 	}
 
 	function MakeDisplay(){
-		$this->Name=stripslashes($this->Name);
+		$this->Name=stripslashes((string)$this->Name);
 	}
 
 	static function RowToObject($row){
 		$cabrow=new CabRow();
-		$cabrow->CabRowID=$row["CabRowID"];
-		$cabrow->Name=$row["Name"];
-		$cabrow->DataCenterID=$row["DataCenterID"];
-		$cabrow->ZoneID=$row["ZoneID"];
+		$cabrow->CabRowID=$row["CabRowID"] ?? null;
+		$cabrow->Name=$row["Name"] ?? null;
+		$cabrow->DataCenterID=$row["DataCenterID"] ?? null;
+		$cabrow->ZoneID=$row["ZoneID"] ?? null;
 		$cabrow->MakeDisplay();
 
 		return $cabrow;
@@ -134,7 +134,8 @@ class CabRow {
 		
 		$sql="SELECT * FROM fac_CabRow WHERE CabRowID=$this->CabRowID;";
 
-		if($row=$this->query($sql)->fetch()){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
 			$tmp = CabRow::RowToObject($row);
 			foreach (get_object_vars($tmp) as $prop => $value) {
 				$this->$prop=$value;
@@ -151,8 +152,10 @@ class CabRow {
 		$sql="SELECT * FROM fac_CabRow WHERE ZoneID=$this->ZoneID ORDER BY Name;";
 
 		$cabrowList=array();
-		foreach($this->query($sql) as $row){
-			$cabrowList[]=CabRow::RowToObject($row);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				$cabrowList[]=CabRow::RowToObject($row);
+			}
 		}
 
 		return $cabrowList;
@@ -167,8 +170,10 @@ class CabRow {
 		$sql="SELECT * FROM fac_CabRow WHERE DataCenterID=$this->DataCenterID AND $sqladdon ORDER BY Name;";
 
 		$cabrowList=array();
-		foreach($this->query($sql) as $row){
-			$cabrowList[]=CabRow::RowToObject($row);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				$cabrowList[]=CabRow::RowToObject($row);
+			}
 		}
 
 		return $cabrowList;
@@ -178,8 +183,10 @@ class CabRow {
 		$sql="SELECT * FROM fac_CabRow ORDER BY Name ASC;";
 		
 		$cabrowList=array();
-		foreach($this->query($sql) as $row){
-			$cabrowList[]=CabRow::RowToObject($row);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				$cabrowList[]=CabRow::RowToObject($row);
+			}
 		}
 		
 		return $cabrowList;
@@ -205,8 +212,9 @@ class CabRow {
 			CabRowID=$this->CabRowID$layout GROUP BY FrontEdge ORDER BY CabCount DESC 
 			LIMIT 1;";
 
-		if($cabinetRow=$this->query($sql)->fetch()){
-			return $cabinetRow["FrontEdge"];
+		$stmt=$this->query($sql);
+		if($stmt && ($cabinetRow=$stmt->fetch())){
+			return $cabinetRow["FrontEdge"] ?? "";
 		}
 
 		return "";
@@ -235,11 +243,13 @@ class CabRow {
 
 		$rowList=array();
 
-		foreach($this->query($sql) as $row){
-			if($indexedbyid){
-				$rowList[$row["CabRowID"]]=CabRow::RowToObject($row);
-			}else{
-				$rowList[]=CabRow::RowToObject($row);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				if($indexedbyid){
+					$rowList[$row["CabRowID"] ?? null]=CabRow::RowToObject($row);
+				}else{
+					$rowList[]=CabRow::RowToObject($row);
+				}
 			}
 		}
 
