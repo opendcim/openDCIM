@@ -68,35 +68,35 @@ class DeviceTemplate {
 	    $this->RearPictureFile=sanitize($this->RearPictureFile);
 		$this->ChassisSlots=intval($this->ChassisSlots);
 		$this->RearChassisSlots=intval($this->RearChassisSlots);
-		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:$config->ParameterArray["SNMPVersion"];
+		$this->SNMPVersion=(in_array($this->SNMPVersion, $validSNMPVersions))?$this->SNMPVersion:($config->ParameterArray["SNMPVersion"] ?? '');
 		$this->GlobalID=intval($this->GlobalID);
 	}
 
 	function MakeDisplay(){
-		$this->Model=stripslashes($this->Model);
-        $this->Notes=stripslashes($this->Notes);
-        $this->FrontPictureFile=stripslashes($this->FrontPictureFile);
-	    $this->RearPictureFile=stripslashes($this->RearPictureFile);
+		$this->Model=stripslashes((string)$this->Model);
+        $this->Notes=stripslashes((string)$this->Notes);
+        $this->FrontPictureFile=stripslashes((string)$this->FrontPictureFile);
+	    $this->RearPictureFile=stripslashes((string)$this->RearPictureFile);
 	}
 
 	static function RowToObject($row,$extendmodel=true){
 		$Template=new DeviceTemplate();
-		$Template->TemplateID=$row["TemplateID"];
-		$Template->ManufacturerID=$row["ManufacturerID"];
-		$Template->Model=$row["Model"];
-		$Template->Height=$row["Height"];
-		$Template->Weight=$row["Weight"];
-		$Template->Wattage=$row["Wattage"];
-		$Template->DeviceType=$row["DeviceType"];
-		$Template->PSCount=$row["PSCount"];
-		$Template->NumPorts=$row["NumPorts"];
-        $Template->Notes=$row["Notes"];
-        $Template->FrontPictureFile=html_entity_decode($row["FrontPictureFile"],ENT_QUOTES);
-        $Template->RearPictureFile=html_entity_decode($row["RearPictureFile"],ENT_QUOTES);
-		$Template->ChassisSlots=$row["ChassisSlots"];
-		$Template->RearChassisSlots=$row["RearChassisSlots"];
-		$Template->SNMPVersion=$row["SNMPVersion"];
-		$Template->GlobalID = $row["GlobalID"];
+		$Template->TemplateID=$row["TemplateID"] ?? null;
+		$Template->ManufacturerID=$row["ManufacturerID"] ?? null;
+		$Template->Model=$row["Model"] ?? null;
+		$Template->Height=$row["Height"] ?? null;
+		$Template->Weight=$row["Weight"] ?? null;
+		$Template->Wattage=$row["Wattage"] ?? null;
+		$Template->DeviceType=$row["DeviceType"] ?? null;
+		$Template->PSCount=$row["PSCount"] ?? null;
+		$Template->NumPorts=$row["NumPorts"] ?? null;
+        $Template->Notes=$row["Notes"] ?? null;
+        $Template->FrontPictureFile=html_entity_decode($row["FrontPictureFile"] ?? '',ENT_QUOTES);
+        $Template->RearPictureFile=html_entity_decode($row["RearPictureFile"] ?? '',ENT_QUOTES);
+		$Template->ChassisSlots=$row["ChassisSlots"] ?? null;
+		$Template->RearChassisSlots=$row["RearChassisSlots"] ?? null;
+		$Template->SNMPVersion=$row["SNMPVersion"] ?? null;
+		$Template->GlobalID = $row["GlobalID"] ?? null;
         $Template->MakeDisplay();
 		$Template->GetCustomValues();
 
@@ -259,7 +259,7 @@ class DeviceTemplate {
 	function Search($indexedbyid=false,$loose=false){
 		$o=new stdClass();
 		// Store any values that have been added before we make them safe 
-		foreach($this as $prop => $val){
+		foreach(get_object_vars($this) as $prop => $val){
 			if(isset($val)){
 				$o->$prop=$val;
 			}
@@ -281,11 +281,13 @@ class DeviceTemplate {
 
 		$templateList=array();
 
-		foreach($this->query($sql) as $row){
-			if($indexedbyid){
-				$templateList[$row["TemplateID"]]=DeviceTemplate::RowToObject($row);
-			}else{
-				$templateList[]=DeviceTemplate::RowToObject($row);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				if($indexedbyid){
+					$templateList[$row["TemplateID"] ?? null]=DeviceTemplate::RowToObject($row);
+				}else{
+					$templateList[]=DeviceTemplate::RowToObject($row);
+				}
 			}
 		}
 
@@ -328,7 +330,8 @@ class DeviceTemplate {
 		//	$value=($prop!='TemplateID')?null:$value;
 		//}
 		
-		if($row=$this->query($sql)->fetch()){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
 			foreach(DeviceTemplate::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
@@ -361,11 +364,13 @@ class DeviceTemplate {
 			a.ManufacturerID=b.ManufacturerID ORDER BY Name ASC, Model ASC;";
 
 		$templateList=array();
-		foreach($dbh->query($sql) as $row){
-			if ( $indexed ) {
-				$templateList[$row["TemplateID"]]=DeviceTemplate::RowToObject($row);
-			} else {
-				$templateList[]=DeviceTemplate::RowToObject($row);
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $row){
+				if ( $indexed ) {
+					$templateList[$row["TemplateID"] ?? null]=DeviceTemplate::RowToObject($row);
+				} else {
+					$templateList[]=DeviceTemplate::RowToObject($row);
+				}
 			}
 		}
 
@@ -380,8 +385,10 @@ class DeviceTemplate {
 			ORDER BY Name ASC, Model ASC;";
 
 		$templateList=array();
-		foreach($this->query($sql) as $row){
-			$templateList[]=DeviceTemplate::RowToObject($row);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				$templateList[]=DeviceTemplate::RowToObject($row);
+			}
 		}
 
 		return $templateList;
@@ -399,7 +406,7 @@ class DeviceTemplate {
         $stmt->execute();
         while ($row = $stmt->fetch()) {
             $devTempl = DeviceTemplate::RowToObject($row);
-            $templateList[$devTempl->TemplateID] = $devTempl;
+            $templateList[$devTempl->TemplateID ?? null] = $devTempl;
         }
         return $templateList;
     }
@@ -412,8 +419,10 @@ class DeviceTemplate {
 			a.MfgDate<'1970-01-01'";
 
 		$devList=array();
-		foreach($this->query($sql) as $row){
-			$devList[]=Device::RowToObject($row);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				$devList[]=Device::RowToObject($row);
+			}
 		}
 
 		$this->MakeDisplay();
@@ -689,10 +698,15 @@ class DeviceTemplate {
 			fac_DeviceTemplateCustomValue v, fac_DeviceCustomAttribute a WHERE 
 			a.AttributeID=v.AttributeID AND TemplateID=$this->TemplateID ORDER BY Label, 
 			AttributeID;";
-		foreach($this->query($sql) as $tdcrow) {
-			$this->{$tdcrow["Label"]}=$tdcrow["Value"];
-			$tdca[$tdcrow["AttributeID"]]["value"]=$tdcrow["Value"];
-			$tdca[$tdcrow["AttributeID"]]["required"]=$tdcrow["Required"];
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $tdcrow) {
+				$label=$tdcrow["Label"] ?? null;
+				$value=$tdcrow["Value"] ?? null;
+				$attributeID=$tdcrow["AttributeID"] ?? null;
+				$this->{$label}=$value;
+				$tdca[$attributeID]["value"]=$value;
+				$tdca[$attributeID]["required"]=$tdcrow["Required"] ?? null;
+			}
 		}	
 		$this->CustomValues = $tdca;
 	}	
