@@ -43,13 +43,13 @@ class Slot {
 
 	static function RowToObject($row){
 		$slot=New Slot();
-		$slot->TemplateID=$row["TemplateID"];
-		$slot->Position=$row["Position"];
-		$slot->BackSide=$row["BackSide"];
-		$slot->X=$row["X"];
-		$slot->Y=$row["Y"];
-		$slot->W=$row["W"];
-		$slot->H=$row["H"];
+		$slot->TemplateID=$row["TemplateID"] ?? null;
+		$slot->Position=$row["Position"] ?? null;
+		$slot->BackSide=$row["BackSide"] ?? null;
+		$slot->X=$row["X"] ?? null;
+		$slot->Y=$row["Y"] ?? null;
+		$slot->W=$row["W"] ?? null;
+		$slot->H=$row["H"] ?? null;
 
 		return $slot;
 	}
@@ -79,7 +79,7 @@ class Slot {
 			;";
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
-			error_log("PDO Error: {$info[2]} SQL=$sql");
+			error_log("PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			return false;
 		}else{
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
@@ -125,8 +125,9 @@ class Slot {
 		$this->MakeSafe();
 		
 		$sql="SELECT * FROM fac_Slots WHERE TemplateID=$this->TemplateID AND Position=$this->Position AND BackSide=$this->BackSide;";
-		if($row=$this->query($sql)->fetch()){
-			foreach(Slot::RowToObject($row) as $prop => $value){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
+			foreach(get_object_vars(Slot::RowToObject($row)) as $prop => $value){
 				$this->$prop=$value;
 			}
 			return true;
@@ -156,8 +157,11 @@ class Slot {
 		$sql="SELECT * FROM fac_Slots WHERE TemplateID=".intval($templateid)." ORDER 
 			BY BackSide ASC, Position ASC;";
 		$slots=array();
-		foreach($dbh->query($sql) as $row){
-			$slots[$row['BackSide']][$row['Position']]=Slot::RowToObject($row);
+		$stmt=$dbh->query($sql);
+		if($stmt){
+			foreach($stmt as $row){
+				$slots[$row['BackSide'] ?? null][$row['Position'] ?? null]=Slot::RowToObject($row);
+			}
 		}	
 		return $slots;
 	}
@@ -166,8 +170,9 @@ class Slot {
 		$this->MakeSafe();
 		
 		$sql="SELECT * FROM fac_Slots WHERE TemplateID=$this->TemplateID ORDER BY BackSide,Position;";
-		if($row=$this->query($sql)->fetch()){
-			foreach(Slot::RowToObject($row) as $prop => $value){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
+			foreach(get_object_vars(Slot::RowToObject($row)) as $prop => $value){
 				$this->$prop=$value;
 			}
 			return true;
