@@ -385,8 +385,8 @@ class Device {
 	 */
 	static function OSS_SNMP_Lookup($dev,$snmplookup,$oid=null,$walk=false){
 		// This is find out the name of the function that called this to make the error logging more descriptive
-		$caller=debug_backtrace();
-		$caller=$caller[1]['function'];
+		$trace=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,2);
+		$caller=$trace[1]['function'] ?? 'unknown';
 
 		if (preg_match('/(?<placeholder>\{(?<tag>[^\}]+)+\})/i', $oid, $oid_matches))
         {
@@ -405,11 +405,20 @@ class Device {
 		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,$dev->SNMPVersion,$dev->v3SecurityLevel,$dev->v3AuthProtocol,$dev->v3AuthPassphrase,$dev->v3PrivProtocol,$dev->v3PrivPassphrase);
 		$snmpresult=false;
 		try {
-			$snmpresult=((is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):($walk))?$snmpHost->realWalk($oid):$snmpHost->get($oid);
+			//$snmpresult=((is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):($walk))?$snmpHost->realWalk($oid):$snmpHost->get($oid);
+			//Comptatility fix for PHP 8.x and earlier , ternaires is confusing with method calls
+				if (is_null($oid)) {
+					$snmpresult = $snmpHost->useSystem()->{$snmplookup}(true);
+				} elseif ($walk) {
+					$snmpresult = $snmpHost->realWalk($oid);
+				} else {
+					$snmpresult = $snmpHost->get($oid);
+				}
 
 		}catch (Exception $e){
 			$dev->IncrementFailures();
 			error_log("Device::$caller($dev->DeviceID) ".$e->getMessage());
+			return false;
 		}
 
 		$dev->ResetFailures();
@@ -2038,7 +2047,9 @@ class Device {
 		if (!file_exists($path.$picturefile)){
 			$picturefile=$config->ParameterArray["picturepath"]."P_ERROR.png";
 		}
-		@list($width, $height)=getimagesize($path.$picturefile);
+		$imgSize = @getimagesize($path.$picturefile);
+		$width  = $imgSize[0] ?? 0;
+		$height = $imgSize[1] ?? 0;
 		// Make sure there is an image! DOH! If either is 0 then use a text box
 		$width=intval($width);
 		$height=intval($height);
