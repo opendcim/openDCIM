@@ -59,20 +59,20 @@ class SensorTemplate {
 	}
 
 	function MakeDisplay() {
-		$this->TemperatureOID=stripslashes($this->TemperatureOID);
-		$this->HumidityOID=stripslashes($this->HumidityOID);
+		$this->TemperatureOID=stripslashes((string)$this->TemperatureOID);
+		$this->HumidityOID=stripslashes((string)$this->HumidityOID);
 	}
 
 	static function RowToObject($dbRow){
 		$st=new SensorTemplate();
-		$st->TemplateID=$dbRow["TemplateID"];
-		$st->ManufacturerID=$dbRow["ManufacturerID"];
-		$st->Model=$dbRow["Model"];
-		$st->TemperatureOID=$dbRow["TemperatureOID"];
-		$st->HumidityOID=$dbRow["HumidityOID"];
-		$st->TempMultiplier=$dbRow["TempMultiplier"];
-		$st->HumidityMultiplier=$dbRow["HumidityMultiplier"];
-		$st->mUnits=$dbRow["mUnits"];
+		$st->TemplateID=$dbRow["TemplateID"] ?? null;
+		$st->ManufacturerID=$dbRow["ManufacturerID"] ?? null;
+		$st->Model=$dbRow["Model"] ?? null;
+		$st->TemperatureOID=$dbRow["TemperatureOID"] ?? null;
+		$st->HumidityOID=$dbRow["HumidityOID"] ?? null;
+		$st->TempMultiplier=$dbRow["TempMultiplier"] ?? null;
+		$st->HumidityMultiplier=$dbRow["HumidityMultiplier"] ?? null;
+		$st->mUnits=$dbRow["mUnits"] ?? null;
 
 		return $st;
 	}
@@ -84,8 +84,9 @@ class SensorTemplate {
 
 		$sql="SELECT * FROM fac_SensorTemplate WHERE TemplateID=$this->TemplateID;";
 
-		if($sensorRow=$dbh->query($sql)->fetch()){
-			foreach(SensorTemplate::RowToObject($sensorRow) as $prop => $value){
+		$stmt=$dbh->query($sql);
+		if($stmt && ($sensorRow=$stmt->fetch())){
+			foreach(get_object_vars(SensorTemplate::RowToObject($sensorRow)) as $prop => $value){
 				$this->$prop=$value;
 			}
 			return true;
@@ -100,8 +101,11 @@ class SensorTemplate {
 		$sql="SELECT * FROM fac_SensorTemplate ORDER BY ManufacturerID, Model ASC;";
 		
 		$tempList = array();
-		foreach($dbh->query($sql) as $row){
-			$tempList[]=SensorTemplate::RowToObject($row);
+		$stmt=$dbh->query($sql);
+		if($stmt){
+			foreach($stmt as $row){
+				$tempList[]=SensorTemplate::RowToObject($row);
+			}
 		}
 		
 		return $tempList;
@@ -121,7 +125,7 @@ class SensorTemplate {
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("CreateTemplate::PDO Error: {$info[2]} $sql");
+			error_log("CreateTemplate::PDO Error: " . ($info[2] ?? 'Unknown error') . " $sql");
 			return false;
 		}
 
@@ -146,7 +150,7 @@ class SensorTemplate {
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
-			error_log("UpdateTemplate::PDO Error: {$info[2]} SQL=$sql");
+			error_log("UpdateTemplate::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			return false;
 		}
 		(class_exists('LogActions'))?LogActions::LogThis($this,$old):'';
