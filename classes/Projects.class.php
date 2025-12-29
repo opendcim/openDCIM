@@ -129,7 +129,7 @@ class Projects {
 		// This will store all our extended sql
 		$sqlextend="";
 		$args = array();
-		foreach($this as $prop => $val){
+		foreach(get_object_vars($this) as $prop => $val){
 			if ( isset( $val ) ) {
 				$method=($loose)?" LIKE \":" . $prop . "%\"":"=:" . $prop;
 				if ($sqlextend) {
@@ -146,7 +146,7 @@ class Projects {
 		$projectList=array();
 		while( $row = $st->fetch() ) {
 			if($indexedbyid){
-				$projectList[$row["ProjectID"]]=$row;
+				$projectList[$row->ProjectID ?? null]=$row;
 			}else{
 				$projectList[]=$row;
 			}
