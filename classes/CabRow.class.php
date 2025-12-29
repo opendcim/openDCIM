@@ -135,7 +135,8 @@ class CabRow {
 		$sql="SELECT * FROM fac_CabRow WHERE CabRowID=$this->CabRowID;";
 
 		if($row=$this->query($sql)->fetch()){
-			foreach(CabRow::RowToObject($row) as $prop => $value){
+			$tmp = CabRow::RowToObject($row);
+			foreach (get_object_vars($tmp) as $prop => $value) {
 				$this->$prop=$value;
 			}
 			return true;
@@ -173,6 +174,7 @@ class CabRow {
 		return $cabrowList;
 	}
 	function GetCabRowList(){
+		$this->MakeSafe();
 		$sql="SELECT * FROM fac_CabRow ORDER BY Name ASC;";
 		
 		$cabrowList=array();
@@ -213,8 +215,8 @@ class CabRow {
 	function Search($indexedbyid=false,$loose=false){
 		$o=new stdClass();
 		// Store any values that have been added before we make them safe 
-		foreach($this as $prop => $val){
-			if(isset($val)){
+		foreach (get_object_vars($this) as $prop => $val) {
+			if ($val !== null) {
 				$o->$prop=$val;
 			}
 		}
