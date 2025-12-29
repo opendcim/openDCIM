@@ -38,9 +38,9 @@ class PDUStats {
 
 	static function RowToObject($row){
 		$m=new PDUStats();
-		$m->PDUID=$row["PDUID"];
-		$m->Wattage=$row["Wattage"];
-		$m->LastRead=$row["LastRead"];
+		$m->PDUID=$row["PDUID"] ?? null;
+		$m->Wattage=$row["Wattage"] ?? null;
+		$m->LastRead=$row["LastRead"] ?? null;
 		return $m;
 	}
 
@@ -57,11 +57,12 @@ class PDUStats {
 
 		$sql="SELECT * FROM fac_PDUStats WHERE PDUID=$this->PDUID";
 
-		if ( !$person->SiteAdmin && $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
+		if ( !$person->SiteAdmin && ($config->ParameterArray["GDPRCountryIsolation"] ?? '') == "enabled" ) {
 			$sql = "SELECT a.* FROM fac_PDUStats a, fac_Device b, fac_Cabinet c, fac_DataCenter d WHERE PDUID=$this->PDUID and a.PDUID=b.DeviceID and b.Cabinet=c.CabinetID and c.DataCenterID=d.DataCenterID and d.countryCode='".$person->countryCode."'";
 		}
 
-		if($row=$this->query($sql)->fetch()){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
 			foreach(PDUStats::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}	
@@ -76,14 +77,17 @@ class PDUStats {
 
 		$this->MakeSafe();
 
+		$lastRead=strtotime((string)$this->LastRead);
+		$lastRead=($lastRead !== false) ? date("Y-m-d H:i:s", $lastRead) : null;
+		$lastReadSql=($lastRead !== null) ? "\"$lastRead\"" : "NULL";
 		$sql="INSERT INTO fac_PDUStats (PDUID,Wattage,LastRead) VALUES 
-			($this->PDUID,$this->Wattage,\"".date("Y-m-d H:i:s", strtotime($this->LastRead))."\") ON DUPLICATE KEY 
-			UPDATE Wattage=$this->Wattage,LastRead=\"".date("Y-m-d H:i:s", strtotime($this->LastRead))."\";";
+			($this->PDUID,$this->Wattage,$lastReadSql) ON DUPLICATE KEY 
+			UPDATE Wattage=$this->Wattage,LastRead=$lastReadSql;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("UpdatePDUStats::PDO Error: {$info[2]} SQL=$sql" );
+			error_log("UpdatePDUStats::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql" );
 			return false;
 		}
 		return true;
@@ -99,7 +103,7 @@ class PDUStats {
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 			
-			error_log("DeletePDUStats::PDO Error: {$info[2]} SQL=$sql" );
+			error_log("DeletePDUStats::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql" );
 			return false;
 		}
 		return true;
@@ -112,24 +116,26 @@ class PDUStats {
 		$this->MakeSafe();
 
 		$sqlextend="";
-		foreach($this as $prop => $val){
+		foreach(get_object_vars($this) as $prop => $val){
 			if($val){
 				extendsql($prop,$val,$sqlextend,$loose);
 			}
 		}
 
-		if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
+		if ( ($config->ParameterArray["GDPRCountryIsolation"] ?? '') == "enabled" && !$person->SiteAdmin ) {
 			$sql = "SELECT * FROM fac_PDUStats where PDUID in (select a.PDUID from fac_PDUStats a, fac_Device b, fac_Cabinet c, fac_DataCenter d WHERE a.PDUID=b.DeviceID and b.Cabinet=c.CabinetID and c.DataCenterID=d.DataCenterID and d.countryCode='".$person->countryCode."') $sqlextend";
 		} else {
 			$sql="SELECT * FROM fac_PDUStats $sqlextend;";
 		}
 
 		$pdustatsList=array();
-		foreach($this->query($sql) as $pdustatsRow){
-			if($indexedbyid){
-				$pdustatsList[$pdustatsRow["PDUID"]]=PDUStats::RowToObject($pdustatsRow);
-			}else{
-				$pdustatsList[]=PDUStats::RowToObject($pdustatsRow);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $pdustatsRow){
+				if($indexedbyid){
+					$pdustatsList[$pdustatsRow["PDUID"] ?? null]=PDUStats::RowToObject($pdustatsRow);
+				}else{
+					$pdustatsList[]=PDUStats::RowToObject($pdustatsRow);
+				}
 			}
 		}
 
