@@ -31,7 +31,7 @@ $app->get( '/audit', function(Request $request, Response $response) use ($person
 		return $response->withJson( $r, $r['errorcode'] );
 	}
 
-	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
+	$attrList = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	if ( isset( $attrList["DeviceID"] ) ) {
 		$auditList = LogActions::getDeviceAudits( $attrList["DeviceID"] );
@@ -69,7 +69,7 @@ $app->get('/people', function(Request $request, Response $response) use($person,
 	$sp=new People();
 	$loose = false;
 	$outputAttr = array();
-	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
+	$attrList = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	foreach($attrList as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
@@ -114,7 +114,7 @@ $app->get('/department', function(Request $request, Response $response) use($per
 	$dept=new Department();
 	$loose = false;
 	$outputAttr = array();
-	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
+	$attrList = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	foreach($attrList as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
 			$loose = true;
@@ -153,7 +153,7 @@ $app->get('/datacenter', function(Request $request, Response $response) use ($pe
 	$outputAttr = array();
 	$loose = false;
 
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
 		$vars["countryCode"] = $person->countryCode;		
 	}
@@ -218,7 +218,7 @@ $app->get( '/cabinet', function(Request $request, Response $response) use ($conf
 	$loose = false;
 	$outputAttr = array();
 
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	foreach($vars as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
@@ -284,6 +284,7 @@ $app->get( '/cabinet/{cabinetid}/getpictures', function( Request $request, Respo
 	if ( array_key_exists( "cabinetid", $args ) ) {
 		$cabinetid = $args["cabinetid"];
 	} else {
+		$cabinetid = '';
 		return $response->withJson(array("message"=>"Cabinet $cabinetid not found."), 404);
 	}
 
@@ -327,6 +328,7 @@ $app->get( '/cabinet/{cabinetid}/getpictures', function( Request $request, Respo
 
 $app->get( '/cabinet/{cabinetid}/sensor', function( Request $request, Response $response, array $args ) use ($config,$person) {
 	$dc = new DataCenter();
+	$cabinetid = $args['cabinetid'];
 
 	if ( $config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
 		$dcList = array();
@@ -379,7 +381,7 @@ $app->get( '/device', function(Request $request, Response $response) {
 	$loose = false;
 	$outputAttr = array();
 
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	foreach($vars as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
@@ -516,12 +518,12 @@ $app->get('/deviceport/{deviceid}', function( Request $request, Response $respon
 $app->get( '/deviceport/{deviceid}/patchcandidates', function( Request $request, Response $response, $args ) {
 	$deviceid = intval($args["deviceid"]);
 	$s=new stdClass();
-	$vars = $request->getParsedBody();
-	$s->portnumber=$vars['PortNumber'];
-	$s->connectto=$vars['connectto'];
-	$s->listports=$vars['listports'];
-	$s->patchpanels=$vars['patchpanels'];
-	$s->limiter=$vars['limiter'];
+	$vars = $request->getParsedBody() ?: array();
+	$s->portnumber=$vars['PortNumber'] ?? null;
+	$s->connectto=$vars['connectto'] ?? null;
+	$s->listports=$vars['listports'] ?? null;
+	$s->patchpanels=$vars['patchpanels'] ?? null;
+	$s->limiter=$vars['limiter'] ?? null;
 
 	$r['error']=false;
 	$r['errorcode']=200;
@@ -870,7 +872,7 @@ $app->get( '/devicetemplate', function(Request $request, Response $response) {
 	$loose = false;
 	$outputAttr = array();
 
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	foreach($vars as $prop => $val){
 		if ( strtoupper($prop) == "WILDCARDS" ) {
@@ -1035,7 +1037,7 @@ $app->get( '/manufacturer', function(Request $request, Response $response) {
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	foreach($vars as $prop => $val){
 		$man->$prop=$val;
 	}
@@ -1056,7 +1058,7 @@ $app->get( '/zone', function(Request $request, Response $response) {
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	foreach($vars as $prop => $val){
 		$zone->$prop=$val;
 	}
@@ -1080,9 +1082,9 @@ $app->get( '/zone/{zoneid}', function( Request $request, Response $response, $ar
 	
 	$r['error']=false;
 	$r['errorcode']=200;
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	foreach($vars as $prop => $val){
-		$dev->$prop=$val;
+		$zone->$prop=$val;
 	}
 	$r['zone']=$zone->GetZone();
 
@@ -1102,7 +1104,7 @@ $app->get( '/cabrow', function(Request $request, Response $response) {
 	$r['error']=false;
 	$r['errorcode']=200;
 
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	foreach($vars as $prop => $val){
 		$cabrow->$prop=$val;
@@ -1138,7 +1140,7 @@ $app->get( '/cabrow/{cabrowid}/devices', function( Request $request, Response $r
 $app->get( '/sensorreadings', function(Request $request, Response $response) {
 	$sensorreadings=new SensorReadings();
 	$outputAttr = array();
-	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
+	$attrList = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	$loose = false;
 
 	foreach($attrList as $prop => $val){
@@ -1190,7 +1192,7 @@ $app->get( '/sensorreadings/{sensorid}', function( Request $request, Response $r
 $app->get( '/pdustats', function(Request $request, Response $response) use ($person) {
 	$pdustats=new PDUStats();
 	$outputAttr = array();
-	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
+	$attrList = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	$loose = false;
 
 	foreach($attrList as $prop => $val){
@@ -1242,7 +1244,7 @@ $app->get( '/pdustats/{pduid}', function( Request $request, Response $response, 
 $app->get( '/vminventory', function(Request $request, Response $response) {
 	$vm = new VM();
 	$outputAttr = array();
-	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
+	$attrList = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	$loose = false;
 
 	foreach($attrList as $prop => $val){
@@ -1294,7 +1296,7 @@ $app->get( '/vminventory/{vmindex}', function( Request $request, Response $respo
 $app->get( '/powerpanel', function(Request $request, Response $response) {
 	$pp = new PowerPanel();
 	$outputAttr = array();
-	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
+	$attrList = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	$loose = false;
 
 	foreach($attrList as $prop => $val){
@@ -1343,7 +1345,7 @@ $app->get( '/powerpanel/{panelid}', function( Request $request, Response $respon
 // Params: Optionally filter by DataCenterID, ZoneID, RowID, CabinetID
 // Returns: Device information for all polling power/CDU sensors that meet the filter criteria
 $app->get( '/pollers/power', function(Request $request, Response $response) {
-	$filters = $request->getQueryParams() ?: $request->getParsedBody();
+	$filters = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	$dev = new Device();
 
@@ -1390,7 +1392,7 @@ $app->get( '/pollers/power', function(Request $request, Response $response) {
 // Params: Optionally filter by DataCenterID, ZoneID, RowID, CabinetID
 // Returns: Device information for all polling sensors that meet the filter criteria
 $app->get( '/pollers/sensors', function(Request $request, Response $response) {
-	$filters = $request->getQueryParams() ?: $request->getParsedBody();
+	$filters = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	$dev = new Device();
 
