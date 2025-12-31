@@ -62,7 +62,7 @@ $app->delete( '/powerport/{deviceid}', function( Request $request, Response $res
 
 	$pp=new PowerPorts();
 	$pp->DeviceID=$deviceid;
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	foreach($vars as $prop => $val){
 		if ( property_exists( $pp, $prop )) {
@@ -81,6 +81,11 @@ $app->delete( '/powerport/{deviceid}', function( Request $request, Response $res
 	// If this port isn't the last port then we're gonna shuffle ports to keep the ids in orderish
 	$portlist=$pp->getPorts();
 	$lastport=end($portlist);
+	if(!$lastport){
+		$r['error']=true;
+		$r['errorcode']=404;
+		return $response->withJson($r, $r['errorcode']);
+	}
 	if($lastport->PortNumber!=$pp->PortNumber){
 		foreach($lastport as $prop=>$value){
 			if($prop!="PortNumber"){
@@ -362,7 +367,7 @@ $app->delete( '/powerpanel/{panelid}', function( Request $request, Response $res
 //	Returns:  true/false on delete operation
 
 $app->delete( '/powerconnectortypes/{id}', function( Request $request, Response $response, $args ) use ($person) {
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	$id = intval($args["id"]);
 
 	$r['error']=true;
