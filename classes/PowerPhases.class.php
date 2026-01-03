@@ -64,14 +64,14 @@ class PowerPhases {
 		return $result;
 	}
 
-	static function deletePhase( $PhaseID ) {
+	static function deletePhase( $PhaseID, $NewPhaseID = 0 ) {
 		global $dbh;
 
-		$oldPhase = getPhase( $PhaseID );
+		$oldPhase = PowerPhases::getPhase( $PhaseID );
 
-		// Set any connections using this PhaseID to have NULL instead
-		$st = $dbh->prepare( "update fac_Ports set PhaseID=NULL where PhaseID=:PhaseID" );
-		$st->execute( array( ":PhaseID"=>$PhaseID ));
+		// Set any connections using this PhaseID to have NewID (Default 0) instead
+		$st = $dbh->prepare( "update fac_PowerPorts set PhaseID=:NewPhaseID where PhaseID=:PhaseID" );
+		$st->execute( array( ":PhaseID"=>$PhaseID, ":NewPhaseID"=>$NewPhaseID ));
 
 		$st = $dbh->prepare( "delete from fac_PowerPhases where PhaseID=:PhaseID" );
 		if ( $st->execute( array( ":PhaseID"=>$PhaseID ))) {

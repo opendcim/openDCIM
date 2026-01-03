@@ -383,5 +383,153 @@ $app->delete( '/powerconnectortypes/{id}', function( Request $request, Response 
 	return $response->withJson($r, $r['errorcode']);
 });
 
+//
+//	URL:      /api/v1/powerphases/:PhaseID
+//	Method:   DELETE
+//	Params:
+//		Required: PhaseID
+//		Optional: NewPhaseID
+//	Returns:  true/false on delete operation
 
+$app->delete( '/powerphases/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!PowerPhases::deletePhase($id,(isset($vars['NewPhaseID']))?$vars['NewPhaseID']:0)){
+			$r['message']=__("Phase deletion failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/powervoltages/:VoltageID
+//	Method:   DELETE
+//	Params:
+//		Required: VoltageID
+//		Optional: NewVoltageID
+//	Returns:  true/false on delete operation
+
+$app->delete( '/powervoltages/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!PowerVoltages::deleteVoltage($id,(isset($vars['NewVoltageID']))?$vars['NewVoltageID']:0)){
+			$r['message']=__("Voltage deletion failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/mediaconnectors/:ConnectorID
+//	Method:   DELETE
+//	Params:
+//		Required: ConnectorID
+//		Optional: NewConnectorID
+//	Returns:  true/false on delete operation
+
+$app->delete( '/mediaconnectors/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!MediaConnectors::deleteConnector($id,(isset($vars['NewConnectorID']))?$vars['NewConnectorID']:0)){
+			$r['message']=__("Connector deletion failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/mediadatarates/:RateID
+//	Method:   DELETE
+//	Params:
+//		Required: RateID
+//		Optional: NewRateID
+//	Returns:  true/false on delete operation
+
+$app->delete( '/mediadatarates/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!MediaDataRates::deleteRate($id,(isset($vars['NewRateID']))?$vars['NewRateID']:0)){
+			$r['message']=__("Rate deletion failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/mediaprotocols/:ProtocolID
+//	Method:   DELETE
+//	Params:
+//		Required: ProtocolID
+//		Optional: NewProtocolID
+//	Returns:  true/false on delete operation
+
+$app->delete( '/mediaprotocols/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!MediaProtocols::deleteProtocol($id,(isset($vars['NewProtocolID']))?$vars['NewProtocolID']:0)){
+			$r['message']=__("Protocol deletion failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
 ?>

@@ -63,14 +63,14 @@ class MediaConnectors {
 		return $result;
 	}
 
-	static function deleteConnector( $ConnectorID ) {
+	static function deleteConnector( $ConnectorID, $NewConnectorID = 0 ) {
 		global $dbh;
 
-		$oldConnector = getConnector( $connectorID );
+		$oldConnector = MediaConnectors::getConnector( $ConnectorID );
 
-		// Set any connections using this ConnectorID to have NULL instead
-		$st = $dbh->prepare( "update fac_Ports set ConnectorID=NULL where ConnectorID=:ConnectorID" );
-		$st->execute( array( ":ConnectorID"=>$ConnectorID ));
+		// Set any connections using this ConnectorID to new one (Default 0) instead
+		$st = $dbh->prepare( "update fac_Ports set ConnectorID=:NewConnectorID where ConnectorID=:ConnectorID" );
+		$st->execute( array( ":ConnectorID"=>$ConnectorID, ":NewConnectorID"=>$NewConnectorID ));
 
 		$st = $dbh->prepare( "delete from fac_MediaConnectors where ConnectorID=:ConnectorID" );
 		if ( $st->execute( array( ":ConnectorID"=>$ConnectorID ))) {
