@@ -864,7 +864,7 @@ $app->post( '/mediaconnectors/{id}', function( Request $request, Response $respo
 
 	$mc=new MediaConnectors();
 	$mc->ConnectorID=$id;
-	$mc->ConnectorName=$vars["name"];
+	$mc->ConnectorType=$vars["name"];
 
 	$r['error']=true;
 	$r['errorcode']=400;
