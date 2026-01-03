@@ -1105,10 +1105,10 @@
 					remove();
 				});
 			}
-			rowinput.keypress(function(event){
-				if(event.keyCode==10 || event.keyCode==13){
+			rowinput.on('keydown', function(event){
+				if(event.key === 'Enter'){
 					event.preventDefault();
-					rowinput.change();
+					update();
 				}
 			});
 			function ajaxdelete(){
@@ -1217,8 +1217,13 @@
 					});;
 				}
 			}
-			rowinput.change(function(){
-				update();
+			rowinput.change(function(event){
+				// this is necessary because when you hit enter on the new item blank it triggers the form submission
+				// then the focus changes from the input blank and it resubmits the change a second time because UI/UX
+				// is hard. This needs a little something extra so Stacked Like Pancakes - 45
+				if(addrem.attr('id')!='newline'){
+					update();
+				}
 			});
 		}
 
