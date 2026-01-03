@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-03 09:05-0600\n"
+"POT-Creation-Date: 2026-01-03 09:42-0600\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -5601,13 +5601,16 @@ msgstr "Return to Row"
 #: api/v1/postRoutes.php:525 api/v1/postRoutes.php:570
 #: api/v1/postRoutes.php:613 api/v1/postRoutes.php:647
 #: api/v1/postRoutes.php:685 api/v1/postRoutes.php:729
-#: api/v1/postRoutes.php:777 api/v1/putRoutes.php:96 api/v1/putRoutes.php:146
-#: api/v1/putRoutes.php:197 api/v1/putRoutes.php:237 api/v1/putRoutes.php:317
-#: api/v1/putRoutes.php:365 api/v1/putRoutes.php:461 api/v1/putRoutes.php:516
-#: api/v1/putRoutes.php:565 api/v1/putRoutes.php:611 api/v1/putRoutes.php:655
-#: api/v1/putRoutes.php:698 api/v1/putRoutes.php:732 api/v1/putRoutes.php:778
-#: api/v1/putRoutes.php:819 api/v1/putRoutes.php:850 api/v1/putRoutes.php:881
-#: api/v1/putRoutes.php:912 api/v1/putRoutes.php:943 api/v1/putRoutes.php:974
+#: api/v1/postRoutes.php:775 api/v1/postRoutes.php:808
+#: api/v1/postRoutes.php:841 api/v1/postRoutes.php:874
+#: api/v1/postRoutes.php:906 api/v1/postRoutes.php:938 api/v1/putRoutes.php:96
+#: api/v1/putRoutes.php:146 api/v1/putRoutes.php:197 api/v1/putRoutes.php:237
+#: api/v1/putRoutes.php:317 api/v1/putRoutes.php:365 api/v1/putRoutes.php:461
+#: api/v1/putRoutes.php:516 api/v1/putRoutes.php:565 api/v1/putRoutes.php:611
+#: api/v1/putRoutes.php:655 api/v1/putRoutes.php:698 api/v1/putRoutes.php:732
+#: api/v1/putRoutes.php:778 api/v1/putRoutes.php:819 api/v1/putRoutes.php:850
+#: api/v1/putRoutes.php:881 api/v1/putRoutes.php:912 api/v1/putRoutes.php:943
+#: api/v1/putRoutes.php:974
 msgid "Access Denied"
 msgstr "Access Denied"
 
@@ -5851,9 +5854,20 @@ msgstr "No Powerpanel found with PanelID "
 msgid "Powerpanel update failed"
 msgstr "Powerpanel update failed"
 
-#: api/v1/postRoutes.php:780
+#: api/v1/postRoutes.php:778 api/v1/postRoutes.php:877
+#: api/v1/postRoutes.php:909 api/v1/postRoutes.php:941
 #, fuzzy
 msgid "Connector update failed"
+msgstr "Actualización fallada"
+
+#: api/v1/postRoutes.php:811
+#, fuzzy
+msgid "Phase update failed"
+msgstr "Actualización fallada"
+
+#: api/v1/postRoutes.php:844
+#, fuzzy
+msgid "Voltage update failed"
 msgstr "Actualización fallada"
 
 #: api/v1/putRoutes.php:47 api/v1/putRoutes.php:61
