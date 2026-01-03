@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-26 08:16-0600\n"
+"POT-Creation-Date: 2026-01-03 07:33-0600\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -119,7 +119,7 @@ msgstr ""
 #: report_project_outage_simulator.php:277 report_projects.php:154
 #: report_sensors.php:23 report_tags.php:33 report_xml_CFD.php:61
 #: search_export.php:149 zone.php:138 classes/Device.class.php:2632
-#: classes/PowerDistribution.class.php:553
+#: classes/PowerDistribution.class.php:555
 msgid "Data Center"
 msgstr "Data Center"
 
@@ -131,7 +131,7 @@ msgstr "Data Center"
 #: report_exception.php:235 report_network_map.php:620
 #: report_project_outage_simulator.php:346 report_projects.php:153
 #: workorder.php:156 zone_stats.php:305 classes/Device.class.php:2632
-#: classes/PowerDistribution.class.php:553
+#: classes/PowerDistribution.class.php:555
 msgid "Cabinet"
 msgstr "Armadio"
 
@@ -2686,7 +2686,7 @@ msgstr "Sensore"
 msgid "Physical Infrastructure"
 msgstr "Dati Infrastruttura"
 
-#: devices.php:942 classes/PowerDistribution.class.php:553
+#: devices.php:942 classes/PowerDistribution.class.php:555
 msgid "CDU"
 msgstr "CDU"
 
@@ -6106,12 +6106,12 @@ msgid "Row "
 msgstr "Row "
 
 #: classes/Device.class.php:2572 classes/Device.class.php:2578
-#: classes/PowerDistribution.class.php:489
+#: classes/PowerDistribution.class.php:491
 msgid "Critical"
 msgstr "Critico"
 
 #: classes/Device.class.php:2574 classes/Device.class.php:2580
-#: classes/PowerDistribution.class.php:491
+#: classes/PowerDistribution.class.php:493
 msgid "Warning"
 msgstr "Avvertimento"
 
@@ -6119,11 +6119,11 @@ msgstr "Avvertimento"
 msgid "Data Center Sensor Alerts Report"
 msgstr "Report Allarmi Sensori Data Center"
 
-#: classes/Device.class.php:2607 classes/PowerDistribution.class.php:528
+#: classes/Device.class.php:2607 classes/PowerDistribution.class.php:530
 msgid "MailFrom"
 msgstr "Mail Da"
 
-#: classes/Device.class.php:2614 classes/PowerDistribution.class.php:535
+#: classes/Device.class.php:2614 classes/PowerDistribution.class.php:537
 msgid "Facility Manager email address"
 msgstr "Indirizzo Email Facility Manager"
 
@@ -6131,11 +6131,11 @@ msgstr "Indirizzo Email Facility Manager"
 msgid "Data Center Sensor Alerts"
 msgstr "Allarmi Sensori Data Center"
 
-#: classes/Device.class.php:2632 classes/PowerDistribution.class.php:553
+#: classes/Device.class.php:2632 classes/PowerDistribution.class.php:555
 msgid "Value"
 msgstr "Valore"
 
-#: classes/Device.class.php:2632 classes/PowerDistribution.class.php:553
+#: classes/Device.class.php:2632 classes/PowerDistribution.class.php:555
 msgid "Alert Level"
 msgstr "Livello di Allarme"
 
@@ -6190,11 +6190,11 @@ msgstr "si è verificato un errore. Template non creato."
 msgid "Ignored port %s"
 msgstr "Report  Inventario"
 
-#: classes/PowerDistribution.class.php:522
+#: classes/PowerDistribution.class.php:524
 msgid "Data Center Power Alerts Report"
 msgstr "Report Allarmi Energia Data Center"
 
-#: classes/PowerDistribution.class.php:551
+#: classes/PowerDistribution.class.php:553
 msgid "Data Center Power Alerts"
 msgstr "Allarmi Energia Data Center"
 
