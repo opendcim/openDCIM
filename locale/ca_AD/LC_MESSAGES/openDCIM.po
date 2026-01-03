@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-03 07:33-0600\n"
+"POT-Creation-Date: 2026-01-03 08:22-0600\n"
 "PO-Revision-Date: 2014-08-04 13:57-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -5603,7 +5603,9 @@ msgstr "Return t' Navigator"
 #: api/v1/putRoutes.php:317 api/v1/putRoutes.php:365 api/v1/putRoutes.php:461
 #: api/v1/putRoutes.php:516 api/v1/putRoutes.php:565 api/v1/putRoutes.php:611
 #: api/v1/putRoutes.php:655 api/v1/putRoutes.php:698 api/v1/putRoutes.php:732
-#: api/v1/putRoutes.php:778 api/v1/putRoutes.php:819
+#: api/v1/putRoutes.php:778 api/v1/putRoutes.php:819 api/v1/putRoutes.php:850
+#: api/v1/putRoutes.php:881 api/v1/putRoutes.php:912 api/v1/putRoutes.php:943
+#: api/v1/putRoutes.php:974
 msgid "Access Denied"
 msgstr ""
 
@@ -5946,6 +5948,31 @@ msgstr "Data Center Configuration"
 #: api/v1/putRoutes.php:822
 #, fuzzy
 msgid "Connector creation failed"
+msgstr "Data Center Configuration"
+
+#: api/v1/putRoutes.php:853
+#, fuzzy
+msgid "Phase creation failed"
+msgstr "Data Center Configuration"
+
+#: api/v1/putRoutes.php:884
+#, fuzzy
+msgid "Voltage creation failed"
+msgstr "Data Center Configuration"
+
+#: api/v1/putRoutes.php:915
+#, fuzzy
+msgid "Media Connector creation failed"
+msgstr "Data Center Configuration"
+
+#: api/v1/putRoutes.php:946
+#, fuzzy
+msgid "Media Rate creation failed"
+msgstr "Data Center Configuration"
+
+#: api/v1/putRoutes.php:977
+#, fuzzy
+msgid "Media Protocol creation failed"
 msgstr "Data Center Configuration"
 
 #: scripts/ajax_tooltip.php:146 scripts/ajax_tooltip.php:147
