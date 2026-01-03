@@ -92,9 +92,9 @@ class PowerPhases {
 	}
 
 	function updatePhase() {
-		$oldPhase = getPhase( $this->PhaseID );
+		$oldPhase = PowerPhases::getPhase( $this->PhaseID );
 		
-		$st = $this->prepare( "fac_PowerPhases set PhaseName=:PhaseName where PhaseID=:PhaseID" );
+		$st = $this->prepare( "update fac_PowerPhases set PhaseName=:PhaseName where PhaseID=:PhaseID" );
 
 		if( $st->execute( array( ":PhaseID"=>$this->PhaseID, ":PhaseName"=>$this->PhaseName ) ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this, $oldPhase):'';

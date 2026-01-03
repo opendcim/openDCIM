@@ -92,9 +92,9 @@ class MediaProtocols {
 	}
 
 	function updateProtocol() {
-		$oldProtocol = getProtocol( $this->ProtocolID );
+		$oldProtocol = MediaProtocols::getProtocol( $this->ProtocolID );
 
-		$st = $this->prepare( "fac_MediaProtocols set ProtocolName=:ProtocolName where ProtocolID=:ProtocolID" );
+		$st = $this->prepare( "update fac_MediaProtocols set ProtocolName=:ProtocolName where ProtocolID=:ProtocolID" );
 
 		if( $st->execute( array( ":ProtocolID"=>$this->ProtocolID, ":ProtocolName"=>$this->ProtocolName ) ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this, $oldProtocol):'';

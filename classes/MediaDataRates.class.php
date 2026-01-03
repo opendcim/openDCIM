@@ -92,9 +92,9 @@ class MediaDataRates {
 	}
 
 	function updateRate() {
-		$oldRate = getRate( $this->RateID );
+		$oldRate = MediaDataRates::getRate( $this->RateID );
 
-		$st = $this->prepare( "fac_MediaDataRates set RateText=:RateText where RateID=:RateID" );
+		$st = $this->prepare( "update fac_MediaDataRates set RateText=:RateText where RateID=:RateID" );
 
 		if( $st->execute( array( ":RateID"=>$this->RateID, ":RateText"=>$this->RateText ) ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this, $oldRate):'';

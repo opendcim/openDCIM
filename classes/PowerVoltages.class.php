@@ -92,9 +92,9 @@ class PowerVoltages {
 	}
 
 	function updateVoltage() {
-		$oldVoltage = getVoltage( $this->VoltageID );
-		
-		$st = $this->prepare( "fac_PowerVoltages set VoltageName=:VoltageName where VoltageID=:VoltageID" );
+		$oldVoltage = PowerVoltages::getVoltage( $this->VoltageID );
+	
+		$st = $this->prepare( "update fac_PowerVoltages set VoltageName=:VoltageName where VoltageID=:VoltageID" );
 
 		if( $st->execute( array( ":VoltageID"=>$this->VoltageID, ":VoltageName"=>$this->VoltageName ) ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this, $oldVoltage):'';

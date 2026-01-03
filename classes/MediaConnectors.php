@@ -91,9 +91,9 @@ class MediaConnectors {
 	}
 
 	function updateConnector() {
-		$oldConnector = getConnector( $this->ConnectorID );
+		$oldConnector = MediaConnectors::getConnector( $this->ConnectorID );
 
-		$st = $this->prepare( "fac_MediaConnectors set ConnectorType=:ConnectorType where ConnectorID=:ConnectorID" );
+		$st = $this->prepare( "update fac_MediaConnectors set ConnectorType=:ConnectorType where ConnectorID=:ConnectorID" );
 
 		if( $st->execute( array( ":ConnectorID"=>$this->ConnectorID, ":ConnectorType"=>$this->ConnectorType ) ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this, $oldConnector):'';
