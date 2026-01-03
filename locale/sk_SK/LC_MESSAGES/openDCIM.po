@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-03 08:22-0600\n"
+"POT-Creation-Date: 2026-01-03 09:05-0600\n"
 "Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -5568,22 +5568,24 @@ msgstr "Return to Row"
 #: api/v1/deleteRoutes.php:195 api/v1/deleteRoutes.php:225
 #: api/v1/deleteRoutes.php:254 api/v1/deleteRoutes.php:282
 #: api/v1/deleteRoutes.php:310 api/v1/deleteRoutes.php:338
-#: api/v1/deleteRoutes.php:373 api/v1/postRoutes.php:36
-#: api/v1/postRoutes.php:88 api/v1/postRoutes.php:146 api/v1/postRoutes.php:177
-#: api/v1/postRoutes.php:236 api/v1/postRoutes.php:277
-#: api/v1/postRoutes.php:314 api/v1/postRoutes.php:353
-#: api/v1/postRoutes.php:385 api/v1/postRoutes.php:431
-#: api/v1/postRoutes.php:479 api/v1/postRoutes.php:525
-#: api/v1/postRoutes.php:570 api/v1/postRoutes.php:613
-#: api/v1/postRoutes.php:647 api/v1/postRoutes.php:685
-#: api/v1/postRoutes.php:729 api/v1/postRoutes.php:777 api/v1/putRoutes.php:96
-#: api/v1/putRoutes.php:146 api/v1/putRoutes.php:197 api/v1/putRoutes.php:237
-#: api/v1/putRoutes.php:317 api/v1/putRoutes.php:365 api/v1/putRoutes.php:461
-#: api/v1/putRoutes.php:516 api/v1/putRoutes.php:565 api/v1/putRoutes.php:611
-#: api/v1/putRoutes.php:655 api/v1/putRoutes.php:698 api/v1/putRoutes.php:732
-#: api/v1/putRoutes.php:778 api/v1/putRoutes.php:819 api/v1/putRoutes.php:850
-#: api/v1/putRoutes.php:881 api/v1/putRoutes.php:912 api/v1/putRoutes.php:943
-#: api/v1/putRoutes.php:974
+#: api/v1/deleteRoutes.php:373 api/v1/deleteRoutes.php:403
+#: api/v1/deleteRoutes.php:433 api/v1/deleteRoutes.php:463
+#: api/v1/deleteRoutes.php:493 api/v1/deleteRoutes.php:523
+#: api/v1/postRoutes.php:36 api/v1/postRoutes.php:88 api/v1/postRoutes.php:146
+#: api/v1/postRoutes.php:177 api/v1/postRoutes.php:236
+#: api/v1/postRoutes.php:277 api/v1/postRoutes.php:314
+#: api/v1/postRoutes.php:353 api/v1/postRoutes.php:385
+#: api/v1/postRoutes.php:431 api/v1/postRoutes.php:479
+#: api/v1/postRoutes.php:525 api/v1/postRoutes.php:570
+#: api/v1/postRoutes.php:613 api/v1/postRoutes.php:647
+#: api/v1/postRoutes.php:685 api/v1/postRoutes.php:729
+#: api/v1/postRoutes.php:777 api/v1/putRoutes.php:96 api/v1/putRoutes.php:146
+#: api/v1/putRoutes.php:197 api/v1/putRoutes.php:237 api/v1/putRoutes.php:317
+#: api/v1/putRoutes.php:365 api/v1/putRoutes.php:461 api/v1/putRoutes.php:516
+#: api/v1/putRoutes.php:565 api/v1/putRoutes.php:611 api/v1/putRoutes.php:655
+#: api/v1/putRoutes.php:698 api/v1/putRoutes.php:732 api/v1/putRoutes.php:778
+#: api/v1/putRoutes.php:819 api/v1/putRoutes.php:850 api/v1/putRoutes.php:881
+#: api/v1/putRoutes.php:912 api/v1/putRoutes.php:943 api/v1/putRoutes.php:974
 msgid "Access Denied"
 msgstr "Access Denied"
 
@@ -5637,10 +5639,30 @@ msgstr "Invalid parameter (days)"
 msgid "Error removing Powerpanel with PanelID "
 msgstr "Error removing Powerpanel with PanelID "
 
-#: api/v1/deleteRoutes.php:376
+#: api/v1/deleteRoutes.php:376 api/v1/deleteRoutes.php:466
 #, fuzzy
 msgid "Connector deletion failed"
 msgstr "Powerpanel creation failed"
+
+#: api/v1/deleteRoutes.php:406
+#, fuzzy
+msgid "Phase deletion failed"
+msgstr "VM creation failed"
+
+#: api/v1/deleteRoutes.php:436
+#, fuzzy
+msgid "Voltage deletion failed"
+msgstr "VM creation failed"
+
+#: api/v1/deleteRoutes.php:496
+#, fuzzy
+msgid "Rate deletion failed"
+msgstr "Powerpanel creation failed"
+
+#: api/v1/deleteRoutes.php:526
+#, fuzzy
+msgid "Protocol deletion failed"
+msgstr "Device creation failed"
 
 #: api/v1/getRoutes.php:305 api/v1/getRoutes.php:349 api/v1/getRoutes.php:441
 msgid "Unknown error"
