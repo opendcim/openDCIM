@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-03 09:42-0600\n"
+"POT-Creation-Date: 2026-01-03 12:12-0600\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -317,7 +317,7 @@ msgstr "Сторінка"
 msgid "Cabinet Location"
 msgstr "Розташування шафи"
 
-#: cabaudit.php:404 cabaudit.php:510 configuration.php:2742 devices.php:1879
+#: cabaudit.php:404 cabaudit.php:510 configuration.php:2747 devices.php:1879
 #: rackrequest.php:351 report_aging.php:425 report_aging.php:460
 #: report_asset.php:54 report_warranty.php:439 report_warranty.php:472
 #: sidebar.inc.php:18 workorder.php:156
@@ -402,7 +402,7 @@ msgstr "Оновлено"
 msgid "New Cabinet"
 msgstr "нова..."
 
-#: cabinets.php:272 configuration.php:2317 report_sensors.php:24
+#: cabinets.php:272 configuration.php:2322 report_sensors.php:24
 #: report_supply_status.php:103 search_export.php:150 supplybin.php:159
 msgid "Location"
 msgstr "Ім'я"
@@ -431,12 +431,12 @@ msgstr "Висота шафи"
 msgid "U1 Position"
 msgstr "Нумерація в шафі"
 
-#: cabinets.php:306 configuration.php:2269 dc_stats.php:321 dc_stats.php:329
+#: cabinets.php:306 configuration.php:2274 dc_stats.php:321 dc_stats.php:329
 #: mapmaker.php:172 zone_stats.php:309 zone_stats.php:317
 msgid "Bottom"
 msgstr "Знизу"
 
-#: cabinets.php:306 configuration.php:2270 dc_stats.php:319 dc_stats.php:327
+#: cabinets.php:306 configuration.php:2275 dc_stats.php:319 dc_stats.php:327
 #: mapmaker.php:170 zone_stats.php:307 zone_stats.php:315
 msgid "Top"
 msgstr "Зверху"
@@ -474,7 +474,7 @@ msgid "Notes"
 msgstr "Примітки"
 
 #: cabinets.php:347 /home/runner/openDCIM/cabrow.php:196 cdu_templates.php:236
-#: configuration.php:3045 container.php:306 datacenter.php:352
+#: configuration.php:3050 container.php:306 datacenter.php:352
 #: departments.php:218 device_manufacturers.php:203 devices.php:2702
 #: disposition.php:115 escalations.php:86 power_panel.php:345
 #: project_mgr.php:174 report_logging.php:73 timeperiods.php:86 usermgr.php:337
@@ -513,7 +513,7 @@ msgid "Return to Navigator"
 msgstr "Назад до шафи"
 
 #: cabinets.php:362 /home/runner/openDCIM/cabrow.php:204 cdu_templates.php:245
-#: configuration.php:3050 container.php:320 datacenter.php:378
+#: configuration.php:3055 container.php:320 datacenter.php:378
 #: departments.php:229 device_manufacturers.php:218 device_templates.php:1134
 #: disposition.php:121 escalations.php:96 image_management.php:163
 #: pathmaker.php:523 /home/runner/openDCIM/paths.php:617 power_panel.php:438
@@ -762,7 +762,7 @@ msgstr "Керований"
 msgid "Automatic Transfer Switch"
 msgstr "Автомат вводу резерва"
 
-#: cdu_templates.php:129 configuration.php:2486 device_templates.php:802
+#: cdu_templates.php:129 configuration.php:2491 device_templates.php:802
 #: devices.php:2160
 msgid "SNMP Version"
 msgstr "Версія SNMP"
@@ -856,22 +856,22 @@ msgstr "Поточний вибір"
 msgid "Select"
 msgstr "Обрати"
 
-#: configuration.php:947 configuration.php:1297
+#: configuration.php:947 configuration.php:1302
 msgid "Clear all"
 msgstr "Очистити все"
 
 #: configuration.php:955 configuration.php:971 configuration.php:1132
-#: configuration.php:1307 configuration.php:1328 configuration.php:1551
-#: configuration.php:1565 configuration.php:1664 configuration.php:1681
+#: configuration.php:1312 configuration.php:1333 configuration.php:1556
+#: configuration.php:1570 configuration.php:1669 configuration.php:1686
 msgid "Something just went horribly wrong."
 msgstr "Щось пішло не так :-/."
 
-#: configuration.php:962 configuration.php:1314
+#: configuration.php:962 configuration.php:1319
 msgid "Replace"
 msgstr "Замінити"
 
-#: configuration.php:978 configuration.php:1335 configuration.php:1546
-#: configuration.php:1573 configuration.php:1660 configuration.php:1688
+#: configuration.php:978 configuration.php:1340 configuration.php:1551
+#: configuration.php:1578 configuration.php:1665 configuration.php:1693
 #: device_templates.php:473
 msgid "Cancel"
 msgstr "Скасувати"
@@ -888,11 +888,11 @@ msgstr ""
 "Цей інтерфейс все ще використовується. Оберіть інший тип інтерфейсу та "
 "застосуйте до всіх записів, або оберіть Очистити все."
 
-#: configuration.php:1339
+#: configuration.php:1344
 msgid "Code Delete Override"
 msgstr "Перевизначення видалення коду"
 
-#: configuration.php:1339
+#: configuration.php:1344
 msgid ""
 "This code is in use somewhere. You can either choose to clear all instances "
 "of this color being used or choose to have them replaced with another color."
@@ -900,21 +900,21 @@ msgstr ""
 "Цей код все ще використовується. Ви можете або очистити всі посилання на "
 "даний тип кабеля, що використовується, або замінити його на інший тип."
 
-#: configuration.php:1551
+#: configuration.php:1556
 msgid "Custom Device Attribute Type Change Error"
 msgstr "Помилка зміни типу користувальницького атрибуту пристроїв"
 
-#: configuration.php:1559
+#: configuration.php:1564
 msgid "Change Type and Clear all uses"
 msgstr ""
 "Змінюємо тип із ВИДАЛЕННЯМ всіх заповнених значень користувальницького "
 "атрибуту!"
 
-#: configuration.php:1578
+#: configuration.php:1583
 msgid "Custom Device Attribute Type Change Override"
 msgstr "Перевизначення зміни типу користувальницького атрибуту пристроїв"
 
-#: configuration.php:1578
+#: configuration.php:1583
 msgid ""
 "This custom device attribute is in use somewhere. If you choose to change "
 "the attribute type, it will be cleared from all devices and device templates."
@@ -923,19 +923,19 @@ msgstr ""
 "вирішено змінити його тип, всі вже заповненні значення даного атрибуту у "
 "пристроях та шаблонах будуть видалені."
 
-#: configuration.php:1664
+#: configuration.php:1669
 msgid "Custom Device Attribute Delete Error"
 msgstr "Помилка видалення користувальницького атрибуту пристроїв"
 
-#: configuration.php:1673
+#: configuration.php:1678
 msgid "Delete from All Devices/Templates"
 msgstr "Видалення з усіх пристроїв та шаблонів"
 
-#: configuration.php:1692
+#: configuration.php:1697
 msgid "Custom Device Attribute Delete Override"
 msgstr "Перевизначення видалення користувальницького атрибуту пристроїв"
 
-#: configuration.php:1692
+#: configuration.php:1697
 msgid ""
 "This custom device attribute is in use somewhere. If you choose to delete "
 "the attribute, it will be removed from all devices and device templates."
@@ -943,945 +943,945 @@ msgstr ""
 "Цей користувальницький атрибут вже використовується. Тому, якщо буде "
 "вирішено його видалити, він зникне з усіх пристроів та шаблонів."
 
-#: configuration.php:1899
+#: configuration.php:1904
 msgid "Verify directory rights"
 msgstr "Перевірте права каталогів"
 
-#: configuration.php:1988
+#: configuration.php:1993
 msgid "General"
 msgstr "Загальні"
 
-#: configuration.php:1989
+#: configuration.php:1994
 #, fuzzy
 msgid "Workflow/Style"
 msgstr "Заявки"
 
-#: configuration.php:1990
+#: configuration.php:1995
 msgid "Privacy/Email"
 msgstr ""
 
-#: configuration.php:1991
+#: configuration.php:1996
 msgid "Reporting"
 msgstr "Звітність"
 
-#: configuration.php:1992
+#: configuration.php:1997
 msgid "ToolTips"
 msgstr "Спливаючі підказки"
 
-#: configuration.php:1993
+#: configuration.php:1998
 msgid "Cabling"
 msgstr "Комутація"
 
-#: configuration.php:1994 configuration.php:2738
+#: configuration.php:1999 configuration.php:2743
 msgid "Custom Device Attributes"
 msgstr "Користувальницькі атрибути пристроїв"
 
-#: configuration.php:1995
+#: configuration.php:2000
 msgid "Attribute Mapping"
 msgstr "Зіставлення атрибутів"
 
-#: configuration.php:1996
+#: configuration.php:2001
 #, fuzzy
 msgid "OIDC/LDAP"
 msgstr "LDAP"
 
-#: configuration.php:1997
+#: configuration.php:2002
 msgid "SAML"
 msgstr "SAML"
 
-#: configuration.php:1998
+#: configuration.php:2003
 msgid "Pre-Flight Check"
 msgstr "Компоненти сайта"
 
-#: configuration.php:1999
+#: configuration.php:2004
 #, fuzzy
 msgid "Credits"
 msgstr "К-ть аудитів"
 
-#: configuration.php:2004
+#: configuration.php:2009
 msgid "Organization Name"
 msgstr "Назва організації"
 
-#: configuration.php:2008
+#: configuration.php:2013
 msgid "Locale"
 msgstr "Локаль"
 
-#: configuration.php:2012
+#: configuration.php:2017
 msgid "Default Panel Voltage"
 msgstr "Лінійна напруга (В)"
 
-#: configuration.php:2016
+#: configuration.php:2021
 msgid "Site Specific Paths"
 msgstr "Налаштовка шляхів до тек"
 
-#: configuration.php:2022
+#: configuration.php:2027
 msgid "Relative path for Drawings"
 msgstr "Відносний шлях до теки з кресленнями"
 
-#: configuration.php:2026
+#: configuration.php:2031
 msgid "Relative path for Pictures"
 msgstr "Відносний шлях до теки із зображеннями"
 
-#: configuration.php:2031
+#: configuration.php:2036
 msgid "Relative path for Local/Custom Reports"
 msgstr "Відносний шлях до теки зі звітами"
 
-#: configuration.php:2036
+#: configuration.php:2041
 msgid "Time and Measurements"
 msgstr "Час та одиниці виміру"
 
-#: configuration.php:2039
+#: configuration.php:2044
 msgid "Time Zone"
 msgstr "Часовий пояс"
 
-#: configuration.php:2044
+#: configuration.php:2049
 msgid "Log Retention (Days)"
 msgstr "Зберігати журнал (днів)"
 
-#: configuration.php:2048 devices.php:1898 rackrequest.php:372
+#: configuration.php:2053 devices.php:1898 rackrequest.php:372
 msgid "Manufacture Date"
 msgstr "Виготовлено"
 
-#: configuration.php:2050 configuration.php:2058
+#: configuration.php:2055 configuration.php:2063
 msgid "Blank"
 msgstr "невизначено"
 
-#: configuration.php:2051 configuration.php:2059 report_surplus.php:31
+#: configuration.php:2056 configuration.php:2064 report_surplus.php:31
 msgid "Now"
 msgstr "Зараз"
 
-#: configuration.php:2056
+#: configuration.php:2061
 msgid "Warranty Date"
 msgstr "Гарантія закінчується"
 
-#: configuration.php:2064
+#: configuration.php:2069
 msgid "Measurement Units"
 msgstr "Система виміру"
 
-#: configuration.php:2066
+#: configuration.php:2071
 msgid "English"
 msgstr "англійська"
 
-#: configuration.php:2067
+#: configuration.php:2072
 msgid "Metric"
 msgstr "метрична"
 
-#: configuration.php:2072
+#: configuration.php:2077
 msgid "Page Size"
 msgstr "Розмір сторінки"
 
-#: configuration.php:2074
+#: configuration.php:2079
 msgid "A4"
 msgstr "А4"
 
-#: configuration.php:2075
+#: configuration.php:2080
 msgid "A3"
 msgstr "А3"
 
-#: configuration.php:2076
+#: configuration.php:2081
 msgid "Letter"
 msgstr "Letter"
 
-#: configuration.php:2077
+#: configuration.php:2082
 msgid "Legal"
 msgstr "Legal"
 
-#: configuration.php:2082 departments.php:235
+#: configuration.php:2087 departments.php:235
 msgid "Users"
 msgstr "Користувачі та відділи"
 
-#: configuration.php:2085
+#: configuration.php:2090
 msgid "Department Types"
 msgstr "Класифікація відділів"
 
-#: configuration.php:2089
+#: configuration.php:2094
 msgid "User Lookup URL"
 msgstr "Інфоресурс по користувачам"
 
-#: configuration.php:2093
+#: configuration.php:2098
 msgid "Block Undefined Users"
 msgstr ""
 "Автентифіковувати тільки<br>користувачів із адресної книжки<br>openDCIM"
 
-#: configuration.php:2095 configuration.php:2169 configuration.php:2180
-#: configuration.php:2191 configuration.php:2199 configuration.php:2300
-#: configuration.php:2308 configuration.php:2360 configuration.php:2368
-#: configuration.php:2434 configuration.php:2442 configuration.php:2575
-#: configuration.php:2588 configuration.php:2603 configuration.php:2715
-#: configuration.php:2908 configuration.php:2929 usermgr.php:331
+#: configuration.php:2100 configuration.php:2174 configuration.php:2185
+#: configuration.php:2196 configuration.php:2204 configuration.php:2305
+#: configuration.php:2313 configuration.php:2365 configuration.php:2373
+#: configuration.php:2439 configuration.php:2447 configuration.php:2580
+#: configuration.php:2593 configuration.php:2608 configuration.php:2720
+#: configuration.php:2913 configuration.php:2934 usermgr.php:331
 msgid "Disabled"
 msgstr "вимкнено"
 
-#: configuration.php:2096 configuration.php:2170 configuration.php:2181
-#: configuration.php:2192 configuration.php:2200 configuration.php:2301
-#: configuration.php:2309 configuration.php:2361 configuration.php:2369
-#: configuration.php:2435 configuration.php:2443 configuration.php:2576
-#: configuration.php:2589 configuration.php:2909 configuration.php:2930
+#: configuration.php:2101 configuration.php:2175 configuration.php:2186
+#: configuration.php:2197 configuration.php:2205 configuration.php:2306
+#: configuration.php:2314 configuration.php:2366 configuration.php:2374
+#: configuration.php:2440 configuration.php:2448 configuration.php:2581
+#: configuration.php:2594 configuration.php:2914 configuration.php:2935
 msgid "Enabled"
 msgstr "ввімкнено"
 
-#: configuration.php:2101
+#: configuration.php:2106
 msgid "Rack Usage"
 msgstr "Налаштовка лімітів утилізації шаф"
 
-#: configuration.php:2104
+#: configuration.php:2109
 msgid "Space Critical"
 msgstr "U-простір (критичний стан)"
 
-#: configuration.php:2107
+#: configuration.php:2112
 msgid "Temperature Critical"
 msgstr "Температура (критичний стан)"
 
-#: configuration.php:2111
+#: configuration.php:2116
 msgid "Space Warning"
 msgstr "U-простір (попередження)"
 
-#: configuration.php:2114
+#: configuration.php:2119
 msgid "Temperature Warning"
 msgstr "Температура (попередження)"
 
-#: configuration.php:2118
+#: configuration.php:2123
 msgid "Weight Critical"
 msgstr "Вага (критичний стан)"
 
-#: configuration.php:2121
+#: configuration.php:2126
 msgid "High Humidity Critical"
 msgstr "Висока вологість (критичний стан)"
 
-#: configuration.php:2125
+#: configuration.php:2130
 msgid "Weight Warning"
 msgstr "Вага (попередження)"
 
-#: configuration.php:2128
+#: configuration.php:2133
 msgid "Low Humidity Critical"
 msgstr "Низька вологість (критичний стан)"
 
-#: configuration.php:2132
+#: configuration.php:2137
 msgid "Power Critical"
 msgstr "Активна потужність (критичний стан)"
 
-#: configuration.php:2135
+#: configuration.php:2140
 msgid "High Humidity Caution"
 msgstr "Висока вологість (попередження)"
 
-#: configuration.php:2139
+#: configuration.php:2144
 msgid "Power Warning"
 msgstr "Активна потужність (попередження)"
 
-#: configuration.php:2142
+#: configuration.php:2147
 msgid "Low Humidity Caution"
 msgstr "Низька вологість (попередження)"
 
-#: configuration.php:2146
+#: configuration.php:2151
 msgid "RCI (Rack Cooling Index) High"
 msgstr "Верхнє значення RCI (Rack Cooling Index)"
 
-#: configuration.php:2149
+#: configuration.php:2154
 msgid "RCI (Rack Cooling Index) Low"
 msgstr "Нижнє значення RCI (Rack Cooling Index)"
 
-#: configuration.php:2153
+#: configuration.php:2158
 msgid "Expirations"
 msgstr "Терміни дії"
 
-#: configuration.php:2156
+#: configuration.php:2161
 msgid "Unseen Virtual Machines (Days)"
 msgstr "Видаляти неіснуючі віртуальні машини через (днів)"
 
-#: configuration.php:2159
+#: configuration.php:2164
 msgid "Uninstalled Reservations (Days)"
 msgstr "Видаляти зарезервоване, але не встановлене обладнання через (днів)"
 
-#: configuration.php:2167
+#: configuration.php:2172
 msgid "Work Order Builder"
 msgstr "Наряди на роботу"
 
-#: configuration.php:2175
+#: configuration.php:2180
 msgid "Site Level Security Options"
 msgstr "Параметри безпеки сервера openDCIM"
 
-#: configuration.php:2178
+#: configuration.php:2183
 msgid "Filter Cabinet List"
 msgstr "Фільтр по списку шаф"
 
-#: configuration.php:2186 configuration.php:2189
+#: configuration.php:2191 configuration.php:2194
 msgid "Rack Requests"
 msgstr "Заявки на розміщення"
 
-#: configuration.php:2197
+#: configuration.php:2202
 msgid "Rack Requests Actions"
 msgstr "Дії по заявкам на розміщення"
 
-#: configuration.php:2205
+#: configuration.php:2210
 msgid "Mail Subject"
 msgstr "Тема листа"
 
-#: configuration.php:2209
+#: configuration.php:2214
 msgid "Warning (Hours)"
 msgstr "Попередження по заявці за (годин)"
 
-#: configuration.php:2213
+#: configuration.php:2218
 msgid "Critical (Hours)"
 msgstr "Критичний стан по заявці за (годин)"
 
-#: configuration.php:2234
+#: configuration.php:2239
 msgid "Racks & Maps"
 msgstr "Шафи та мапи"
 
-#: configuration.php:2237
+#: configuration.php:2242
 msgid "Critical Color"
 msgstr "Колір критичного стану"
 
-#: configuration.php:2243
+#: configuration.php:2248
 msgid "Caution Color"
 msgstr "Колір попередження"
 
-#: configuration.php:2249
+#: configuration.php:2254
 msgid "Good Color"
 msgstr "Колір нормального стану"
 
-#: configuration.php:2261
+#: configuration.php:2266
 msgid "Unused Spaces"
 msgstr "Вільний U-простір"
 
-#: configuration.php:2267
+#: configuration.php:2272
 msgid "Default U1 Position"
 msgstr "Нумерація в шафі починається:"
 
-#: configuration.php:2274 departments.php:235
+#: configuration.php:2279 departments.php:235
 msgid "Devices"
 msgstr "Пристрої"
 
-#: configuration.php:2277
+#: configuration.php:2282
 msgid "Device Labels"
 msgstr "Маркування пристроїв"
 
-#: configuration.php:2279
+#: configuration.php:2284
 msgid "Uppercase"
 msgstr "Всі букви заголовні"
 
-#: configuration.php:2280
+#: configuration.php:2285
 msgid "Lowercase"
 msgstr "Всі букви прописні"
 
-#: configuration.php:2281
+#: configuration.php:2286
 msgid "Initial caps"
 msgstr "Починати з заголовної букви"
 
-#: configuration.php:2282
+#: configuration.php:2287
 msgid "Don't touch my labels"
 msgstr "Не виправляти"
 
-#: configuration.php:2287
+#: configuration.php:2292
 msgid "Device Lists"
 msgstr "Список обладнання"
 
-#: configuration.php:2289
+#: configuration.php:2294
 msgid "Just Devices"
 msgstr "тільки пристрої"
 
-#: configuration.php:2290
+#: configuration.php:2295
 msgid "Show Datacenter and Cabinet"
 msgstr "показувати ЦОДи та шафи"
 
-#: configuration.php:2295 departments.php:235 rowview.php:92
+#: configuration.php:2300 departments.php:235 rowview.php:92
 msgid "Cabinets"
 msgstr "Шафи"
 
-#: configuration.php:2298
+#: configuration.php:2303
 msgid "Draw Cabinet Outlines"
 msgstr "Креслити контури шаф"
 
-#: configuration.php:2306
+#: configuration.php:2311
 msgid "Add Cabinet Labels"
 msgstr "Відображати маркування шаф"
 
-#: configuration.php:2314
+#: configuration.php:2319
 msgid "Which Cabinet Label?"
 msgstr "У якості маркування використовувати"
 
-#: configuration.php:2318
+#: configuration.php:2323
 msgid "Owner Name"
 msgstr "Власник"
 
-#: configuration.php:2319
+#: configuration.php:2324
 msgid "Key Lock Information"
 msgstr "Інформація про ключ/замок"
 
-#: configuration.php:2320
+#: configuration.php:2325
 msgid "Model No"
 msgstr "Модель"
 
-#: configuration.php:2326
+#: configuration.php:2331
 msgid "Site"
 msgstr "Сайт"
 
-#: configuration.php:2329
+#: configuration.php:2334
 msgid "Header Color"
 msgstr "Колір шапки"
 
-#: configuration.php:2335
+#: configuration.php:2340
 msgid "Body Color"
 msgstr "Основний колір"
 
-#: configuration.php:2341
+#: configuration.php:2346
 msgid "Link Color"
 msgstr "Колір посилань"
 
-#: configuration.php:2347
+#: configuration.php:2352
 msgid "Viewed Link Color"
 msgstr "Колір відвіданих посилань"
 
-#: configuration.php:2355
+#: configuration.php:2360
 #, fuzzy
 msgid "GDPR Enforcement"
 msgstr "Примусово"
 
-#: configuration.php:2358
+#: configuration.php:2363
 msgid "GDPR Enforcement of Country Isolation"
 msgstr ""
 
-#: configuration.php:2366
+#: configuration.php:2371
 msgid "GPDR PII Privacy"
 msgstr ""
 
-#: configuration.php:2374
+#: configuration.php:2379
 #, fuzzy
 msgid "Default Country for Users"
 msgstr "Інтерфейс за промовчанням"
 
-#: configuration.php:2384
+#: configuration.php:2389
 #, fuzzy
 msgid "SMTP Options"
 msgstr "Налаштовки SNMP"
 
-#: configuration.php:2388
+#: configuration.php:2393
 msgid "SMTP Server"
 msgstr "SMTP сервер"
 
-#: configuration.php:2392
+#: configuration.php:2397
 msgid "SMTP Port"
 msgstr "SMTP порт"
 
-#: configuration.php:2396
+#: configuration.php:2401
 msgid "SMTP Helo"
 msgstr "SMTP привітання"
 
-#: configuration.php:2400
+#: configuration.php:2405
 msgid "SMTP Username"
 msgstr "SMTP користувач"
 
-#: configuration.php:2404
+#: configuration.php:2409
 msgid "SMTP Password"
 msgstr "SMTP пароль"
 
-#: configuration.php:2408
+#: configuration.php:2413
 msgid "Mail To"
 msgstr "Отримувач"
 
-#: configuration.php:2412
+#: configuration.php:2417
 msgid "Mail From"
 msgstr "Відправник"
 
-#: configuration.php:2416
+#: configuration.php:2421
 msgid "Facility Manager"
 msgstr "Менеджер по обладнанню"
 
-#: configuration.php:2420
+#: configuration.php:2425
 msgid "Facility Manager Email"
 msgstr "Пошта менеджера по обладнанню"
 
-#: configuration.php:2425
+#: configuration.php:2430
 msgid "Test Settings"
 msgstr "Перевірити налаштовки"
 
-#: configuration.php:2432
+#: configuration.php:2437
 msgid "Email Alerts on Power Poll"
 msgstr ""
 "Надсилати повідомлення по датчикам потужності БРЖ та АВР з відхиленнями від "
 "норми"
 
-#: configuration.php:2440
+#: configuration.php:2445
 msgid "Email Alerts on Sensor Poll"
 msgstr ""
 "Надсилати повідомлення по кліматичним датчикам з відхиленнями від норми"
 
-#: configuration.php:2455 report_cost.php:397 report_cost.php:400
+#: configuration.php:2460 report_cost.php:397 report_cost.php:400
 msgid "Annual Cost Per Rack Unit (Year)"
 msgstr "Річна вартість одного юніта в шафі"
 
-#: configuration.php:2459
+#: configuration.php:2464
 msgid "Cost Per KwHr"
 msgstr "Вартість кВт*год"
 
-#: configuration.php:2463
+#: configuration.php:2468
 msgid "Logo file for headers"
 msgstr "Файл логотипу організації"
 
-#: configuration.php:2467
+#: configuration.php:2472
 msgid "Font"
 msgstr "Шрифт"
 
-#: configuration.php:2471
+#: configuration.php:2476
 msgid "New Installs Period"
 msgstr "Звітувати по новим інсталяціям за період (днів)"
 
-#: configuration.php:2475
+#: configuration.php:2480
 msgid "Base URL for install"
 msgstr "URL в листах"
 
-#: configuration.php:2479
+#: configuration.php:2484
 msgid "SNMP Options"
 msgstr "Налаштовки SNMP"
 
-#: configuration.php:2482
+#: configuration.php:2487
 msgid "Default SNMP Community"
 msgstr "SNMP community за промовчанням"
 
-#: configuration.php:2496 devices.php:2177
+#: configuration.php:2501 devices.php:2177
 msgid "SNMPv3 Security Level"
 msgstr "SNMPv3 Security Level"
 
-#: configuration.php:2506 devices.php:2190
+#: configuration.php:2511 devices.php:2190
 msgid "SNMPv3 AuthProtocol"
 msgstr "SNMPv3 AuthProtocol"
 
-#: configuration.php:2515 devices.php:2203
+#: configuration.php:2520 devices.php:2203
 msgid "SNMPv3 Passphrase"
 msgstr "SNMPv3 Passphrase"
 
-#: configuration.php:2519 devices.php:2207
+#: configuration.php:2524 devices.php:2207
 msgid "SNMPv3 PrivProtocol"
 msgstr "SNMPv3 PrivProtocol"
 
-#: configuration.php:2530 devices.php:2223
+#: configuration.php:2535 devices.php:2223
 msgid "SNMPv3 PrivPassphrase"
 msgstr "SNMPv3 PrivPassphrase"
 
-#: configuration.php:2534
+#: configuration.php:2539
 msgid "Capacity Reporting"
 msgstr "Звітність по утилізації портів"
 
-#: configuration.php:2537
+#: configuration.php:2542
 msgid "Switches"
 msgstr "Комутатори"
 
-#: configuration.php:2540
+#: configuration.php:2545
 msgid "OptIn"
 msgstr "вибіркове включення до звіту"
 
-#: configuration.php:2541
+#: configuration.php:2546
 msgid "OptOut"
 msgstr "вибіркове виключення зі звіту"
 
-#: configuration.php:2546
+#: configuration.php:2551
 msgid "Switch Capacity Threshold"
 msgstr "Ліміт ємкості комутатора"
 
-#: configuration.php:2550
+#: configuration.php:2555
 msgid "Utilities"
 msgstr "Утиліти"
 
-#: configuration.php:2553
+#: configuration.php:2558
 msgid "snmpget"
 msgstr "Шлях до snmpget"
 
-#: configuration.php:2557
+#: configuration.php:2562
 msgid "snmpwalk"
 msgstr "Шлях до snmpwalk"
 
-#: configuration.php:2561
+#: configuration.php:2566
 msgid "cut"
 msgstr "Шлях до cut"
 
-#: configuration.php:2565
+#: configuration.php:2570
 msgid "dot"
 msgstr "Шлях до dot"
 
-#: configuration.php:2573
+#: configuration.php:2578
 msgid "Cabinet ToolTips"
 msgstr "Спливаючі підказки для шаф"
 
-#: configuration.php:2586
+#: configuration.php:2591
 msgid "CDU ToolTips"
 msgstr "Спливаючі підказки для шафних БРЖ"
 
-#: configuration.php:2598
+#: configuration.php:2603
 msgid "Media Types"
 msgstr "Кабелі"
 
-#: configuration.php:2601
+#: configuration.php:2606
 msgid "Media Type Matching"
 msgstr "Сумісність типів кабелів"
 
-#: configuration.php:2604 configuration.php:2716
+#: configuration.php:2609 configuration.php:2721
 msgid "Enforce"
 msgstr "Примусово"
 
-#: configuration.php:2614 devices.php:2592 devices.php:2645
+#: configuration.php:2619 devices.php:2592 devices.php:2645
 msgid "Media Type"
 msgstr "Тип кабеля"
 
-#: configuration.php:2615
+#: configuration.php:2620
 msgid "Default Color"
 msgstr "Інтерфейс за промовчанням"
 
-#: configuration.php:2619 configuration.php:2633 configuration.php:2646
-#: configuration.php:2658 configuration.php:2670 configuration.php:2682
-#: configuration.php:2694 configuration.php:2706 configuration.php:2750
-#: configuration.php:2767
+#: configuration.php:2624 configuration.php:2638 configuration.php:2651
+#: configuration.php:2663 configuration.php:2675 configuration.php:2687
+#: configuration.php:2699 configuration.php:2711 configuration.php:2755
+#: configuration.php:2772
 msgid "Add new row"
 msgstr "Додати новий рядок"
 
-#: configuration.php:2624
+#: configuration.php:2629
 msgid "Cable Colors"
 msgstr "Інтерфейси"
 
-#: configuration.php:2628 connections_spreadsheet.php:25
+#: configuration.php:2633 connections_spreadsheet.php:25
 msgid "Color"
 msgstr "Інтерфейс"
 
-#: configuration.php:2629
+#: configuration.php:2634
 msgid "Default Note"
 msgstr "Маркування за промовчанням"
 
-#: configuration.php:2638
+#: configuration.php:2643
 msgid "Media Protocols"
 msgstr ""
 
-#: configuration.php:2642
+#: configuration.php:2647
 #, fuzzy
 msgid "Protocol Name"
 msgstr "Порт або роз'єм"
 
-#: configuration.php:2650
+#: configuration.php:2655
 #, fuzzy
 msgid "Media Connectors"
 msgstr "Міжпанельна комутація"
 
-#: configuration.php:2654 configuration.php:2678 devices.php:2521
+#: configuration.php:2659 configuration.php:2683 devices.php:2521
 #, fuzzy
 msgid "Connector Type"
 msgstr "Таблиця комутації"
 
-#: configuration.php:2662
+#: configuration.php:2667
 #, fuzzy
 msgid "Media Data Rates"
 msgstr "ЦОДи"
 
-#: configuration.php:2666
+#: configuration.php:2671
 #, fuzzy
 msgid "Data Rate"
 msgstr "ЦОД/площадка"
 
-#: configuration.php:2674
+#: configuration.php:2679
 #, fuzzy
 msgid "Power Connectors"
 msgstr "Таблиця електроживлення"
 
-#: configuration.php:2686
+#: configuration.php:2691
 #, fuzzy
 msgid "Power Voltages"
 msgstr "Лінійна напруга"
 
-#: configuration.php:2690
+#: configuration.php:2695
 #, fuzzy
 msgid "Voltage Value"
 msgstr "Номінальна напруга"
 
-#: configuration.php:2698
+#: configuration.php:2703
 #, fuzzy
 msgid "Power Phases"
 msgstr "Модульний БРЖ"
 
-#: configuration.php:2702
+#: configuration.php:2707
 #, fuzzy
 msgid "Phase Name"
 msgstr "Ім'я"
 
-#: configuration.php:2710
+#: configuration.php:2715
 msgid "Connection Filtering"
 msgstr "Фільтри по комутації"
 
-#: configuration.php:2713
+#: configuration.php:2718
 msgid "Patch panel rear connection filtering"
 msgstr "Фільтр по міжпанельній комутації"
 
-#: configuration.php:2721
+#: configuration.php:2726
 msgid "Connection Pathing"
 msgstr "Вагові коефіцієнти для автоматичної комутації"
 
-#: configuration.php:2724
+#: configuration.php:2729
 msgid "Cabinet Weight"
 msgstr "Для з'єднань в межах шафи (чим менше, тим вагоміше)"
 
-#: configuration.php:2728
+#: configuration.php:2733
 msgid "Weight for rear connections between panels"
 msgstr "Для міжпанельних з'єднань (чим менше, тим вагоміше)"
 
-#: configuration.php:2732
+#: configuration.php:2737
 msgid "Weight for patches in the same row"
 msgstr "Для з'єднань в межах ряда шаф (чим менше, тим вагоміше)"
 
-#: configuration.php:2743
+#: configuration.php:2748
 msgid "Type"
 msgstr "Тип"
 
-#: configuration.php:2744
+#: configuration.php:2749
 msgid "Required"
 msgstr "Обов'язковий<br>до заповнення"
 
-#: configuration.php:2745
+#: configuration.php:2750
 msgid "Apply to<br>All Devices"
 msgstr "Застосувати до<br>всіх пристроїв"
 
-#: configuration.php:2746
+#: configuration.php:2751
 msgid "Default Value"
 msgstr "Значення за промовчанням"
 
-#: configuration.php:2758 search_export.php:164
+#: configuration.php:2763 search_export.php:164
 msgid "Device Status"
 msgstr "Статус"
 
-#: configuration.php:2773
+#: configuration.php:2778
 #, fuzzy
 msgid "Authentication Attribute Mapping"
 msgstr "Зіставлення атрибутів"
 
-#: configuration.php:2776
+#: configuration.php:2781
 msgid "FirstName"
 msgstr "Ім'я"
 
-#: configuration.php:2780 usermgr.php:267
+#: configuration.php:2785 usermgr.php:267
 msgid "Last Name"
 msgstr "Прізвище"
 
-#: configuration.php:2784 report_contact.php:451 report_cost.php:435
+#: configuration.php:2789 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Email"
 msgstr "Пошта"
 
-#: configuration.php:2788 report_contact.php:451 report_cost.php:435
+#: configuration.php:2793 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Phone1"
 msgstr "Тел. внутрішній"
 
-#: configuration.php:2792 report_contact.php:451 report_cost.php:435
+#: configuration.php:2797 report_contact.php:451 report_cost.php:435
 #: report_department.php:179 report_vm_by_department.php:223
 msgid "Phone2"
 msgstr "Тел. мобільний"
 
-#: configuration.php:2796 container.php:250 datacenter.php:283 usermgr.php:283
+#: configuration.php:2801 container.php:250 datacenter.php:283 usermgr.php:283
 #, fuzzy
 msgid "Country"
 msgstr "Кількість"
 
-#: configuration.php:2800
+#: configuration.php:2805
 #, fuzzy
 msgid "Username Transformations"
 msgstr "Користувачі та відділи"
 
-#: configuration.php:2803
+#: configuration.php:2808
 msgid "Remove Account Prefix"
 msgstr "Видалити префікс облікового запису"
 
-#: configuration.php:2807
+#: configuration.php:2812
 msgid "Remove Account Suffix"
 msgstr "Видалити суфікс облікового запису"
 
-#: configuration.php:2811
+#: configuration.php:2816
 #, fuzzy
 msgid "Group/Scope Mapping"
 msgstr "Зіставлення груп"
 
-#: configuration.php:2814
+#: configuration.php:2819
 msgid "SAML Attribute containing Groups"
 msgstr "SAML Attribute containing Groups"
 
-#: configuration.php:2818
+#: configuration.php:2823
 msgid "Site Access"
 msgstr "На доступ до сайту"
 
-#: configuration.php:2822
+#: configuration.php:2827
 msgid "Global Read"
 msgstr "На перегляд (глобально)"
 
-#: configuration.php:2826
+#: configuration.php:2831
 msgid "Global Write"
 msgstr "На модифікацію (глобально)"
 
-#: configuration.php:2830
+#: configuration.php:2835
 msgid "Global Delete"
 msgstr "На видалення (глобально)"
 
-#: configuration.php:2834
+#: configuration.php:2839
 msgid "Admin Owned Devices"
 msgstr "Тільки на свої пристрої"
 
-#: configuration.php:2838
+#: configuration.php:2843
 msgid "Enter Rack Request"
 msgstr "На створення заявок"
 
-#: configuration.php:2842
+#: configuration.php:2847
 msgid "Complete Rack Request"
 msgstr "На закриття заявок"
 
-#: configuration.php:2846
+#: configuration.php:2851
 msgid "Contact Admin"
 msgstr "Contact Admin"
 
-#: configuration.php:2850
+#: configuration.php:2855
 msgid "Bulk Operations"
 msgstr "На груповий імпорт"
 
-#: configuration.php:2854
+#: configuration.php:2859
 msgid "Site Admin"
 msgstr "Site Admin"
 
-#: configuration.php:2860
+#: configuration.php:2865
 #, fuzzy
 msgid "OIDC Connection Configuration"
 msgstr "Налаштовки openDCIM"
 
-#: configuration.php:2863
+#: configuration.php:2868
 #, fuzzy
 msgid "OIDC Authorization Endpoint"
 msgstr "Груповий імпорт облікових записів"
 
-#: configuration.php:2867
+#: configuration.php:2872
 msgid "OIDC Client ID"
 msgstr "OIDC Client ID"
 
-#: configuration.php:2871
+#: configuration.php:2876
 msgid "OIDC Client Secret"
 msgstr "OIDC Client Secret"
 
-#: configuration.php:2875
+#: configuration.php:2880
 #, fuzzy
 msgid "OIDC UserID Attribute"
 msgstr "Користувальницька інформація"
 
-#: configuration.php:2879
+#: configuration.php:2884
 msgid "LDAP Authentication and Authorization Configuration"
 msgstr "Налаштовки автентифікації та авторизації в LDAP"
 
-#: configuration.php:2882
+#: configuration.php:2887
 msgid "LDAP Server URI"
 msgstr "URI сервера LDAP"
 
-#: configuration.php:2886
+#: configuration.php:2891
 msgid "Base DN"
 msgstr "Base DN"
 
-#: configuration.php:2890
+#: configuration.php:2895
 msgid "Base Search"
 msgstr "Base Search"
 
-#: configuration.php:2891
+#: configuration.php:2896
 msgid "Leave blank for Active Directory"
 msgstr "Не заповнювати для Active Directory"
 
-#: configuration.php:2894
+#: configuration.php:2899
 msgid "Bind DN"
 msgstr "Bind DN"
 
-#: configuration.php:2898
+#: configuration.php:2903
 msgid "User Search"
 msgstr "User Search"
 
-#: configuration.php:2902
+#: configuration.php:2907
 msgid "LDAP Session Expiration (Seconds)"
 msgstr "Тайм-аут сесії LDAP (секунд)"
 
-#: configuration.php:2906
+#: configuration.php:2911
 msgid "LDAP Debugging"
 msgstr "LDAP Debugging"
 
-#: configuration.php:2914
+#: configuration.php:2919
 msgid "Emergency Bypass Password"
 msgstr "Пароль аварійного відновлення доступу"
 
-#: configuration.php:2920
+#: configuration.php:2925
 msgid "SAML Authentication Configuration"
 msgstr "Налаштовки автентифікації в SAML"
 
-#: configuration.php:2923
+#: configuration.php:2928
 msgid "Base URL"
 msgstr "Base URL"
 
-#: configuration.php:2927
+#: configuration.php:2932
 msgid "Show Success Page"
 msgstr "Показувати Success Page"
 
-#: configuration.php:2935
+#: configuration.php:2940
 msgid "SAML SP Information and Certificate Generation"
 msgstr "Налаштовки сервіс-провайдера SAML та генерація сертифіката"
 
-#: configuration.php:2939
+#: configuration.php:2944
 msgid "Entity ID"
 msgstr "Назва суб'єкта"
 
-#: configuration.php:2943
+#: configuration.php:2948
 msgid "Country (2 Character)"
 msgstr "Країна (2 символи)"
 
-#: configuration.php:2947
+#: configuration.php:2952
 msgid "State or Province"
 msgstr "Область або край"
 
-#: configuration.php:2951
+#: configuration.php:2956
 msgid "Organization"
 msgstr "Організація"
 
-#: configuration.php:2964
+#: configuration.php:2969
 msgid "Certificate Expiration"
 msgstr "Термін дії сертифіката"
 
-#: configuration.php:2968
+#: configuration.php:2973
 msgid "SP Private Key"
 msgstr "SP Private Key"
 
-#: configuration.php:2972
+#: configuration.php:2977
 msgid "SP x509 Certificate"
 msgstr "SP x509 Certificate"
 
-#: configuration.php:2977
+#: configuration.php:2982
 msgid "Generate/Renew Certificate"
 msgstr "Згенерувати/оновити сертифікат"
 
-#: configuration.php:2982
+#: configuration.php:2987
 msgid "SAML Identity Provider Configuration"
 msgstr "Налаштовки провайдера ідентифікації в SAML"
 
-#: configuration.php:2986
+#: configuration.php:2991
 msgid "IdP entityId"
 msgstr "IdP entityId"
 
-#: configuration.php:2990
+#: configuration.php:2995
 msgid "IdP Metadata URL"
 msgstr "IdP Metadata URL"
 
-#: configuration.php:2994
+#: configuration.php:2999
 msgid "SSO URL"
 msgstr "SSO URL"
 
-#: configuration.php:2998
+#: configuration.php:3003
 msgid "SLS URL"
 msgstr "SLS URL"
 
-#: configuration.php:3002
+#: configuration.php:3007
 msgid "IdP x509 Certificate"
 msgstr "IdP x509 Certificate"
 
-#: configuration.php:3007
+#: configuration.php:3012
 msgid "Refresh IdP Metadata"
 msgstr "Оновити IdP Metadata"
 
-#: configuration.php:3050
+#: configuration.php:3055
 msgid "Reserved"
 msgstr "Зарезервовано"
 
-#: configuration.php:3050
+#: configuration.php:3055
 msgid "Disposed"
 msgstr "Утилізовано"
 
