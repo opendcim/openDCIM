@@ -1113,10 +1113,10 @@
 			});
 			function ajaxdelete(){
 				var modalactive = !!modal.data('ui-dialog');
-				var newConnectorId = (choices && choices.length)?choices.val():undefined;
+				var newId = (choices && choices.length)?choices.val():undefined;
 				$.ajax({
 					url: 'api/v1/' + datapath + '/' + rowinput.data('id'),
-					data: newConnectorId === undefined ? undefined : { NewConnectorID: newConnectorId },
+					data: newId === undefined ? undefined : { NewID: newId },
 					method: 'DELETE'
 				}).done(function(data){
 					if(modalactive){
