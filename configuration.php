@@ -1108,6 +1108,7 @@
 			rowinput.on('keydown', function(event){
 				if(event.key === 'Enter'){
 					event.preventDefault();
+					$(this).data('enter-pressed', true);
 					update();
 				}
 			});
@@ -1221,9 +1222,12 @@
 				// this is necessary because when you hit enter on the new item blank it triggers the form submission
 				// then the focus changes from the input blank and it resubmits the change a second time because UI/UX
 				// is hard. This needs a little something extra so Stacked Like Pancakes - 45
-				if(addrem.attr('id')!='newline'){
-					update();
+				event.preventDefault();
+				if($(this).data('enter-pressed')){
+					$(this).removeData('enter-pressed');
+					return;
 				}
+				update();
 			});
 		}
 
