@@ -1169,6 +1169,7 @@ div#pandn.table div[id^="ppn"] { min-width: 200px; }
 .patchpanel.table input, .patchpanel.table select { padding: 0; background-color: transparent;}
 .switch.table div[id^=n] input { width:98%; }
 .power.table > div > div,[id^=pow] { position: relative; }
+.power.table > div > div,[id^=pow] > select:focus { outline: none; }
 
 .switch .status, .power .status, .patchpanel .down { background-image: url("../images/portstatus.png");}
 .switch .down, .patchpanel .down { background-position: left; }
