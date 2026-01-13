@@ -1545,6 +1545,18 @@ class Device {
 		return $deviceList;
 	}
 
+	static function GetDeviceBySerialNumber($serial,$filterrights=true){
+		global $dbh;
+
+		$serial=sanitize($serial);
+		$st=$dbh->prepare("SELECT * FROM fac_Device WHERE SerialNo=:SerialNo LIMIT 1");
+		$st->execute(array(":SerialNo"=>$serial));
+		if(($row=$st->fetch(PDO::FETCH_ASSOC))!==false){
+			return Device::RowToObject($row,$filterrights);
+		}
+		return null;
+	}
+
 	function SearchDevicebyAssetTag(){
 		global $dbh;
 
