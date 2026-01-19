@@ -62,7 +62,7 @@ $app->delete( '/powerport/{deviceid}', function( Request $request, Response $res
 
 	$pp=new PowerPorts();
 	$pp->DeviceID=$deviceid;
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	foreach($vars as $prop => $val){
 		if ( property_exists( $pp, $prop )) {
@@ -362,7 +362,7 @@ $app->delete( '/powerpanel/{panelid}', function( Request $request, Response $res
 //	Returns:  true/false on delete operation
 
 $app->delete( '/powerconnectortypes/{id}', function( Request $request, Response $response, $args ) use ($person) {
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	$id = intval($args["id"]);
 
 	$r['error']=true;
