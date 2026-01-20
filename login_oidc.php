@@ -71,8 +71,8 @@ if ( $config->ParameterArray["AttrPhone1"] != "" )
 if ( $config->ParameterArray["AttrPhone2"] != "" )
 	$person->Phone2 = $oidc->requestUserInfo($config->ParameterArray["AttrPhone2"]);
 
-if ( $config->ParameterArray["AttrPhone3"] != "" )
-	$person->Phone3 = $oidc->requestUserInfo($config->ParameterArray["AttrPhone3"]);
+if ( $config->ParameterArray["AttrCountry"] != "" )
+	$person->countryCode = $oidc->requestUserInfo($config->ParameterArray["AttrCountry"]);
 
 // If an attribute name for 'Groups' is specified, use it to override rights.  Otherwise, leave existing accounts alone.
 if ( $config->ParameterArray["SAMLGroupAttribute"] != "" ) {

@@ -220,7 +220,7 @@ class PDF extends FPDF {
 
 		$pdf->SetFont( $config->ParameterArray['PDFfont'], '', 8 );
 
-		$headerTags = array( __("UserName"), __("UserID"), __("Phone1"), __("Phone2"), __("Phone3"), __("Email") );
+		$headerTags = array( __("UserName"), __("UserID"), __("Phone1"), __("Phone2"), __("countryCode"), __("Email") );
 		$cellWidths = array( 50, 20, 25, 25, 25, 50 );
 		$maxval = count( $headerTags );
 
@@ -238,7 +238,7 @@ class PDF extends FPDF {
 			$pdf->Cell( $cellWidths[1], 6, $contact->UserID, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[2], 6, $contact->Phone1, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[3], 6, $contact->Phone2, 'LBRT', 0, 'L', $fill );
-			$pdf->Cell( $cellWidths[4], 6, $contact->Phone3, 'LBRT', 0, 'L', $fill );
+			$pdf->Cell( $cellWidths[4], 6, $contact->countryCode, 'LBRT', 0, 'L', $fill );
 			$pdf->Cell( $cellWidths[5], 6, $contact->Email, 'LBRT', 1, 'L', $fill );
 
 			$fill =! $fill;
