@@ -64,14 +64,14 @@ class PowerVoltages {
 		return $result;
 	}
 
-	static function deleteVoltage( $VoltageID ) {
+	static function deleteVoltage( $VoltageID, $NewVoltageID ) {
 		global $dbh;
 
-		$oldVoltage = getVoltage( $VoltageID );
+		$oldVoltage = PowerVoltages::getVoltage( $VoltageID );
 
-		// Set any connections using this VoltageID to have NULL instead
-		$st = $dbh->prepare( "update fac_Ports set VoltageID=NULL where VoltageID=:VoltageID" );
-		$st->execute( array( ":VoltageID"=>$VoltageID ));
+		// Set any connections using this VoltageID to have NewID (Default 0) instead
+		$st = $dbh->prepare( "update fac_PowerPorts set VoltageID=:NewVoltageID where VoltageID=:VoltageID" );
+		$st->execute( array( ":VoltageID"=>$VoltageID, ":NewVoltageID"=>$NewVoltageID ));
 
 		$st = $dbh->prepare( "delete from fac_PowerVoltages where VoltageID=:VoltageID" );
 		if ( $st->execute( array( ":VoltageID"=>$VoltageID ))) {
@@ -92,9 +92,9 @@ class PowerVoltages {
 	}
 
 	function updateVoltage() {
-		$oldVoltage = getVoltage( $this->VoltageID );
-		
-		$st = $this->prepare( "fac_PowerVoltages set VoltageName=:VoltageName where VoltageID=:VoltageID" );
+		$oldVoltage = PowerVoltages::getVoltage( $this->VoltageID );
+	
+		$st = $this->prepare( "update fac_PowerVoltages set VoltageName=:VoltageName where VoltageID=:VoltageID" );
 
 		if( $st->execute( array( ":VoltageID"=>$this->VoltageID, ":VoltageName"=>$this->VoltageName ) ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this, $oldVoltage):'';
