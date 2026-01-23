@@ -203,8 +203,10 @@ class PowerDistribution {
 			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\", 
 			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, FirmwareVersion=\"$this->FirmwareVersion\",
 			PanelPole=\"$this->PanelPole\", InputAmperage=$this->InputAmperage, 
-			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, 
-			PanelPole2=$this->PanelPole2$sqladdon;";
+			FailSafe=$this->FailSafe, PanelID2=\"$this->PanelID2\", 
+			PanelPole2=\"$this->PanelPole2\"$sqladdon;";
+
+		error_log( $sql );
 
 		if($this->exec($sql)){
 			$this->PDUID=$dbh->lastInsertId();
