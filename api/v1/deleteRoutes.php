@@ -530,7 +530,7 @@ $app->delete( '/powerpanel/{panelid}', function( Request $request, Response $res
 //	Method:   DELETE
 //	Params:
 //		Required: ConnectorID
-//		Optional: NewConnectorID
+//		Optional: NewID
 //	Returns:  true/false on delete operation
 
 $app->delete( '/powerconnectortypes/{id}', function( Request $request, Response $response, $args ) use ($person) {
@@ -544,7 +544,7 @@ $app->delete( '/powerconnectortypes/{id}', function( Request $request, Response 
 		$r['errorcode']=401;
 		$r['message']=__("Access Denied");
 	}else{
-		if(!PowerConnectors::deleteConnector($id,(isset($vars['NewConnectorID']))?$vars['NewConnectorID']:0)){
+		if(!PowerConnectors::deleteConnector($id,(isset($vars['NewID']))?$vars['NewID']:0)){
 			$r['message']=__("Connector deletion failed");
 		}else{
 			$r['error']=false;
@@ -555,5 +555,153 @@ $app->delete( '/powerconnectortypes/{id}', function( Request $request, Response 
 	return $response->withJson($r, $r['errorcode']);
 });
 
+//
+//	URL:      /api/v1/powerphases/:PhaseID
+//	Method:   DELETE
+//	Params:
+//		Required: PhaseID
+//		Optional: NewID
+//	Returns:  true/false on delete operation
 
+$app->delete( '/powerphases/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!PowerPhases::deletePhase($id,(isset($vars['NewID']))?$vars['NewID']:0)){
+			$r['message']=__("Phase deletion failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/powervoltages/:VoltageID
+//	Method:   DELETE
+//	Params:
+//		Required: VoltageID
+//		Optional: NewID
+//	Returns:  true/false on delete operation
+
+$app->delete( '/powervoltages/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!PowerVoltages::deleteVoltage($id,(isset($vars['NewID']))?$vars['NewID']:0)){
+			$r['message']=__("Voltage deletion failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/mediaconnectors/:ConnectorID
+//	Method:   DELETE
+//	Params:
+//		Required: ConnectorID
+//		Optional: NewID
+//	Returns:  true/false on delete operation
+
+$app->delete( '/mediaconnectors/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!MediaConnectors::deleteConnector($id,(isset($vars['NewID']))?$vars['NewID']:0)){
+			$r['message']=__("Connector deletion failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/mediadatarates/:RateID
+//	Method:   DELETE
+//	Params:
+//		Required: RateID
+//		Optional: NewID
+//	Returns:  true/false on delete operation
+
+$app->delete( '/mediadatarates/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!MediaDataRates::deleteRate($id,(isset($vars['NewID']))?$vars['NewID']:0)){
+			$r['message']=__("Rate deletion failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/mediaprotocols/:ProtocolID
+//	Method:   DELETE
+//	Params:
+//		Required: ProtocolID
+//		Optional: NewID
+//	Returns:  true/false on delete operation
+
+$app->delete( '/mediaprotocols/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!MediaProtocols::deleteProtocol($id,(isset($vars['NewID']))?$vars['NewID']:0)){
+			$r['message']=__("Protocol deletion failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
 ?>

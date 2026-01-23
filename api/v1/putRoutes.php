@@ -901,5 +901,160 @@ $app->put( '/powerconnectortypes', function( Request $request, Response $respons
 	return $response->withJson($r, $r['errorcode']);
 });
 
+//
+//	URL:      /api/v1/powerphases
+//	Method:   PUT
+//	Params:
+//	Required: name
+//	Returns:  new power phase id
+
+$app->put( '/powerphases', function( Request $request, Response $response ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+
+	$pp=new PowerPhases();
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!$pp->createPhase($vars["name"])){
+			$r['message']=__("Phase creation failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+			$r['id']=$pp->PhaseID;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/powervoltages
+//	Method:   PUT
+//	Params:
+//	Required: name
+//	Returns:  new power voltage id
+
+$app->put( '/powervoltages', function( Request $request, Response $response ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+
+	$pv=new PowerVoltages();
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!$pv->createVoltage($vars["name"])){
+			$r['message']=__("Voltage creation failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+			$r['id']=$pv->VoltageID;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/mediaconnectors
+//	Method:   PUT
+//	Params:
+//	Required: name
+//	Returns:  new media connector id
+
+$app->put( '/mediaconnectors', function( Request $request, Response $response ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+
+	$mc = new MediaConnectors();
+
+	$r['error'] = true;
+	$r['errorcode'] = 400;
+
+	if (!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if ( !$mc->createConnector($vars["name"])) {
+			$r['message']=__("Media Connector creation failed");
+		} else {
+			$r['error'] = false;
+			$r['errorcode'] = 200;
+			$r['id'] = $mc->ConnectorID;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/mediadatarates
+//	Method:   PUT
+//	Params:
+//	Required: name
+//	Returns:  new media data rate id
+
+$app->put( '/mediadatarates', function( Request $request, Response $response ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+
+	$mr = new MediaDataRates();
+
+	$r['error'] = true;
+	$r['errorcode'] = 400;
+
+	if (!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if ( !$mr->createRate($vars["name"])) {
+			$r['message']=__("Media Rate creation failed");
+		} else {
+			$r['error'] = false;
+			$r['errorcode'] = 200;
+			$r['id'] = $mr->RateID;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/mediaprotocols
+//	Method:   PUT
+//	Params:
+//	Required: name
+//	Returns:  new media protocol id
+
+$app->put( '/mediaprotocols', function( Request $request, Response $response ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+
+	$mp = new MediaProtocols();
+
+	$r['error'] = true;
+	$r['errorcode'] = 400;
+
+	if (!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if ( !$mp->createProtocol($vars["name"])) {
+			$r['message']=__("Media Protocol creation failed");
+		} else {
+			$r['error'] = false;
+			$r['errorcode'] = 200;
+			$r['id'] = $mp->ProtocolID;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
 
 ?>
