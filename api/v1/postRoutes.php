@@ -752,8 +752,6 @@ $app->post( '/powerpanel/{panelid}', function( Request $request, Response $respo
 	return $response->withJson($r, $r['errorcode']);
 });
 
-
-
 //
 //	URL:      /api/v1/powerconnectortypes/:ConnectorID
 //	Method:   POST
@@ -787,6 +785,167 @@ $app->post( '/powerconnectortypes/{id}', function( Request $request, Response $r
 	return $response->withJson($r, $r['errorcode']);
 });
 
+//
+//	URL:      /api/v1/powerphases/:PhaseID
+//	Method:   POST
+//	Params:
+//	Required: PhaseID, name
+//	Returns:  true/false on update operation
 
+$app->post( '/powerphases/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$pp=new PowerPhases();
+	$pp->PhaseID=$id;
+	$pp->PhaseName=$vars["name"];
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!$pp->updatePhase()){
+			$r['message']=__("Phase update failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/powervoltages/:VoltageID
+//	Method:   POST
+//	Params:
+//	Required: VoltageID, name
+//	Returns:  true/false on update operation
+
+$app->post( '/powervoltages/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$pv=new PowerVoltages();
+	$pv->VoltageID=$id;
+	$pv->VoltageName=$vars["name"];
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!$pv->updateVoltage()){
+			$r['message']=__("Voltage update failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+
+//
+//	URL:      /api/v1/mediaconnectortypes/:ConnectorID
+//	Method:   POST
+//	Params:
+//	Required: ConnectorID, name
+//	Returns:  true/false on update operation
+
+$app->post( '/mediaconnectors/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$mc=new MediaConnectors();
+	$mc->ConnectorID=$id;
+	$mc->ConnectorType=$vars["name"];
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!$mc->updateConnector()){
+			$r['message']=__("Connector update failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+//
+//	URL:      /api/v1/mediadatarates/:RateID
+//	Method:   POST
+//	Params:
+//	Required: RateID, name
+//	Returns:  true/false on update operation
+
+$app->post( '/mediadatarates/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$mdr=new MediaDataRates();
+	$mdr->RateID=$id;
+	$mdr->RateText=$vars["name"];
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!$mdr->updateRate()){
+			$r['message']=__("Connector update failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
+//
+//	URL:      /api/v1/mediaprotocols/:ProtocolID
+//	Method:   POST
+//	Params:
+//	Required: ProtocolID, name
+//	Returns:  true/false on update operation
+
+$app->post( '/mediaprotocols/{id}', function( Request $request, Response $response, $args ) use ($person) {
+	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$id = intval($args["id"]);
+
+	$mp=new MediaProtocols();
+	$mp->ProtocolID=$id;
+	$mp->ProtocolName=$vars["name"];
+
+	$r['error']=true;
+	$r['errorcode']=400;
+
+	if(!$person->SiteAdmin){
+		$r['errorcode']=401;
+		$r['message']=__("Access Denied");
+	}else{
+		if(!$mp->updateProtocol()){
+			$r['message']=__("Connector update failed");
+		}else{
+			$r['error']=false;
+			$r['errorcode']=200;
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+});
 
 ?>

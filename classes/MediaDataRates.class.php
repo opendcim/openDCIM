@@ -64,14 +64,14 @@ class MediaDataRates {
 		return $result;
 	}
 
-	static function deleteRate( $RateID ) {
+	static function deleteRate( $RateID, $NewRateID = 0 ) {
 		global $dbh;
+		
+		$oldRate = MediaDataRates::getRate( $RateID );
 
-		$oldRate = getRate( $RateID );
-
-		// Set any connections using this RateID to have NULL instead
-		$st = $dbh->prepare( "update fac_Ports set RateID=NULL where RateID=:RateID" );
-		$st->execute( array( ":RateID"=>$RateID ));
+		// Set any connections using this RateID to have new one (Default 0) instead
+		$st = $dbh->prepare( "update fac_Ports set RateID=:NewRateID where RateID=:RateID" );
+		$st->execute( array( ":RateID"=>$RateID, ":NewRateID"=>$NewRateID ));
 
 		$st = $dbh->prepare( "delete from fac_MediaDataRates where RateID=:RateID" );
 		if ( $st->execute( array( ":RateID"=>$RateID ))) {
@@ -92,9 +92,9 @@ class MediaDataRates {
 	}
 
 	function updateRate() {
-		$oldRate = getRate( $this->RateID );
+		$oldRate = MediaDataRates::getRate( $this->RateID );
 
-		$st = $this->prepare( "fac_MediaDataRates set RateText=:RateText where RateID=:RateID" );
+		$st = $this->prepare( "update fac_MediaDataRates set RateText=:RateText where RateID=:RateID" );
 
 		if( $st->execute( array( ":RateID"=>$this->RateID, ":RateText"=>$this->RateText ) ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this, $oldRate):'';
