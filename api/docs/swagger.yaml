@@ -922,6 +922,284 @@ paths:
       security:
       - api_key: []
       - user_id: []
+    put:
+      summary: Create a new project
+      tags:
+      - "Project"
+      description: "Creates a new project record."
+      produces:
+      - "application/json"
+      operationId: "CreateProject"
+      parameters:
+        - in: body
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Project"
+      responses:
+        "401":
+          description: "Access denied."
+        "400":
+          description: "Invalid input."
+        "201":
+          description: "Project created."
+      security:
+      - api_key: []
+      - user_id: []
+  /project/{ProjectID}:
+    delete:
+      summary: Delete a project
+      tags:
+      - "Project"
+      description: "Deletes a project and removes all project membership links."
+      produces:
+      - "application/json"
+      operationId: "DeleteProject"
+      parameters:
+        - name: ProjectID
+          in: path
+          required: true
+          type: string
+          description: "ProjectID to delete"
+          allowEmptyValue: false
+      responses:
+        "401":
+          description: "Access denied."
+        "404":
+          description: "Project not found."
+        "200":
+          description: "successful operation"
+      security:
+      - api_key: []
+      - user_id: []
+  /project/{ProjectID}/devices:
+    get:
+      summary: Devices for a project
+      tags:
+      - "Project"
+      - "Device"
+      description: "Returns the list of devices associated with a project."
+      produces:
+      - "application/json"
+      operationId: "GetProjectDevices"
+      parameters:
+        - name: ProjectID
+          in: path
+          required: true
+          type: string
+          description: "ProjectID to retrieve devices for"
+          allowEmptyValue: false
+      responses:
+        "403":
+          description: "Access denied."
+        "404":
+          description: "Project not found."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ProjectDeviceView"
+      security:
+      - api_key: []
+      - user_id: []
+  /project/byname/{ProjectName}/devices:
+    get:
+      summary: Devices for a project by name
+      tags:
+      - "Project"
+      - "Device"
+      description: "Returns the list of devices associated with a project name."
+      produces:
+      - "application/json"
+      operationId: "GetProjectDevicesByName"
+      parameters:
+        - name: ProjectName
+          in: path
+          required: true
+          type: string
+          description: "Project name to retrieve devices for"
+          allowEmptyValue: false
+      responses:
+        "403":
+          description: "Access denied."
+        "404":
+          description: "Project not found."
+        "409":
+          description: "Multiple projects matched the supplied name."
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ProjectDeviceView"
+      security:
+      - api_key: []
+      - user_id: []
+  /project/{ProjectID}/device:
+    post:
+      summary: Link a device to a project
+      tags:
+      - "Project"
+      - "Device"
+      description: "Associates a device with a project."
+      produces:
+      - "application/json"
+      operationId: "AddProjectDevice"
+      parameters:
+        - name: ProjectID
+          in: path
+          required: true
+          type: string
+          description: "ProjectID to update"
+          allowEmptyValue: false
+        - in: body
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/ProjectDeviceLinkRequest"
+      responses:
+        "401":
+          description: "Access denied."
+        "404":
+          description: "Project or device not found."
+        "200":
+          description: "successful operation"
+      security:
+      - api_key: []
+      - user_id: []
+  /project/{ProjectID}/cabinet:
+    post:
+      summary: Link a cabinet to a project
+      tags:
+      - "Project"
+      - "Cabinet"
+      description: "Associates a cabinet with a project."
+      produces:
+      - "application/json"
+      operationId: "AddProjectCabinet"
+      parameters:
+        - name: ProjectID
+          in: path
+          required: true
+          type: string
+          description: "ProjectID to update"
+          allowEmptyValue: false
+        - in: body
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/ProjectCabinetLinkRequest"
+      responses:
+        "401":
+          description: "Access denied."
+        "404":
+          description: "Project or cabinet not found."
+        "200":
+          description: "successful operation"
+      security:
+      - api_key: []
+      - user_id: []
+  /project/{ProjectID}/device/{DeviceID}:
+    delete:
+      summary: Unlink a device from a project
+      tags:
+      - "Project"
+      - "Device"
+      description: "Removes the device association from a project."
+      produces:
+      - "application/json"
+      operationId: "RemoveProjectDevice"
+      parameters:
+        - name: ProjectID
+          in: path
+          required: true
+          type: string
+          description: "ProjectID to update"
+          allowEmptyValue: false
+        - name: DeviceID
+          in: path
+          required: true
+          type: string
+          description: "DeviceID to remove"
+          allowEmptyValue: false
+      responses:
+        "401":
+          description: "Access denied."
+        "404":
+          description: "Project or device not found."
+        "200":
+          description: "successful operation"
+      security:
+      - api_key: []
+      - user_id: []
+  /project/{ProjectID}/cabinet/{CabinetID}:
+    delete:
+      summary: Unlink a cabinet from a project
+      tags:
+      - "Project"
+      - "Cabinet"
+      description: "Removes the cabinet association from a project."
+      produces:
+      - "application/json"
+      operationId: "RemoveProjectCabinet"
+      parameters:
+        - name: ProjectID
+          in: path
+          required: true
+          type: string
+          description: "ProjectID to update"
+          allowEmptyValue: false
+        - name: CabinetID
+          in: path
+          required: true
+          type: string
+          description: "CabinetID to remove"
+          allowEmptyValue: false
+      responses:
+        "401":
+          description: "Access denied."
+        "404":
+          description: "Project or cabinet not found."
+        "200":
+          description: "successful operation"
+      security:
+      - api_key: []
+      - user_id: []
+  /project/{ProjectID}/sendToStorage:
+    post:
+      summary: Send all project devices to storage
+      tags:
+      - "Project"
+      - "Device"
+      description: "Moves all devices in the project to the storage room."
+      produces:
+      - "application/json"
+      operationId: "SendProjectDevicesToStorage"
+      parameters:
+        - name: ProjectID
+          in: path
+          required: true
+          type: string
+          description: "ProjectID to update"
+          allowEmptyValue: false
+        - in: body
+          name: "body"
+          required: false
+          schema:
+            $ref: "#/definitions/SendToStorageRequest"
+      responses:
+        "401":
+          description: "Access denied."
+        "404":
+          description: "Project or storage room not found."
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/SendToStorageResponse"
+      security:
+      - api_key: []
+      - user_id: []
   /project/bycabinet/{CabinetID}:
     get:
       summary: Metadata about all projects associated with a specific cabinet
@@ -1632,12 +1910,160 @@ definitions:
       ProjectStartDate:
         type: "string"
         format: "Datestamp"
-      ProjectEndDate:
+      ProjectExpirationDate:
         type: "string"
         format: "Datestamp"
       ProjectActualEndDate:
         type: "string"
         format: "Datestamp"
+  ProjectDeviceLinkRequest:
+    type: "object"
+    properties:
+      DeviceID:
+        type: "integer"
+        format: "keyValue"
+  ProjectCabinetLinkRequest:
+    type: "object"
+    properties:
+      CabinetID:
+        type: "integer"
+        format: "keyValue"
+  ProjectDeviceView:
+    type: "object"
+    properties:
+      DeviceID:
+        type: "integer"
+        format: "keyValue"
+      Label:
+        type: "string"
+        format: "string"
+      SerialNo:
+        type: "string"
+        format: "string"
+      AssetTag:
+        type: "string"
+        format: "string"
+      CabinetID:
+        type: "integer"
+        format: "keyValue"
+      CabinetName:
+        type: "string"
+        format: "string"
+      Position:
+        type: "integer"
+        format: "integer"
+      Height:
+        type: "integer"
+        format: "integer"
+      DeviceType:
+        type: "string"
+        format: "string"
+      Status:
+        type: "string"
+        format: "string"
+      PrimaryIP:
+        type: "string"
+        format: "string"
+      ParentDeviceID:
+        type: "integer"
+        format: "keyValue"
+      ParentDeviceLabel:
+        type: "string"
+        format: "string"
+      TemplateID:
+        type: "integer"
+        format: "keyValue"
+      TemplateModel:
+        type: "string"
+        format: "string"
+      ManufacturerID:
+        type: "integer"
+        format: "keyValue"
+      ManufacturerName:
+        type: "string"
+        format: "string"
+      DataCenterID:
+        type: "integer"
+        format: "keyValue"
+      DataCenterName:
+        type: "string"
+        format: "string"
+      CabRowID:
+        type: "integer"
+        format: "keyValue"
+      CabRowName:
+        type: "string"
+        format: "string"
+      ZoneID:
+        type: "integer"
+        format: "keyValue"
+      ZoneName:
+        type: "string"
+        format: "string"
+      DepartmentID:
+        type: "integer"
+        format: "keyValue"
+      DepartmentName:
+        type: "string"
+        format: "string"
+      Notes:
+        type: "string"
+        format: "string"
+      Tags:
+        type: "array"
+        items:
+          type: "string"
+      Rights:
+        type: "string"
+        format: "string"
+  SendToStorageRequest:
+    type: "object"
+    properties:
+      StorageRoomID:
+        type: "integer"
+        format: "keyValue"
+  ProjectDeviceMoveIssue:
+    type: "object"
+    properties:
+      DeviceID:
+        type: "integer"
+        format: "keyValue"
+      Reason:
+        type: "string"
+        format: "string"
+  SendToStorageSummary:
+    type: "object"
+    properties:
+      totalDevices:
+        type: "integer"
+        format: "integer"
+      moved:
+        type: "integer"
+        format: "integer"
+      skipped:
+        type: "integer"
+        format: "integer"
+      skippedDetails:
+        type: "array"
+        items:
+          $ref: "#/definitions/ProjectDeviceMoveIssue"
+      errors:
+        type: "array"
+        items:
+          $ref: "#/definitions/ProjectDeviceMoveIssue"
+  SendToStorageResponse:
+    type: "object"
+    properties:
+      error:
+        type: "boolean"
+        format: "boolean"
+      errorcode:
+        type: "integer"
+        format: "integer"
+      project:
+        $ref: "#/definitions/Project"
+      summary:
+        $ref: "#/definitions/SendToStorageSummary"
   PowerPort:
     type: "object"
     properties:

@@ -367,6 +367,232 @@ $app->post( '/device/{deviceid}/store', function( Request $request, Response $re
 });
 
 //
+//	URL:	/api/v1/project/:projectid/device
+//	Method:	POST
+//	Params:	DeviceID (required, body)
+//	Returns:  true/false on update operation
+//
+
+$app->post( '/project/{projectid}/device', function( Request $request, Response $response, $args ) use ( $person ) {
+	$projectid = intval( $args["projectid"] );
+
+	if ( ! $person->WriteAccess ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+	} else {
+		$project = Projects::getProject( $projectid );
+		if ( ! $project ) {
+			$r['error'] = true;
+			$r['errorcode'] = 404;
+			$r['message'] = __("Project not found");
+		} else {
+			$vars = $request->getQueryParams() ?: $request->getParsedBody();
+			if ( ! isset( $vars["DeviceID"] ) ) {
+				$r['error'] = true;
+				$r['errorcode'] = 400;
+				$r['message'] = __("DeviceID is required");
+			} else {
+				$deviceid = intval( $vars["DeviceID"] );
+				$dev = new Device();
+				$dev->DeviceID = $deviceid;
+				if ( ! $dev->GetDevice() ) {
+					$r['error'] = true;
+					$r['errorcode'] = 404;
+					$r['message'] = __("Device not found");
+				} elseif ( $dev->Rights != "Write" ) {
+					$r['error'] = true;
+					$r['errorcode'] = 401;
+					$r['message'] = __("Access Denied");
+				} else {
+					global $dbh;
+					$st = $dbh->prepare( "select 1 from fac_ProjectMembership where ProjectID=:ProjectID and MemberType='Device' and MemberID=:MemberID" );
+					$st->execute( array( ":ProjectID"=>$projectid, ":MemberID"=>$deviceid ) );
+					$exists = $st->fetchColumn();
+
+					if ( ! ProjectMembership::addMember( $projectid, $deviceid, "Device" ) ) {
+						$r['error'] = true;
+						$r['errorcode'] = 400;
+						$r['message'] = __("Unable to link device to project.");
+					} else {
+						$r['error'] = false;
+						$r['errorcode'] = 200;
+						$r['message'] = $exists ? __("Device already linked to project.") : __("Device linked to project.");
+						$r['project'] = $project;
+						$r['device'] = $dev;
+					}
+				}
+			}
+		}
+	}
+
+	return $response->withJson( $r, $r['errorcode'] );
+});
+
+//
+//	URL:	/api/v1/project/:projectid/cabinet
+//	Method:	POST
+//	Params:	CabinetID (required, body)
+//	Returns:  true/false on update operation
+//
+
+$app->post( '/project/{projectid}/cabinet', function( Request $request, Response $response, $args ) use ( $person ) {
+	$projectid = intval( $args["projectid"] );
+
+	if ( ! $person->WriteAccess ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+	} else {
+		$project = Projects::getProject( $projectid );
+		if ( ! $project ) {
+			$r['error'] = true;
+			$r['errorcode'] = 404;
+			$r['message'] = __("Project not found");
+		} else {
+			$vars = $request->getQueryParams() ?: $request->getParsedBody();
+			if ( ! isset( $vars["CabinetID"] ) ) {
+				$r['error'] = true;
+				$r['errorcode'] = 400;
+				$r['message'] = __("CabinetID is required");
+			} else {
+				$cabinetid = intval( $vars["CabinetID"] );
+				$cab = new Cabinet();
+				$cab->CabinetID = $cabinetid;
+				if ( ! $cab->GetCabinet() ) {
+					$r['error'] = true;
+					$r['errorcode'] = 404;
+					$r['message'] = __("Cabinet not found");
+				} elseif ( $cab->Rights != "Write" ) {
+					$r['error'] = true;
+					$r['errorcode'] = 401;
+					$r['message'] = __("Access Denied");
+				} else {
+					global $dbh;
+					$st = $dbh->prepare( "select 1 from fac_ProjectMembership where ProjectID=:ProjectID and MemberType='Cabinet' and MemberID=:MemberID" );
+					$st->execute( array( ":ProjectID"=>$projectid, ":MemberID"=>$cabinetid ) );
+					$exists = $st->fetchColumn();
+
+					if ( ! ProjectMembership::addMember( $projectid, $cabinetid, "Cabinet" ) ) {
+						$r['error'] = true;
+						$r['errorcode'] = 400;
+						$r['message'] = __("Unable to link cabinet to project.");
+					} else {
+						$r['error'] = false;
+						$r['errorcode'] = 200;
+						$r['message'] = $exists ? __("Cabinet already linked to project.") : __("Cabinet linked to project.");
+						$r['project'] = $project;
+						$r['cabinet'] = $cab;
+					}
+				}
+			}
+		}
+	}
+
+	return $response->withJson( $r, $r['errorcode'] );
+});
+
+//
+//	URL:	/api/v1/project/:projectid/sendToStorage
+//	Method:	POST
+//	Params:	StorageRoomID (optional, body)
+//	Returns:  Summary of processed devices
+//
+
+$app->post( '/project/{projectid}/sendToStorage', function( Request $request, Response $response, $args ) use ( $person ) {
+	$projectid = intval( $args["projectid"] );
+
+	if ( ! $person->WriteAccess ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+	} else {
+		$project = Projects::getProject( $projectid );
+		if ( ! $project ) {
+			$r['error'] = true;
+			$r['errorcode'] = 404;
+			$r['message'] = __("Project not found");
+		} else {
+			$vars = $request->getQueryParams() ?: $request->getParsedBody();
+			$storageRoomID = null;
+
+			if ( isset( $vars["StorageRoomID"] ) ) {
+				$storageRoomID = intval( $vars["StorageRoomID"] );
+				if ( $storageRoomID < 0 ) {
+					$r['error'] = true;
+					$r['errorcode'] = 400;
+					$r['message'] = __("Invalid StorageRoomID");
+					return $response->withJson( $r, $r['errorcode'] );
+				}
+				if ( $storageRoomID > 0 ) {
+					$dc = new DataCenter();
+					$dc->DataCenterID = $storageRoomID;
+					if ( ! $dc->GetDataCenterbyID() ) {
+						$r['error'] = true;
+						$r['errorcode'] = 404;
+						$r['message'] = __("Storage room not found.");
+						return $response->withJson( $r, $r['errorcode'] );
+					}
+				}
+			}
+
+			$deviceList = ProjectMembership::getProjectMembership( $projectid, true, true );
+			$summary = array(
+				"totalDevices"=>sizeof( $deviceList ),
+				"moved"=>0,
+				"skipped"=>0,
+				"skippedDetails"=>array(),
+				"errors"=>array()
+			);
+
+			foreach ( $deviceList as $deviceID => $deviceRow ) {
+				$dev = new Device();
+				$dev->DeviceID = $deviceID;
+
+				if ( ! $dev->GetDevice() ) {
+					$summary["errors"][] = array(
+						"DeviceID"=>$deviceID,
+						"Reason"=>"Device not found"
+					);
+					continue;
+				}
+
+				if ( $dev->Rights != "Write" ) {
+					$summary["skipped"]++;
+					$summary["skippedDetails"][] = array(
+						"DeviceID"=>$deviceID,
+						"Reason"=>"Access denied"
+					);
+					continue;
+				}
+
+				$dev->MoveToStorage();
+
+				if ( $storageRoomID !== null ) {
+					$dev->Position = $storageRoomID;
+					if ( ! $dev->UpdateDevice() ) {
+						$summary["errors"][] = array(
+							"DeviceID"=>$deviceID,
+							"Reason"=>"Unable to update storage room"
+						);
+						continue;
+					}
+				}
+
+				$summary["moved"]++;
+			}
+
+			$r['error'] = false;
+			$r['errorcode'] = 200;
+			$r['project'] = $project;
+			$r['summary'] = $summary;
+		}
+	}
+
+	return $response->withJson( $r, $r['errorcode'] );
+});
+
+//
 //	URL:	/api/v1/devicetemplate/:templateid
 //	Method:	POST
 //	Params:	
