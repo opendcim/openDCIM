@@ -6359,3 +6359,416 @@ msgstr ""
 
 #~ msgid "MailTo"
 #~ msgstr "Envoyé à "
+
+#: DisposalProcessing.php
+msgid "Automated Disposal Processing"
+msgstr "Traitement automatisé du rebut"
+
+
+#: DisposalProcessing.php
+msgid "N/A"
+msgstr "N/D"
+
+
+#: DisposalProcessing.php
+msgid "Invalid file uploaded."
+msgstr "Fichier importé invalide."
+
+
+#: DisposalProcessing.php
+msgid "The uploaded file could not be read."
+msgstr "Le fichier importé n'a pas pu être lu."
+
+
+#: DisposalProcessing.php
+msgid "File uploaded successfully. Please select the column that contains the serial numbers."
+msgstr "Fichier importé avec succès. Veuillez sélectionner la colonne contenant les numéros de série."
+
+
+#: DisposalProcessing.php
+msgid "Please select a valid column."
+msgstr "Veuillez sélectionner une colonne valide."
+
+
+#: DisposalProcessing.php
+msgid "No serial numbers were found in the selected column."
+msgstr "Aucun numéro de série trouvé dans la colonne sélectionnée."
+
+
+#: DisposalProcessing.php
+msgid "Serial numbers ready for processing."
+msgstr "Numéros de série prêts pour le traitement."
+
+
+#: DisposalProcessing.php
+msgid "Already disposed / Skipped"
+msgstr "Déjà traité / Ignoré"
+
+
+#: DisposalProcessing.php
+msgid "Unknown serial numbers have been ignored."
+msgstr "Les numéros de série inconnus ont été ignorés."
+
+
+#: DisposalProcessing.php
+msgid "Ignored unknown serial number %s"
+msgstr "Numéro de série inconnu %s ignoré"
+
+
+#: DisposalProcessing.php
+msgid "Created minimal storage record"
+msgstr "Enregistrement minimal de stockage créé"
+
+
+#: DisposalProcessing.php
+msgid "Failed to create device for serial number %s."
+msgstr "Impossible de créer l'équipement pour le numéro de série %s."
+
+
+#: DisposalProcessing.php
+msgid "Minimal device entries created successfully."
+msgstr "Les enregistrements minimaux ont été créés avec succès."
+
+
+#: DisposalProcessing.php
+msgid "Please select at least one device to move."
+msgstr "Veuillez sélectionner au moins un équipement à déplacer."
+
+
+#: DisposalProcessing.php
+msgid "Moved to Storage Room"
+msgstr "Déplacé vers la salle de stockage"
+
+
+#: DisposalProcessing.php
+msgid "Devices moved to the Storage Room."
+msgstr "Équipements déplacés vers la salle de stockage."
+
+
+#: DisposalProcessing.php
+msgid "Storage Room devices confirmed. You may proceed with the final processing."
+msgstr "Équipements de la salle de stockage confirmés. Vous pouvez poursuivre le traitement final."
+
+
+#: DisposalProcessing.php
+msgid "Please confirm the Storage Room devices first."
+msgstr "Veuillez d'abord confirmer les équipements de la salle de stockage."
+
+
+#: DisposalProcessing.php
+msgid "No devices are ready in the Storage Room."
+msgstr "Aucun équipement prêt dans la salle de stockage."
+
+
+#: DisposalProcessing.php
+msgid "Please select a valid disposal method."
+msgstr "Veuillez sélectionner une méthode de sortie valide."
+
+
+#: DisposalProcessing.php
+msgid "Please provide a valid operation date."
+msgstr "Veuillez fournir une date d'opération valide."
+
+
+#: DisposalProcessing.php
+msgid "Disposed from Storage Room"
+msgstr "Sorti de la salle de stockage"
+
+
+#: DisposalProcessing.php
+msgid "Devices disposed successfully."
+msgstr "Équipements traités avec succès."
+
+
+#: DisposalProcessing.php
+msgid "Process completed."
+msgstr "Processus terminé."
+
+
+#: DisposalProcessing.php
+msgid "Operation cancelled."
+msgstr "Opération annulée."
+
+
+#: DisposalProcessing.php
+msgid "Import disposal spreadsheet"
+msgstr "Importer la feuille de calcul de rebut"
+
+
+#: DisposalProcessing.php
+msgid "Upload Excel File"
+msgstr "Importer un fichier Excel"
+
+
+#: DisposalProcessing.php
+msgid "Start Import"
+msgstr "Démarrer l'import"
+
+
+#: DisposalProcessing.php
+msgid "Select Serial Number Column"
+msgstr "Sélectionner la colonne des numéros de série"
+
+
+#: DisposalProcessing.php
+msgid "Continue"
+msgstr "Continuer"
+
+
+#: DisposalProcessing.php
+msgid "Cancel operation"
+msgstr "Annuler l'opération"
+
+
+#: DisposalProcessing.php
+msgid "Category 1: Unknown serial numbers"
+msgstr "Catégorie 1 : Numéros de série inconnus"
+
+
+#: DisposalProcessing.php
+msgid "Proceed without processing unknown SN"
+msgstr "Continuer sans traiter les numéros de série inconnus"
+
+
+#: DisposalProcessing.php
+msgid "Create minimal device entries automatically"
+msgstr "Créer automatiquement des enregistrements minimaux"
+
+
+#: DisposalProcessing.php
+msgid "Category 2: Devices not in the Storage Room"
+msgstr "Catégorie 2 : Équipements hors de la salle de stockage"
+
+
+#: DisposalProcessing.php
+msgid "Move selected devices to Storage Room"
+msgstr "Déplacer les équipements sélectionnés vers la salle de stockage"
+
+
+#: DisposalProcessing.php
+msgid "Category 3: Devices ready in the Storage Room"
+msgstr "Catégorie 3 : Équipements prêts dans la salle de stockage"
+
+
+#: DisposalProcessing.php
+msgid "Proceed with disposal method"
+msgstr "Continuer avec la méthode de sortie"
+
+
+#: DisposalProcessing.php
+msgid "Category 4: Already processed"
+msgstr "Catégorie 4 : Déjà traités"
+
+
+#: DisposalProcessing.php
+msgid "Items already processed will be skipped."
+msgstr "Les éléments déjà traités seront ignorés."
+
+
+#: DisposalProcessing.php
+msgid "Final disposal method"
+msgstr "Méthode de sortie finale"
+
+
+#: DisposalProcessing.php
+msgid "Select disposition method"
+msgstr "Sélectionner la méthode de sortie"
+
+
+#: DisposalProcessing.php
+msgid "Operation date"
+msgstr "Date d'opération"
+
+
+#: DisposalProcessing.php
+msgid "Start Processing"
+msgstr "Démarrer le traitement"
+
+
+#: DisposalProcessing.php
+msgid "Processing log"
+msgstr "Journal de traitement"
+
+
+#: DisposalProcessing.php
+msgid "Operation"
+msgstr "Opération"
+
+
+#: DisposalProcessing.php
+msgid "Timestamp"
+msgstr "Horodatage"
+
+
+#: DisposalProcessing.php
+msgid "Download full log"
+msgstr "Télécharger le journal complet"
+
+
+#: DisposalProcessing.php
+msgid "Undo last operation"
+msgstr "Annuler la dernière opération"
+
+
+#: DisposalProcessing.php
+msgid "Process Completed"
+msgstr "Processus terminé"
+
+
+#: DisposalProcessing.php
+msgid "Before starting this automated disposal workflow, please perform a full database backup."
+msgstr "Avant de démarrer ce processus automatisé de rebut, veuillez effectuer une sauvegarde complète de la base de données."
+
+
+#: DisposalProcessing.php
+msgid "No records found."
+msgstr "Aucun enregistrement trouvé."
+
+
+#: DisposalProcessing.php
+msgid "Process Scrap"
+msgstr "Traitement du rebut"
+
+
+#: DisposalProcessing.php
+msgid "No operations to rollback."
+msgstr "Aucune opération à annuler."
+
+
+#: DisposalProcessing.php
+msgid "The rollback completed successfully."
+msgstr "Le retour arrière a été effectué avec succès."
+
+
+#: DisposalProcessing.php
+msgid "Please select the column that contains the serial numbers."
+msgstr "Veuillez sélectionner la colonne contenant les numéros de série."
+
+#: DisposalProcessing.php
+msgid "File uploaded successfully. Please select the worksheets to process."
+msgstr "Fichier importé avec succès. Veuillez sélectionner les feuilles de calcul à traiter."
+
+#: DisposalProcessing.php
+msgid "No valid worksheets were detected in the uploaded file."
+msgstr "Aucune feuille de calcul valide n'a été détectée dans le fichier importé."
+
+#: DisposalProcessing.php
+msgid "Please select at least one worksheet."
+msgstr "Veuillez sélectionner au moins une feuille de calcul."
+
+#: DisposalProcessing.php
+msgid "Please select a serial number column for sheet %s."
+msgstr "Veuillez sélectionner la colonne des numéros de série pour la feuille %s."
+
+#: DisposalProcessing.php
+msgid "Invalid column selection for sheet %s."
+msgstr "Sélection de colonne invalide pour la feuille %s."
+
+#: DisposalProcessing.php
+msgid "Select worksheets to process"
+msgstr "Sélectionnez les feuilles de calcul à traiter"
+
+#: DisposalProcessing.php
+msgid "Sheet \"%s\""
+msgstr "Feuille \"%s\""
+
+#: DisposalProcessing.php
+msgid "Sheet \"%s\" serial column"
+msgstr "Colonne de numéro de série pour la feuille \"%s\""
+
+#: DisposalProcessing.php
+msgid "The serial number column could not be detected. Please select the correct column."
+msgstr "La colonne des numéros de série n'a pas pu être détectée. Veuillez sélectionner la colonne appropriée."
+
+#: DisposalProcessing.php
+msgid "Review these devices before running the final processing step."
+msgstr "Vérifiez ces équipements avant de lancer l'étape de traitement final."
+
+#: DisposalProcessing.php
+msgid "Clean power connections (fac_PowerPorts)"
+msgstr "Nettoyer les connexions électriques (fac_PowerPorts)"
+
+#: DisposalProcessing.php
+msgid "Clean network connections (fac_Ports)"
+msgstr "Nettoyer les connexions réseau (fac_Ports)"
+
+#: DisposalProcessing.php
+msgid "Remove project assignments (fac_ProjectMembership)"
+msgstr "Supprimer les affectations de projet (fac_ProjectMembership)"
+
+#: DisposalProcessing.php
+msgid "Remove tags (fac_DeviceTags)"
+msgstr "Supprimer les tags (fac_DeviceTags)"
+
+#: DisposalProcessing.php
+msgid "Remove custom attributes (fac_DeviceCustomAttribute)"
+msgstr "Supprimer les attributs personnalisés (fac_DeviceCustomAttribute)"
+
+#: DisposalProcessing.php
+msgid "Remove VM Inventory entries (fac_VMInventory)"
+msgstr "Supprimer les entrées d'inventaire VM (fac_VMInventory)"
+
+#: DisposalProcessing.php
+msgid "Clean logs (fac_GenericLog)"
+msgstr "Nettoyer les journaux (fac_GenericLog)"
+
+#: DisposalProcessing.php
+msgid "Not recommended: removing logs erases historical traceability."
+msgstr "Non recommandé : supprimer les journaux efface la traçabilité historique."
+
+#: DisposalProcessing.php
+msgid "Clean rack request history (fac_RackRequest)"
+msgstr "Nettoyer l'historique des demandes de rack (fac_RackRequest)"
+
+#: DisposalProcessing.php
+msgid "Power connections cleaned"
+msgstr "Connexions électriques nettoyées"
+
+#: DisposalProcessing.php
+msgid "Network connections cleaned"
+msgstr "Connexions réseau nettoyées"
+
+#: DisposalProcessing.php
+msgid "Project assignments removed"
+msgstr "Affectations de projet supprimées"
+
+#: DisposalProcessing.php
+msgid "Device tags removed"
+msgstr "Tags de l'équipement supprimés"
+
+#: DisposalProcessing.php
+msgid "Custom attributes removed"
+msgstr "Attributs personnalisés supprimés"
+
+#: DisposalProcessing.php
+msgid "VM inventory entries removed"
+msgstr "Entrées d'inventaire VM supprimées"
+
+#: DisposalProcessing.php
+msgid "Device logs cleaned"
+msgstr "Journaux de l'équipement nettoyés"
+
+#: DisposalProcessing.php
+msgid "Rack request history cleaned"
+msgstr "Historique des demandes de rack nettoyé"
+
+#: DisposalProcessing.php
+msgid "Optional cleanups help remove related records before final processing."
+msgstr "Les nettoyages optionnels permettent de supprimer les données liées avant le traitement final."
+
+#: DisposalProcessing.php
+msgid "Optional Cleanup Operations"
+msgstr "Opérations de nettoyage optionnelles"
+
+#: DisposalProcessing.php
+msgid "Processing completed successfully."
+msgstr "Traitement achevé avec succès."
+
+#: DisposalProcessing.php
+msgid "Processing in progress..."
+msgstr "Traitement en cours..."
+
+#: DisposalProcessing.php
+msgid "Initializing"
+msgstr "Initialisation"
+
