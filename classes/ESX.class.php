@@ -58,8 +58,10 @@ class ESX {
 				$vm->DeviceID=$dev->DeviceID;
 				$vm->LastUpdated=date( 'Y-m-d H:i:s' );
 				$vm->vmID=count($vmList);
-				$vm->vmName=trim(str_replace('"','',@end(explode(":",$name))));
-				$vm->vmState=trim(str_replace('"','',@end(explode(":",$state))));
+				$nameParts = explode(':', $name);
+				$stateParts = explode(':', $state);
+				$vm->vmName = trim(str_replace('"', '', $nameParts[count($nameParts) - 1]));
+				$vm->vmState = trim(str_replace('"', '', $stateParts[count($stateParts) - 1]));
 				$vmList[]=$vm;
 			}
 		}

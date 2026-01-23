@@ -212,9 +212,9 @@ class Device {
 		$dev->APIPort=$dbRow["APIPort"];
 		$dev->ProxMoxRealm=$dbRow["ProxMoxRealm"];
 		$dev->Owner=$dbRow["Owner"];
-		// Suppressing errors on the following two because they can be null and that generates an apache error
-		@$dev->EscalationTimeID=$dbRow["EscalationTimeID"];
-		@$dev->EscalationID=$dbRow["EscalationID"];
+		// Suppressing notices in case these fields are null in the database
+		$dev->EscalationTimeID = isset($dbRow["EscalationTimeID"]) ? $dbRow["EscalationTimeID"] : null;
+		$dev->EscalationID = isset($dbRow["EscalationID"]) ? $dbRow["EscalationID"] : null;
 		$dev->PrimaryContact=$dbRow["PrimaryContact"];
 		$dev->Cabinet=$dbRow["Cabinet"];
 		$dev->Position=$dbRow["Position"];
@@ -231,7 +231,7 @@ class Device {
 		$dev->MfgDate=$dbRow["MfgDate"];
 		$dev->InstallDate=$dbRow["InstallDate"];
 		$dev->WarrantyCo=$dbRow["WarrantyCo"];
-		@$dev->WarrantyExpire=$dbRow["WarrantyExpire"];
+		$dev->WarrantyExpire = isset($dbRow["WarrantyExpire"]) ? $dbRow["WarrantyExpire"] : null;
 		$dev->Notes=$dbRow["Notes"];
 		$dev->Status = $dbRow["Status"];
 		$dev->HalfDepth=$dbRow["HalfDepth"];
@@ -316,7 +316,7 @@ class Device {
 			if ( !$person->SiteAdmin && $dc->countryCode != $person->countryCode && $config->ParameterArray["GDPRCountryIsolation"] == "enabled" ) {
 				error_log( "-> Isolation section entered" );
 				$this->Rights = 'None';
-				foreach($this as $prop=>$val) {
+				foreach (get_object_vars($this) as $prop => $val) {
 					$this->$prop=null;
 				}
 				return;
@@ -331,7 +331,7 @@ class Device {
 		// Remove information that this user isn't allowed to see
 		if($this->Rights=='None'){
 			$publicfields=array('DeviceID','Label','Cabinet','Position','Height','Status','DeviceType','Rights');
-			foreach($this as $prop => $value){
+			foreach (get_object_vars($this) as $prop => $val) {
 				if(!in_array($prop,$publicfields)){
 					$this->$prop=null;
 				}
@@ -385,8 +385,8 @@ class Device {
 	 */
 	static function OSS_SNMP_Lookup($dev,$snmplookup,$oid=null,$walk=false){
 		// This is find out the name of the function that called this to make the error logging more descriptive
-		$caller=debug_backtrace();
-		$caller=$caller[1]['function'];
+		$trace=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,2);
+		$caller=$trace[1]['function'] ?? 'unknown';
 
 		if (preg_match('/(?<placeholder>\{(?<tag>[^\}]+)+\})/i', $oid, $oid_matches))
         {
@@ -405,11 +405,20 @@ class Device {
 		$snmpHost=new OSS_SNMP\SNMP($dev->PrimaryIP,$dev->SNMPCommunity,$dev->SNMPVersion,$dev->v3SecurityLevel,$dev->v3AuthProtocol,$dev->v3AuthPassphrase,$dev->v3PrivProtocol,$dev->v3PrivPassphrase);
 		$snmpresult=false;
 		try {
-			$snmpresult=((is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):($walk))?$snmpHost->realWalk($oid):$snmpHost->get($oid);
+			//$snmpresult=((is_null($oid))?$snmpHost->useSystem()->$snmplookup(true):($walk))?$snmpHost->realWalk($oid):$snmpHost->get($oid);
+			//Comptatility fix for PHP 8.x and earlier , ternaires is confusing with method calls
+				if (is_null($oid)) {
+					$snmpresult = $snmpHost->useSystem()->{$snmplookup}(true);
+				} elseif ($walk) {
+					$snmpresult = $snmpHost->realWalk($oid);
+				} else {
+					$snmpresult = $snmpHost->get($oid);
+				}
 
 		}catch (Exception $e){
 			$dev->IncrementFailures();
 			error_log("Device::$caller($dev->DeviceID) ".$e->getMessage());
+			return false;
 		}
 
 		$dev->ResetFailures();
@@ -458,7 +467,6 @@ class Device {
 
 		if(!$dbh->exec($sql)){
 			$info = $dbh->errorInfo();
-
 			error_log( "PDO Error: {$info[2]} SQL=$sql" );
 			return false;
 		}
@@ -655,6 +663,8 @@ class Device {
 		$sql="UPDATE fac_Device SET SNMPFailureCount=SNMPFailureCount+1 WHERE DeviceID=$this->DeviceID";
 		
 		if(!$this->query($sql)){
+			global $dbh;
+			$info = $dbh->errorInfo();
 			error_log( "Device::IncrementFailures::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}else{
@@ -669,6 +679,8 @@ class Device {
 		$sql="UPDATE fac_Device SET SNMPFailureCount=0 WHERE DeviceID=$this->DeviceID";
 		
 		if(!$this->query($sql)){
+			global $dbh;
+			$info = $dbh->errorInfo();
 			error_log( "Device::ResetFailures::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}else{
@@ -1038,7 +1050,6 @@ class Device {
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
-
 			error_log("Device:Audit::PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
@@ -1061,7 +1072,8 @@ class Device {
 		$sql="SELECT * FROM fac_Device WHERE DeviceID=$this->DeviceID;";
 
 		if($devRow=$dbh->query($sql)->fetch()){
-			foreach(Device::RowToObject($devRow,$filterrights) as $prop => $value){
+    	$tmp = Device::RowToObject($devRow,$filterrights);
+    		foreach (get_object_vars($tmp) as $prop => $value) {
 				$this->$prop=$value;
 			}
 
@@ -1088,7 +1100,7 @@ class Device {
 		$sql = "select a.* from fac_Device a, fac_Cabinet b where a.Cabinet=b.CabinetID $dcLimit order by b.DataCenterID ASC, Label ASC";
 		
 		$deviceList = array();
-		foreach ( $this->query( $sql ) as $deviceRow ) {
+		foreach ($this->query( $sql ) as $deviceRow ) {
 			$deviceList[]=Device::RowToObject( $deviceRow );
 		}
 		
@@ -1372,7 +1384,6 @@ class Device {
 
 		if(!$dbh->exec($sql)){
 			$info=$dbh->errorInfo();
-
 			error_log("PDO Error: {$info[2]} SQL=$sql");
 			return false;
 		}
@@ -1403,7 +1414,7 @@ class Device {
 		$sql="SELECT * FROM fac_Device WHERE Status<>'Disposed' AND PrimaryIP LIKE \"%$this->PrimaryIP%\" ORDER BY Label;";
 
 		$deviceList = array();
-		foreach($this->query($sql) as $deviceRow){
+		foreach ($this->query($sql) as $deviceRow){
 			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 
@@ -1422,7 +1433,7 @@ class Device {
 
 		$deviceList=array();
 
-		foreach($dbh->query($sql) as $deviceRow){
+		foreach ($dbh->query($sql) as $deviceRow){
 			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 
@@ -1436,7 +1447,7 @@ class Device {
 
 		$deviceList = array();
 
-		foreach($dbh->query($sql) as $deviceRow){ 
+		foreach ($dbh->query($sql) as $deviceRow){ 
 			$deviceList[$deviceRow["DeviceID"]]=Device::RowToObject($deviceRow);
 		}
 
@@ -1471,7 +1482,7 @@ class Device {
 
 		$o=array();
 		// Store any values that have been added before we make them safe 
-		foreach($this as $prop => $val){
+		foreach (get_object_vars($this) as $prop => $val) {
 			if(isset($val)){
 				$o[$prop]=$val;
 			}
@@ -1486,7 +1497,7 @@ class Device {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		foreach($o as $prop => $val){
+		foreach ($o as $prop => $val){
 			if(property_exists("Device",$prop)){
 				extendsql($prop,$this->$prop,$sqlextend,$loose);
 			}else{
@@ -1874,7 +1885,6 @@ class Device {
 				$sql="INSERT INTO fac_DeviceTags (DeviceID, TagID) VALUES ($this->DeviceID,$t);";
 				if(!$dbh->exec($sql)){
 					$info=$dbh->errorInfo();
-
 					error_log("PDO Error: {$info[2]} SQL=$sql");
 					return false;
 				}				
@@ -2037,7 +2047,9 @@ class Device {
 		if (!file_exists($path.$picturefile)){
 			$picturefile=$config->ParameterArray["picturepath"]."P_ERROR.png";
 		}
-		@list($width, $height)=getimagesize($path.$picturefile);
+		$imgSize = @getimagesize($path.$picturefile);
+		$width  = $imgSize[0] ?? 0;
+		$height = $imgSize[1] ?? 0;
 		// Make sure there is an image! DOH! If either is 0 then use a text box
 		$width=intval($width);
 		$height=intval($height);
@@ -2469,7 +2481,7 @@ class Device {
 		if ( ! is_null($CabinetID) ) {
 			$filterType = "Cabinet";
 			$filterValue = $CabinetID;
-			$this->UpdateSensorsFilter( $filterType, $filterValue );
+			self::UpdateSensorsFilter( $filterType, $filterValue );
 		}
 	}
 
@@ -2498,7 +2510,7 @@ class Device {
 				$filterSQL = "AND b.CabRowID='$filterValue'";
 				break;
 			case "Cabinet":
-				$filterSQL=(is_null($CabinetID))?"":" AND a.Cabinet=$cab->CabinetID";
+				$filterSQL = "AND a.Cabinet='" . intval($filterValue) . "'";
 				break;
 			default:
 				$filterSQL = "";
@@ -2561,7 +2573,6 @@ class Device {
 
 			if(!$dbh->query($insertsql)){
 				$info=$dbh->errorInfo();
-
 				error_log( "UpdateSensors::PDO Error: {$info[2]} SQL=$insertsql" );
 				return false;
 			}
@@ -2687,7 +2698,7 @@ class Device {
 		if ( ! $p->SiteAdmin ) {
 			return false;
 		}
-		
+		$clause = "";
 		if ( $deviceID != false ) {
 			$clause = "WHERE DeviceID=" . intval( $deviceID );
 		}

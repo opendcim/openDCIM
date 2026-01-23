@@ -53,6 +53,7 @@ class BinContents {
 	}
 	
 	function AddContents(){
+		$this->MakeSafe();
 		$sql="INSERT INTO fac_BinContents SET BinID=$this->BinID, SupplyID=$this->SupplyID, Count=$this->Count;";
 		return $this->exec($sql);
 	}
@@ -92,7 +93,7 @@ class BinContents {
 		$sql="UPDATE fac_BinContents SET Count=$this->Count WHERE BinID=$this->BinID 
 			AND SupplyID=$this->SupplyID;";
 
-		return $this->query($sql);
+		return $this->exec($sql);
 	}
 	
 	function RemoveContents(){
