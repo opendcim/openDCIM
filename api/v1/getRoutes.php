@@ -706,11 +706,47 @@ $app->get( '/device/byproject/{projectid}', function( Request $request, Response
 //
 
 $app->get( '/project', function(Request $request, Response $response) {
-	$r['error']=false;
-	$r['errorcode']=200;
-	$r['project']=Projects::getProjectList();
+    $r['error']=false;
+    $r['errorcode']=200;
 
-	return $response->withJson( $r, $r['errorcode'] );
+    $list = Projects::getProjectList();
+
+    // Fetch Maitrise rows for each project
+    global $dbh;
+    $st = null;
+    try{
+        $st = $dbh->prepare("SELECT mt.MaitriseName, pm.BureauName, pm.BureauEmail
+                              FROM fac_ProjectMaitrise pm
+                              LEFT JOIN fac_MaitriseType mt ON mt.MaitriseTypeID = pm.MaitriseTypeID
+                              WHERE pm.ProjectID = :pid
+                              ORDER BY pm.ProjectMaitriseID ASC");
+    }catch(Exception $e){
+        $st = null; // If tables don't exist, just omit maitrise info
+    }
+
+    $projects = array();
+    foreach($list as $p){
+        $tmp = array();
+        foreach($p as $prop=>$val){
+            $tmp[$prop] = $val;
+        }
+        // Attach maitrise info if available
+        $tmp['Maitrise'] = array();
+        if($st){
+            try{
+                $st->execute(array(':pid'=>$p->ProjectID));
+                $tmp['Maitrise'] = $st->fetchAll(PDO::FETCH_ASSOC);
+            }catch(Exception $e){
+                // ignore errors and leave Maitrise empty
+                $tmp['Maitrise'] = array();
+            }
+        }
+        $projects[] = $tmp;
+    }
+
+    $r['project'] = $projects;
+
+    return $response->withJson( $r, $r['errorcode'] );
 });
 
 //

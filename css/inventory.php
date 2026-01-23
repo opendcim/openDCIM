@@ -520,6 +520,16 @@ div.error {margin-top: 2em;margin-bottom: 2em;border: 1px dotted gray;}
 		padding: 10px;
 		margin-bottom: 8px;
 }
+
+/* Maitrise Types modal spacing */
+#maitrisetypesmodal { padding: 10px; }
+#maitrisetypesmodal table { border-collapse: separate; border-spacing: 0 8px; }
+#maitrisetypesmodal th, #maitrisetypesmodal td { padding: 6px 10px; vertical-align: middle; }
+#maitrisetypesmodal input[type="text"],
+#maitrisetypesmodal input[type="email"],
+#maitrisetypesmodal select { padding: 6px 8px; margin: 4px 6px 4px 0; }
+#maitrisetypesmodal button { margin: 4px 6px; }
+#maitrisetypesmodal .note { margin-top: 10px; display: block; }
 #infopanel fieldset button, #infopanel fieldset input[type=submit], #infopanel fieldset input[type=button],.reports fieldset button, .reports fieldset input[type=submit], .reports fieldset input[type=button] {width: 100%;}
 #infopanel legend, .device legend, .reports legend {border: 1px <?php echo $config->ParameterArray['HeaderColor']; ?> solid;background-color: white;}
 div.cabinet {
@@ -1130,6 +1140,11 @@ div.cabinet {
 #pandn.table .custom-combobox input {background-image: none; border-left: 2px; border-right: 0px; padding-left: 4px; font-size: inherit;} 
 #pandn.table .custom-combobox a {margin: 0; vertical-align: top; border-left: 0px; border-right: 2px; position: absolute;} 
 div#pandn.table div[id^="ppn"] { min-width: 200px; }
+
+/* Project Manager: align combobox toggle with input */
+#projectid + span.custom-combobox { position: relative; display: inline-block; width: 100%; vertical-align: middle; }
+#projectid + span.custom-combobox input { width: calc(100% - 24px) !important; }
+#projectid + span.custom-combobox a.custom-combobox-toggle { position: absolute; right: 0; top: 0; bottom: 0; width: 24px; padding: 0; }
 
 #olog > div:first-child { border-bottom: 2px solid black; }
 #olog > div > div:first-child { width: 100px; padding-right: 5px; white-space: nowrap; }
