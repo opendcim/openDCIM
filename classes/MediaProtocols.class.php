@@ -64,14 +64,14 @@ class MediaProtocols {
 		return $result;
 	}
 
-	static function deleteProtocol( $ProtocolID ) {
+	static function deleteProtocol( $ProtocolID, $NewProtocolID = 0 ) {
 		global $dbh;
 
-		$oldProtocol = getProtocol( $ProtocolID );
+		$oldProtocol = MediaProtocols::getProtocol( $ProtocolID );
 
-		// Set any connections using this ProtocolID to have NULL instead
-		$st = $dbh->prepare( "update fac_Ports set ProtocolID=NULL where ProtocolID=:ProtocolID" );
-		$st->execute( array( ":ProtocolID"=>$ProtocolID ));
+		// Set any connections using this ProtocolID to the new one (default 0) instead
+		$st = $dbh->prepare( "update fac_Ports set ProtocolID=:NewProtocolID where ProtocolID=:ProtocolID" );
+		$st->execute( array( ":ProtocolID"=>$ProtocolID, ":NewProtocolID"=>$NewProtocolID ));
 
 		$st = $dbh->prepare( "delete from fac_MediaProtocols where ProtocolID=:ProtocolID" );
 		if ( $st->execute( array( ":ProtocolID"=>$ProtocolID ))) {
@@ -92,9 +92,9 @@ class MediaProtocols {
 	}
 
 	function updateProtocol() {
-		$oldProtocol = getProtocol( $this->ProtocolID );
+		$oldProtocol = MediaProtocols::getProtocol( $this->ProtocolID );
 
-		$st = $this->prepare( "fac_MediaProtocols set ProtocolName=:ProtocolName where ProtocolID=:ProtocolID" );
+		$st = $this->prepare( "update fac_MediaProtocols set ProtocolName=:ProtocolName where ProtocolID=:ProtocolID" );
 
 		if( $st->execute( array( ":ProtocolID"=>$this->ProtocolID, ":ProtocolName"=>$this->ProtocolName ) ) ) {
 			(class_exists('LogActions'))?LogActions::LogThis($this, $oldProtocol):'';

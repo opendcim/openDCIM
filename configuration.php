@@ -1105,18 +1105,19 @@
 					remove();
 				});
 			}
-			rowinput.keypress(function(event){
-				if(event.keyCode==10 || event.keyCode==13){
+			rowinput.on('keydown', function(event){
+				if(event.key === 'Enter'){
 					event.preventDefault();
-					rowinput.change();
+					$(this).data('enter-pressed', true);
+					update();
 				}
 			});
 			function ajaxdelete(){
 				var modalactive = !!modal.data('ui-dialog');
-				var newConnectorId = (choices && choices.length)?choices.val():undefined;
+				var newId = (choices && choices.length)?choices.val():undefined;
 				$.ajax({
 					url: 'api/v1/' + datapath + '/' + rowinput.data('id'),
-					data: newConnectorId === undefined ? undefined : { NewConnectorID: newConnectorId },
+					data: newId === undefined ? undefined : { NewID: newId },
 					method: 'DELETE'
 				}).done(function(data){
 					if(modalactive){
@@ -1217,7 +1218,15 @@
 					});;
 				}
 			}
-			rowinput.change(function(){
+			rowinput.change(function(event){
+				// this is necessary because when you hit enter on the new item blank it triggers the form submission
+				// then the focus changes from the input blank and it resubmits the change a second time because UI/UX
+				// is hard. This needs a little something extra so Stacked Like Pancakes - 45
+				event.preventDefault();
+				if($(this).data('enter-pressed')){
+					$(this).removeData('enter-pressed');
+					return;
+				}
 				update();
 			});
 		}
