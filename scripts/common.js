@@ -1942,7 +1942,7 @@ function LameLogDisplay(){
 					});
 					setmediatype.val('');
 				}
-			}).css('z-index','3');
+			}).css('z-index','5');
 
 			// Populate media type choices
 			function massedit_mt(){
@@ -1991,7 +1991,7 @@ function LameLogDisplay(){
 					});
 					setmediaconnector.val('');
 				}
-			});
+			}).css('z-index','8');
 
 			// Populate port connector type choices
 			function massedit_mc(){
@@ -2041,7 +2041,7 @@ function LameLogDisplay(){
 					});
 					setmediaprotocol.val('');
 				}
-			});
+			}).css('z-index','7');
 
 			// Populate port protocol type choices
 			function massedit_mp(){
@@ -2091,7 +2091,7 @@ function LameLogDisplay(){
 					});
 					setmediarate.val('');
 				}
-			});
+			}).css('z-index','6');
 
 			// Populate port rate choices
 			function massedit_mr(){
@@ -2142,7 +2142,7 @@ function LameLogDisplay(){
 					});
 					setpowerconnector.val('');
 				}
-			}).css('z-index','3');
+			}).css('z-index','9');
 
 			// Populate power conenctor choices
 			function massedit_powc(){
@@ -2193,7 +2193,7 @@ function LameLogDisplay(){
 					});
 					setpowervoltage.val('');
 				}
-			}).css('z-index','3');
+			}).css('z-index','8');
 
 			// Populate power voltage choices
 			function massedit_powv(){
@@ -2244,7 +2244,7 @@ function LameLogDisplay(){
 					});
 					setpowerphase.val('');
 				}
-			}).css('z-index','3');
+			}).css('z-index','7');
 
 			// Populate power phase choices
 			function massedit_powp(){
@@ -2294,7 +2294,7 @@ function LameLogDisplay(){
 					});
 					setcolorcode.val('');
 				}
-			});
+			}).css('z-index','4');
 
 			// Populate color code choices
 			function massedit_cc(){
