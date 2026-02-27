@@ -418,7 +418,7 @@ if(isset($results)){
 		}
 	}
 
-	if ( isset($_REQUEST['ldapaction']) && $_REQUEST['ldapaction'] == "Set" ) {
+	if ( isset($_REQUEST['ldapaction']) && $_REQUEST['ldapaction'] == "Set" && $person->SiteAdmin ) {
 		Config::UpdateParameter( 'LDAPServer', $_REQUEST['LDAPServer']);
 		Config::UpdateParameter( 'LDAPBaseDN', $_REQUEST['LDAPBaseDN']);
 		Config::UpdateParameter( 'LDAPBindDN', $_REQUEST['LDAPBindDN']);

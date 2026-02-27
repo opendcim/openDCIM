@@ -5,6 +5,10 @@
     $subheader=__("Network Map Viewer");
 
     $dotCommand = $config->ParameterArray["dot"];
+    if(!is_executable($dotCommand)){
+        error_log("report_network_map: dot command is not a valid executable: ".$dotCommand);
+        exit;
+    }
     # if format is set, graph options should be set and ready to be rendered
     if(isset($_REQUEST['format'])) {
         # find the directory that dcim is being hosted out of (used when we build
@@ -464,7 +468,7 @@ overlap = scale;
             } elseif($ft == 'jpg') {
                 $header .= "image/jpeg";
             }
-            exec($dotCommand." -T".$ft." -o".$graphfile." ".$dotfile, $graph, $retval);
+            exec(escapeshellarg($dotCommand)." -T".escapeshellarg($ft)." -o".escapeshellarg($graphfile)." ".escapeshellarg($dotfile), $graph, $retval);
             if($retval == 0) {
                 header($header);
                 unlink($dotfile);

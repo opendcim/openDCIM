@@ -78,12 +78,13 @@ class Config{
 		if(is_null($parameter) || is_null($value)){
 			return false;
 		}else{
-			$sql="UPDATE fac_Config SET Value=\"$value\" WHERE Parameter=\"$parameter\";";
-			if($dbh->query($sql)){
+			$sql="UPDATE fac_Config SET Value=:value WHERE Parameter=:parameter;";
+			$st=$dbh->prepare($sql);
+			if($st->execute(array(":value"=>$value,":parameter"=>$parameter))){
 				return $value;
 			}else{
-				$info=$dbh->errorInfo();
-				error_log("UpdateParamter::PDO Error: {$info[2]} SQL=$sql");
+				$info=$st->errorInfo();
+				error_log("UpdateParameter::PDO Error: {$info[2]}");
 				return false;
 			}
 		}
