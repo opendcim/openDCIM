@@ -252,6 +252,18 @@ function get_base_url() {
 	}
 
 
+	// Check for SELinux
+	if(strtolower(PHP_OS)=='linux'){
+		exec("getenforce 2>/dev/null", $getenforce, $return);
+		if($return == 0 && isset($getenforce[0]) && $getenforce[0] == "Enforcing"){
+			$tests['selinux']['state']="warning";
+			$tests['selinux']['message']='SELinux is in Enforcing mode. If you have trouble writing to directories even with correct permissions, you may need to adjust SELinux contexts (e.g. <i>chcon -R -t httpd_sys_rw_content_t</i> on writable directories) or set appropriate booleans.';
+		}else{
+			$tests['selinux']['state']="good";
+			$tests['selinux']['message']='';
+		}
+	}
+
 	//Adding in some preliminary support for nginix
 	if(preg_match("/apache/i", $_SERVER['SERVER_SOFTWARE'])){
 		if(function_exists('apache_get_modules')){
