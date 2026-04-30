@@ -1482,5 +1482,50 @@ table#parcheos tr td:first-child + td table {margin-left: auto;}
 
 p.errormsg {padding: 20px; background-color: #DDDDDD; font-size: 120%; font-weight: bold; color: red;}
 
+/* feature automatic pdu link planer */
+.phase-load-table td {
+	padding: 3px 5px;
+	vertical-align: middle;
+}
+  /* --- Fix for Auto Planner modal visibility --- */
+  .ui-dialog {
+    z-index: 99999 !important;        /* ensures it's above the rack view */
+    background: #fff !important;      /* opaque white background for clarity */
+    border-radius: 6px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.4);
+  }
 
+  .ui-widget-overlay {
+    background: rgba(0,0,0,0.6) !important; /* dark transparent overlay */
+    position: fixed !important;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 99998 !important;
+  }
+
+  /* Slight fade animation for nicer UX */
+  .ui-dialog {
+    animation: fadeInModal 0.25s ease-in-out;
+  }
+  @keyframes fadeInModal {
+    from {opacity:0; transform: scale(0.97);}
+    to {opacity:1; transform: scale(1);}
+  }
+
+  /* Optional: better spacing inside modal */
+  #pduPlannerDialog label {
+    display: block;
+    margin: 6px 0;
+    cursor: pointer;
+  }
+  .ui-dialog-buttonpane .ui-button {
+  background-color: #007bff !important;
+  border: none !important;
+  color: white !important;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-weight: bold;
+}
+.ui-dialog-buttonpane .ui-button:hover {
+  background-color: #0056b3 !important;
+}
 
