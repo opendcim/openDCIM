@@ -1,0 +1,61 @@
+Vue D’Ensemble
+
+Page de gestion des projets: créer, modifier, supprimer un projet et gérer ses “Maitrise” (bureaux/types), ainsi que l’association de matériels (devices/cabinets).
+Accès via Project dans le menu; la liste est filtrable (recherche intégrée).
+Accès
+
+Permissions d’écriture requises pour créer/modifier des projets.
+Les actions “Gérer les types de Maitrise” sont réservées aux administrateurs de contacts.
+Sélection Du Projet
+
+Sélectionner un projet dans la liste en haut; le changement charge automatiquement le projet choisi.
+Option “New Project” pour créer un projet.
+Champs Projet
+
+Project Name: obligatoire.
+Project Sponsor: optionnel.
+Project Start Date, Expiration Date, Actual End Date: optionnels; format de date YYYY-MM-DD avec sélecteur calendrier.
+Les validations de formulaire guident la saisie (ex. nom requis).
+Actions
+
+Create: enregistre un nouveau projet et recharge la page du projet créé.
+Update: sauvegarde les modifications du projet courant et des lignes “Maitrise”.
+Delete: ouvre une confirmation. Supprime le projet; les devices sont dés-associés, pas supprimés. Action irréversible.
+Maitrise (Bureaux)
+
+Section “Maitrise Entries”: ajoutez une ou plusieurs lignes.
+Par ligne:
+Type: sélectionner un type de Maitrise.
+Bureau Name: nom du bureau, obligatoire.
+Email: email du bureau, optionnel.
+Boutons:
+Add Maitrise: ajoute une nouvelle ligne vide.
+Remove: supprime la ligne correspondante.
+Règles Email
+
+Non obligatoire: si laissé vide, l’email est enregistré à NULL.
+Si saisi, le format est vérifié:
+Valide: enregistré tel quel.
+Invalide: non enregistré (remplacé par NULL) et un avertissement s’affiche en haut du formulaire.
+L’enregistrement des autres champs n’est pas bloqué par un email manquant/invalide.
+Types De Maitrise (Admin)
+
+Bouton “Manage Maitrise Types”:
+Modifier/Supprimer des types existants (sauvegarde immédiate).
+Ajouter un nouveau type.
+Dans les listes Type, l’option “More” ouvre également la gestion des types.
+Association D’Éléments
+
+Assign Devices / Assign Cabinets: ouvre un panneau (iframe) pour associer/dissocier des équipements ou armoires au projet courant.
+Pendant l’assignation, les champs du formulaire principal sont mis en lecture seule.
+Conseils & Dépannage
+
+Champs requis: renseigner “Project Name” pour créer/mettre à jour.
+Dates: utiliser le sélecteur pour éviter des formats invalides.
+Email: laissez vide si vous n’en avez pas; en cas de message d’avertissement, corrigez le format si nécessaire.
+Suppression: vérifiez bien le contenu du projet; l’action ne peut pas être annulée.
+Références Fonctionnelles
+
+Email optionnel et avertissements: project_mgr.php:144, project_mgr.php:147, project_mgr.php:172.
+Insertion des avertissements dans le formulaire: project_mgr.php:168, project_mgr.php:173, project_mgr.php:260.
+Champs et actions de base du projet (formulaire): project_mgr.php:259, project_mgr.php:260, project_mgr.php:383.

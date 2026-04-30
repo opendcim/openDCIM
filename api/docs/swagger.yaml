@@ -903,10 +903,10 @@ paths:
       - user_id: []
   /project:
     get:
-      summary: Metadata about all projects
+      summary: Metadata about all projects (with Maitrise entries)
       tags:
       - "Project"
-      description: 'Returns the metadata about projects in the system, but not members of the projects.'
+      description: 'Returns the metadata about projects in the system, including Maitrise (type, bureau, email) entries for each project.'
       produces:
       - "application/json"
       operationId: "GetProjectList"
@@ -1638,6 +1638,22 @@ definitions:
       ProjectActualEndDate:
         type: "string"
         format: "Datestamp"
+      Maitrise:
+        type: "array"
+        items:
+          $ref: "#/definitions/ProjectMaitrise"
+  ProjectMaitrise:
+    type: "object"
+    properties:
+      MaitriseName:
+        type: "string"
+        format: "Freeform text"
+      BureauName:
+        type: "string"
+        format: "Freeform text"
+      BureauEmail:
+        type: "string"
+        format: "EmailAddress"
   PowerPort:
     type: "object"
     properties:
