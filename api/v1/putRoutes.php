@@ -79,7 +79,7 @@ $app->put( '/audit', function( Request $request, Response $response ) {
 //	URL:	/api/v1/people/:userid
 //	Method: PUT
 //	Params: userid (required, passed as :userid in URL)
-//			lastname, firstname, phone1, phone2, phone3, email, adminowndevices, 
+//			lastname, firstname, phone1, phone2, countryCode, email, adminowndevices, 
 //			readaccess, writeaccess, deleteaccess, contactadmin, rackrequest, 
 //			rackadmin, siteadmin
 //	Returns: record as created
