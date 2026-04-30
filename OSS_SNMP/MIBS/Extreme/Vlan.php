@@ -426,5 +426,3 @@ class Vlan extends \OSS_SNMP\MIBS\Extreme
     }
 
 }
-
-

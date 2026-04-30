@@ -1,12 +1,6 @@
 <?php
 
 /*
-    Copyright (c) 2012 - 2014, Open Source Solutions Limited, Dublin, Ireland
-    All rights reserved.
-
-    Contact: Barry O'Donovan - barry (at) opensolutions (dot) ie
-    http://www.opensolutions.ie/
-
     This file is part of the OSS_SNMP package.
 
     Redistribution and use in source and binary forms, with or without
@@ -33,27 +27,22 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-// Works with sysDescr such as:
+// Verified against Apresia15000 series devices
 //
-// 'ProCurve J4903A Switch 2824, revision I.08.98, ROM I.08.07 (/sw/code/build/mako(ts_08_5))'
+// Sample sysDescr:
+// "Hitachi Cable Ethernet Switch Apresia15000-32XL-PSR Ver.8.22.03"
 
-if( substr( $sysDescr, 0, 9 ) == 'ProCurve ' )
+if( substr( $sysDescr, 0, 13 ) == 'Hitachi Cable' )
 {
-    if( preg_match( '/ProCurve (\w+) Switch (\w+).*, revision ([A-Z0-9\.]+), ROM ([A-Z0-9\.]+ .*)/',
-            $sysDescr, $matches ) )
-    {
-        $this->setVendor( 'Hewlett-Packard' );
-        $this->setModel( "Procurve Switch {$matches[2]} ({$matches[1]})" );
-        $this->setOs( 'ProCurve' );
-        $this->setOsVersion( $matches[3] );
-        $this->setOsDate( null );
-        //$this->getOsDate()->setTimezone( new \DateTimeZone( 'UTC' ) );
-    }
+    preg_match( '/(Hitachi Cable) Ethernet Switch ([^\s]+) ([^\s]+)/', $sysDescr, $matches );
+    $this->setVendor( $matches[1] );
+    $this->setModel( $matches[2] );
+    $this->setOs( 'hitachi os' );
+    $this->setOsVersion( $matches[3] );
 
-    try {
-        $this->setSerialNumber( $this->getSNMPHost()->useHP_ProCurve_Chassis()->serialNumber() );
-    } catch( Exception $e ) {
-        $this->setSerialNumber( '(error)' );
+    if( preg_match( '/Build date: (\d\d\d\d-\d\d-\d\d) (\d\d:\d\d:\d\d) ([A-Za-z]+)/', $sysDescr, $d ) )
+    {
+        $this->setOsDate( new \DateTime( "{$d[1]} {$d[2]} +00:00") );
+        $this->getOsDate()->setTimezone( new \DateTimeZone( $d[3] ) );
     }
 }
