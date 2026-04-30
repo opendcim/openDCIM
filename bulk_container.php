@@ -223,7 +223,7 @@
       
       // Rows are also optional
       if ( $row["Row"] != "" && $DataCenterID > 0 ) {
-        $st = $dbh->prepare( "select count(RowID) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ZoneID=:ZoneID and ucase(Name)=ucase(:Name)" );
+        $st = $dbh->prepare( "select count(CabRowID) as TotalMatches, CabRowID from fac_CabRow where DataCenterID=:DataCenterID and ZoneID=:ZoneID and ucase(Name)=ucase(:Name)" );
         $st->execute( array( ":DataCenterID"=>$DataCenterID, ":ZoneID"=>$ZoneID, ":Name"=>$row["Row"] ));
         if ( ! $val = $st->fetch() ) {
           $info = $dbh->errorInfo();
