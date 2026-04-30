@@ -76,6 +76,77 @@ $app->put( '/audit', function( Request $request, Response $response ) {
 });
 
 //
+//	URL:	/api/v1/project
+//	Method:	PUT
+//	Params:	ProjectName (required)
+//	Returns: record as created
+//
+
+$app->put( '/project', function( Request $request, Response $response ) use ( $person ) {
+	if ( ! $person->WriteAccess ) {
+		$r['error'] = true;
+		$r['errorcode'] = 401;
+		$r['message'] = __("Access Denied");
+	} else {
+		$project = new Projects();
+		$vars = $request->getQueryParams() ?: $request->getParsedBody();
+
+		foreach ( $vars as $prop=>$val ) {
+			if ( property_exists( $project, $prop ) ) {
+				$project->$prop = $val;
+			}
+		}
+
+		$project->ProjectName = trim( $project->ProjectName );
+		if ( $project->ProjectName == "" ) {
+			$r['error'] = true;
+			$r['errorcode'] = 400;
+			$r['message'] = __("ProjectName is required");
+		} else {
+			if ( $project->ProjectStartDate > "" ) {
+				$project->ProjectStartDate = date( "Y-m-d", strtotime( $project->ProjectStartDate ) );
+			} else {
+				$project->ProjectStartDate = null;
+			}
+			if ( $project->ProjectExpirationDate > "" ) {
+				$project->ProjectExpirationDate = date( "Y-m-d", strtotime( $project->ProjectExpirationDate ) );
+			} else {
+				$project->ProjectExpirationDate = null;
+			}
+			if ( $project->ProjectActualEndDate > "" ) {
+				$project->ProjectActualEndDate = date( "Y-m-d", strtotime( $project->ProjectActualEndDate ) );
+			} else {
+				$project->ProjectActualEndDate = null;
+			}
+
+			$search = new Projects();
+			$search->ProjectName = $project->ProjectName;
+			$existing = $search->Search();
+
+			if ( sizeof( $existing ) > 0 ) {
+				$r['error'] = true;
+				$r['errorcode'] = 400;
+				$r['message'] = __("Project name already exists.");
+			} else {
+				$project->createProject();
+				if ( $project->ProjectID == false ) {
+					$r['error'] = true;
+					$r['errorcode'] = 400;
+					$r['message'] = __("Unable to create Project resource with the given parameters.");
+				} else {
+					$r['error'] = false;
+					$r['errorcode'] = 201;
+					$r['message'] = __("Project resource created successfully.");
+					$r['project'] = $project;
+				}
+			}
+		}
+	}
+
+	return $response->withJson( $r, $r['errorcode'] );
+});
+
+//
 //	URL:	/api/v1/people/:userid
 //	Method: PUT
 //	Params: userid (required, passed as :userid in URL)
