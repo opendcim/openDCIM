@@ -219,5 +219,16 @@ class ProjectMembership {
 
 		return;
 	}
+
+	/**
+	 * Remove all direct project associations for a specific Device
+	 * Used before assigning a new project to the device.
+	 */
+	public static function RemoveDeviceMemberships( $DeviceID ) {
+		global $dbh;
+
+		$st = $dbh->prepare("DELETE FROM fac_ProjectMembership WHERE MemberType='Device' AND MemberID=:id");
+		$st->execute(array(":id"=>$DeviceID));
+	}
 }
 ?>
