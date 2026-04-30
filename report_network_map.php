@@ -9,7 +9,7 @@
     if(isset($_REQUEST['format'])) {
         # find the directory that dcim is being hosted out of (used when we build
         # the url for each node
-        $baseURI = $config->ParameterArray["InstallURL"];
+        $baseURI = rtrim($config->ParameterArray["InstallURL"], '/') . '/';
         # way to randomize the colors/styles
         # 0 == randomize colors if color can't be identified from db
         # 1 == Randomize colors, keeping same color for each colorid
