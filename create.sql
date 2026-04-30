@@ -13,6 +13,7 @@ CREATE TABLE fac_Cabinet (
   CabRowID int(11) NOT NULL,
   CabinetHeight int(11) NOT NULL,
   Model varchar(80) NOT NULL,
+  SerialNo varchar(30) NOT NULL,
   Keylock varchar(30) NOT NULL,
   MaxKW float(11) NOT NULL,
   MaxWeight int(11) NOT NULL,

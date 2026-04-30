@@ -68,6 +68,11 @@
 		$devList=$dev->SearchDevicebyAssetTag();
 		$resultcount=count($devList);
 		$title=__("Asset tag search results for")." &quot;$searchTerm&quot;";
+	}elseif($searchKey=='cabserial'){
+		$cab->SerialNo=$searchTerm;
+		$cabList=$cab->Search(true,true);
+		$resultcount=count($cabList);
+		$title=__("Cabinet Serial Number search results for")." &quot;$searchTerm&quot;";
 	}elseif($searchKey=="ctag"){
 		// TODO: this could be enhanced to allow searching for a specific custom attribute
 		$devList=$dev->SearchByCustomTag($searchTerm);
@@ -413,7 +418,7 @@ $(document).ready(function() {
 				hundredths = pad(time - (sec * 100) - (min * 6000), 2);
 			return pad(sec, 2);
 		}
-		var msg=$('<p>').append('<?php printf(__("Only one result, will autoforward in %s seconds."),'<span id="countdown"></span>'); ?>').click(function(){timer.stop();$(this).remove();})
+		var msg=$('<p>').append('<?php printf(__("Only one result; auto-forwarding in %s seconds. Click here to cancel the countdown."),'<span id="countdown"></span>'); ?>').click(function(){timer.stop();$(this).remove();})
 		$('#resultcount').parent('p').append(msg);
 		var currentTime=500,
 		incrementTime=100,
