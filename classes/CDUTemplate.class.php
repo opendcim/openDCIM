@@ -75,43 +75,43 @@ class CDUTemplate {
 	}
 
 	function MakeDisplay(){
-		$this->Model=stripslashes($this->Model);
-		$this->VersionOID=stripslashes($this->VersionOID);
-		$this->OutletNameOID=stripslashes($this->OutletNameOID);
-		$this->OutletDescOID=stripslashes($this->OutletDescOID);
-		$this->OutletCountOID=stripslashes($this->OutletCountOID);
-		$this->OutletStatusOID=stripslashes($this->OutletStatusOID);
-		$this->OutletStatusOn=stripslashes($this->OutletStatusOn);
-		$this->OID1=stripslashes($this->OID1);
-		$this->OID2=stripslashes($this->OID2);
-		$this->OID3=stripslashes($this->OID3);
-		$this->ATSStatusOID=stripslashes($this->ATSStatusOID);
-		$this->ATSDesiredResult=stripslashes($this->ATSDesiredResult);
+		$this->Model=stripslashes((string)$this->Model);
+		$this->VersionOID=stripslashes((string)$this->VersionOID);
+		$this->OutletNameOID=stripslashes((string)$this->OutletNameOID);
+		$this->OutletDescOID=stripslashes((string)$this->OutletDescOID);
+		$this->OutletCountOID=stripslashes((string)$this->OutletCountOID);
+		$this->OutletStatusOID=stripslashes((string)$this->OutletStatusOID);
+		$this->OutletStatusOn=stripslashes((string)$this->OutletStatusOn);
+		$this->OID1=stripslashes((string)$this->OID1);
+		$this->OID2=stripslashes((string)$this->OID2);
+		$this->OID3=stripslashes((string)$this->OID3);
+		$this->ATSStatusOID=stripslashes((string)$this->ATSStatusOID);
+		$this->ATSDesiredResult=stripslashes((string)$this->ATSDesiredResult);
 	}
 
 	static function RowToObject($row){
 		$template=new CDUTemplate();
-		$template->TemplateID=$row["TemplateID"];
-		$template->ManufacturerID=$row["ManufacturerID"];
-		$template->Model=$row["Model"];
-		$template->Managed=$row["Managed"];
-		$template->ATS=$row["ATS"];
-		$template->VersionOID=$row["VersionOID"];
-		$template->OutletNameOID=$row["OutletNameOID"];
-		$template->OutletDescOID=$row["OutletDescOID"];
-		$template->OutletCountOID=$row["OutletCountOID"];
-		$template->OutletStatusOID=$row["OutletStatusOID"];
-		$template->OutletStatusOn=$row["OutletStatusOn"];
-		$template->Multiplier=$row["Multiplier"];
-		$template->OID1=$row["OID1"];
-		$template->OID2=$row["OID2"];
-		$template->OID3=$row["OID3"];
-		$template->ATSStatusOID=$row["ATSStatusOID"];
-		$template->ATSDesiredResult=$row["ATSDesiredResult"];
-		$template->ProcessingProfile=$row["ProcessingProfile"];
-		$template->Voltage=$row["Voltage"];
-		$template->Amperage=$row["Amperage"];
-		$template->NumOutlets=$row["NumOutlets"];
+		$template->TemplateID=$row["TemplateID"] ?? null;
+		$template->ManufacturerID=$row["ManufacturerID"] ?? null;
+		$template->Model=$row["Model"] ?? null;
+		$template->Managed=$row["Managed"] ?? null;
+		$template->ATS=$row["ATS"] ?? null;
+		$template->VersionOID=$row["VersionOID"] ?? null;
+		$template->OutletNameOID=$row["OutletNameOID"] ?? null;
+		$template->OutletDescOID=$row["OutletDescOID"] ?? null;
+		$template->OutletCountOID=$row["OutletCountOID"] ?? null;
+		$template->OutletStatusOID=$row["OutletStatusOID"] ?? null;
+		$template->OutletStatusOn=$row["OutletStatusOn"] ?? null;
+		$template->Multiplier=$row["Multiplier"] ?? null;
+		$template->OID1=$row["OID1"] ?? null;
+		$template->OID2=$row["OID2"] ?? null;
+		$template->OID3=$row["OID3"] ?? null;
+		$template->ATSStatusOID=$row["ATSStatusOID"] ?? null;
+		$template->ATSDesiredResult=$row["ATSDesiredResult"] ?? null;
+		$template->ProcessingProfile=$row["ProcessingProfile"] ?? null;
+		$template->Voltage=$row["Voltage"] ?? null;
+		$template->Amperage=$row["Amperage"] ?? null;
+		$template->NumOutlets=$row["NumOutlets"] ?? null;
 
 		$template->MakeDisplay();
 
@@ -125,8 +125,10 @@ class CDUTemplate {
 			a.ManufacturerID=b.ManufacturerID ORDER BY b.Name ASC,a.Model ASC;";
 		
 		$tmpList=array();
-		foreach($dbh->query($sql) as $row){
-			$tmpList[]=CDUTemplate::RowToObject($row);
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $row){
+				$tmpList[]=CDUTemplate::RowToObject($row);
+			}
 		}
 		
 		return $tmpList;
@@ -139,7 +141,8 @@ class CDUTemplate {
 		
 		$sql="SELECT * FROM fac_CDUTemplate WHERE TemplateID=$this->TemplateID";
 
-		if($row=$dbh->query($sql)->fetch()){
+		$stmt=$dbh->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
 			foreach(CDUTemplate::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}

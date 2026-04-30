@@ -140,9 +140,10 @@ class PlannedPath {
 		$this->DeviceID=0;
 		$this->escribe_log("CANDIDATES:");
 		foreach($this->candidates as $dev => $port) {
-			$this->escribe_log("  [D=".$dev.", P=".$port.", W=".$this->nodes[$dev][$port]["weight"]."]");
-			if($this->nodes[$dev][$port]["weight"]<$minweight){
-				$minweight=$this->nodes[$dev][$port]["weight"];
+			$weight=$this->nodes[$dev][$port]["weight"] ?? null;
+			$this->escribe_log("  [D=".$dev.", P=".$port.", W=".$weight."]");
+			if($weight !== null && $weight<$minweight){
+				$minweight=$weight;
 				$this->DeviceID=$dev;
 				$this->PortNumber=$port;
 			}
@@ -159,17 +160,17 @@ class PlannedPath {
 		//Destination device is $this->devID2
 		
 		//weights
-		$weight_cabinet=$config->ParameterArray["path_weight_cabinet"]; 	//weight for patches on actual cabinet
-		$weight_rear=$config->ParameterArray["path_weight_rear"];		//weight fot rear connetcion between panels
-		$weight_row=$config->ParameterArray["path_weight_row"];		//weigth for patches on same row of cabinets (except actual cabinet)
+		$weight_cabinet=$config->ParameterArray["path_weight_cabinet"] ?? 0; 	//weight for patches on actual cabinet
+		$weight_rear=$config->ParameterArray["path_weight_rear"] ?? 0;		//weight fot rear connetcion between panels
+		$weight_row=$config->ParameterArray["path_weight_row"] ?? 0;		//weigth for patches on same row of cabinets (except actual cabinet)
 		//It is possible to assign a weight proportional to the distance between the actual cabinet and each cabinet of actual row, 
 		//so you can prioritize closest cabinets in the actual row. In the future...
 		
 		$this->escribe_log("\nSelected node: D=".$this->DeviceID.
 						"; P=".$this->PortNumber.
-						"; W=".$this->nodes[$this->DeviceID][$this->PortNumber]["weight"].
-						"; PD=".$this->nodes[$this->DeviceID][$this->PortNumber]["prev_dev"].
-						"; PP=".$this->nodes[$this->DeviceID][$this->PortNumber]["prev_port"]);;	
+						"; W=".($this->nodes[$this->DeviceID][$this->PortNumber]["weight"] ?? null).
+						"; PD=".($this->nodes[$this->DeviceID][$this->PortNumber]["prev_dev"] ?? null).
+						"; PP=".($this->nodes[$this->DeviceID][$this->PortNumber]["prev_port"] ?? null));;	
 			
 		//Compruebo si el puerto del dispositivo actual esta conectado a la conexion trasera de un panel
 		//I check if the port of this device is connected to a rear-panel connection
@@ -226,7 +227,7 @@ class PlannedPath {
 			global $config;
 
 			$mediaenforce="";
-			if($config->ParameterArray["MediaEnforce"]=='enabled'){
+			if(($config->ParameterArray["MediaEnforce"] ?? null)=='enabled'){
 				$mediaenforce=" AND af.MediaID=".$port->MediaID;
 			}
 			$sql="SELECT af.DeviceID AS DeviceID1,
@@ -245,15 +246,20 @@ class PlannedPath {
 					bf.ConnectedDeviceID IS NULL
 				ORDER BY DeviceID1,PortNumber1,DeviceID2,PortNumber2;";
 			foreach($dbh->query($sql) as $row){
+				$deviceID2=$row["DeviceID2"] ?? null;
+				$deviceID1=$row["DeviceID1"] ?? null;
+				$portNumber1=$row["PortNumber1"] ?? null;
+				$portNumber2=$row["PortNumber2"] ?? null;
+				$nodeWeight=$this->nodes[$this->DeviceID][$this->PortNumber]["weight"] ?? 0;
 				//Compruebo si tengo que anadir esta pareja
 				//I check if I have to add this pair of nodes
-				if (isset($this->candidates[$row["DeviceID2"]]) 
-					&& $this->nodes[$row["DeviceID2"]][$this->candidates[$row["DeviceID2"]]]["weight"]>$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_cabinet+$weight_rear
-					|| !isset($this->candidates[$row["DeviceID2"]]) && !isset($this->used_candidates[$row["DeviceID2"]])){
-					$this->AddNodeToList($row["DeviceID1"],-$row["PortNumber1"],$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_cabinet, $this->DeviceID, $this->PortNumber);
+				if (isset($this->candidates[$deviceID2]) 
+					&& ($this->nodes[$deviceID2][$this->candidates[$deviceID2]]["weight"] ?? 0)>$nodeWeight+$weight_cabinet+$weight_rear
+					|| !isset($this->candidates[$deviceID2]) && !isset($this->used_candidates[$deviceID2])){
+					$this->AddNodeToList($deviceID1,-$portNumber1,$nodeWeight+$weight_cabinet, $this->DeviceID, $this->PortNumber);
 					//Anado directamente el espejo de este puerto
 					//I add directly the mirror port of this port
-					$this->AddNodeToList($row["DeviceID2"],$row["PortNumber2"],$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_cabinet+$weight_rear, $row["DeviceID1"],-$row["PortNumber1"]);
+					$this->AddNodeToList($deviceID2,$portNumber2,$nodeWeight+$weight_cabinet+$weight_rear, $deviceID1,-$portNumber1);
 				}
 			}
 			
@@ -278,15 +284,20 @@ class PlannedPath {
 					bf.ConnectedDeviceID IS NULL
 				ORDER BY DeviceID1,PortNumber1,DeviceID2,PortNumber2;";
 			foreach($dbh->query($sql) as $row){
+				$deviceID2=$row["DeviceID2"] ?? null;
+				$deviceID1=$row["DeviceID1"] ?? null;
+				$portNumber1=$row["PortNumber1"] ?? null;
+				$portNumber2=$row["PortNumber2"] ?? null;
+				$nodeWeight=$this->nodes[$this->DeviceID][$this->PortNumber]["weight"] ?? 0;
 				//Compruebo si tengo que anadir esta pareja
 				//I check if I have to add this pair of nodes
-				if (isset($this->candidates[$row["DeviceID2"]]) 
-					&& $this->nodes[$row["DeviceID2"]][$this->candidates[$row["DeviceID2"]]]["weight"]>$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_row+$weight_rear
-					|| !isset($this->candidates[$row["DeviceID2"]]) && !isset($this->used_candidates[$row["DeviceID2"]])){
-					$this->AddNodeToList($row["DeviceID1"],-$row["PortNumber1"],$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_row,$this->DeviceID, $this->PortNumber);
+				if (isset($this->candidates[$deviceID2]) 
+					&& ($this->nodes[$deviceID2][$this->candidates[$deviceID2]]["weight"] ?? 0)>$nodeWeight+$weight_row+$weight_rear
+					|| !isset($this->candidates[$deviceID2]) && !isset($this->used_candidates[$deviceID2])){
+					$this->AddNodeToList($deviceID1,-$portNumber1,$nodeWeight+$weight_row,$this->DeviceID, $this->PortNumber);
 					//Anado directamente el espejo de este puerto
 					//I add directly the mirror port of this port
-					$this->AddNodeToList($row["DeviceID2"],$row["PortNumber2"],$this->nodes[$this->DeviceID][$this->PortNumber]["weight"]+$weight_row+$weight_rear, $row["DeviceID1"],-$row["PortNumber1"]);
+					$this->AddNodeToList($deviceID2,$portNumber2,$nodeWeight+$weight_row+$weight_rear, $deviceID1,-$portNumber1);
 				}
 			}
 		}
@@ -400,7 +411,7 @@ class PlannedPath {
 	function GotoHeadDevice () {
 	//Pone el objeto en el primer dispositivo del Path, si no lo es ya
 	//Places the object in the first device of Path, if not already
-		If (isset($this->Path[1]["DeviceID"]) && $this->Path[1]["DeviceID"]==$this->devID1){
+		if (isset($this->Path[1]["DeviceID"]) && $this->Path[1]["DeviceID"]==$this->devID1){
 			$this->DeviceID=$this->Path[1]["DeviceID"];
 			$this->PortNumber=$this->Path[1]["PortNumber"];
 			$this->acti=1;
@@ -416,7 +427,7 @@ class PlannedPath {
 	// Places the object with the DeviceID, PortNumber and Front of the next device in the path.
     // If the object's current device is not connected returns "false" and the object doesn't change.
 		$this->acti++;
-		If (isset($this->Path[$this->acti]["DeviceID"])){
+		if (isset($this->Path[$this->acti]["DeviceID"])){
 			$this->DeviceID=$this->Path[$this->acti]["DeviceID"];
 			$this->PortNumber=$this->Path[$this->acti]["PortNumber"];
 			return true;

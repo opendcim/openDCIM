@@ -29,7 +29,7 @@ class BinAudits {
 
 	function MakeSafe(){
 		$this->BinID=intval($this->BinID);
-		$this->UserID=sanitize($this->UserID);
+		$this->UserID=trim($this->UserID);
 		$this->AuditStamp=sanitize($this->AuditStamp);
 	}
 
@@ -48,7 +48,12 @@ class BinAudits {
 		$this->MakeSafe();
 
 		$sql="INSERT INTO fac_BinAudits SET BinID=$this->BinID, UserID=\"$this->UserID\", AuditStamp=\"$this->AuditStamp\";";
-		$this->exec($sql);
+		if ( $this->exec($sql) === false ) {
+			$info = $GLOBALS['dbh']->errorInfo();
+			error_log("BinAudits::AddAudit PDO Error: {$info[2]} SQL=$sql");
+			return false;
+}
+return true;
 	}
 
 	public static function RedactUser($UserID) {

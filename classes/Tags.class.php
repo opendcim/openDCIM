@@ -57,7 +57,7 @@ class Tags {
 			}
 		}else{
 			//No tagname was supplied so kick back an array of all available TagIDs and Names
-			return $this->FindAll();
+			return self::FindAll();
 		}
 		//everything failed give them nothing
 		return 0;
@@ -74,7 +74,7 @@ class Tags {
 			}
 		}else{
 			//No tagname was supplied so kick back an array of all available TagIDs and Names
-			return $this->FindAll();
+			return self::FindAll();
 		}
 		//everything failed give them nothing
 		return 0;
@@ -86,8 +86,11 @@ class Tags {
 		$sql="SELECT * FROM fac_Tags order by Name ASC";
 
 		$tagarray=array();
-		foreach($dbh->query($sql) as $row){
-			$tagarray[$row['TagID']]=$row['Name'];
+		$stmt=$dbh->query($sql);
+		if($stmt){
+			foreach($stmt as $row){
+				$tagarray[$row['TagID'] ?? null]=$row['Name'] ?? null;
+			}
 		}
 		return $tagarray;
 	}

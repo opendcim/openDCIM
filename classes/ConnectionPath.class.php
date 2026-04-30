@@ -42,6 +42,9 @@ class ConnectionPath {
 	}
 
 	private function AddDeviceToPathAux () {
+		if(!is_array($this->PathAux)){
+			$this->PathAux=array();
+		}
 		$i=count($this->PathAux);
 		$this->PathAux[$i]["DeviceID"]=$this->DeviceID;
 		$this->PathAux[$i]["PortNumber"]=$this->PortNumber;
@@ -54,8 +57,11 @@ class ConnectionPath {
 	private function IsDeviceInPathAux () {
 		$ret=false;
 		$crossovercount=0;
-		for ($i=0; $i<count($this->PathAux); $i++){
-			if ($this->PathAux[$i]["DeviceID"]==$this->DeviceID && $this->PathAux[$i]["PortNumber"]=$this->PortNumber) {
+		if(!is_array($this->PathAux)){
+			return false;
+		}
+		for ($i=0, $cnt=count($this->PathAux); $i<$cnt; $i++){
+			if (($this->PathAux[$i]["DeviceID"] ?? null)==$this->DeviceID && ($this->PathAux[$i]["PortNumber"] ?? null)==$this->PortNumber) {
 				++$crossovercount;
 				if($crossovercount>=200){
 					$ret=true;

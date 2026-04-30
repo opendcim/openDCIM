@@ -32,13 +32,13 @@ class SupplyBin {
 	}
 
 	function MakeDisplay(){
-		$this->Location=stripslashes($this->Location);
+		$this->Location=stripslashes((string)$this->Location);
 	}
 
 	static function RowToObject($row){
 		$bin=New SupplyBin();
-		$bin->BinID=$row['BinID'];
-		$bin->Location=$row['Location'];
+		$bin->BinID=$row['BinID'] ?? null;
+		$bin->Location=$row['Location'] ?? null;
 		$bin->MakeDisplay();
 
 		return $bin;
@@ -59,8 +59,9 @@ class SupplyBin {
 
 		$sql="SELECT * FROM fac_SupplyBin WHERE BinID=$this->BinID;";
 
-		if($row=$this->query($sql)->fetch()){
-			foreach(SupplyBin::RowToObject($row) as $prop => $value){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
+			foreach(get_object_vars(SupplyBin::RowToObject($row)) as $prop => $value){
 				$this->$prop=$value;
 			}
 			return true;
@@ -108,8 +109,11 @@ class SupplyBin {
 		$sql="SELECT * FROM fac_SupplyBin ORDER BY Location ASC;";
 		
 		$binList=array();
-		foreach($this->query($sql) as $row){
-			$binList[]=SupplyBin::RowToObject($row);
+		$stmt=$this->query($sql);
+		if($stmt){
+			foreach($stmt as $row){
+				$binList[]=SupplyBin::RowToObject($row);
+			}
 		}
 		
 		return $binList;

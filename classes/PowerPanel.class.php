@@ -93,28 +93,28 @@ class PowerPanel {
 	}
 
 	function MakeDisplay(){
-		$this->PanelLabel=stripslashes($this->PanelLabel);
-		$this->ParentBreakerName=stripslashes($this->ParentBreakerName);
-		$this->PanelIPAddress=stripslashes($this->PanelIPAddress);
+		$this->PanelLabel=stripslashes((string)$this->PanelLabel);
+		$this->ParentBreakerName=stripslashes((string)$this->ParentBreakerName);
+		$this->PanelIPAddress=stripslashes((string)$this->PanelIPAddress);
 	}
 
 	static function RowToObject($row){
 		$panel=new PowerPanel();
-		$panel->PanelID=$row["PanelID"];
-		$panel->PanelLabel=$row["PanelLabel"];
-		$panel->NumberOfPoles=$row["NumberOfPoles"];
-		$panel->MainBreakerSize=$row["MainBreakerSize"];
-		$panel->PanelVoltage=$row["PanelVoltage"];
-		$panel->NumberScheme=$row["NumberScheme"];
-		$panel->ParentPanelID=$row["ParentPanelID"];
-		$panel->ParentBreakerName=$row["ParentBreakerName"];
-		$panel->TemplateID=$row["TemplateID"];
-		$panel->PanelIPAddress=$row["PanelIPAddress"];
-		$panel->MapDataCenterID=$row["MapDataCenterID"];
-		$panel->MapX1=$row["MapX1"];
-		$panel->MapX2=$row["MapX2"];
-		$panel->MapY1=$row["MapY1"];
-		$panel->MapY2=$row["MapY2"];
+		$panel->PanelID=$row["PanelID"] ?? null;
+		$panel->PanelLabel=$row["PanelLabel"] ?? null;
+		$panel->NumberOfPoles=$row["NumberOfPoles"] ?? null;
+		$panel->MainBreakerSize=$row["MainBreakerSize"] ?? null;
+		$panel->PanelVoltage=$row["PanelVoltage"] ?? null;
+		$panel->NumberScheme=$row["NumberScheme"] ?? null;
+		$panel->ParentPanelID=$row["ParentPanelID"] ?? null;
+		$panel->ParentBreakerName=$row["ParentBreakerName"] ?? null;
+		$panel->TemplateID=$row["TemplateID"] ?? null;
+		$panel->PanelIPAddress=$row["PanelIPAddress"] ?? null;
+		$panel->MapDataCenterID=$row["MapDataCenterID"] ?? null;
+		$panel->MapX1=$row["MapX1"] ?? null;
+		$panel->MapX2=$row["MapX2"] ?? null;
+		$panel->MapY1=$row["MapY1"] ?? null;
+		$panel->MapY2=$row["MapY2"] ?? null;
 
 		$panel->MakeDisplay();
 
@@ -147,8 +147,10 @@ class PowerPanel {
 		
 		// Ok, now repeat for the subpanels
 		$sql = "select PanelID from fac_PowerPanel where ParentPanelID=" . intval( $PanelID);
-		foreach ( $dbh->query( $sql ) as $pnl) {
-			$watts += PowerPanel::getInheritedLoad( $pnl["PanelID"] );
+		if($stmt=$dbh->query( $sql )){
+			foreach ( $stmt as $pnl) {
+				$watts += PowerPanel::getInheritedLoad( $pnl["PanelID"] ?? null );
+			}
 		}
 
 		return $watts;
@@ -160,14 +162,18 @@ class PowerPanel {
 
 		// Same as with the InheritedLoad - get all the power strips off of the requested panel, then all of the subpanels
 		$sql = "select PDUID from fac_PowerDistribution where PanelID=" . intval( $PanelID );
-		foreach( $dbh->query( $sql ) as $pdu ) {
-			$watts += PowerDistribution::calculateEstimatedLoad( $pdu["PDUID"] );
+		if($stmt=$dbh->query( $sql )){
+			foreach( $stmt as $pdu ) {
+				$watts += PowerDistribution::calculateEstimatedLoad( $pdu["PDUID"] ?? null );
+			}
 		}
 
 		// Now get the subpanels
 		$sql = "select PanelID from fac_PowerPanel where ParentPanelID=" . intval( $PanelID );
-		foreach( $dbh->query( $sql ) as $pnl ) {
-			$watts += PowerPanel::getEstimatedLoad( $pnl["PanelID"] );
+		if($stmt=$dbh->query( $sql )){
+			foreach( $stmt as $pnl ) {
+				$watts += PowerPanel::getEstimatedLoad( $pnl["PanelID"] ?? null );
+			}
 		}
 
 		return $watts;
@@ -189,13 +195,13 @@ class PowerPanel {
 		while ( $currParent != 0 ) {
 			$st->execute( array( ":PanelID"=>$currParent ) );
 			$row = $st->fetch();
-			$currParent = $row->ParentPanelID;
+			$currParent = $row->ParentPanelID ?? 0;
 		}
 		
 		if ( ! @is_object( $row ) ) {
 			// Someone called this on a PowerSource
 			$row = new PowerPanel();
-			foreach ( $this as $prop=>$val ) {
+			foreach ( get_object_vars($this) as $prop=>$val ) {
 				$row->$prop = $val;
 			}
 		}
@@ -294,7 +300,8 @@ class PowerPanel {
 		$this->MakeSafe();
 
 		$sql="SELECT * FROM fac_PowerPanel WHERE PanelID=$this->PanelID;";
-		if($row=$this->query($sql)->fetch()){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
 			foreach(PowerPanel::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
@@ -317,7 +324,7 @@ class PowerPanel {
 
 		if(!$this->exec($sql)){
 			$info=$this->errorInfo();
-			error_log("createPanel::PDO Error: {$info[2]} $sql");
+			error_log("createPanel::PDO Error: " . ($info[2] ?? 'Unknown error') . " $sql");
 			return false;
 		}else{
 			$this->PanelID=$this->lastInsertId();
@@ -583,7 +590,7 @@ class PowerPanel {
 
 		if(!$this->query($sql)){
 			$info=$this->errorInfo();
-			error_log("updatePanel::PDO Error: {$info[2]} SQL=$sql");
+			error_log("updatePanel::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			return false;
 		}
 
@@ -600,7 +607,7 @@ class PowerPanel {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		foreach($this as $prop => $val){
+		foreach(get_object_vars($this) as $prop => $val){
 			// We force NumberScheme to a known value so this is to check if they wanted to search for the default
 			if($prop=="NumberScheme" && $val=="Sequential" && $os!="Sequential"){
 				continue;
@@ -614,11 +621,13 @@ class PowerPanel {
 
 		$panelList=array();
 
-		foreach($this->query($sql) as $row){
-			if($indexedbyid){
-				$panelList[$deviceRow["DeviceID"]]=PowerPanel::RowToObject($row);
-			}else{
-				$panelList[]=PowerPanel::RowToObject($row);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				if($indexedbyid){
+					$panelList[$deviceRow["DeviceID"] ?? null]=PowerPanel::RowToObject($row);
+				}else{
+					$panelList[]=PowerPanel::RowToObject($row);
+				}
 			}
 		}
 

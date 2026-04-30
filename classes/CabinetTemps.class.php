@@ -37,14 +37,20 @@ class CabinetTemps {
 		
 		$sql = sprintf( "select * from fac_CabinetTemps where CabinetID=%d", $this->CabinetID );
 		
-		if ( $row = $dbh->query( $sql )->fetch() ) {
-			$this->LastRead = date( "m-d-Y H:i:s", strtotime($row["LastRead"]) );
-			$Temp = $row["Temp"];
-			$Humidity = $row["Humidity"];
+		$stmt = $dbh->query( $sql );
+		if ( $stmt && ( $row = $stmt->fetch() ) ) {
+			$lastRead = $row["LastRead"] ?? null;
+			if ( $lastRead ) {
+				$this->LastRead = date( "m-d-Y H:i:s", strtotime( $lastRead ) );
+			} else {
+				$this->LastRead = null;
+			}
+			$this->Temp = $row["Temp"] ?? null;
+			$this->Humidity = $row["Humidity"] ?? null;
 		} else {
 			$info = $dbh->errorInfo();
 
-			error_log( "PDO Error: " . $info[2] . " SQL=" . $sql );
+			error_log( "PDO Error: " . ( $info[2] ?? 'Unknown error' ) . " SQL=" . $sql );
 			return false;
 		}
 		

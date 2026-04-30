@@ -59,14 +59,14 @@ class VM {
 		 */
 
 		$vm=new VM();
-		$vm->VMIndex=$dbRow["VMIndex"];
-		$vm->DeviceID=$dbRow["DeviceID"];
-		$vm->LastUpdated=$dbRow["LastUpdated"];
-		$vm->vmID=$dbRow["vmID"];
-		$vm->vmName=$dbRow["vmName"];
-		$vm->vmState=$dbRow["vmState"];
-		$vm->Owner=$dbRow["Owner"];
-		$vm->PrimaryContact=$dbRow["PrimaryContact"];
+		$vm->VMIndex=$dbRow["VMIndex"] ?? null;
+		$vm->DeviceID=$dbRow["DeviceID"] ?? null;
+		$vm->LastUpdated=$dbRow["LastUpdated"] ?? null;
+		$vm->vmID=$dbRow["vmID"] ?? null;
+		$vm->vmName=$dbRow["vmName"] ?? null;
+		$vm->vmState=$dbRow["vmState"] ?? null;
+		$vm->Owner=$dbRow["Owner"] ?? null;
+		$vm->PrimaryContact=$dbRow["PrimaryContact"] ?? null;
 
 		return $vm;
 	}
@@ -77,9 +77,12 @@ class VM {
 		$vmList=array();
 		$vmCount=0;
 
-		foreach($dbh->query($sql) as $row){
-			$vmList[$vmCount]=VM::RowToObject($row);
-			$vmCount++;
+		$stmt=$dbh->query($sql);
+		if($stmt){
+			foreach($stmt as $row){
+				$vmList[$vmCount]=VM::RowToObject($row);
+				$vmCount++;
+			}
 		}
 
 		return $vmList;
@@ -99,10 +102,11 @@ class VM {
 
 		$sql="SELECT * FROM fac_VMInventory WHERE VMIndex=$this->VMIndex;";
 
-		if(!$vmRow=$dbh->query($sql)->fetch()){
+		$stmt=$dbh->query($sql);
+		if(!$stmt || !($vmRow=$stmt->fetch())){
 			return false;
 		}else{
-			foreach(VM::RowToObject($vmRow) as $param => $value){
+			foreach(get_object_vars(VM::RowToObject($vmRow)) as $param => $value){
 				$this->$param=$value;
 			}
 			return true;
@@ -114,7 +118,7 @@ class VM {
 		$this->MakeSafe();
 
 		$sqlextend="";
-                foreach($this as $prop => $val){
+                foreach(get_object_vars($this) as $prop => $val){
                         if($val){
                                 extendsql($prop,$val,$sqlextend,$loose);
                         }
@@ -123,11 +127,14 @@ class VM {
 		$sql="SELECT *  FROM fac_VMInventory $sqlextend;";
 
 		$VMList=array();
-		foreach($this->query($sql) as $VMRow){
-			if($indexedbyid){
-				$VMList[$VMRow["VMIndex"]]=VM::RowToObject($VMRow);
-			}else{
-				$VMList[]=VM::RowToObject($VMRow);
+		$stmt=$this->query($sql);
+		if($stmt){
+			foreach($stmt as $VMRow){
+				if($indexedbyid){
+					$VMList[$VMRow["VMIndex"] ?? null]=VM::RowToObject($VMRow);
+				}else{
+					$VMList[]=VM::RowToObject($VMRow);
+				}
 			}
 		}
 		return $VMList;
@@ -138,14 +145,17 @@ class VM {
 
                 $this->MakeSafe();
 
+		$lastUpdated=strtotime((string)$this->LastUpdated);
+		$lastUpdated=($lastUpdated === false) ? 0 : $lastUpdated;
+		$lastUpdatedSQL=date("Y-m-d H:i:s", $lastUpdated);
 		$sql="INSERT INTO fac_VMInventory (DeviceID,LastUpdated,vmID,vmName,vmState,Owner,PrimaryContact) VALUES
-			($this->DeviceID,\"".date("Y-m-d H:i:s", strtotime($this->LastUpdated))."\",$this->vmID,
+			($this->DeviceID,\"$lastUpdatedSQL\",$this->vmID,
                         \"".$this->vmName."\",\"".$this->vmState."\",$this->Owner,$this->PrimaryContact);";
 
 		if(!$dbh->query($sql)){
                         $info=$dbh->errorInfo();
 			
-			error_log("CreateVM::PDO Error: {$info[2]} SQL=$sql" );
+			error_log("CreateVM::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql" );
                         return false;
                 }
                 return true;
@@ -156,14 +166,17 @@ class VM {
 
 		$this->MakeSafe();
 
-		$sql="UPDATE fac_VMInventory SET DeviceID=$this->DeviceID,LastUpdated=\"".date("Y-m-d H:i:s", strtotime($this->LastUpdated))."\",vmID=$this->vmID,
+		$lastUpdated=strtotime((string)$this->LastUpdated);
+		$lastUpdated=($lastUpdated === false) ? 0 : $lastUpdated;
+		$lastUpdatedSQL=date("Y-m-d H:i:s", $lastUpdated);
+		$sql="UPDATE fac_VMInventory SET DeviceID=$this->DeviceID,LastUpdated=\"$lastUpdatedSQL\",vmID=$this->vmID,
 			vmName=\"".$this->vmName."\",vmState=\"".$this->vmState."\",Owner=$this->Owner,PrimaryContact=$this->PrimaryContact WHERE
 			VMIndex=$this->VMIndex;";
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("UpdateVM::PDO Error: {$info[2]} SQL=$sql" );
+			error_log("UpdateVM::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql" );
 			return false;
 		}
 		return true;                            
@@ -179,7 +192,7 @@ class VM {
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("DeleteVM::PDO Error: {$info[2]} SQL=$sql" );
+			error_log("DeleteVM::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql" );
 			return false;
 		}
 		return true;

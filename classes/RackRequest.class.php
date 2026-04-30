@@ -80,19 +80,20 @@ class RackRequest {
 		$this->CurrentLocation=sanitize(transform($this->CurrentLocation));
 		$this->SpecialInstructions=sanitize($this->SpecialInstructions);
 		$this->RequestedAction=(in_array($this->RequestedAction,$validrequestactions))?$this->RequestedAction:'';
-		$this->MfgDate=date("Y-m-d", strtotime($this->MfgDate)); //date
+		$mfgDate=strtotime((string)$this->MfgDate);
+		$this->MfgDate=($mfgDate !== false) ? date("Y-m-d", $mfgDate) : '';
 	}
 
 	function MakeDisplay(){
-		$this->Label=stripslashes($this->Label);
-		$this->SerialNo=stripslashes($this->SerialNo);
-		$this->AssetTag=stripslashes($this->AssetTag);
-		$this->VLANList=stripslashes($this->VLANList);
-		$this->SANList=stripslashes($this->SANList);
-		$this->DeviceClass=stripslashes($this->DeviceClass);
-		$this->LabelColor=stripslashes($this->LabelColor);
-		$this->CurrentLocation=stripslashes($this->CurrentLocation);
-		$this->SpecialInstructions=stripslashes($this->SpecialInstructions);
+		$this->Label=stripslashes((string)$this->Label);
+		$this->SerialNo=stripslashes((string)$this->SerialNo);
+		$this->AssetTag=stripslashes((string)$this->AssetTag);
+		$this->VLANList=stripslashes((string)$this->VLANList);
+		$this->SANList=stripslashes((string)$this->SANList);
+		$this->DeviceClass=stripslashes((string)$this->DeviceClass);
+		$this->LabelColor=stripslashes((string)$this->LabelColor);
+		$this->CurrentLocation=stripslashes((string)$this->CurrentLocation);
+		$this->SpecialInstructions=stripslashes((string)$this->SpecialInstructions);
 	}
  
   function CreateRequest(){
@@ -111,7 +112,7 @@ class RackRequest {
 
 	if(!$dbh->exec($sql)){
 		$info=$dbh->errorInfo();
-		error_log("PDO Error: {$info[2]}");
+		error_log("PDO Error: " . ($info[2] ?? 'Unknown error'));
 		return false;
 	}else{		
 		$this->RequestID=$dbh->lastInsertId();
@@ -126,31 +127,34 @@ class RackRequest {
     $sql="SELECT * FROM fac_RackRequest WHERE CompleteTime='0000-00-00 00:00:00'";
     
     $requestList=array();
-	foreach($dbh->query($sql) as $row){ 
-		$requestNum=sizeof($requestList);
+	$stmt=$dbh->query($sql);
+	if($stmt){
+		foreach($stmt as $row){ 
+			$requestNum=sizeof($requestList);
 
-		$requestList[$requestNum]=new RackRequest();
-		$requestList[$requestNum]->RequestID=$row["RequestID"];
-		$requestList[$requestNum]->RequestorID=$row["RequestorID"];
-		$requestList[$requestNum]->RequestTime=$row["RequestTime"];
-		$requestList[$requestNum]->CompleteTime=$row["CompleteTime"];
-		$requestList[$requestNum]->Label=$row["Label"];
-		$requestList[$requestNum]->SerialNo=$row["SerialNo"];
-		$requestList[$requestNum]->AssetTag=$row["AssetTag"];
-		$requestList[$requestNum]->Hypervisor=$row["Hypervisor"];
-		$requestList[$requestNum]->Owner=$row["Owner"];
-		$requestList[$requestNum]->DeviceHeight=$row["DeviceHeight"];
-		$requestList[$requestNum]->EthernetCount=$row["EthernetCount"];
-		$requestList[$requestNum]->VLANList=$row["VLANList"];
-		$requestList[$requestNum]->SANCount=$row["SANCount"];
-		$requestList[$requestNum]->SANList=$row["SANList"];
-		$requestList[$requestNum]->DeviceClass=$row["DeviceClass"];
-		$requestList[$requestNum]->DeviceType=$row["DeviceType"];
-		$requestList[$requestNum]->LabelColor=$row["LabelColor"];
-		$requestList[$requestNum]->CurrentLocation=$row["CurrentLocation"];
-		$requestList[$requestNum]->SpecialInstructions=$row["SpecialInstructions"];
-		$requestList[$requestNum]->RequestedAction=$row["RequestedAction"];
-		$requestList[$requestNum]->MakeDisplay();
+			$requestList[$requestNum]=new RackRequest();
+			$requestList[$requestNum]->RequestID=$row["RequestID"] ?? null;
+			$requestList[$requestNum]->RequestorID=$row["RequestorID"] ?? null;
+			$requestList[$requestNum]->RequestTime=$row["RequestTime"] ?? null;
+			$requestList[$requestNum]->CompleteTime=$row["CompleteTime"] ?? null;
+			$requestList[$requestNum]->Label=$row["Label"] ?? null;
+			$requestList[$requestNum]->SerialNo=$row["SerialNo"] ?? null;
+			$requestList[$requestNum]->AssetTag=$row["AssetTag"] ?? null;
+			$requestList[$requestNum]->Hypervisor=$row["Hypervisor"] ?? null;
+			$requestList[$requestNum]->Owner=$row["Owner"] ?? null;
+			$requestList[$requestNum]->DeviceHeight=$row["DeviceHeight"] ?? null;
+			$requestList[$requestNum]->EthernetCount=$row["EthernetCount"] ?? null;
+			$requestList[$requestNum]->VLANList=$row["VLANList"] ?? null;
+			$requestList[$requestNum]->SANCount=$row["SANCount"] ?? null;
+			$requestList[$requestNum]->SANList=$row["SANList"] ?? null;
+			$requestList[$requestNum]->DeviceClass=$row["DeviceClass"] ?? null;
+			$requestList[$requestNum]->DeviceType=$row["DeviceType"] ?? null;
+			$requestList[$requestNum]->LabelColor=$row["LabelColor"] ?? null;
+			$requestList[$requestNum]->CurrentLocation=$row["CurrentLocation"] ?? null;
+			$requestList[$requestNum]->SpecialInstructions=$row["SpecialInstructions"] ?? null;
+			$requestList[$requestNum]->RequestedAction=$row["RequestedAction"] ?? null;
+			$requestList[$requestNum]->MakeDisplay();
+		}
     }
     
     return $requestList;
@@ -160,27 +164,28 @@ class RackRequest {
 	global $dbh;
     $sql="SELECT * FROM fac_RackRequest WHERE RequestID=\"".intval($this->RequestID)."\";";
 
-	if($row=$dbh->query($sql)->fetch()){
-		$this->RequestorID=$row["RequestorID"];
-		$this->RequestTime=$row["RequestTime"];
-		$this->CompleteTime=$row["CompleteTime"];
-		$this->Label=$row["Label"];
-		$this->SerialNo=$row["SerialNo"];
-		$this->MfgDate=$row["MfgDate"];
-		$this->AssetTag=$row["AssetTag"];
-		$this->Hypervisor=$row["Hypervisor"];
-		$this->Owner=$row["Owner"];
-		$this->DeviceHeight=$row["DeviceHeight"];
-		$this->EthernetCount=$row["EthernetCount"];
-		$this->VLANList=$row["VLANList"];
-		$this->SANCount=$row["SANCount"];
-		$this->SANList=$row["SANList"];
-		$this->DeviceClass=$row["DeviceClass"];
-		$this->DeviceType=$row["DeviceType"];
-		$this->LabelColor=$row["LabelColor"];
-		$this->CurrentLocation=$row["CurrentLocation"];
-		$this->SpecialInstructions=$row["SpecialInstructions"];
-		$this->RequestedAction=$row["RequestedAction"];
+	$stmt=$dbh->query($sql);
+	if($stmt && ($row=$stmt->fetch())){
+		$this->RequestorID=$row["RequestorID"] ?? null;
+		$this->RequestTime=$row["RequestTime"] ?? null;
+		$this->CompleteTime=$row["CompleteTime"] ?? null;
+		$this->Label=$row["Label"] ?? null;
+		$this->SerialNo=$row["SerialNo"] ?? null;
+		$this->MfgDate=$row["MfgDate"] ?? null;
+		$this->AssetTag=$row["AssetTag"] ?? null;
+		$this->Hypervisor=$row["Hypervisor"] ?? null;
+		$this->Owner=$row["Owner"] ?? null;
+		$this->DeviceHeight=$row["DeviceHeight"] ?? null;
+		$this->EthernetCount=$row["EthernetCount"] ?? null;
+		$this->VLANList=$row["VLANList"] ?? null;
+		$this->SANCount=$row["SANCount"] ?? null;
+		$this->SANList=$row["SANList"] ?? null;
+		$this->DeviceClass=$row["DeviceClass"] ?? null;
+		$this->DeviceType=$row["DeviceType"] ?? null;
+		$this->LabelColor=$row["LabelColor"] ?? null;
+		$this->CurrentLocation=$row["CurrentLocation"] ?? null;
+		$this->SpecialInstructions=$row["SpecialInstructions"] ?? null;
+		$this->RequestedAction=$row["RequestedAction"] ?? null;
 		$this->MakeDisplay();
 	}else{
 		//something bad happened maybe tell someone

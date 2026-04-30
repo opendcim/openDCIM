@@ -61,20 +61,20 @@ class LogActions {
 		 * table and convert it to an object for use in array or other
 		 */
 		$log=new LogActions();
-		$log->UserID=$dbRow["UserID"];
-		$log->Class=$dbRow["Class"];
-		$log->ObjectID=$dbRow["ObjectID"];
-		$log->ChildID=$dbRow["ChildID"];
-		$log->Property=$dbRow["Property"];
-		$log->Action=$dbRow["Action"];
+		$log->UserID=$dbRow["UserID"] ?? null;
+		$log->Class=$dbRow["Class"] ?? null;
+		$log->ObjectID=$dbRow["ObjectID"] ?? null;
+		$log->ChildID=$dbRow["ChildID"] ?? null;
+		$log->Property=$dbRow["Property"] ?? null;
+		$log->Action=$dbRow["Action"] ?? null;
 		if (strpos($log->Property, "assword") || strpos($log->Property, "ommunity")) {
-			$log->OldVal=str_repeat("*", strlen($dbRow["OldVal"]));
-			$log->NewVal=str_repeat("*", strlen($dbRow["NewVal"]));
+			$log->OldVal=str_repeat("*", strlen((string)($dbRow["OldVal"] ?? '')));
+			$log->NewVal=str_repeat("*", strlen((string)($dbRow["NewVal"] ?? '')));
 		}else{
-			$log->OldVal=$dbRow["OldVal"];
-			$log->NewVal=$dbRow["NewVal"];
+			$log->OldVal=$dbRow["OldVal"] ?? null;
+			$log->NewVal=$dbRow["NewVal"] ?? null;
 		}
-		$log->Time=$dbRow["Time"];
+		$log->Time=$dbRow["Time"] ?? null;
 
 		return $log;
 	}
@@ -86,7 +86,7 @@ class LogActions {
 		$log=new LogActions();
 		$log->UserID=$person->UserID;
 
-		$trace=debug_backtrace();
+		$trace=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
 		// we're only concerned with the 2nd record $trace can be read for a full debug if something calls for it
 		$caller=(isset($trace[1]))?$trace[1]:array('function' => 'direct');
 		$action=$caller['function'];
@@ -110,13 +110,13 @@ class LogActions {
 		}
 
 		// The diff function is acting retarded with some values so scrub em
-		foreach($object as $key => $value){
+		foreach(get_object_vars($object) as $key => $value){
 			if($value=='NULL' || $value=='0'){
 				$object->$key='';
 			}
 		}
 		if(!is_null($originalobject)){
-			foreach($originalobject as $key => $value){
+			foreach(get_object_vars($originalobject) as $key => $value){
 				if($value=='NULL' || $value=='0'){
 					$originalobject->$key='';
 				}
@@ -210,7 +210,7 @@ class LogActions {
 		$return=true;
 
 		// If a retention period has been set, trim the logs for this ObjectID prior to making this entry
-		if ( $config->ParameterArray["logretention"] > 0 ) {
+		if ( ($config->ParameterArray["logretention"] ?? 0) > 0 ) {
 			LogActions::Prune( $config->ParameterArray["logretention"], $log->ObjectID );
 		}
 
@@ -232,7 +232,7 @@ class LogActions {
 		}else{
 			// if we're creating a new object make a note of all the values
 			if($log->Action==1){
-				foreach($object as $prop => $value){
+				foreach(get_object_vars($object) as $prop => $value){
 					$log->Property=$prop;
 					$log->NewVal=$value;
 					// Log only new object properties that have values
@@ -282,7 +282,7 @@ class LogActions {
 
 		if(!$stmt->execute()){
 			$info=$stmt->errorInfo();
-			error_log("PDO Error::LogActions:WriteToDB {$info[1]}::{$info[2]}");
+			error_log("PDO Error::LogActions:WriteToDB " . ($info[1] ?? 'Unknown') . "::" . ($info[2] ?? 'Unknown error'));
 			return false;
 		}
 		return true;
@@ -296,9 +296,11 @@ class LogActions {
 		// Return a blank entry if nothing is found
 		$result = new LogActions();
 
-		foreach ( $log->query($sql) as $dbRow ) {
-			// There can be only one
-			$result = LogActions::RowToObject($dbRow);
+		if($stmt=$log->query($sql)){
+			foreach ( $stmt as $dbRow ) {
+				// There can be only one
+				$result = LogActions::RowToObject($dbRow);
+			}
 		}
 
 		return $result;
@@ -314,7 +316,7 @@ class LogActions {
 			$log->Class=get_class($object);
 
 			// Attempt to autofind the id of the object we've been handed
-			foreach($object as $prop => $value){
+			foreach(get_object_vars($object) as $prop => $value){
 				if(preg_match("/id/i", $prop)){
 					$log->ObjectID=$value;
 					break;
@@ -336,16 +338,18 @@ class LogActions {
 
 		$sql.=$add.' ORDER BY Time ASC;';
 		$events=array();		
-		foreach($log->query($sql) as $dbRow){
-			if ( $config->ParameterArray["GDPRPIIPrivacy"] == "enabled" && !$person->SiteAdmin ) {
-				$p = new People();
-				$p->UserID=$dbRow["UserID"];
-				$p->GetPersonByUserID();
-				if ( $p->countryCode != $person->countryCode ) {
-					$dbRow["UserID"] = "PIIProtected";				
+		if($stmt=$log->query($sql)){
+			foreach($stmt as $dbRow){
+				if ( ($config->ParameterArray["GDPRPIIPrivacy"] ?? '') == "enabled" && !$person->SiteAdmin ) {
+					$p = new People();
+					$p->UserID=$dbRow["UserID"] ?? null;
+					$p->GetPersonByUserID();
+					if ( $p->countryCode != $person->countryCode ) {
+						$dbRow["UserID"] = "PIIProtected";				
+					}
 				}
+				$events[]=LogActions::RowToObject($dbRow);
 			}
-			$events[]=LogActions::RowToObject($dbRow);
 		}
 
 		return $events;
@@ -400,7 +404,7 @@ class LogActions {
 		function findit($prop,$val,&$sql){
 			$sql.=" AND $prop LIKE \"%$val%\"";
 		}
-		foreach($this as $prop => $val){
+		foreach(get_object_vars($this) as $prop => $val){
 			if($val && $val!=date("Y-m-d", strtotime(0))){
 				findit($prop,$val,$sqlextend);
 			}
@@ -408,8 +412,10 @@ class LogActions {
 
 		$sql="SELECT DISTINCT CAST($sqlcolumn AS CHAR(80)) AS Search FROM fac_GenericLog WHERE $sqlcolumn!=\"\"$sqlextend ORDER BY $sqlcolumn ASC;";
 		$values=array();
-		foreach($this->query($sql) as $row){
-			$values[]=$row['Search'];
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				$values[]=$row['Search'] ?? null;
+			}
 		}
 
 		return array_unique($values);
@@ -430,7 +436,7 @@ class LogActions {
 
 		// This will store all our extended sql
 		$sqlextend="";
-		foreach($this as $prop => $val){
+		foreach(get_object_vars($this) as $prop => $val){
 			if($val && $val!=date("Y-m-d", strtotime(0))){
 				// Setting wild card searching to false because we use exact matches
 				// in the report_logging and I don't think we use this function
@@ -453,8 +459,10 @@ class LogActions {
 		$sql="SELECT * FROM fac_GenericLog $sqlextend;";
 
 		$events=array();		
-		foreach($this->query($sql) as $dbRow){
-			$events[]=LogActions::RowToObject($dbRow);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $dbRow){
+				$events[]=LogActions::RowToObject($dbRow);
+			}
 		}
 
 		return $events;

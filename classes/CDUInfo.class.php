@@ -43,10 +43,10 @@ class CDUInfo {
 
 		// If the device doesn't have an SNMP community set,
 		// check and see if we have a global one
-		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?$config->ParameterArray["SNMPCommunity"]:$dev->SNMPCommunity;
+		$dev->SNMPCommunity=($dev->SNMPCommunity=="")?($config->ParameterArray["SNMPCommunity"] ?? ''):$dev->SNMPCommunity;
 
 		// Make this false faster
-		$dev->SNMPCommunity=trim($dev->SNMPCommunity);
+		$dev->SNMPCommunity=trim((string)$dev->SNMPCommunity);
 		if($dev->SNMPCommunity==""){return false;}
 
 		// We've passed all the repeatable tests, return the device object for digging
@@ -58,8 +58,8 @@ class CDUInfo {
 	static private function OSS_SNMP_Lookup($dev,$snmplookup,$portid=null,$baseOID=null){
 		// This is find out the name of the function that called this to
 		// make the error logging more descriptive
-		$caller=debug_backtrace();
-		$caller=$caller[1]['function'];
+		$trace=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+		$caller=$trace[1]['function'] ?? 'unknown';
 
 		// Since we don't really let the user specify the version right now here's a stop gap
 		// Try the default version of 2c first

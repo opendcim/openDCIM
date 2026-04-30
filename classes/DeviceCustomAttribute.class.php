@@ -97,12 +97,12 @@ class DeviceCustomAttribute {
 
 	static function RowToObject($dbRow) {
 		$dca = new DeviceCustomAttribute();
-		$dca->AttributeID=$dbRow["AttributeID"];
-		$dca->Label=$dbRow["Label"];
-		$dca->AttributeType=$dbRow["AttributeType"];
-		$dca->Required=$dbRow["Required"];
-		$dca->AllDevices=$dbRow["AllDevices"];
-		$dca->DefaultValue=$dbRow["DefaultValue"];
+		$dca->AttributeID=$dbRow["AttributeID"] ?? null;
+		$dca->Label=$dbRow["Label"] ?? null;
+		$dca->AttributeType=$dbRow["AttributeType"] ?? null;
+		$dca->Required=$dbRow["Required"] ?? null;
+		$dca->AllDevices=$dbRow["AllDevices"] ?? null;
+		$dca->DefaultValue=$dbRow["DefaultValue"] ?? null;
 		return $dca;
 	}
 
@@ -123,7 +123,7 @@ class DeviceCustomAttribute {
 
 		if(!$dbh->exec($sql)) {
 			$info=$dbh->errorInfo();
-			error_log("CreateDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql");
+			error_log("CreateDeviceCustomAttribute::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			return false;
 		} else {
 			$this->AttributeID=$dbh->LastInsertId();
@@ -162,7 +162,7 @@ class DeviceCustomAttribute {
 
 		if(!$dbh->query($sql)) {
 			$info=$dbh->errorInfo();
-			error_log("UpdateDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql");
+			error_log("UpdateDeviceCustomAttribute::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			return false;
 		}
 
@@ -178,7 +178,8 @@ class DeviceCustomAttribute {
 			FROM fac_DeviceCustomAttribute
 			WHERE AttributeID=$this->AttributeID;";
 
-		if($dcaRow=$dbh->query($sql)->fetch()) {
+		$stmt=$dbh->query($sql);
+		if($stmt && ($dcaRow=$stmt->fetch())) {
 			foreach(DeviceCustomAttribute::RowToObject($dcaRow) as $prop => $value) {
 				$this->$prop=$value;
 			}
@@ -195,21 +196,21 @@ class DeviceCustomAttribute {
 		$sql="DELETE FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$this->AttributeID;";
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
-			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+			error_log("RemoveDeviceCustomAttribute::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql" );
 			return false;
 		}
 
 		$sql="DELETE FROM fac_DeviceCustomValue WHERE AttributeID=$this->AttributeID;";
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
-			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+			error_log("RemoveDeviceCustomAttribute::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql" );
 			return false;
 		}
 		
 		$sql="DELETE FROM fac_DeviceCustomAttribute WHERE AttributeID=$this->AttributeID;";
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
-			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+			error_log("RemoveDeviceCustomAttribute::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql" );
 			return false;
 		}
 		
@@ -225,14 +226,14 @@ class DeviceCustomAttribute {
 		$sql="DELETE FROM fac_DeviceTemplateCustomValue WHERE AttributeID=$this->AttributeID;";
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
-			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+			error_log("RemoveDeviceCustomAttribute::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql" );
 			return false;
 		}
 
 		$sql="DELETE FROM fac_DeviceCustomValue WHERE AttributeID=$this->AttributeID;";
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
-			error_log("RemoveDeviceCustomAttribute::PDO Error: {$info[2]} SQL=$sql" );
+			error_log("RemoveDeviceCustomAttribute::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql" );
 			return false;
 		}
 		
@@ -248,11 +249,13 @@ class DeviceCustomAttribute {
 			FROM fac_DeviceCustomAttribute
 			ORDER BY Label, AttributeID;";
 
-		foreach($dbh->query($sql) as $dcaRow) {
-			if($indexbyname){
-				$dcaList[$dcaRow["Label"]]=DeviceCustomAttribute::RowToObject($dcaRow);
-			}else{
-				$dcaList[$dcaRow["AttributeID"]]=DeviceCustomAttribute::RowToObject($dcaRow);
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $dcaRow) {
+				if($indexbyname){
+					$dcaList[$dcaRow["Label"] ?? null]=DeviceCustomAttribute::RowToObject($dcaRow);
+				}else{
+					$dcaList[$dcaRow["AttributeID"] ?? null]=DeviceCustomAttribute::RowToObject($dcaRow);
+				}
 			}
 		}
 

@@ -97,19 +97,22 @@ class DataCenter {
 		return $dbh->exec($sql);
 	}
 
-	function Search($indexedbyid=false,$loose=false){
-		global $person;
-		global $config;
+	function Search($indexedbyid = false, $loose = false) {
+	global $person, $config;
 
-		if ($config->ParameterArray["GDPRCountryIsolation"] == "enabled" && !$person->SiteAdmin ) {
+		if (
+			$config->ParameterArray["GDPRCountryIsolation"] === "enabled"
+			&& !$person->SiteAdmin
+		) {
 			$this->countryCode = $person->countryCode;
 		}
 
-		$o=new stdClass();
-		// Store any values that have been added before we make them safe 
-		foreach($this as $prop => $val){
-			if(isset($val)){
-				$o->$prop=$val;
+		$o = new stdClass();
+
+		// Store any values that have been added before we make them safe
+		foreach (get_object_vars($this) as $prop => $val) {
+			if ($val !== null) {
+				$o->$prop = $val;
 			}
 		}
 
@@ -117,27 +120,30 @@ class DataCenter {
 		$this->MakeSafe();
 
 		// This will store all our extended sql
-		$sqlextend="";
-		foreach($this as $prop => $val){
-			if($val){
-				extendsql($prop,$val,$sqlextend,$loose);
+		$sqlextend = "";
+
+		foreach (get_object_vars($this) as $prop => $val) {
+			if ($val !== null && $val !== '') {
+				extendsql($prop, $val, $sqlextend, $loose);
 			}
 		}
 
-		$sql="SELECT * FROM fac_DataCenter $sqlextend ORDER BY Name ASC;";
+		$sql = "SELECT * FROM fac_DataCenter $sqlextend ORDER BY Name ASC;";
 
-		$dcList=array();
+		$dcList = [];
 
-		foreach($this->query($sql) as $row){
-			if($indexedbyid){
-				$dcList[$row["DataCenterID"]]=DataCenter::RowToObject($row);
-			}else{
-				$dcList[]=DataCenter::RowToObject($row);
+		foreach ($this->query($sql) as $row) {
+			$dc = DataCenter::RowToObject($row);
+			if ($indexedbyid) {
+				$dcList[$row["DataCenterID"]] = $dc;
+			} else {
+				$dcList[] = $dc;
 			}
 		}
 
 		return $dcList;
 	}
+
 
 	// Make a simple reference to a loose search
 	function LooseSearch($indexedbyid=false){
@@ -211,9 +217,11 @@ class DataCenter {
 		$zn->DataCenterID = $this->DataCenterID;
 		$zoneList = $zn->GetZonesByDC();
 		
+		if (is_iterable($zoneList) ) {
 		foreach ( $zoneList as $z ) {
 			// This function already deletes any rows within the zone
 			$z->DeleteZone();
+		  }
 		}
 		
 		// Time to deal with the crap in storage
@@ -294,9 +302,11 @@ class DataCenter {
 		
 
 		if($row=$this->query($sql)->fetch()){
-			foreach(DataCenter::RowToObject($row) as $prop => $value){
-				$this->$prop=$value;
+			$tmp = DataCenter::RowToObject($row);
+			foreach (get_object_vars($tmp) as $prop => $value) {
+    		$this->$prop = $value;
 			}
+
 			return true;
 		}else{
 			return false;
@@ -392,7 +402,8 @@ class DataCenter {
 	function GetOverview(){
 		global $config;
 		$this->MakeSafe();
-		$statusarray=array();	
+		$statusarray=array();
+		$airflow=array();	
 		// check to see if map was set
 		if(strlen($this->DrawingFileName)){
 			$mapfile=$config->ParameterArray['drawingpath'].DIRECTORY_SEPARATOR.$this->DrawingFileName;
@@ -452,7 +463,8 @@ class DataCenter {
 				$RealPowerYellow=intval($this->dcconfig->ParameterArray["PowerYellow"]);
 				
 				// get image file attributes and type
-				if(mime_content_type($mapfile)=='image/svg+xml'){
+				$mime = mime_content_type($mapfile);
+				if ($mime === 'image/svg+xml') {
 					$svgfile = simplexml_load_file($mapfile);
 					$width = substr($svgfile['width'],0,4);
 					$height = substr($svgfile['height'],0,4);
