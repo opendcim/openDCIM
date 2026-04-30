@@ -70,7 +70,26 @@
 				}
 			}
 		}
-		$body.=BuildCabinet($cabinet->CabinetID,$side);
+		$cabHtml=BuildCabinet($cabinet->CabinetID,$side);
+
+		// Add compact metrics inside the cabinet wrapper div
+		$stats=Cabinet::getStats($cabinet->CabinetID);
+		$used=$cabinet->CabinetOccupancy($cabinet->CabinetID);
+		$spaceUsed=$used."/".$cabinet->CabinetHeight."U";
+		$powerKW=sprintf("%.1f",$stats->Wattage/1000);
+		$weightKg=$stats->Weight;
+		$metrics="<div class=\"cabinet-metrics\" style=\"text-align:center;font-size:10px;margin-top:2px;\">";
+		$metrics.="<span title=\"".__("Space")."\">{$spaceUsed}</span>";
+		$metrics.=" | <span title=\"".__("Power")."\">{$powerKW}kW</span>";
+		$metrics.=" | <span title=\"".__("Weight")."\">{$weightKg}kg</span>";
+		$metrics.="</div>";
+
+		// Insert metrics inside <div class="cabinet"> before its closing </div>
+		$pos=strrpos($cabHtml,'</div>');
+		if($pos!==false){
+			$cabHtml=substr_replace($cabHtml,$metrics,$pos,0);
+		}
+		$body.=$cabHtml;
 	}
 
 	$dcID=$cabrow->DataCenterID;
