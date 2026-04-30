@@ -1,0 +1,19 @@
+﻿						$sel.empty();
+						$sel.append($('<option>').attr('value',0).text(defaultText));
+						$sel.append($tmpl.children().clone());
+						if(current && $sel.find('option[value="'+current+'"]').length){
+							$sel.val(current);
+						}else{
+							$sel.val('0');
+						}
+					}
+					// Scope selection: All / Container / Data Center
+					$('#PanelFilterScope').change(function(){
+						var scope=$(this).val();
+						var tpl='#allPanelsTemplate';
+						if(scope==='container'){ tpl='#containerPanelsTemplate'; }
+						if(scope==='dc'){ tpl='#dcPanelsTemplate'; }
+						refillSelect('#PanelID', tpl);
+						refillSelect('#PanelID2', tpl);
+					}).trigger('change');
+				});
