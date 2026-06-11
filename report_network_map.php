@@ -463,7 +463,7 @@ overlap = scale;
             } elseif($ft == 'jpg') {
                 $header .= "image/jpeg";
             }
-            $dotCommand = escapeshellarg($dotCommand);
+            $dotCommand = escapeshellcmd($dotCommand);
             $ft = escapeshellarg($ft);
             $command = "$dotCommand -T $ft -o $graphfile $dotfile";
             $descriptors = [
