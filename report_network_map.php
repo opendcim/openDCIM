@@ -455,7 +455,6 @@ overlap = scale;
         if(!$file_written) {
             $body = "<span class=\"errmsg\">ERROR: There was a problem writing out the temp dot file. Check that php can write to /tmp</span>";
         } else {
-            $graph = array();
             $retval = 0;
             if($ft == 'svg') {
                 $header .= "image/svg+xml";
@@ -464,7 +463,23 @@ overlap = scale;
             } elseif($ft == 'jpg') {
                 $header .= "image/jpeg";
             }
-            exec($dotCommand." -T".$ft." -o".$graphfile." ".$dotfile, $graph, $retval);
+            $ft = escapeshellarg($ft);
+            $command = "$dotCommand -T $ft -o $graphfile $dotfile"
+            $descriptors = [
+                0 => ["pipe", "r"], // stdin
+                1 => ["pipe", "w"], // stdout
+                2 => ["pipe", "w"]  // stderr
+            ];
+            $dot_process = proc_open($command, $descriptors, $pipes)
+            if (is_resource($dot_process)) {
+                // Read output if necessary
+                #$output = stream_get_contents($pipes[1]);
+                // Always close pipes and the process
+                fclose($pipes[0]);
+                fclose($pipes[1]);
+                fclose($pipes[2]);
+                $retval = proc_close($dot_process);
+            }
             if($retval == 0) {
                 header($header);
                 unlink($dotfile);
