@@ -466,7 +466,7 @@ DROP TABLE IF EXISTS fac_MediaConnectors;
 CREATE TABLE IF NOT EXISTS fac_MediaConnectors (
   ConnectorID int(11) NOT NULL AUTO_INCREMENT,
   ConnectorType varchar(40) NOT NULL,
-  PRIMARY KEY (ConnectorIDid),
+  PRIMARY KEY (ConnectorID),
   UNIQUE KEY connectortype (ConnectorType)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
