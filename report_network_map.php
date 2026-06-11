@@ -464,13 +464,13 @@ overlap = scale;
                 $header .= "image/jpeg";
             }
             $ft = escapeshellarg($ft);
-            $command = "$dotCommand -T $ft -o $graphfile $dotfile"
+            $command = "$dotCommand -T $ft -o $graphfile $dotfile";
             $descriptors = [
                 0 => ["pipe", "r"], // stdin
                 1 => ["pipe", "w"], // stdout
                 2 => ["pipe", "w"]  // stderr
             ];
-            $dot_process = proc_open($command, $descriptors, $pipes)
+            $dot_process = proc_open($command, $descriptors, $pipes);
             if (is_resource($dot_process)) {
                 // Read output if necessary
                 #$output = stream_get_contents($pipes[1]);
