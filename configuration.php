@@ -1896,6 +1896,8 @@
 				$('#messages').text('');
 				// Don't let this button do a real form submit
 				e.preventDefault();
+				// If there is a pending new status in the input, create it before saving
+				$('#devstatus .newstatus img').trigger('click');
 				// Collect the config data
 				var formdata=$(".main form").serializeArray();
 				// Set the action of the form to Update
