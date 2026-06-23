@@ -42,6 +42,11 @@ textarea {white-space: pre;word-wrap: break-word;}
 .arrow_left:after { border-color: rgba(255, 255, 255, 0); border-right-color: #ffffff; border-width: 15px; top: 15px; margin-top: -15px; } 
 .arrow_left:before { border-color: rgba(0, 0, 0, 0); border-right-color: #000000; border-width: 16px; top: 15px; margin-top: -16px; }
 
+.arrow_right { position: relative; background: #ffffff; border: 1px solid #000000; }
+.arrow_right:after, .arrow_right:before { left: 100%; border: solid transparent; content: " "; height: 0; width: 0; position: absolute; pointer-events: none; }
+.arrow_right:after { border-color: rgba(255, 255, 255, 0); border-left-color: #ffffff; border-width: 15px; top: 15px; margin-top: -15px; }
+.arrow_right:before { border-color: rgba(0, 0, 0, 0); border-left-color: #000000; border-width: 16px; top: 15px; margin-top: -16px; }
+
 .no-close .ui-dialog-titlebar-close {display: none;}
 
 @keyframes loading{
