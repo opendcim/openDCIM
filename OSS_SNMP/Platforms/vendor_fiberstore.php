@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Copyright (c) 2012 - 2015, Open Source Solutions Limited, Dublin, Ireland
+    Copyright (c) 2012 - 2022, Open Source Solutions Limited, Dublin, Ireland
     All rights reserved.
 
     Contact: Barry O'Donovan - barry (at) opensolutions (dot) ie
@@ -36,27 +36,20 @@
 
 // Works with sysDescr such as:
 //
-// 'Dell Force10 OS Operating System Version: 1.0 Application Software Version: 8.3.12.1 Series: S4810 Copyright (c) 1999-2012 by Dell Inc. All Rights Reserved. Build Time: Sun Nov 18 11:05:15 2012'
-// 'Dell Force10 OS Operating System Version: 2.0 Application Software Version: 9.3(0.0) Series: S4810 Copyright (c) 1999-2014 by Dell Inc. All Rights Reserved. Build Time: Thu Jan 2 02:14:08 2014'
-// 'Dell Networking OS Operating System Version: 2.0 Application Software Version: 9.10(0.1P3) Series: S4810 Copyright (c) 1999-2016 by Dell Inc. All Rights Reserved. Build Time: Tue Jun 14 15:00:23 2016'
+// 'FSOS software, S5850 software (S5850 48S6Q), Version 7.2.2
+//Copyright (C) 2019 by FS.COM. All rights reserved.
+//Compiled Dec 10 09:12:14 2019
 
-if( substr( $sysDescr, 0, 5 ) == 'Dell ' )
+if( substr( $sysDescr, 0, 5 ) == 'FSOS ' )
 {
-    $sysDescr = preg_replace('/\R/',' ', $sysDescr );
-    if( preg_match( '/^Dell (Force10|Networking) OS Operating System Version: ([\d\.]+) Application Software Version:\s([A-Z0-9\(\)\.]+)\sSeries:\s([A-Z0-9]+)\sCopyright \(c\) \d+-\d+ by Dell Inc. All Rights Reserved. Build Time:\s[A-Za-z0-9]+\s(([a-zA-Z]+)\s+(\d+)\s((\d\d):(\d\d):(\d\d))\s(\d+))$/',
-           $sysDescr, $matches ) )
-    {
-        $this->setVendor( "Dell {$matches[1]}" );
-        $this->setModel( $matches[4] );
-        $this->setOs( "FTOS {$matches[2]}" );
-        $this->setOsVersion( $matches[3] );
-        $this->setOsDate( new \DateTime( "{$matches[7]}/{$matches[6]}/{$matches[12]}:{$matches[8]} +0000" ) );
-        $this->getOsDate()->setTimezone( new \DateTimeZone( 'UTC' ) );
-    }
+    $this->setVendor( 'FiberStore' );
+    $this->setOs( 'FSOS' );
 
-    try {
-        $this->setSerialNumber( $this->getSNMPHost()->get( '.1.3.6.1.2.1.47.1.1.1.1.11.2' ) );
-    } catch( Exception $e ) {
-        $this->setSerialNumber( '(error)' );
-    }
+    preg_match( '/FSOS\s+software,\s+[\w]+\s+software\s+\(([\w\s]+)\),\s+Version\s+([\w.]+).*/',
+        $sysDescr, $matches );
+
+    $this->setModel( $matches[1] );
+    $this->setOsVersion( $matches[2] );
+    $this->setOsDate( null );
 }
+

@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Copyright (c) 2012 - 2014, Open Source Solutions Limited, Dublin, Ireland
+    Copyright (c) 2012 - 2018, Open Source Solutions Limited, Dublin, Ireland
     All rights reserved.
 
     Contact: Barry O'Donovan - barry (at) opensolutions (dot) ie
@@ -33,27 +33,9 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-// Works with sysDescr such as:
-//
-// 'ProCurve J4903A Switch 2824, revision I.08.98, ROM I.08.07 (/sw/code/build/mako(ts_08_5))'
-
-if( substr( $sysDescr, 0, 9 ) == 'ProCurve ' )
-{
-    if( preg_match( '/ProCurve (\w+) Switch (\w+).*, revision ([A-Z0-9\.]+), ROM ([A-Z0-9\.]+ .*)/',
-            $sysDescr, $matches ) )
-    {
-        $this->setVendor( 'Hewlett-Packard' );
-        $this->setModel( "Procurve Switch {$matches[2]} ({$matches[1]})" );
-        $this->setOs( 'ProCurve' );
-        $this->setOsVersion( $matches[3] );
-        $this->setOsDate( null );
-        //$this->getOsDate()->setTimezone( new \DateTimeZone( 'UTC' ) );
-    }
-
-    try {
-        $this->setSerialNumber( $this->getSNMPHost()->useHP_ProCurve_Chassis()->serialNumber() );
-    } catch( Exception $e ) {
-        $this->setSerialNumber( '(error)' );
-    }
-}
+$this->setVendor( 'Brocade' );
+$this->setModel( 'FESX648' );
+$this->setOs( 'Dummy' );
+$this->setOsVersion( '1.2.3' );
+$this->setOsDate( date('Y-m-d H:i:s' ) );
+$this->setSerialNumber( 'ABC987654321' );
