@@ -366,6 +366,73 @@ $app->post( '/device/{deviceid}/store', function( Request $request, Response $re
 	return $response->withJson($r, $r['errorcode']);
 });
 
+
+//	URL:	/api/v1/device/:deviceid/updateportlabels
+//	Method:	POST
+//	Params:
+//		Required:	
+//			deviceid, (passed in URL)  
+//			method,   (query param)
+//			pattern   (query param)
+//	Returns:	http response code
+
+$app->post( '/device/{deviceid}/updateportlabels', function( Request $request, Response $response, $args ) {
+	$deviceid = intval($args["deviceid"]);
+
+	$dev=new Device();
+	$dev->DeviceID=$deviceid;
+	
+	if(!$dev->GetDevice()){
+		$r['error']=true;
+		$r['errorcode']=404;
+		$r['message']=__("No device found with DeviceID")." $deviceid";
+	}else{
+		if($dev->Rights!="Write"){
+			$r['error']=true;
+			$r['errorcode']=401;
+			$r['message']=__("Access Denied");
+		}else{
+			
+			$vars = $request->getQueryParams() ?: $request->getParsedBody();
+
+			if(isset($vars['method']) && isset($vars['pattern'])){			
+				list($result, $msg, $idx) = parseGeneratorString($vars['pattern']);
+
+				$portnames=array();
+
+				if($result){
+					$portnames=generatePatterns($result, $dev->Ports);
+
+					// generatePatterns starts the index at 0, it's more useful to us starting at 1
+					array_unshift($portnames, null);
+					$r['portnames']=$portnames;
+				}
+
+				$blurg=DevicePorts::getPortList($dev->DeviceID);
+
+				$r['blurg']=$blurg;
+
+				foreach($blurg as $portnum => $port){
+					$port->Label=$portnames[abs($port->PortNumber)];
+
+					if(!$port->updateLabel()){
+						$r['error']=true;
+						$r['errorcode']=401;
+						$r['message']=__("Update failed");
+						break;
+					}else{
+						$r['error']=false;
+						$r['errorcode']=200;
+					}
+				}
+			}
+		}
+	}
+
+	return $response->withJson($r, $r['errorcode']);
+	
+});
+
 //
 //	URL:	/api/v1/devicetemplate/:templateid
 //	Method:	POST

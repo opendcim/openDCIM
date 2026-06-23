@@ -425,6 +425,40 @@ paths:
       security:
       - api_key: []
       - user_id: []
+  /device/{DeviceId}/updateportlabels:
+    post:
+      summary: Update port labels
+      tags:
+      - "Device"
+      description: 'Update the port labels for a specific device.'
+      consumes:
+      - "application/json"
+      operationId: "UpdateLabel"
+      parameters:
+        - name: "DeviceId"
+          in: path  
+          required: true
+          type: string
+        - name: "method"
+          in: query
+          required: true
+          type: string
+          description: "The method for updating labels e.g. Custom, From Template, Invert Port Labels"
+          allowEmptyValue: false
+        - name: "pattern"
+          in: query
+          required: false
+          type: string
+          description: "If method is Custom we need a custom pattern e.g. (xxxx;1)"
+          allowEmptyValue: false
+      responses:
+        "401":
+          description: "Access denied."
+        "200":
+          description: "successful operation"
+      security:
+      - api_key: []
+      - user_id: []
   /device/{DeviceLabel}:
     put:
       summary: Create a new device
