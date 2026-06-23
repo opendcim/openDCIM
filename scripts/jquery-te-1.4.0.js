@@ -582,6 +582,7 @@
 							replaceSelection("a",setdatalink,"");
 						}
 					}else{
+						replaceSelection("a",setdatalink,"");
 						linkinput.val(thisHrefLink).focus();
 					}
 					
