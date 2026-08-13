@@ -1,3 +1,7 @@
+# Maintainer needed
+
+After working on openDCIM for nearly 20 years, I feel that I've contributed more than enough and am looking towards retirement and more relaxing hobbies.   If any contributors would like to take over the project, reach out to me and I'll see about transferring ownership within GitHub for the organization, pursuant to the code remaining open source.  I will be packaging up a final release - 26.01 - in the coming weeks and also retiring the opendcim.org domain name upon expiration of that registration.
+
 openDCIM
 -----------
 

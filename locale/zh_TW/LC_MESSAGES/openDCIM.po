@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-12 15:39-0600\n"
+"POT-Creation-Date: 2026-06-11 08:49-0500\n"
 "Language: zh-TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -109,7 +109,7 @@ msgstr ""
 #: bulk_importer.php:213 cabinets.php:258 cabnavigator.php:51 cabrow.php:166
 #: /home/runner/openDCIM/pathmaker.php:496 pathmaker.php:508
 #: /home/runner/openDCIM/paths.php:605 report_cabinets.php:71
-#: report_diverse_power_exceptions.php:163 report_network_map.php:624
+#: report_diverse_power_exceptions.php:163 report_network_map.php:640
 #: report_outage_simulator.php:45 report_panel_schedule.php:52
 #: report_panel_schedule.php:170 report_power_distribution.php:164
 #: report_power_utilization.php:163 report_project_outage_simulator.php:46
@@ -125,7 +125,7 @@ msgstr "数据中心"
 #: /home/runner/openDCIM/paths.php:221 paths.php:296
 #: /home/runner/openDCIM/paths.php:380 report_cabinets.php:187
 #: report_contact.php:486 report_cost.php:469 report_exception.php:165
-#: report_exception.php:235 report_network_map.php:620
+#: report_exception.php:235 report_network_map.php:636
 #: report_project_outage_simulator.php:346 report_projects.php:153
 #: workorder.php:156 zone_stats.php:305 classes/Device.class.php:2632
 #: classes/PowerDistribution.class.php:555
@@ -416,11 +416,11 @@ msgstr "分配给"
 msgid "General Use"
 msgstr "常规用途"
 
-#: cabinets.php:291 cabnavigator.php:58 report_network_map.php:626 zone.php:117
+#: cabinets.php:291 cabnavigator.php:58 report_network_map.php:642 zone.php:117
 msgid "Zone"
 msgstr "区域"
 
-#: cabinets.php:295 report_network_map.php:621
+#: cabinets.php:295 report_network_map.php:637
 msgid "Cabinet Row"
 msgstr "一排机柜"
 
@@ -1980,7 +1980,7 @@ msgstr ""
 "This container will be deleted and there is no undo. Their direct "
 "descendants will be moved to \\'home\\'."
 
-#: container.php:234 datacenter.php:316 report_network_map.php:622
+#: container.php:234 datacenter.php:316 report_network_map.php:638
 msgid "Container"
 msgstr "机柜"
 
@@ -3790,7 +3790,7 @@ msgstr "Project Detail"
 msgid "openDCIM Project Information"
 msgstr "openDCIM Project Information"
 
-#: project_mgr.php:138 report_network_map.php:625
+#: project_mgr.php:138 report_network_map.php:641
 #: report_project_outage_simulator.php:342 report_projects.php:132
 #: sidebar.inc.php:23
 msgid "Project"
@@ -4590,15 +4590,15 @@ msgstr "操作日志"
 msgid "Network Map Viewer"
 msgstr "网络拓扑查看"
 
-#: report_network_map.php:617
+#: report_network_map.php:633
 msgid "Filter type:"
 msgstr "过滤类型:"
 
-#: report_network_map.php:619
+#: report_network_map.php:635
 msgid "Select filter type"
 msgstr "选择过滤类型"
 
-#: report_network_map.php:623 sidebar.inc.php:19
+#: report_network_map.php:639 sidebar.inc.php:19
 msgid "Custom Tag"
 msgstr "自定义标签"
 
