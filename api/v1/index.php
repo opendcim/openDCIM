@@ -86,34 +86,34 @@ function echoResponse( $response ) {
 // Framework v3 Version of the Authentication Middleware
 $app->add(function($request, $response, $next) use($person) {
 	if ( AUTHENTICATION == "LDAP" || AUTHENTICATION == "AD" || AUTHENTICATION == "Saml" || AUTHENTICATION == "OIDC" ) {
-	    // Getting request headers
-	    $headers = $request->getHeaders();
+		// Getting request headers
+		$headers = $request->getHeaders();
 
-	    $valid = false;
-	 
-	 	if ( isset( $_SESSION['userid'] ) ) {
-	 		$valid = true;
+		$valid = false;
 
-	 		$person->UserID = $_SESSION['userid'];
-	 		$person->GetPersonByUserID();
+		if ( isset( $_SESSION['userid'] ) ) {
+			$valid = true;
 
-	 	} elseif ( isset($headers['HTTP_USERID']) && isset($headers['HTTP_APIKEY'])) {
-	    	// Load up the $person variable - so at this point, everything else functions
-	    	// the same way as with Apache authorization - using the $person class
-	    	$person->UserID = $headers['HTTP_USERID'][0];
-	    	if ( $person->GetPersonByUserID() ){
-		    	if ( $person->APIKey !== '' && $person->APIKey == $headers['HTTP_APIKEY'][0] ) {
-		    		$valid = true;
-	    		}
+			$person->UserID = $_SESSION['userid'];
+			$person->GetPersonByUserID();
+
+		} elseif ( isset($headers['HTTP_USERID']) && isset($headers['HTTP_APIKEY'])) {
+			// Load up the $person variable - so at this point, everything else functions
+			// the same way as with Apache authorization - using the $person class
+			$person->UserID = $headers['HTTP_USERID'][0];
+			if ( $person->GetPersonByUserID() ){
+				if ( $person->APIKey !== '' && $person->APIKey == $headers['HTTP_APIKEY'][0] ) {
+					$valid = true;
+				}
 			}
-	    }
+		}
 
-	    if ( ! $valid ) {
-	        // api key is missing in header
-	    	$response->getBody()->write( "Access Denied" );
-	    } else {
-	    	$response = $next( $request, $response );
-	    }
+		if ( ! $valid ) {
+			// api key is missing in header
+			$response->getBody()->write( "Access Denied" );
+		} else {
+			$response = $next( $request, $response );
+		}
 	} else {
 		$response = $next( $request, $response );
 	}
