@@ -101,11 +101,11 @@ $app->add(function($request, $response, $next) use($person) {
 	    	// Load up the $person variable - so at this point, everything else functions
 	    	// the same way as with Apache authorization - using the $person class
 	    	$person->UserID = $headers['HTTP_USERID'][0];
-	    	$person->GetPersonByUserID();
-
-	    	if ( $person->APIKey == $headers['HTTP_APIKEY'][0] ) {
-	    		$valid = true;
-	    	}
+	    	if ( $person->GetPersonByUserID() ){
+		    	if ( $person->APIKey !== '' && $person->APIKey == $headers['HTTP_APIKEY'][0] ) {
+		    		$valid = true;
+	    		}
+			}
 	    }
 
 	    if ( ! $valid ) {
