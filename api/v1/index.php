@@ -92,10 +92,12 @@ $app->add(function($request, $response, $next) use($person) {
 		$valid = false;
 
 		if ( isset( $_SESSION['userid'] ) ) {
-			$valid = true;
-
+			// If someone is authenticating directly to the webserver then an API key isn't necessary
+			// but we do need to make sure that the user exists in openDCIM
 			$person->UserID = $_SESSION['userid'];
-			$person->GetPersonByUserID();
+			if ( $person->GetPersonByUserID() ){
+				$valid = true;
+			}
 
 		} elseif ( isset($headers['HTTP_USERID']) && isset($headers['HTTP_APIKEY'])) {
 			// Load up the $person variable - so at this point, everything else functions
