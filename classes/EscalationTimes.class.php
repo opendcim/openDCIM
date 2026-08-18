@@ -33,7 +33,7 @@ class EscalationTimes {
         }
 
         function MakeDisplay(){
-                $this->TimePeriod=stripslashes($this->TimePeriod);
+                $this->TimePeriod=stripslashes((string)$this->TimePeriod);
         }
 
         function query($sql){
@@ -77,24 +77,30 @@ class EscalationTimes {
                 //if($row=$this->query($sql)->fetch()){
                 if($q=$this->query($sql)){
                         $row=$q->fetch();
-                        $this->EscalationTimeID=$row["EscalationTimeID"];
-                        $this->TimePeriod=$row["TimePeriod"];
-                        $this->MakeDisplay();
-                        return true;
+                        if($row){
+                                $this->EscalationTimeID=$row["EscalationTimeID"] ?? null;
+                                $this->TimePeriod=$row["TimePeriod"] ?? null;
+                                $this->MakeDisplay();
+                                return true;
+                        }
                 }else{
                         return false;
                 }
+                return false;
         }
 
         function GetEscalationTimeList(){
                 $sql="SELECT * FROM fac_EscalationTimes ORDER BY TimePeriod ASC;";
 
                 $escList=array();
-                foreach($this->query($sql) as $row){
-                        $escList[$row["EscalationTimeID"]]=new EscalationTimes();
-                        $escList[$row["EscalationTimeID"]]->EscalationTimeID = $row["EscalationTimeID"];
-                        $escList[$row["EscalationTimeID"]]->TimePeriod = $row["TimePeriod"];
-                        $escList[$row["EscalationTimeID"]]->MakeDisplay();
+                if($stmt=$this->query($sql)){
+                        foreach($stmt as $row){
+                                $escID=$row["EscalationTimeID"] ?? null;
+                                $escList[$escID]=new EscalationTimes();
+                                $escList[$escID]->EscalationTimeID = $escID;
+                                $escList[$escID]->TimePeriod = $row["TimePeriod"] ?? null;
+                                $escList[$escID]->MakeDisplay();
+                        }
                 }
 
                 return $escList;

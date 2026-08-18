@@ -40,10 +40,19 @@ class CabinetMetrics {
 		
 		$m = new CabinetMetrics();
 		$m->CabinetID = $CabinetID;
-		
+		$m->IntakeTemperature  = 0;
+		$m->IntakeHumidity     = 0;
+		$m->ExhaustTemperature = 0;
+		$m->ExhaustHumidity    = 0;
+		$m->CalculatedPower    = 0;
+		$m->CalculatedWeight   = 0;
+		$m->MeasuredPower      = 0;
+		$m->LastRead           = null;
+		$m->SpaceUsed          = 0;
+
 		$params = array( ":CabinetID"=>$CabinetID );
 		// Get the intake side
-		$sql = "select max(Temperature) as Temp, max(Humidity) as Humid, LastRead from fac_SensorReadings where DeviceID in (select DeviceID from fac_Device where DeviceType='Sensor' and BackSide=0 and Cabinet=:CabinetID)";
+		$sql = "select max(Temperature) as Temp, max(Humidity) as Humid, max(LastRead) as LastRead from fac_SensorReadings where DeviceID in (select DeviceID from fac_Device where DeviceType='Sensor' and BackSide=0 and Cabinet=:CabinetID)";
 		$st = $dbh->prepare( $sql );
 		$st->execute( $params );
 		if ( $row = $st->fetch() ) {
@@ -69,8 +78,8 @@ class CabinetMetrics {
 		$st = $dbh->prepare( $sql );
 		$st->execute( $params );
 		if ( $row = $st->fetch() ) {
-			$m->CalculatedPower = $row["Power"];
-			$m->CalculatedWeight = $row["Weight"];
+			$m->CalculatedPower = (int)($row["Power"]??0);
+			$m->CalculatedWeight = (int)($row["Weight"]??0);
 		}
 
 		// Space needs to only count devices that are not children of other devices (slots in a chassis)
@@ -78,7 +87,7 @@ class CabinetMetrics {
 		$st = $dbh->prepare( $sql );
 		$st->execute( $params );
 		if ( $row = $st->fetch() ) {
-					$m->SpaceUsed = $row["SpaceUsed"];
+			$m->SpaceUsed = (int)($row["SpaceUsed"]??0);
 		}
 
 		
@@ -87,7 +96,7 @@ class CabinetMetrics {
 		$st = $dbh->prepare( $sql );
 		$st->execute( $params );
 		if ( $row = $st->fetch() ) {
-			$m->MeasuredPower = $row["Power"];
+			$m->MeasuredPower = (int)($row["Power"]??0);
 		}
 		
 		return $m;

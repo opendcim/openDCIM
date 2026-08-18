@@ -48,19 +48,19 @@ class TemplatePowerPorts {
 	}
 
 	function MakeDisplay(){
-		$this->Label=stripslashes(trim($this->Label));
-		$this->PortNotes=stripslashes(trim($this->PortNotes));
+		$this->Label=stripslashes(trim((string)$this->Label));
+		$this->PortNotes=stripslashes(trim((string)$this->PortNotes));
 	}
 
 	static function RowToObject($dbRow){
-		$tp=new TemplatePorts();
-		$tp->TemplateID=$dbRow['TemplateID'];
-		$tp->PortNumber=$dbRow['PortNumber'];
-		$tp->ConnectorID=$dbRow['ConnectorID'];
-		$tp->VoltageID=$dbRow['VoltageID'];
-		$tp->PhaseID=$dbRow['PhaseID'];
-		$tp->Label=$dbRow['Label'];
-		$tp->PortNotes=$dbRow['PortNotes'];
+		$tp=new TemplatePowerPorts();
+		$tp->TemplateID=$dbRow['TemplateID'] ?? null;
+		$tp->PortNumber=$dbRow['PortNumber'] ?? null;
+		$tp->ConnectorID=$dbRow['ConnectorID'] ?? null;
+		$tp->VoltageID=$dbRow['VoltageID'] ?? null;
+		$tp->PhaseID=$dbRow['PhaseID'] ?? null;
+		$tp->Label=$dbRow['Label'] ?? null;
+		$tp->PortNotes=$dbRow['PortNotes'] ?? null;
 
 		$tp->MakeDisplay();
 
@@ -83,10 +83,11 @@ class TemplatePowerPorts {
 
 		$sql="SELECT * FROM fac_TemplatePowerPorts WHERE TemplateID=$this->TemplateID AND PortNumber=$this->PortNumber;";
 
-		if(!$row=$dbh->query($sql)->fetch()){
+		$stmt=$dbh->query($sql);
+		if(!$stmt || !($row=$stmt->fetch())){
 			return false;
 		}else{
-			foreach(TemplatePowerPorts::RowToObject($row) as $prop => $value){
+			foreach(get_object_vars(TemplatePowerPorts::RowToObject($row)) as $prop => $value){
 				$this->$prop=$value;
 			}
 			return true;
@@ -100,8 +101,11 @@ class TemplatePowerPorts {
 		$sql="SELECT * FROM fac_TemplatePowerPorts WHERE TemplateID=$this->TemplateID ORDER BY PortNumber ASC;";
 
 		$ports=array();
-		foreach($dbh->query($sql) as $row){
-			$ports[$row['PortNumber']]=TemplatePowerPorts::RowToObject($row);
+		$stmt=$dbh->query($sql);
+		if($stmt){
+			foreach($stmt as $row){
+				$ports[$row['PortNumber'] ?? null]=TemplatePowerPorts::RowToObject($row);
+			}
 		}	
 		return $ports;
 	}
@@ -119,7 +123,7 @@ class TemplatePowerPorts {
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("createPort::PDO Error: {$info[2]} SQL=$sql");
+			error_log("createPort::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			return false;
 		}
 
@@ -146,7 +150,7 @@ class TemplatePowerPorts {
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
 
-			error_log("updatePort::PDO Error: {$info[2]} SQL=$sql");
+			error_log("updatePort::PDO Error: " . ($info[2] ?? 'Unknown error') . " SQL=$sql");
 			
 			return false;
 		}

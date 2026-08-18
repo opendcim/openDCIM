@@ -39,7 +39,7 @@ class MediaTypes {
 		}else{
 			$info=$dbh->errorInfo();
 
-			error_log("PDO Error: {$info[2]}");
+			error_log("PDO Error: " . ($info[2] ?? 'Unknown error'));
 			return false;
 		}
 		
@@ -54,7 +54,7 @@ class MediaTypes {
 			
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
-			error_log("PDO Error: {$info[2]}");
+			error_log("PDO Error: " . ($info[2] ?? 'Unknown error'));
 			return false;
 		}else{		
 			return true;
@@ -76,11 +76,12 @@ class MediaTypes {
 		
 		$sql="SELECT * FROM fac_MediaTypes WHERE MediaID=".intval($this->MediaID);
 		
-		if(!$row=$dbh->query($sql)->fetch()){
+		$stmt=$dbh->query($sql);
+		if(!$stmt || !($row=$stmt->fetch())){
 			return false;
 		}else{
-			$this->MediaType = $row["MediaType"];
-			$this->ColorID = $row["ColorID"];
+			$this->MediaType = $row["MediaType"] ?? null;
+			$this->ColorID = $row["ColorID"] ?? null;
 			
 			return true;
 		}
@@ -91,11 +92,12 @@ class MediaTypes {
 		
 		$sql="SELECT * FROM fac_MediaTypes WHERE UCASE(MediaType)=UCASE('".sanitize($this->MediaType)."')";
 		
-		if(!$row=$dbh->query($sql)->fetch()){
+		$stmt=$dbh->query($sql);
+		if(!$stmt || !($row=$stmt->fetch())){
 			return false;
 		}else{
-			$this->MediaID = $row["MediaID"];
-			$this->ColorID = $row["ColorID"];
+			$this->MediaID = $row["MediaID"] ?? null;
+			$this->ColorID = $row["ColorID"] ?? null;
 			
 			return true;
 		}
@@ -108,12 +110,14 @@ class MediaTypes {
 		
 		$mediaList = array();
 	
-		foreach ( $dbh->query( $sql ) as $row ) {
-			$n=$row[$indexedby];
-			$mediaList[$n] = new MediaTypes();
-			$mediaList[$n]->MediaID = $row["MediaID"];
-			$mediaList[$n]->MediaType = $row["MediaType"];
-			$mediaList[$n]->ColorID = $row["ColorID"];
+		if($stmt=$dbh->query($sql)){
+			foreach ( $stmt as $row ) {
+				$n=$row[$indexedby] ?? null;
+				$mediaList[$n] = new MediaTypes();
+				$mediaList[$n]->MediaID = $row["MediaID"] ?? null;
+				$mediaList[$n]->MediaType = $row["MediaType"] ?? null;
+				$mediaList[$n]->ColorID = $row["ColorID"] ?? null;
+			}
 		}
 		
 		return $mediaList;
@@ -134,7 +138,7 @@ class MediaTypes {
 
 		if(!$dbh->query($sql)){
 			$info=$dbh->errorInfo();
-			error_log("PDO Error: {$info[2]}");
+			error_log("PDO Error: " . ($info[2] ?? 'Unknown error'));
 			return false;
 		}else{		
 			return true;

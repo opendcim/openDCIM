@@ -41,17 +41,18 @@ class CabinetAudit {
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 		}
 
-		return;
+		return true;
 	}
 
-	function GetLastAudit( $db = null ) {
+	function GetLastAudit() {
 		global $dbh;
 		global $config;
 		global $person;
 		
 		$sql = "select * from fac_GenericLog where ObjectID=\"" . intval( $this->CabinetID ) . "\" and Class=\"CabinetAudit\" order by Time DESC Limit 1";
 
-		if($row=$dbh->query($sql)->fetch()){
+		$stmt = $dbh->query($sql);
+		if ($stmt && ($row = $stmt->fetch())) {
 			$this->CabinetID=$row["ObjectID"];
 			if ( !$person->SiteAdmin && ($config->ParameterArray["GDPRCountryIsolation"] == "enabled" || $config->ParameterArray["GDPRPIIPrivacy"] == "enabled" )) {
 				$p = new People();
@@ -79,9 +80,13 @@ class CabinetAudit {
 		global $config;
 		global $person;
 				
-		$sql = "select * from fac_GenericLog where UserID=\"" . addslashes( $this->UserID ) . "\" and Class=\"CabinetAudit\" order by Time DESC Limit 1";
+		$sql = "select * from fac_GenericLog where UserID=:userid and Class='CabinetAudit' order by Time DESC limit 1";
+		$st = $dbh->prepare($sql);
+		$st->execute([ ':userid' => $this->UserID ]);
+		$row = $st->fetch();
 
-		if ( $row = $dbh->query( $sql )->fetch() ) {
+		$stmt = $dbh->query($sql);
+		if ($stmt && ($row = $stmt->fetch())) {
 			$this->CabinetID = $row["ObjectID"];
 			if ( !$person->SiteAdmin && ($config->ParameterArray["GDPRCountryIsolation"] == "enabled" || $config->ParameterArray["GDPRPIIPrivacy"] == "enabled" )) {
 				$p = new People();
@@ -103,7 +108,7 @@ class CabinetAudit {
 			return false;
 		}
 		
-		return;
+		return true;
 	}
 }
 ?>

@@ -32,7 +32,7 @@ class Escalations {
 	}
 
 	function MakeDisplay(){
-		$this->Details=stripslashes($this->Details);
+		$this->Details=stripslashes((string)$this->Details);
 	}
 
 	function query($sql){
@@ -78,24 +78,30 @@ class Escalations {
 		// if($row=$this->query($sql)->fetch()){
 		if($q=$this->query($sql)){
 			$row=$q->fetch();
-			$this->EscalationID=$row["EscalationID"] ?? '';
-			$this->Details=$row["Details"] ?? '';
-			$this->MakeDisplay();
-			return true;
+			if($row){
+				$this->EscalationID=$row["EscalationID"] ?? '';
+				$this->Details=$row["Details"] ?? '';
+				$this->MakeDisplay();
+				return true;
+			}
 		}else{
 			return false;
 		}
+		return false;
 	}
 	
 	function GetEscalationList() {
 		$sql="SELECT * FROM fac_Escalations ORDER BY Details ASC;";
 		
 		$escList=array();
-		foreach($this->query($sql) as $row){
-			$escList[$row["EscalationID"]]=new Escalations();
-			$escList[$row["EscalationID"]]->EscalationID=$row["EscalationID"];
-			$escList[$row["EscalationID"]]->Details=$row["Details"];
-			$escList[$row["EscalationID"]]->MakeDisplay();
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				$escID=$row["EscalationID"] ?? null;
+				$escList[$escID]=new Escalations();
+				$escList[$escID]->EscalationID=$escID;
+				$escList[$escID]->Details=$row["Details"] ?? null;
+				$escList[$escID]->MakeDisplay();
+			}
 		}
 		
 		return $escList;

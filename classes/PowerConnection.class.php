@@ -43,15 +43,15 @@ class PowerConnection {
 	}
 
 	private function MakeDisplay(){
-		$this->PDUPosition=stripslashes($this->PDUPosition);
+		$this->PDUPosition=stripslashes((string)$this->PDUPosition);
 	}
 
 	static function RowToObject($row){
 		$conn=new PowerConnection;
-		$conn->PDUID=$row["PDUID"];
-		$conn->PDUPosition=$row["PDUPosition"];
-		$conn->DeviceID=$row["DeviceID"];
-		$conn->DeviceConnNumber=$row["DeviceConnNumber"];
+		$conn->PDUID=$row["PDUID"] ?? null;
+		$conn->PDUPosition=$row["PDUPosition"] ?? null;
+		$conn->DeviceID=$row["DeviceID"] ?? null;
+		$conn->DeviceConnNumber=$row["DeviceConnNumber"] ?? null;
 		$conn->MakeDisplay();
 
 		return $conn;
@@ -64,7 +64,7 @@ class PowerConnection {
 
 			// check for an existing device
 		$tmpconn=new PowerConnection();
-		foreach($this as $prop => $value){
+		foreach(get_object_vars($this) as $prop => $value){
 			$tmpconn->$prop=$value;
 		}
 		$tmpconn->GetPDUConnectionByPosition();
@@ -155,7 +155,8 @@ class PowerConnection {
 		$sql="SELECT * FROM fac_PowerConnection WHERE PDUID=$this->PDUID AND 
 			PDUPosition=\"$this->PDUPosition\";";
     
-		if($row=$dbh->query($sql)->fetch()){
+		$stmt=$dbh->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
 			foreach(PowerConnection::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
@@ -172,8 +173,10 @@ class PowerConnection {
 			PDUPosition;";
 
 		$connList=array();
-		foreach($dbh->query($sql) as $row){
-			$connList[$row["PDUPosition"]]=PowerConnection::RowToObject($row);
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $row){
+				$connList[$row["PDUPosition"] ?? null]=PowerConnection::RowToObject($row);
+			}
 		}
 		return $connList;
 	}
@@ -185,8 +188,10 @@ class PowerConnection {
     	$sql="SELECT * FROM fac_PowerConnection WHERE DeviceID=$this->DeviceID ORDER BY DeviceConnnumber ASC, PDUID, PDUPosition";
 
 		$connList=array();
-		foreach($dbh->query($sql) as $row){
-			$connList[]=PowerConnection::RowToObject($row);
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $row){
+				$connList[]=PowerConnection::RowToObject($row);
+			}
 		}
 		return $connList;
 	}    

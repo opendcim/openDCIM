@@ -54,21 +54,21 @@ class Department {
 	}
 
 	function MakeDisplay(){
-		$this->Name=stripslashes($this->Name);
-		$this->ExecSponsor=stripslashes($this->ExecSponsor);
-		$this->SDM=stripslashes($this->SDM);
-		$this->Classification=stripslashes($this->Classification);
-		$this->DeptColor=stripslashes($this->DeptColor);
+		$this->Name=stripslashes((string)$this->Name);
+		$this->ExecSponsor=stripslashes((string)$this->ExecSponsor);
+		$this->SDM=stripslashes((string)$this->SDM);
+		$this->Classification=stripslashes((string)$this->Classification);
+		$this->DeptColor=stripslashes((string)$this->DeptColor);
 	}
 
 	static function RowToObject($row){
 		$dept=new Department();
-		$dept->DeptID=$row["DeptID"];
-		$dept->Name=$row["Name"];
-		$dept->ExecSponsor=$row["ExecSponsor"];
-		$dept->SDM=$row["SDM"];
-		$dept->Classification=$row["Classification"];
-		$dept->DeptColor=$row["DeptColor"];
+		$dept->DeptID=$row["DeptID"] ?? null;
+		$dept->Name=$row["Name"] ?? null;
+		$dept->ExecSponsor=$row["ExecSponsor"] ?? null;
+		$dept->SDM=$row["SDM"] ?? null;
+		$dept->Classification=$row["Classification"] ?? null;
+		$dept->DeptColor=$row["DeptColor"] ?? null;
 
 		$dept->MakeDisplay();
 
@@ -195,14 +195,15 @@ class Department {
 
 		$sql="SELECT * FROM fac_Department WHERE DeptID=$this->DeptID;";
 
-		if($row=$this->query($sql)->fetch()){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
 			foreach(Department::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}
 			return true;
 		}else{
 			// Return an empty object in the case of a failed lookup, preserve the id though
-			foreach($this as $prop => $value){
+			foreach(get_object_vars($this) as $prop => $value){
 				$this->$prop=($prop=='DeptID')?$value:'';
 			}
 			return false;
@@ -213,14 +214,15 @@ class Department {
 		$this->MakeSafe();
 
 		$sql="SELECT count(*) as Total, fac_Department.* FROM fac_Department WHERE ucase(Name)=ucase(\"$this->Name\");";
-		if($row=$this->query($sql)->fetch()){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
 			foreach(Department::RowToObject($row) as $prop => $value){
 				if ( $prop != "Total" )
 					$this->$prop=$value;
 			}
 		}
 
-		if ( $row["Total"] == 0 ) {
+		if ( ($row["Total"] ?? 0) == 0 ) {
 			return false;
 		} else {
 			return true;
@@ -229,8 +231,10 @@ class Department {
 	function GetDepartmentList() {
 		$sql="SELECT * FROM fac_Department ORDER BY Name ASC;";
 		$deptList=array();
-		foreach($this->query($sql) as $row){
-			$deptList[]=Department::RowToObject($row);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $row){
+				$deptList[]=Department::RowToObject($row);
+			}
 		}
 
 		return $deptList;
@@ -248,7 +252,7 @@ class Department {
         $stmt->execute();
         while ($row = $stmt->fetch()) {
             $dept = Department::RowToObject($row);
-            $deptList[$dept->DeptID] = $dept;
+            $deptList[$dept->DeptID ?? null] = $dept;
         }
 		return $deptList;
 	}
@@ -275,8 +279,9 @@ class Department {
 			c.UserID=\"".sanitize($UserID)."\";";
 	 
 		// If someone is assigned to more than one department, just return the first hit
-		if($row=$this->query($sql)->fetch()){
-			$this->DeptID=$row["DeptID"];
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
+			$this->DeptID=$row["DeptID"] ?? null;
 			$this->GetDeptByID();
 		}
 	}
@@ -314,11 +319,13 @@ class Department {
 		}
 		$sql="SELECT * FROM fac_Department $sqlextend ORDER BY Name ASC;";
 		$deptList=array();
-		foreach($this->query($sql) as $deptRow){
-			if($indexedbyid){
-				$deptList[$deptRow["DeptID"]]=Department::RowToObject($deptRow);
-			}else{
-				$deptList[]=Department::RowToObject($deptRow);
+		if($stmt=$this->query($sql)){
+			foreach($stmt as $deptRow){
+				if($indexedbyid){
+					$deptList[$deptRow["DeptID"] ?? null]=Department::RowToObject($deptRow);
+				}else{
+					$deptList[]=Department::RowToObject($deptRow);
+				}
 			}
 		}
 

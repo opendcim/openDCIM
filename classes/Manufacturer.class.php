@@ -42,15 +42,15 @@ class Manufacturer {
 	}
 
 	function MakeDisplay(){
-		$this->Name=stripslashes($this->Name);
+		$this->Name=stripslashes((string)$this->Name);
 	}
 
 	static function RowToObject($row){
 		$m=new Manufacturer();
-		$m->ManufacturerID=$row["ManufacturerID"];
-		$m->Name=$row["Name"];
-		$m->GlobalID = $row["GlobalID"];
-		$m->SubscribeToUpdates = $row["SubscribeToUpdates"];
+		$m->ManufacturerID=$row["ManufacturerID"] ?? null;
+		$m->Name=$row["Name"] ?? null;
+		$m->GlobalID = $row["GlobalID"] ?? null;
+		$m->SubscribeToUpdates = $row["SubscribeToUpdates"] ?? null;
 		$m->MakeDisplay();
 
 		return $m;
@@ -97,7 +97,8 @@ class Manufacturer {
 
 		$sql="SELECT * FROM fac_Manufacturer WHERE ManufacturerID=$this->ManufacturerID;";
 
-		if($row=$this->query($sql)->fetch()){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
 			foreach(Manufacturer::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}	
@@ -112,7 +113,8 @@ class Manufacturer {
 
 		$sql="SELECT * FROM fac_Manufacturer WHERE ucase(Name)=ucase('".$this->Name."');";
 
-		if($row=$this->query($sql)->fetch()){
+		$stmt=$this->query($sql);
+		if($stmt && ($row=$stmt->fetch())){
 			foreach(Manufacturer::RowToObject($row) as $prop => $value){
 				$this->$prop=$value;
 			}	
@@ -128,11 +130,13 @@ class Manufacturer {
 		$sql="SELECT * FROM fac_Manufacturer ORDER BY Name ASC;";
 
 		$ManufacturerList=array();
-		foreach($dbh->query($sql) as $row){
-			if($indexbyid){
-				$ManufacturerList[$row['ManufacturerID']]=Manufacturer::RowToObject($row);
-			}else{
-				$ManufacturerList[]=Manufacturer::RowToObject($row);
+		if($stmt=$dbh->query($sql)){
+			foreach($stmt as $row){
+				if($indexbyid){
+					$ManufacturerList[$row['ManufacturerID'] ?? null]=Manufacturer::RowToObject($row);
+				}else{
+					$ManufacturerList[]=Manufacturer::RowToObject($row);
+				}
 			}
 		}
 

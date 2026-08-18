@@ -161,7 +161,8 @@ class Container {
 			ORDER BY LENGTH(Name), Name ASC;";
 
 		if($row=$this->query($sql)->fetch()){
-			foreach(Container::RowToObject($row) as $prop => $value){
+			$tmp = Container::RowToObject($row);
+			foreach (get_object_vars($tmp) as $prop => $value) {
 				$this->$prop=$value;
 			}
 			return true;
@@ -293,12 +294,22 @@ class Container {
 		}
 	   
 		if ( file_exists( $mapfile ) ) {
-			if(mime_content_type($mapfile)=='image/svg+xml'){
-				$svgfile = simplexml_load_file($mapfile);
+			$mime = @mime_content_type($mapfile);
+			if ($mime === 'image/svg+xml') {
+				$svgfile = @simplexml_load_file($mapfile);
+				if ($svgfile !== false) {
+    				$width  = intval($svgfile['width'] ?? 0);
+    				$height = intval($svgfile['height'] ?? 0);
+				} else {
+    				$width = 0;
+    				$height = 0;
+				}
 				$width = substr($svgfile['width'],0,4);
 				$height = substr($svgfile['height'],0,4);
 			}else{					
-				list($width, $height, $type, $attr)=getimagesize($mapfile);
+				$imgSize = @getimagesize($mapfile);
+				$width  = $imgSize[0] ?? 0;
+				$height = $imgSize[1] ?? 0;
 			}
 			$mapHTML.="<div style='position:relative;'>\n";
 			$mapHTML.="<img src=\"$mapfile\" width=\"$width\" height=\"$height\" alt=\"Container Image\">\n";
@@ -365,11 +376,20 @@ class Container {
 	   
 		if ( file_exists( $mapfile ) ) {
 			if(mime_content_type($mapfile)=='image/svg+xml'){
-				$svgfile = simplexml_load_file($mapfile);
+				$svgfile = @simplexml_load_file($mapfile);
+				if ($svgfile !== false) {
+					$width  = intval($svgfile['width'] ?? 0);
+					$height = intval($svgfile['height'] ?? 0);
+				} else {
+					$width = 0;
+					$height = 0;
+				}
 				$width = substr($svgfile['width'],0,4);
 				$height = substr($svgfile['height'],0,4);
 			}else{
-				list($width, $height, $type, $attr)=getimagesize($mapfile);
+				$imgSize = @getimagesize($mapfile);
+				$width  = $imgSize[0] ?? 0;
+				$height = $imgSize[1] ?? 0;
 			}
 			$mapHTML.="<div style='position:relative;'>\n";
 			$mapHTML.="<img id='containerimg' src=\"".$mapfile."\" width=\"".($width*$red)."\" height=\"".($height*$red)."\" 
