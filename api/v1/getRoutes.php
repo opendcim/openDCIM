@@ -698,6 +698,93 @@ $app->get( '/device/byproject/{projectid}', function( Request $request, Response
 });
 
 
+// Helper for retrieving device details for a project.
+function getProjectDeviceList( $projectID ) {
+	global $dbh;
+
+	$sql = "SELECT d.*,
+		c.CabinetID AS CabinetID, c.Location AS CabinetName, c.DataCenterID AS DataCenterID, dc.Name AS DataCenterName,
+		c.CabRowID AS CabRowID, cr.Name AS CabRowName, c.ZoneID AS ZoneID, z.Description AS ZoneName,
+		dt.Model AS TemplateModel, dt.ManufacturerID AS ManufacturerID, m.Name AS ManufacturerName,
+		dept.DeptID AS DepartmentID, dept.Name AS DepartmentName,
+		p.DeviceID AS ParentDeviceID, p.Label AS ParentDeviceLabel,
+		tags.TagList AS TagList
+		FROM fac_Device d
+		LEFT JOIN fac_DeviceTemplate dt ON d.TemplateID=dt.TemplateID
+		LEFT JOIN fac_Manufacturer m ON dt.ManufacturerID=m.ManufacturerID
+		LEFT JOIN fac_Cabinet c ON d.Cabinet=c.CabinetID
+		LEFT JOIN fac_DataCenter dc ON c.DataCenterID=dc.DataCenterID
+		LEFT JOIN fac_CabRow cr ON c.CabRowID=cr.CabRowID
+		LEFT JOIN fac_Zone z ON c.ZoneID=z.ZoneID
+		LEFT JOIN fac_Department dept ON d.Owner=dept.DeptID
+		LEFT JOIN fac_Device p ON d.ParentDevice=p.DeviceID
+		LEFT JOIN (
+			SELECT dtg.DeviceID, GROUP_CONCAT(t.Name SEPARATOR '||') AS TagList
+			FROM fac_DeviceTags dtg
+			JOIN fac_Tags t ON dtg.TagID=t.TagID
+			GROUP BY dtg.DeviceID
+		) tags ON d.DeviceID=tags.DeviceID
+		WHERE d.DeviceID IN (
+			SELECT MemberID FROM fac_ProjectMembership WHERE ProjectID=:ProjectID AND MemberType='Device'
+			UNION
+			SELECT d2.DeviceID FROM fac_Device d2 WHERE d2.Cabinet IN (
+				SELECT MemberID FROM fac_ProjectMembership WHERE ProjectID=:ProjectID AND MemberType='Cabinet'
+			)
+		)
+		ORDER BY d.Label ASC";
+
+	$st = $dbh->prepare( $sql );
+	$st->execute( array( ":ProjectID"=>$projectID ));
+
+	$devices = array();
+	while ( $row = $st->fetch( PDO::FETCH_ASSOC ) ) {
+		$dev = Device::RowToObject( $row, true, false, false );
+
+		$device = array(
+			"DeviceID"=>$dev->DeviceID,
+			"Label"=>$dev->Label,
+			"SerialNo"=>$dev->SerialNo,
+			"AssetTag"=>$dev->AssetTag,
+			"CabinetID"=>$dev->Cabinet,
+			"Position"=>$dev->Position,
+			"Height"=>$dev->Height,
+			"DeviceType"=>$dev->DeviceType,
+			"Status"=>$dev->Status,
+			"PrimaryIP"=>$dev->PrimaryIP,
+			"ParentDeviceID"=>$dev->ParentDevice,
+			"Rights"=>$dev->Rights
+		);
+
+		if ( $dev->Rights != "None" ) {
+			$tags = array();
+			if ( isset( $row["TagList"] ) && $row["TagList"] > "" ) {
+				$tags = array_filter( explode( "||", $row["TagList"] ) );
+			}
+
+			$device["TemplateID"] = $dev->TemplateID;
+			$device["TemplateModel"] = $row["TemplateModel"];
+			$device["ManufacturerID"] = $row["ManufacturerID"];
+			$device["ManufacturerName"] = $row["ManufacturerName"];
+			$device["CabinetName"] = $row["CabinetName"];
+			$device["DataCenterID"] = $row["DataCenterID"];
+			$device["DataCenterName"] = $row["DataCenterName"];
+			$device["CabRowID"] = $row["CabRowID"];
+			$device["CabRowName"] = $row["CabRowName"];
+			$device["ZoneID"] = $row["ZoneID"];
+			$device["ZoneName"] = $row["ZoneName"];
+			$device["DepartmentID"] = $row["DepartmentID"];
+			$device["DepartmentName"] = $row["DepartmentName"];
+			$device["ParentDeviceLabel"] = $row["ParentDeviceLabel"];
+			$device["Notes"] = $dev->Notes;
+			$device["Tags"] = $tags;
+		}
+
+		$devices[] = $device;
+	}
+
+	return $devices;
+}
+
 //
 //	URL:	/api/v1/project
 //	Method:	GET
@@ -741,6 +828,75 @@ $app->get( '/project/bydevice/{deviceid}', function( Request $request, Response 
 	$r['error']=false;
 	$r['errorcode']=200;
 	$r['project']=ProjectMembership::getDeviceMembership( $deviceid );
+
+	return $response->withJson( $r, $r['errorcode'] );
+});
+
+//
+//	URL:	/api/v1/project/:projectid/devices
+//	Method:	GET
+//	Params:	ProjectID
+//	Returns:  Devices assigned to the project
+//
+
+$app->get( '/project/{projectid}/devices', function( Request $request, Response $response, $args ) use ( $person ) {
+	$projectid = intval($args["projectid"]);
+
+	if ( ! $person->ReadAccess ) {
+		$r['error'] = true;
+		$r['errorcode'] = 403;
+		$r['message'] = __("Access Denied");
+	} else {
+		$project = Projects::getProject( $projectid );
+		if ( ! $project ) {
+			$r['error'] = true;
+			$r['errorcode'] = 404;
+			$r['message'] = __("Project not found");
+		} else {
+			$r['error'] = false;
+			$r['errorcode'] = 200;
+			$r['project'] = $project;
+			$r['device'] = getProjectDeviceList( $projectid );
+		}
+	}
+
+	return $response->withJson( $r, $r['errorcode'] );
+});
+
+//
+//	URL:	/api/v1/project/byname/:projectname/devices
+//	Method:	GET
+//	Params:	ProjectName
+//	Returns:  Devices assigned to the project
+//
+
+$app->get( '/project/byname/{projectname}/devices', function( Request $request, Response $response, $args ) use ( $person ) {
+	$projectname = $args["projectname"];
+
+	if ( ! $person->ReadAccess ) {
+		$r['error'] = true;
+		$r['errorcode'] = 403;
+		$r['message'] = __("Access Denied");
+	} else {
+		$p = new Projects();
+		$p->ProjectName = $projectname;
+		$projectList = $p->Search();
+		if ( sizeof( $projectList ) == 0 ) {
+			$r['error'] = true;
+			$r['errorcode'] = 404;
+			$r['message'] = __("Project not found");
+		} elseif ( sizeof( $projectList ) > 1 ) {
+			$r['error'] = true;
+			$r['errorcode'] = 409;
+			$r['message'] = __("Multiple projects matched the supplied name.");
+		} else {
+			$project = $projectList[0];
+			$r['error'] = false;
+			$r['errorcode'] = 200;
+			$r['project'] = $project;
+			$r['device'] = getProjectDeviceList( $project->ProjectID );
+		}
+	}
 
 	return $response->withJson( $r, $r['errorcode'] );
 });
