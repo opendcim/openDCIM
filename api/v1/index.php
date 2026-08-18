@@ -25,7 +25,7 @@
 	$app = new \Slim\App($c);
 
 	// Import any local extensions to the API, which obviously will not be supported
-	foreach( glob("../local/*.php") as $filename) {
+	foreach( (glob("../local/*.php") ?: []) as $filename) {
 		include_once( $filename );
 	}
 

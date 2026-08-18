@@ -29,7 +29,7 @@ $app->put( '/audit', function( Request $request, Response $response ) {
 	$r = array();
 	$error = false;
 
-	$attrList = $request->getQueryParams() ?: $request->getParsedBody();
+	$attrList = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	$log = new LogActions();
 
 	if ( isset( $attrList["CabinetID"] ) ) {
@@ -97,7 +97,7 @@ $app->put('/people/{userid}', function( Request $request, Response $response, $a
 	}
 	
 	$p = new People();
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	$p->UserID = $userid;
 
 	if($p->GetPersonByUserID()){
@@ -146,7 +146,7 @@ $app->put( '/cabinet', function( Request $request, Response $response ) use ($pe
 		$r['message'] = __("Access Denied");
 	} else {
 		$cab = new Cabinet();
-		$vars = $request->getQueryParams() ?: $request->getParsedBody();
+		$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 		foreach ($vars as $prop=>$val) {
 			if ( property_exists($cab, $prop)) {
@@ -197,7 +197,7 @@ $app->put( '/colorcode/{colorname}', function( Request $request, Response $respo
 		$r['message'] = __("Access Denied");
 	} else {
 		$cc=new ColorCoding();
-		$vars = $request->getQueryParams() ?: $request->getParsedBody();
+		$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 		foreach( $vars as $prop=>$val ) {
 			if ( property_exists( $cc, $prop )) {
@@ -237,7 +237,7 @@ $app->put( '/department/{departmentname}', function( Request $request, Response 
 		$r['message'] = __("Access Denied");
 	} else {
 		$dept=new Department();
-		$vars = $request->getQueryParams() ?: $request->getParsedBody();
+		$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 		foreach( $vars as $prop=>$val ) {
 			if ( property_exists( $dept, $prop )) {
@@ -275,7 +275,7 @@ $app->put( '/device/{devicelabel}', function( Request $request, Response $respon
 
 	$dev=new Device();
 
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists( $dev, $prop )) {
@@ -416,7 +416,7 @@ $app->put( '/deviceport', function( Request $request, Response $response ) {
 // It is expected that this would overwrite the entire existing port
 // due to being a PUT instead of POST
 	$dp = new DevicePorts();
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	foreach($vars as $prop => $val){
 		if ( property_exists($dp, $prop)) {
 			$dp->$prop=$val;
@@ -461,7 +461,7 @@ $app->put( '/devicestatus/{status}', function( Request $request, Response $respo
 		$r['message'] = __("Access Denied");
 	} else {
 		$ds=new DeviceStatus();
-		$vars = $request->getQueryParams() ?: $request->getParsedBody();
+		$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 		foreach( $vars as $prop=>$val ) {
 			if ( property_exists( $ds, $prop )) {
@@ -499,7 +499,7 @@ $app->put( '/devicetemplate/{model}', function( Request $request, Response $resp
 
 	$dt=new DeviceTemplate();
 
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists( $dt, $prop )) {
@@ -547,7 +547,7 @@ $app->put( '/devicetemplate/{templateid}/dataport/{portnum}', function( Request 
 
 	$tp=new TemplatePorts();
 	
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists($tp, $prop)) {
@@ -593,7 +593,7 @@ $app->put( '/devicetemplate/{templateid}/powerport/{portnum}', function( Request
 
 	$tp=new TemplatePowerPorts();
 
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists($tp, $prop)) {
@@ -639,7 +639,7 @@ $app->put( '/devicetemplate/{templateid}/slot/{slotnum}', function( Request $req
 
 	$s=new Slot();
 
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 	foreach($vars as $prop => $val){
 		if ( property_exists($s, $prop)) {
 			$s->$prop=$val;
@@ -680,7 +680,7 @@ $app->put( '/manufacturer/{name}', function( Request $request, Response $respons
 
 	$man=new Manufacturer();
 
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	foreach( $vars as $prop=>$val ) {
 		if ( property_exists( $man, $prop )) {
@@ -698,7 +698,7 @@ $app->put( '/manufacturer/{name}', function( Request $request, Response $respons
 		$r['message']=__("Access Denied");
 	}else{
 		if(!$man->CreateManufacturer()){
-			$r['message']=__("Manufacturer not created: ")." $manufacturerid";
+			$r['message']=__("Manufacturer not created: ")." $name";
 		}else{
 			$r['error']=false;
 			$r['errorcode']=200;
@@ -737,7 +737,7 @@ $app->put( '/vminventory/{deviceid}/{vmname}', function( Request $request, Respo
 			$r['errorcode']=404;
 			$r['message']=__("No Device found with DeviceID ").$deviceid;
 		}else{
-			$vars = $request->getQueryParams() ?: $request->getParsedBody();
+			$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 			foreach($vars as $prop => $val){
 				if ( property_exists($vm, $prop)) {
 					$vm->$prop=$val;
@@ -777,7 +777,7 @@ $app->put( '/powerpanel/{panelname}', function( Request $request, Response $resp
 		$r['errorcode']=401;
 		$r['message']=__("Access Denied");
 	}else{
-		$vars = $request->getQueryParams() ?: $request->getParsedBody();
+		$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 		foreach($vars as $prop => $val){
 			if ( property_exists($pp, $prop)) {
 				$pp->$prop=$val;
@@ -806,7 +806,7 @@ $app->put( '/powerpanel/{panelname}', function( Request $request, Response $resp
 //	Returns:  new power connector id
 
 $app->put( '/powerconnectortypes', function( Request $request, Response $response ) use ($person) {
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
+	$vars = $request->getQueryParams() ?: ($request->getParsedBody() ?: array());
 
 	$pc=new PowerConnectors();
 	$pc->ConnectorName=$vars["name"];
