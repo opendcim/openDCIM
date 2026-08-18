@@ -24,6 +24,8 @@
 			$field="Owner";
 		}elseif(isset($_REQUEST["notes"])){
 			$field="Notes";
+		}elseif(isset($_REQUEST["cabserial"])){
+			$field="CabinetSerial";
 		}elseif(isset($_REQUEST["ip"])){
 			$field="PrimaryIP";
 		}else{
@@ -65,6 +67,8 @@
 			$sql="SELECT DISTINCT Value FROM fac_DeviceCustomValue WHERE 
 				AttributeID=$custom AND Value LIKE '%$searchTerm%' AND Value !='' ORDER BY 
 				Value ASC;";
+		}elseif($field=="CabinetSerial"){
+			$sql="SELECT DISTINCT SerialNo FROM fac_Cabinet WHERE SerialNo LIKE '%$searchTerm%' ORDER BY SerialNo ASC LIMIT 500;";
 		}else{
 			$sql="SELECT DISTINCT $field FROM fac_Device WHERE $field LIKE '%$searchTerm%' LIMIT 500;";
 		}
