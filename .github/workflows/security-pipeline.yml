@@ -5,7 +5,7 @@ permissions:
 
 on:
   push:
-    branches: [master]
+    branches: [mynewfeature-patch]
   pull_request:
     branches: [master]
 
