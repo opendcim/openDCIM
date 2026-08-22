@@ -307,6 +307,37 @@
 		exit;
 	}
 
+	// Export search results as CSV
+	if(isset($_REQUEST['format']) && $_REQUEST['format']=='csv'){
+		header('Content-Type: text/csv; charset=utf-8');
+		header(sprintf('Content-Disposition: attachment;filename="opendcim-search-%s.csv"', date("YmdHis")));
+		$out = fopen('php://output', 'w');
+		fputcsv($out, array(__("Data Center"), __("Cabinet"), __("Device Label"), __("Device Type"), __("Serial No"), __("Asset Tag"), __("Primary IP"), __("Owner"), __("Status")));
+		$tmpDept = new Department();
+		foreach($dctemp as $DataCenterID=>$DataCenterName){
+			foreach($cabtemp as $cabID=>$cabRow){
+				if($cabRow['dc']==$DataCenterID){
+					foreach($devList as $key => $row){
+						if($cabID==$row['cabinet']){
+							$d = new Device();
+							$d->DeviceID = $row['devid'];
+							$d->GetDevice();
+							$ownerName = '';
+							if($d->Owner > 0){
+								$tmpDept->DeptID = $d->Owner;
+								$tmpDept->GetDeptByID();
+								$ownerName = $tmpDept->Name;
+							}
+							fputcsv($out, array($DataCenterName, $cabRow['name'], $d->Label, $d->DeviceType, $d->SerialNo, $d->AssetTag, $d->PrimaryIP, $ownerName, $d->Status));
+						}
+					}
+				}
+			}
+		}
+		fclose($out);
+		exit;
+	}
+
 	// This is the looping portion that we'll call for each device
 	function printDevice($row,$skip=false){
 		global $devList,$vmList;
@@ -448,7 +479,10 @@ $(document).ready(function() {
 	include( 'sidebar.inc.php' );
 ?>
 <div class="main">
-<?php echo '<div id="searchfilters"><button type="button" onclick="showall()">'.__("Show All").'</button><button type="button" onclick="hidedevices()">'.__("Racks Only").'</button></div>'; ?>
+<?php
+	$exportUrl = $_SERVER['REQUEST_URI'] . (strpos($_SERVER['REQUEST_URI'], '?') !== false ? '&' : '?') . 'format=csv';
+	echo '<div id="searchfilters"><button type="button" onclick="showall()">'.__("Show All").'</button><button type="button" onclick="hidedevices()">'.__("Racks Only").'</button><button type="button" onclick="window.location.href=\''.$exportUrl.'\'">'.__("Export CSV").'</button></div>';
+?>
 <div class="center"><div>
 	<ol>
 <?php
