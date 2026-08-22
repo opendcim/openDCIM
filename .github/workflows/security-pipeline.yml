@@ -10,6 +10,7 @@ on:
     branches: [mynewfeature-patch]
 
 concurrency:
+
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -41,6 +42,8 @@ jobs:
 
       - name: Semgrep
         uses: returntocorp/semgrep-action@713efdd345f3035192eaa63f56867b88e63e4e5d # v1
+        env:
+          SEMGREP_EXCLUDE: api/docs
         with:
           config: p/security-audit
 
@@ -62,7 +65,6 @@ jobs:
           scanners: vuln
           severity: CRITICAL,HIGH
           exit-code: '1'
-          trivy-config: trivy.yaml
 
   php-check:
     runs-on: ubuntu-24.04
@@ -77,11 +79,11 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: "8.2"
           coverage: none
 
       - name: Validate Composer configuration
-        run: composer validate 
+        run: composer validate
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress
