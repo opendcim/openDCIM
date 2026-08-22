@@ -5,9 +5,9 @@ permissions:
 
 on:
   push:
-    branches: [master]
+    branches: [mynewfeature-patch]
   pull_request:
-    branches: [master]
+    branches: [mynewfeature-patch]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
