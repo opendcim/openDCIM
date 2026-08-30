@@ -1138,10 +1138,16 @@ function bindmaptooltips(){
 		var cx2=parseInt(coor[2])+parseInt(pos.left)
 		var cy1=parseInt(coor[1])+parseInt(pos.top);
 		var cy2=parseInt(coor[3])+parseInt(pos.top);
+		var tooltipWidth=300;
+		var arrowClass='arrow_left';
+		if(tx+tooltipWidth>$(window).width()){
+			tx=pos.left+parseInt(coor[0])-tooltipWidth-17;
+			arrowClass='arrow_right';
+		}
 		var tooltip=$('<div />').css({
 			'left':tx+'px',
 			'top':ty+'px'
-		}).addClass('arrow_left border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
+		}).addClass(arrowClass+' border cabnavigator tooltip').attr('id','tt').append('<span class="ui-icon ui-icon-refresh rotate"></span>');
 		var id=$(this).attr('href');
 		var startType=id.lastIndexOf('?')+1;
 		var endType=id.lastIndexOf('=');
