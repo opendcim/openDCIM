@@ -44,7 +44,7 @@ namespace OSS_SNMP\MIBS;
 class Iface extends \OSS_SNMP\MIB
 {
     const OID_IF_NUMBER                  = '.1.3.6.1.2.1.2.1.0';
-    
+
     const OID_IF_INDEX                   = '.1.3.6.1.2.1.2.2.1.1';
     const OID_IF_DESCRIPTION             = '.1.3.6.1.2.1.2.2.1.2';
     const OID_IF_TYPE                    = '.1.3.6.1.2.1.2.2.1.3';
@@ -70,9 +70,25 @@ class Iface extends \OSS_SNMP\MIB
     const OID_IF_OUT_QUEUE_LENGTH        = '.1.3.6.1.2.1.2.2.1.21';
 
     const OID_IF_NAME                    = '.1.3.6.1.2.1.31.1.1.1.1';
+    const OID_IF_IN_MULTICAST            = '.1.3.6.1.2.1.31.1.1.1.2';  // no fn() implemented
+    const OID_IF_IN_BROADCAST            = '.1.3.6.1.2.1.31.1.1.1.3';  // no fn() implemented
+    const OID_IF_OUT_MULTICAST           = '.1.3.6.1.2.1.31.1.1.1.4';  // no fn() implemented
+    const OID_IF_OUT_BROADCAST           = '.1.3.6.1.2.1.31.1.1.1.5';  // no fn() implemented
+    const OID_IF_HC_IN_OCTETS            = '.1.3.6.1.2.1.31.1.1.1.6';  // no fn() implemented
+    const OID_IF_HC_IN_UNICAST_PACKETS   = '.1.3.6.1.2.1.31.1.1.1.7';  // no fn() implemented
+    const OID_IF_HC_IN_MULTICAST         = '.1.3.6.1.2.1.31.1.1.1.8';  // no fn() implemented
+    const OID_IF_HC_IN_BROADCAST         = '.1.3.6.1.2.1.31.1.1.1.9';  // no fn() implemented
+    const OID_IF_HC_OUT_OCTETS           = '.1.3.6.1.2.1.31.1.1.1.10'; // no fn() implemented
+    const OID_IF_HC_OUT_UNICAST_PACKETS  = '.1.3.6.1.2.1.31.1.1.1.11'; // no fn() implemented
+    const OID_IF_HC_OUT_MULTICAST        = '.1.3.6.1.2.1.31.1.1.1.12'; // no fn() implemented
+    const OID_IF_HC_OUT_BROADCAST        = '.1.3.6.1.2.1.31.1.1.1.13'; // no fn() implemented
+    const OID_IF_LINK_UP_DOWN_TRAP       = '.1.3.6.1.2.1.31.1.1.1.14'; // no fn() implemented
     const OID_IF_HIGH_SPEED              = '.1.3.6.1.2.1.31.1.1.1.15';
+    const OID_IF_PROMISCUOUS_MODE        = '.1.3.6.1.2.1.31.1.1.1.16'; // no fn() implemented
+    const OID_IF_CONNECTOR_PRESENT       = '.1.3.6.1.2.1.31.1.1.1.17'; // no fn() implemented
     const OID_IF_ALIAS                   = '.1.3.6.1.2.1.31.1.1.1.18';
-    
+    const OID_IF_COUNTER_DISCONTINUTIY   = '.1.3.6.1.2.1.31.1.1.1.19'; // no fn() implemented
+
     /**
      * Get the number of network interfaces (regardless of
      * their current state) present on this system.
@@ -109,12 +125,12 @@ class Iface extends \OSS_SNMP\MIB
     public function physAddresses()
     {
         $pa = $this->getSNMP()->walk1d( self::OID_IF_PHYS_ADDRESS );
-        
+
         // some switches return leading '00:' as '0:' - we correct this here:
         foreach( $pa as $i => $a )
             if( strpos( $a, ':' ) == 1 )
                 $pa[ $i ] = '0' . $a;
-        
+
         return $pa;
     }
 
@@ -195,16 +211,16 @@ class Iface extends \OSS_SNMP\MIB
     public function lastChanges( $asUnixTimestamp = false )
     {
         $lc = $this->getSNMP()->walk1d( self::OID_IF_LAST_CHANGE );
-        
+
         if( $asUnixTimestamp )
         {
             $sysUptime = $this->getSNMP()->useSystem()->uptime() / 100;
-            
+
             foreach( $lc as $i => $t )
                 if( $t )
                     $lc[$i] = intval( floor( time() - $sysUptime + ( $t / 100 ) ) );
         }
-        
+
         return $lc;
     }
 
@@ -524,9 +540,9 @@ class Iface extends \OSS_SNMP\MIB
     {
         return $this->getSNMP()->walk1d( self::OID_IF_HIGH_SPEED );
     }
-    
-    
-    
+
+
+
     /**
      * Constant for possible value of interface operation status.
      * @see operationStates()
@@ -2285,5 +2301,3 @@ class Iface extends \OSS_SNMP\MIB
     }
 
 }
-
-

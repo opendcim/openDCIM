@@ -43,7 +43,23 @@ namespace OSS_SNMP\MIBS\SNMP;
  */
 class Engine extends \OSS_SNMP\MIB
 {
+    const OID_BOOTS         = '.1.3.6.1.6.3.10.2.1.2.0';
     const OID_TIME          = '.1.3.6.1.6.3.10.2.1.3.0';
+
+    /**
+     * Get the SNMP engine boots
+     *
+     *
+     * > "The number of times that the SNMP engine has (re-)initialized itself since snmpEngineID was last configured."
+     *
+     * @see http://tools.cisco.com/Support/SNMP/do/BrowseOID.do?local=en&translate=Translate&objectInput=1.3.6.1.6.3.10.2.1.2#oidContent
+     *
+     * @return int The SNMP engine boots
+     */
+    public function boots()
+    {
+        return $this->getSNMP()->get( self::OID_BOOTS );
+    }
 
     /**
      * Get the SNMP engine time

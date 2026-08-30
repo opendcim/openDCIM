@@ -40,16 +40,25 @@ namespace OSS_SNMP\MIBS;
  *
  * @copyright Copyright (c) 2012 - 2013, Open Source Solutions Limited, Dublin, Ireland
  * @author Barry O'Donovan <barry@opensolutions.ie>
+ * @author Sergio Gómez <sergio@uco.es>
  */
 class Entity extends \OSS_SNMP\MIB
 {
     const OID_ENTITY_PHYSICAL_DESCRIPTION    = '.1.3.6.1.2.1.47.1.1.1.1.2';
+    const OID_ENTITY_PHYSICAL_VENDOR_TYPE    = '.1.3.6.1.2.1.47.1.1.1.1.3';
+    const OID_ENTITY_PHYSICAL_CONTAINED_IN   = '.1.3.6.1.2.1.47.1.1.1.1.4';
     const OID_ENTITY_PHYSICAL_CLASS          = '.1.3.6.1.2.1.47.1.1.1.1.5';
     const OID_ENTITY_PHYSICAL_PARENT_REL_POS = '.1.3.6.1.2.1.47.1.1.1.1.6';
     const OID_ENTITY_PHYSICAL_NAME           = '.1.3.6.1.2.1.47.1.1.1.1.7';
+    const OID_ENTITY_PHYSICAL_HARDWARE_REV   = '.1.3.6.1.2.1.47.1.1.1.1.8';
+    const OID_ENTITY_PHYSICAL_FIRMWARE_REV   = '.1.3.6.1.2.1.47.1.1.1.1.9';
+    const OID_ENTITY_PHYSICAL_SOFTWARE_REV   = '.1.3.6.1.2.1.47.1.1.1.1.10';
+    const OID_ENTITY_PHYSICAL_SERIALNUM      = '.1.3.6.1.2.1.47.1.1.1.1.11';
+    const OID_ENTITY_PHYSICAL_MFG_NAME       = '.1.3.6.1.2.1.47.1.1.1.1.12';
+    const OID_ENTITY_PHYSICAL_MODEL_NAME     = '.1.3.6.1.2.1.47.1.1.1.1.13';
     const OID_ENTITY_PHYSICAL_ALIAS          = '.1.3.6.1.2.1.47.1.1.1.1.14';
-
-
+    const OID_ENTITY_PHYSICAL_ASSET_ID       = '.1.3.6.1.2.1.47.1.1.1.1.15';
+    const OID_ENTITY_PHYSICAL_IS_FRU         = '.1.3.6.1.2.1.47.1.1.1.1.16';
 
     /**
      * Returns an associate array of entPhysicalDescr
@@ -91,43 +100,43 @@ class Entity extends \OSS_SNMP\MIB
 
     /**
      * Physical entitly class type
-     * @var Physical entitly class type
+     * @var int Physical entitly class type
      */
     const PHYSICAL_CLASS_CHASSIS = 3;
 
     /**
      * Physical entitly class type
-     * @var Physical entitly class type
+     * @var int Physical entitly class type
      */
     const PHYSICAL_CLASS_CONTAINER = 5;
 
     /**
      * Physical entitly class type
-     * @var Physical entitly class type
+     * @var int Physical entitly class type
      */
     const PHYSICAL_CLASS_POWER_SUPPLY = 6;
 
     /**
      * Physical entitly class type
-     * @var Physical entitly class type
+     * @var int Physical entitly class type
      */
     const PHYSICAL_CLASS_FAN = 7;
 
     /**
      * Physical entitly class type
-     * @var Physical entitly class type
+     * @var int Physical entitly class type
      */
     const PHYSICAL_CLASS_SENSOR = 8;
 
     /**
      * Physical entitly class type
-     * @var Physical entitly class type
+     * @var int Physical entitly class type
      */
     const PHYSICAL_CLASS_MODULE = 9;
 
     /**
      * Physical entitly class type
-     * @var Physical entitly class type
+     * @var int Physical entitly class type
      */
     const PHYSICAL_CLASS_PORT = 10;
 
@@ -216,8 +225,168 @@ class Entity extends \OSS_SNMP\MIB
 
         return $rtn;
     }
+    
+    /**
+     * Returns an associate array of entPhysicalSerialNum
+     *
+     * e.g.
+     *
+     *     [1001] = STRING: "FOC16829FD54"
+     *     [1002] = STRING: ""
+     *     [1003] = STRING: ""
+     *     [1004] = STRING: ""
+     *
+     * @return array Associate array of entPhysicalSerialNum
+     */
+    public function physicalSerialNum()
+    {
+        return $this->getSNMP()->walk1d( self::OID_ENTITY_PHYSICAL_SERIALNUM );
+    }
 
 
+    /**
+     * Returns an associate array of entPhysicalVendorType
+     *
+     * e.g.
+     *
+     *     [1] => .1.3.6.1.4.1.9.12.3.1.3.144
+     *     [2] => .1.3.6.1.4.1.9.12.3.1.5.1
+     *     [3] => .1.3.6.1.4.1.9.12.3.1.5.1
+     *     [4] => .1.3.6.1.4.1.9.12.3.1.5.1
+     *
+     * @return array Associate array of entPhysicalVendorType
+     */
+    public function physicalVendorType()
+    {
+        return $this->getSNMP()->walk1d(self::OID_ENTITY_PHYSICAL_VENDOR_TYPE);
+    }
+
+    /**
+     * Returns an associate array of entPhysicalContainedIn
+     *
+     * e.g.
+     *
+     *     [1] => 0
+     *     [2] => 1
+     *     [3] => 1
+     *     [4] => 1
+     *
+     * @return array Associate array of entPhysicalContainedIn
+     */
+    public function physicalContainedIndex()
+    {
+        return $this->getSNMP()->walk1d(self::OID_ENTITY_PHYSICAL_CONTAINED_IN);
+    }
+
+    /**
+     * Returns an associate array of entPhysicalHardwareRev
+     *
+     * e.g.
+     *
+     *     [1] => V2
+     *     [2] =>
+     *     [3] =>
+     *     [4] =>
+     *
+     * @return array Associate array of entPhysicalHardwareRev
+     */
+    public function physicalHardwareRevision()
+    {
+        return $this->getSNMP()->walk1d(self::OID_ENTITY_PHYSICAL_HARDWARE_REV);
+    }
+
+    /**
+     * Returns an associate array of entPhysicalFirmwareRev
+     *
+     * e.g.
+     *
+     *     [1] => 12.1(22)EA14
+     *     [2] =>
+     *     [3] =>
+     *     [4] =>
+     *
+     * @return array Associate array of entPhysicalFirmwareRev
+     */
+    public function physicalFirmwareRevision()
+    {
+        return $this->getSNMP()->walk1d(self::OID_ENTITY_PHYSICAL_FIRMWARE_REV);
+    }
+
+    /**
+     * Returns an associate array of entPhysicalSoftwareRev
+     *
+     * e.g.
+     *
+     *     [1] => 12.1(22)EA14
+     *     [2] =>
+     *     [3] =>
+     *     [4] =>
+     *
+     * @return array Associate array of entPhysicalSoftwareRev
+     */
+    public function physicalSoftwareRevision()
+    {
+        return $this->getSNMP()->walk1d(self::OID_ENTITY_PHYSICAL_SOFTWARE_REV);
+    }
+
+    /**
+     * Returns an associate array of entPhysicalMfgName
+     *
+     * e.g.
+     *
+     *     [1] => cisco
+     *     [2] => cisco
+     *     [3] => cisco
+     *     [4] => cisco
+     *
+     * @return array Associate array of entPhysicalMfgName
+     */
+    public function physicalManufacturerName()
+    {
+        return $this->getSNMP()->walk1d(self::OID_ENTITY_PHYSICAL_MFG_NAME);
+    }
+
+    /**
+     * Returns an associate array of entPhysicalModelName
+     *
+     * e.g.
+     *
+     *     [1] => WS-C6509-E
+     *     [2] =>
+     *     [3] =>
+     *     [4] =>
+     *
+     * @return array Associate array of entPhysicalModelName
+     */
+    public function physicalModelName()
+    {
+        return $this->getSNMP()->walk1d(self::OID_ENTITY_PHYSICAL_MODEL_NAME);
+    }
+
+    /**
+     * Returns an associate array of entPhysicalAssetID
+     *
+     * @return array Associate array of entPhysicalAssetID
+     */
+    public function physicalAssetId()
+    {
+        return $this->getSNMP()->walk1d(self::OID_ENTITY_PHYSICAL_ASSET_ID);
+    }
+
+    /**
+     * Returns an associate array of entPhysicalIsFRU
+     *
+     * e.g.
+     *
+     *     [1] => true
+     *     [2] => false
+     *     [3] => false
+     *     [4] => false
+     *
+     * @return array Associate array of entPhysicalIsFRU
+     */
+    public function physicalIsFRU()
+    {
+        return $this->getSNMP()->ppTruthValue($this->getSNMP()->walk1d(self::OID_ENTITY_PHYSICAL_IS_FRU));
+    }
 }
-
-

@@ -40,7 +40,7 @@
 
 if( substr( $sysDescr, 0, 9 ) == 'ProCurve ' )
 {
-    if( preg_match( '/ProCurve (\w+) Switch ([0-9]+), revision ([A-Z0-9\.]+), ROM [A-Z0-9\.]+ .*/',
+    if( preg_match( '/ProCurve (\w+) Switch (\w+).*, revision ([A-Z0-9\.]+), ROM ([A-Z0-9\.]+ .*)/',
             $sysDescr, $matches ) )
     {
         $this->setVendor( 'Hewlett-Packard' );
