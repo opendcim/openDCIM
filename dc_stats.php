@@ -245,8 +245,12 @@ echo '<div class="main">
 		<div>',sprintf("%s",number_format($dc->MaxkW)),' kW</div>
   </div>
   <div>
-        <div>',__("BTU Computation from Computed Watts"),'</div>
-        <div>',sprintf("%s",number_format(($dcStats["ComputedWatts"]*3.412)/1000)),' kBTU</div>
+        <div>',__("BTU/h from Computed Watts"),'</div>
+        <div>',sprintf("%s",number_format(($dcStats["ComputedWatts"]*3.412)/1000)),' kBTU/h</div>
+  </div>
+  <div>
+        <div>',__("BTU/h from Measured Watts"),'</div>
+        <div>',sprintf("%s",number_format(($dcStats["MeasuredWatts"]*3.412)/1000)),' kBTU/h</div>
   </div>
   <div>
         <div>',__("Data Center Size"),'</div>
@@ -263,6 +267,10 @@ echo '<div class="main">
   <div>
         <div>',__("Minimum Cooling Tonnage (Based on Computed Watts)"),'</div>
         <div>',sprintf("%s ".__("Tons"), number_format($dcStats["ComputedWatts"]*3.412*1.15/12000)),'</div>
+  </div>
+  <div>
+        <div>',__("Minimum Cooling Tonnage (Based on Measured Watts)"),'</div>
+        <div>',sprintf("%s ".__("Tons"), number_format($dcStats["MeasuredWatts"]*3.412*1.15/12000)),'</div>
   </div>
   <div>
         <div>',__("Average Temperature"),'</div>
