@@ -78,7 +78,7 @@
 
     $fieldNum = 1;
 
-    foreach ( array( "LastName"=>"The last (family) name of the user account being imported.", "FirstName"=>"The first (given) name of the user account being imported.", "UserID"=>"The UserID, as returned by the authentication mechanism (apache, LDAP, etc), of the user account being imported.   Required unique.", "Email"=>"Email address of the user account being imported.   Required.", "Phone1"=>"A phone number for contacting the person.", "Phone2"=>"A phone number for contacting the person.", "Phone3"=>"A phone number for contacting the person.", "AdminOwnDevices"=>"Y/Yes/1 means true that the user has the ability to read/write/delete any devices owned by a department they are a member of.", "ReadAccess"=>"Y/Yes/1 means true that the user has global read access in the system.", "WriteAccess"=>"Y/Yes/1 means true that the user has global write/enter/modify access in the system.", "DeleteAccess"=>"Y/Yes/1 means true that the user has global delete access within the system.", "ContactAdmin"=>"Y/Yes/1 means true that the user has rights to enter and modify the user accounts of others in the system.", "RackRequest"=>"Y/Yes/1 means true that the user is allowed to enter Rack Requests in the system.", "RackAdmin"=>"Y/Yes/1 means true that the user is allowed to process/complete rack requests in the system.", "SiteAdmin"=>"Y/Yes/1 means true that the user has the ability to perform upgrades to the openDCIM installation, and to modify infrastructure such as cabinets, data centers, and power distribution.", "BulkOperations"=>"Y/Yes/1 means true that the user has the ability to access the Bulk Importer functions within openDCIM.", "DepartmentMembership"=>"Optional, comma separated list of departments to add the UserID to.   Will not remove from any departments absent in the list during an update." ) as $fieldName=>$helpText ) {
+    foreach ( array( "LastName"=>"The last (family) name of the user account being imported.", "FirstName"=>"The first (given) name of the user account being imported.", "UserID"=>"The UserID, as returned by the authentication mechanism (apache, LDAP, etc), of the user account being imported.   Required unique.", "Email"=>"Email address of the user account being imported.   Required.", "Phone1"=>"A phone number for contacting the person.", "Phone2"=>"A phone number for contacting the person.", "countryCode"=>"Country code of the person.", "AdminOwnDevices"=>"Y/Yes/1 means true that the user has the ability to read/write/delete any devices owned by a department they are a member of.", "ReadAccess"=>"Y/Yes/1 means true that the user has global read access in the system.", "WriteAccess"=>"Y/Yes/1 means true that the user has global write/enter/modify access in the system.", "DeleteAccess"=>"Y/Yes/1 means true that the user has global delete access within the system.", "ContactAdmin"=>"Y/Yes/1 means true that the user has rights to enter and modify the user accounts of others in the system.", "RackRequest"=>"Y/Yes/1 means true that the user is allowed to enter Rack Requests in the system.", "RackAdmin"=>"Y/Yes/1 means true that the user is allowed to process/complete rack requests in the system.", "SiteAdmin"=>"Y/Yes/1 means true that the user has the ability to perform upgrades to the openDCIM installation, and to modify infrastructure such as cabinets, data centers, and power distribution.", "BulkOperations"=>"Y/Yes/1 means true that the user has the ability to access the Bulk Importer functions within openDCIM.", "DepartmentMembership"=>"Optional, comma separated list of departments to add the UserID to.   Will not remove from any departments absent in the list during an update." ) as $fieldName=>$helpText ) {
       $content .= '<div>
                     <div><span title="' . __($helpText) . '">' . __($fieldName) . '</span>: </div><div><select name="' . $fieldName . '">';
       for ( $n = 0; $n < sizeof( $fieldList ); $n++ ) {
@@ -124,7 +124,7 @@
 
     // Also make sure we start with an empty string to display
     $content = "";
-    $fields = array( "LastName", "FirstName", "UserID", "Email", "Phone1", "Phone2", "Phone3", "AdminOwnDevices", "ReadAccess", "WriteAccess", "DeleteAccess", "ContactAdmin", "RackRequest", "RackAdmin", "SiteAdmin", "BulkOperations", "DepartmentMembership" );
+    $fields = array( "LastName", "FirstName", "UserID", "Email", "Phone1", "Phone2", "countryCode", "AdminOwnDevices", "ReadAccess", "WriteAccess", "DeleteAccess", "ContactAdmin", "RackRequest", "RackAdmin", "SiteAdmin", "BulkOperations", "DepartmentMembership" );
 
     $iPerson = new People();
     $trueArray = array( "1", "Y", "YES" );
@@ -153,7 +153,7 @@
       $iPerson->Email = $row["Email"];
       $iPerson->Phone1 = $row["Phone1"];
       $iPerson->Phone2 = $row["Phone2"];
-      $iPerson->Phone3 = $row["Phone3"];
+      $iPerson->countryCode = $row["countryCode"];
       $iPerson->AdminOwnDevices = in_array( strtoupper($row["AdminOwnDevices"]), $trueArray );
       $iPerson->ReadAccess = in_array( strtoupper($row["ReadAccess"]), $trueArray );
       $iPerson->WriteAccess = in_array( strtoupper($row["WriteAccess"]), $trueArray );

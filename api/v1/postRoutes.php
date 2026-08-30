@@ -21,7 +21,7 @@
 //	URL:	/api/v1/people
 //	Method: POST
 //	Params: userid (required)
-//			lastname, firstname, phone1, phone2, phone3, email, adminowndevices, 
+//			lastname, firstname, phone1, phone2, countryCode, email, adminowndevices, 
 //			readaccess, writeaccess, deleteaccess, contactadmin, rackrequest, 
 //			rackadmin, siteadmin
 //	Returns: record as modified
