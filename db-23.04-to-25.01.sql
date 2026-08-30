@@ -111,4 +111,10 @@ ALTER TABLE fac_TemplatePowerPorts ADD COLUMN ConnectorID int(11) DEFAULT NULL A
 ALTER TABLE fac_TemplatePowerPorts ADD COLUMN PhaseID int(11) DEFAULT NULL AFTER ConnectorID;
 ALTER TABLE fac_TemplatePowerPorts ADD COLUMN VoltageID int(11) DEFAULT NULL AFTER PhaseID;
 
+--
+-- Increase fac_Config.Value column size for upgraded installations
+-- New installs already have TEXT type from create.sql
+--
+ALTER TABLE fac_Config MODIFY Value text NOT NULL;
+
 UPDATE fac_Config set Value="25.01" WHERE Parameter="Version";
