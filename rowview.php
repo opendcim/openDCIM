@@ -33,7 +33,7 @@
 	foreach($dsList as $stat){
 		if($stat->ColorCode != "#FFFFFF"){
 			$stName=str_replace(' ','_',$stat->Status);
-			$important=($stName == 'Reserved')?' !important':'';
+			$important=' !important';
 
 			$head.="\t\t\t.$stName {background-color: {$stat->ColorCode}$important;}\n";
 		}
