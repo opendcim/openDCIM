@@ -28,6 +28,23 @@
 	$taginsert="";
 
 	// Ajax functions
+	// checks if an AJAX request is sent to check for the existence of a serial number triggered by the serialexist button
+	if (isset($_POST['action']) && $_POST['action'] === 'checkserial' && isset($_POST['serial'])) {
+
+		$dev = new Device();
+		$dev->SerialNo = $_POST['serial'];
+		$devList = $dev->SearchDevicebySerialNo(true);
+
+		if (count($devList) > 0) {
+			$device = reset($devList);
+			echo '<a href="devices.php?DeviceID=' . $device->DeviceID . '" target="_blank">'
+			.__('Already used') . ' : ' . htmlspecialchars($device->SerialNo) . '</a>';
+		} else {
+			echo __('No duplicate found');
+		}
+		exit;
+	}
+
 	// SNMP Test
 	if(isset($_POST['snmptest'])){
 		// Parse through the post data and pull in site defaults if necessary
@@ -1140,6 +1157,7 @@ function getHash(){
 		changingHash=false;
 	}
 }
+
 </SCRIPT>
 
 <script type="text/javascript">
@@ -1871,6 +1889,7 @@ echo '<div class="center"><div>
 						$selected=($dev->Status==$statRow)?" selected":"";
 						print "\t\t\t\t<option value=\"$statRow\"$selected>" . __($statRow) . "</option>\n";
 					}
+$classSerialCheck = ($dev->DeviceID == 0 || trim($dev->SerialNo) == '') ? '' : 'hide';
 echo '			</select>
 			</div>
 
@@ -1880,9 +1899,14 @@ echo '			</select>
 		   <div><input type="text" class="validate[required,minSize[3],maxSize[50]]" name="Label" id="Label" size="40" value="'.$dev->Label.'"></div>
 		</div>
 		<div>
-		   <div><label for="SerialNo">'.__("Serial Number").'</label></div>
+		   <div style="vertical-align: top;"><label for="SerialNo">'.__("Serial Number").'</label></div>
 		   <div><input type="text" name="SerialNo" id="SerialNo" size="40" value="'.$dev->SerialNo.'">
-		   <button class="hide" type="button" onclick="getScan(\'SerialNo\')">',__("Scan Barcode"),'</button></div>
+		   <div id="serialCheckContainer" class="'.$classSerialCheck.'">
+  		   <button type="button" onclick="checkSerialExist()">'.__("Check serial number").'</button>
+  		   <span id="serialCheckResult" style="margin-left:0px; font-weight:bold; color:#444;"></span></div></div>
+		</div>
+		<div>
+		   <button class="hide" type="button" onclick="getScan(\'SerialNo\')">',__("Scan Barcode"),'</button>
 		</div>
 		<div>
 		   <div><label for="AssetTag">'.__("Asset Tag").'</label></div>
@@ -2752,6 +2776,10 @@ print "<!--				<div>".__("Panel")."</div> -->
 ?>
 
 <script type="text/javascript">
+const langStrings = {
+    enterSerial: "<?php echo __("Please enter a serial number."); ?>",
+    verificationError: "<?php echo __("Verification error."); ?>"
+};
 	var portrights=$.parseJSON('<?php echo json_encode($jsondata); ?>');
 	portrights['admin']=<?php echo ($person->WriteAccess)?'true':'false'; ?>;
 <?php
@@ -2933,6 +2961,37 @@ print "<!--				<div>".__("Panel")."</div> -->
 		// of the table
 		$('#buttonbar').width($('#pandn').width());
 	});
+/**
+ * Checks in AJAX if the entered serial number already exists in the database
+ */
+	function checkSerialExist() {
+		console.log("ButtonClicked");
+
+		const serial = document.getElementById('SerialNo').value.trim();
+		const result = document.getElementById('serialCheckResult');
+
+		if (serial === "") {
+			result.textContent = langStrings.enterSerial;
+			return;
+		}
+
+		let url = window.location.pathname.split('?')[0];
+		fetch(url, {
+			method: "POST",
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body: "action=checkserial&serial=" + encodeURIComponent(serial)
+		})
+		.then(response => response.text())
+		.then(data => {
+			console.log("Réponse AJAX :", data);
+			result.innerHTML = data;
+		})
+		.catch(err => {
+			console.error("Erreur AJAX :", err);
+			result.textContent = langStrings.verificationError;
+		});
+	}
+
 </script>
 
 </body>
