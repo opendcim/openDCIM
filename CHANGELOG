@@ -6,6 +6,13 @@ GitHub, at http://github.com/opendcim/openDCIM/issues, where you can also downlo
 the latest development version.  However, it is not advised to pull from GitHub unless you
 are simply testing, as some functionality can break between releases.
 
+Changes in 26.01
+----------------
+* Quite a few bug fixes
+* Expansion of fields to allow for EU power certification reporting requirements
+* Ability to merge multiple instances into a single instance of openDCIM (using CLI based script)
+* Container version patches the PHP2SHELL vulnerability
+
 Changes in 23.04
 ----------------
 * Resolved UI issue with patch panel entry deletions
