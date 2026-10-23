@@ -4,19 +4,27 @@
 [![Code Coverage](https://coveralls.io/repos/github/PHPOffice/PhpSpreadsheet/badge.svg?branch=master)](https://coveralls.io/github/PHPOffice/PhpSpreadsheet?branch=master)
 [![Total Downloads](https://img.shields.io/packagist/dt/PHPOffice/PhpSpreadsheet)](https://packagist.org/packages/phpoffice/phpspreadsheet)
 [![Latest Stable Version](https://img.shields.io/github/v/release/PHPOffice/PhpSpreadsheet)](https://packagist.org/packages/phpoffice/phpspreadsheet)
-[![License](https://img.shields.io/github/license/PHPOffice/PhpSpreadsheet)](https://packagist.org/packages/phpoffice/phpspreadsheet)
+[![License](https://poser.pugx.org/phpoffice/phpspreadsheet/license)](https://packagist.org/packages/phpoffice/phpspreadsheet)
 [![Join the chat at https://gitter.im/PHPOffice/PhpSpreadsheet](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/PHPOffice/PhpSpreadsheet)
 
 PhpSpreadsheet is a library written in pure PHP and offers a set of classes that
 allow you to read and write various spreadsheet file formats such as Excel and LibreOffice Calc.
 
-This branch (release1291) is *not* the latest version of PhpSpreadsheet, and may therefore lack features and bug fixes found in the latest version.
+This branch (1.30.x) is *not* the latest version of PhpSpreadsheet, and may therefore lack features and bug fixes found in the latest version.
+
+## End Of Support Notice
+
+Security patches will continue to be applied to this branch
+until 2027-02-28. At that date, no further changes,
+including security patches, will be applied.
+You are encouraged to upgrade to the master branch (release 5)
+before that date.
 
 ## Security Changes Only
 
 Except for security changes, no further maintenance will be applied to this branch.
 You are encouraged to upgrade to a maintained branch as soon as possible.
-Maintained branches are master (preferred - version is 5.2.0 as of the date when this is being written), release390 (current version is 3.10.1), and release222 (2.4.1).
+Maintained branches are master (preferred - version is 5.4.0 as of the date when this is being written), 3.10.x (current version is 3.10.3), and 2.4.x (2.4.3).
 
 Of particular note is that this branch should not run under Php 8.5, and will *not* be updated to avoid deprecation notices which will be introduced with Php 8.5.
 

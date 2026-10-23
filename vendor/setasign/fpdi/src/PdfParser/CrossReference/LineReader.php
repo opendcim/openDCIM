@@ -4,7 +4,7 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2024 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2026 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
  */
 
@@ -119,7 +119,7 @@ class LineReader extends AbstractReader implements ReaderInterface
         // can be reverted for php7.2
         $differentLineEndings = \count(\array_count_values($m[0]));
         if ($differentLineEndings > 1) {
-            $lines = \preg_split("/(\r\n|\n|\r)/", $xrefContent, -1, PREG_SPLIT_NO_EMPTY);
+            $lines = \preg_split("/(\r\n|\n|\r)/", $xrefContent, -1, \PREG_SPLIT_NO_EMPTY);
         } else {
             $lines = \explode($m[0][0], $xrefContent);
         }

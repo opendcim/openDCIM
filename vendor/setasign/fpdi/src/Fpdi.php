@@ -4,16 +4,11 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2024 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2026 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
  */
 
 namespace setasign\Fpdi;
-
-use setasign\Fpdi\PdfParser\CrossReference\CrossReferenceException;
-use setasign\Fpdi\PdfParser\PdfParserException;
-use setasign\Fpdi\PdfParser\Type\PdfIndirectObject;
-use setasign\Fpdi\PdfParser\Type\PdfNull;
 
 /**
  * Class Fpdi
@@ -30,5 +25,5 @@ class Fpdi extends FpdfTpl
      *
      * @string
      */
-    const VERSION = '2.6.4';
+    const VERSION = '2.6.9';
 }

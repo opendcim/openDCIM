@@ -4,7 +4,7 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2024 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2026 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
  */
 
@@ -98,7 +98,7 @@ trait FpdiTrait
      */
     public function cleanUp($allReaders = false)
     {
-        $readers = $allReaders ? array_keys($this->readers) : $this->createdReaders;
+        $readers = $allReaders ? \array_keys($this->readers) : $this->createdReaders;
         foreach ($readers as $id) {
             $this->readers[$id]->getParser()->getStreamReader()->cleanUp();
             unset($this->readers[$id]);
@@ -127,8 +127,11 @@ trait FpdiTrait
      * @param array $parserParams Individual parameters passed to the parser instance.
      * @return PdfParser|FpdiPdfParser
      */
-    protected function getPdfParserInstance(StreamReader $streamReader, array $parserParams = [])
-    {
+    protected function getPdfParserInstance(
+        StreamReader $streamReader,
+        #[\SensitiveParameter]
+        array $parserParams = []
+    ) {
         // note: if you get an exception here - turn off errors/warnings on not found classes for your autoloader.
         // psr-4 (https://www.php-fig.org/psr/psr-4/) says: Autoloader implementations MUST NOT throw
         // exceptions, MUST NOT raise errors of any level, and SHOULD NOT return a value.
@@ -149,8 +152,11 @@ trait FpdiTrait
      * @param array $parserParams Individual parameters passed to the parser instance.
      * @return string
      */
-    protected function getPdfReaderId($file, array $parserParams = [])
-    {
+    protected function getPdfReaderId(
+        $file,
+        #[\SensitiveParameter]
+        array $parserParams = []
+    ) {
         if (\is_resource($file)) {
             $id = (string) $file;
         } elseif (\is_string($file)) {
@@ -166,7 +172,8 @@ trait FpdiTrait
             );
         }
 
-        /** @noinspection OffsetOperationsInspection */
+        $id = \md5($id . '|' . \print_r($parserParams, true));
+
         if (isset($this->readers[$id])) {
             return $id;
         }
@@ -181,7 +188,6 @@ trait FpdiTrait
         }
 
         $reader = new PdfReader($this->getPdfParserInstance($streamReader, $parserParams));
-        /** @noinspection OffsetOperationsInspection */
         $this->readers[$id] = $reader;
 
         return $id;
@@ -228,8 +234,11 @@ trait FpdiTrait
      * @throws PdfParserException
      * @throws PdfTypeException
      */
-    public function setSourceFileWithParserParams($file, array $parserParams = [])
-    {
+    public function setSourceFileWithParserParams(
+        $file,
+        #[\SensitiveParameter]
+        array $parserParams = []
+    ) {
         $this->currentReaderId = $this->getPdfReaderId($file, $parserParams);
         $this->objectsToCopy[$this->currentReaderId] = [];
 
@@ -313,7 +322,7 @@ trait FpdiTrait
             $dict->value['Resources'] = $resources;
         }
 
-        list($width, $height) = $page->getWidthAndHeight($box);
+        [$width, $height] = $page->getWidthAndHeight($box);
 
         $a = 1;
         $b = 0;
@@ -326,7 +335,7 @@ trait FpdiTrait
 
         if ($rotation !== 0) {
             $rotation *= -1;
-            $angle = $rotation * M_PI / 180;
+            $angle = $rotation * \M_PI / 180;
             $a = \cos($angle);
             $b = \sin($angle);
             $c = -$b;
@@ -442,7 +451,7 @@ trait FpdiTrait
         if (\is_array($x)) {
             /** @noinspection OffsetOperationsInspection */
             unset($x['pageId']);
-            \extract($x, EXTR_IF_EXISTS);
+            \extract($x, \EXTR_IF_EXISTS);
             /** @noinspection NotOptimalIfConditionsInspection */
             /** @phpstan-ignore function.alreadyNarrowedType  */
             if (\is_array($x)) {
@@ -480,7 +489,7 @@ trait FpdiTrait
             )
         );
 
-        if (count($importedPage['externalLinks']) > 0) {
+        if (\count($importedPage['externalLinks']) > 0) {
             foreach ($importedPage['externalLinks'] as $externalLink) {
                 // mPDF uses also 'externalLinks' but doesn't come with a rect-value
                 if (!isset($externalLink['rect'])) {
@@ -522,11 +531,11 @@ trait FpdiTrait
     protected function adjustLastLink($externalLink, $xPt, $scaleX, $yPt, $newHeightPt, $scaleY, $importedPage)
     {
         // let's create a relation of the newly created link to the data of the external link
-        $lastLink = count($this->PageLinks[$this->page]);
+        $lastLink = \count($this->PageLinks[$this->page]);
         $this->PageLinks[$this->page][$lastLink - 1]['importedLink'] = $externalLink;
-        if (count($externalLink['quadPoints']) > 0) {
+        if (\count($externalLink['quadPoints']) > 0) {
             $quadPoints = [];
-            for ($i = 0, $n = count($externalLink['quadPoints']); $i < $n; $i += 2) {
+            for ($i = 0, $n = \count($externalLink['quadPoints']); $i < $n; $i += 2) {
                 $quadPoints[] = $xPt + $externalLink['quadPoints'][$i] * $scaleX;
                 $quadPoints[] = $this->hPt - $yPt - $newHeightPt + $externalLink['quadPoints'][$i + 1] * $scaleY;
             }

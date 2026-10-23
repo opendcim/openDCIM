@@ -4,7 +4,7 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2024 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2026 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
  */
 
@@ -124,6 +124,8 @@ class PdfReader
             );
         }
 
+        $pageNumber = (int)$pageNumber;
+
         if ($pageNumber < 1 || $pageNumber > $this->getPageCount()) {
             throw new \InvalidArgumentException(
                 \sprintf(
@@ -242,7 +244,7 @@ class PdfReader
                 }
 
                 // stop if all pages are read - faulty documents exists with additional entries with invalid data.
-                if (count($this->pages) === $expectedPageCount) {
+                if (\count($this->pages) === $expectedPageCount) {
                     break;
                 }
             }

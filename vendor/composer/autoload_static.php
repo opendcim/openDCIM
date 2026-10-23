@@ -7,8 +7,9 @@ namespace Composer\Autoload;
 class ComposerStaticInitae0c1a8752912043eea48eea67adca57
 {
     public static $files = array (
-        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
+        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
@@ -32,6 +33,7 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         ),
         'S' => 
         array (
+            'Symfony\\Polyfill\\Php80\\' => 23,
             'Slim\\' => 5,
         ),
         'R' => 
@@ -95,6 +97,10 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         'ZipStream\\' => 
         array (
             0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
+        ),
+        'Symfony\\Polyfill\\Php80\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
         'Slim\\' => 
         array (
@@ -213,6 +219,7 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
     );
 
     public static $classMap = array (
+        'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'BinAudits' => __DIR__ . '/../..' . '/classes/BinAudits.class.php',
         'BinContents' => __DIR__ . '/../..' . '/classes/BinContents.class.php',
         'CDUInfo' => __DIR__ . '/../..' . '/classes/CDUInfo.class.php',
@@ -256,6 +263,7 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         'PanelSchedule' => __DIR__ . '/../..' . '/classes/PanelSchedule.class.php',
         'PanelScheduleItem' => __DIR__ . '/../..' . '/classes/PanelScheduleItem.class.php',
         'People' => __DIR__ . '/../..' . '/classes/People.class.php',
+        'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'PlannedPath' => __DIR__ . '/../..' . '/classes/PlannedPath.class.php',
         'PowerConnection' => __DIR__ . '/../..' . '/classes/PowerConnection.class.php',
         'PowerConnectors' => __DIR__ . '/../..' . '/classes/PowerConnectors.class.php',
@@ -278,7 +286,9 @@ class ComposerStaticInitae0c1a8752912043eea48eea67adca57
         'Tags' => __DIR__ . '/../..' . '/classes/Tags.class.php',
         'TemplatePorts' => __DIR__ . '/../..' . '/classes/TemplatePorts.class.php',
         'TemplatePowerPorts' => __DIR__ . '/../..' . '/classes/TemplatePowerPorts.class.php',
+        'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
         'VM' => __DIR__ . '/../..' . '/classes/VM.class.php',
+        'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
         'Zone' => __DIR__ . '/../..' . '/classes/Zone.class.php',
     );
 

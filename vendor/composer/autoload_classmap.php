@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
     'BinAudits' => $baseDir . '/classes/BinAudits.class.php',
     'BinContents' => $baseDir . '/classes/BinContents.class.php',
     'CDUInfo' => $baseDir . '/classes/CDUInfo.class.php',
@@ -49,6 +50,7 @@ return array(
     'PanelSchedule' => $baseDir . '/classes/PanelSchedule.class.php',
     'PanelScheduleItem' => $baseDir . '/classes/PanelScheduleItem.class.php',
     'People' => $baseDir . '/classes/People.class.php',
+    'PhpToken' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
     'PlannedPath' => $baseDir . '/classes/PlannedPath.class.php',
     'PowerConnection' => $baseDir . '/classes/PowerConnection.class.php',
     'PowerConnectors' => $baseDir . '/classes/PowerConnectors.class.php',
@@ -71,6 +73,8 @@ return array(
     'Tags' => $baseDir . '/classes/Tags.class.php',
     'TemplatePorts' => $baseDir . '/classes/TemplatePorts.class.php',
     'TemplatePowerPorts' => $baseDir . '/classes/TemplatePowerPorts.class.php',
+    'UnhandledMatchError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
     'VM' => $baseDir . '/classes/VM.class.php',
+    'ValueError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
     'Zone' => $baseDir . '/classes/Zone.class.php',
 );

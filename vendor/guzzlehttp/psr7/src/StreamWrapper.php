@@ -44,7 +44,13 @@ final class StreamWrapper
                 .'writable, or both.');
         }
 
-        return fopen('guzzle://stream', $mode, false, self::createStreamContext($stream));
+        $resource = @fopen('guzzle://stream', $mode, false, self::createStreamContext($stream));
+
+        if ($resource === false) {
+            throw new \RuntimeException('Unable to create stream resource');
+        }
+
+        return $resource;
     }
 
     /**
@@ -91,6 +97,11 @@ final class StreamWrapper
     public function stream_write(string $data): int
     {
         return $this->stream->write($data);
+    }
+
+    public function stream_flush(): bool
+    {
+        return true;
     }
 
     public function stream_tell(): int

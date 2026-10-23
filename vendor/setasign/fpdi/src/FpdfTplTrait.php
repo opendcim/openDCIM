@@ -4,7 +4,7 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2024 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2026 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
  */
 
@@ -107,7 +107,7 @@ trait FpdfTplTrait
 
         if (\is_array($x)) {
             unset($x['tpl']);
-            \extract($x, EXTR_IF_EXISTS);
+            \extract($x, \EXTR_IF_EXISTS);
             /** @noinspection NotOptimalIfConditionsInspection */
             /** @phpstan-ignore function.alreadyNarrowedType  */
             if (\is_array($x)) {
@@ -302,7 +302,7 @@ trait FpdfTplTrait
 
         $fontKey = $this->FontFamily . $this->FontStyle;
         if ($fontKey) {
-            $this->CurrentFont =& $this->fonts[$fontKey];
+            $this->CurrentFont = $this->fonts[$fontKey];
         } else {
             unset($this->CurrentFont);
         }
@@ -408,7 +408,7 @@ trait FpdfTplTrait
     {
         parent::SetFontSize($size);
         if ($this->page === 0 && $this->currentTemplateId !== null) {
-            $this->_out(sprintf('BT /F%d %.2F Tf ET', $this->CurrentFont['i'], $this->FontSizePt));
+            $this->_out(\sprintf('BT /F%d %.2F Tf ET', $this->CurrentFont['i'], $this->FontSizePt));
         }
     }
 

@@ -4,7 +4,7 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2024 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2026 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
  */
 
@@ -76,4 +76,9 @@ class CrossReferenceException extends PdfParserException
      * @var int
      */
     const ENCRYPTED = 0x010C;
+
+    /**
+     * @var int
+     */
+    const CYCLIC_STRUCTURE = 0x010D;
 }

@@ -29,6 +29,7 @@ namespace Pimple\Tests;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Pimple\Container;
+use Pimple\ServiceProviderInterface;
 
 /**
  * @author Igor Wiedler <igor@wiedler.ch>
@@ -204,7 +205,14 @@ class PimpleTest extends TestCase
     public function testFluentRegister()
     {
         $pimple = new Container();
-        $this->assertSame($pimple, $pimple->register($this->getMockBuilder('Pimple\ServiceProviderInterface')->getMock()));
+
+        $stub = new class implements ServiceProviderInterface {
+            public function register(Container $pimple)
+            {
+            }
+        };
+
+        $this->assertSame($pimple, $pimple->register($stub));
     }
 
     public function testRawValidatesKeyIsPresent()
@@ -275,11 +283,15 @@ class PimpleTest extends TestCase
         unset($pimple['foo']);
 
         $p = new \ReflectionProperty($pimple, 'values');
-        $p->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $p->setAccessible(true);
+        }
         $this->assertEmpty($p->getValue($pimple));
 
         $p = new \ReflectionProperty($pimple, 'factories');
-        $p->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $p->setAccessible(true);
+        }
         $this->assertCount(0, $p->getValue($pimple));
     }
 
@@ -421,6 +433,7 @@ class PimpleTest extends TestCase
     /**
      * @group legacy
      * @expectedDeprecation How Pimple behaves when extending protected closures will be fixed in Pimple 4. Are you sure "foo" should be protected?
+     * @dataProvider badServiceDefinitionProvider
      */
     #[DataProvider('badServiceDefinitionProvider')]
     public function testExtendingProtectedClosureDeprecation($service)
