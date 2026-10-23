@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-11 08:49-0500\n"
+"POT-Creation-Date: 2026-10-23 07:20-0500\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -122,7 +122,7 @@ msgid "Data Center"
 msgstr "ЦОД/площадка"
 
 #: bulk_importer.php:223 bulk_moves.php:230 cabinets.php:246 dc_stats.php:317
-#: devices.php:2008 pathmaker.php:227 pathmaker.php:304 pathmaker.php:470
+#: devices.php:2008 pathmaker.php:304 pathmaker.php:470
 #: /home/runner/openDCIM/paths.php:221 paths.php:296
 #: /home/runner/openDCIM/paths.php:380 report_cabinets.php:187
 #: report_contact.php:486 report_cost.php:469 report_exception.php:165
@@ -1939,7 +1939,6 @@ msgid "MediaType"
 msgstr "Кабель"
 
 #: connections_spreadsheet.php:28 devices.php:2582 devices.php:2645
-#: pathmaker.php:199
 msgid "Connections"
 msgstr "Таблиця комутації"
 
@@ -2006,7 +2005,6 @@ msgid "Parent Container"
 msgstr "Батьківський контейнер"
 
 #: container.php:273 datacenter.php:318 classes/Cabinet.class.php:390
-#: classes/Cabinet.class.php:458
 msgid "None"
 msgstr "немає"
 
@@ -2777,7 +2775,6 @@ msgid "Departmental Owner"
 msgstr "Відділ"
 
 #: devices.php:1922 devices.php:1968 rackrequest.php:393 search_export.php:62
-#: search_export.php:196 scripts/ajax_tooltip.php:318
 msgid "Unassigned"
 msgstr "не визначено"
 
@@ -3529,62 +3526,6 @@ msgstr "Майстер автоматичної комутації"
 #: pathmaker.php:96 pathmaker.php:98
 msgid "Connection implemented"
 msgstr "Комутацію виконано"
-
-#: pathmaker.php:148
-msgid "Path not initialized"
-msgstr "Комутацію не проініціалізовано"
-
-#: pathmaker.php:153
-msgid "Error getting initial device data"
-msgstr "Помилка отримання інформації про початковий пристрій комутації"
-
-#: pathmaker.php:156
-msgid "Error: initial device is a panel"
-msgstr "Помилка: початковий пристрій комутації є патчпанеллю"
-
-#: pathmaker.php:159
-msgid "Error getting initial device port data"
-msgstr "Помилка отримання інформації про порт початкового пристрою комутації"
-
-#: pathmaker.php:162
-msgid "Error: initial device port is already connected"
-msgstr "Помилка: порт початкового пристрою комутації вже підключено"
-
-#: pathmaker.php:165
-msgid "Error getting final device data"
-msgstr "Помилка отримання інформації про кінцевий пристрій комутації"
-
-#: pathmaker.php:168
-msgid "Error: final device is a panel"
-msgstr "Помилка: кінцевий пристрій комутації є патчпанеллю"
-
-#: pathmaker.php:171
-msgid "Error getting final device port data"
-msgstr "Помилка отримання інформації про порт кінцевого пристрою комутації"
-
-#: pathmaker.php:174
-msgid "Error: final device port is already connected"
-msgstr "Помилка: порт кінцевого пристрою комутації вже підключено"
-
-#: pathmaker.php:177
-msgid "Path not found"
-msgstr "Шлях комутації не знайдено"
-
-#: pathmaker.php:184
-msgid "Initial device unspecified"
-msgstr "Початковий пристрій комутації не вказано"
-
-#: pathmaker.php:186
-msgid "Initial device port unspecified"
-msgstr "Порт початкового пристрою комутації не вказано"
-
-#: pathmaker.php:188 pathmaker.php:190
-msgid "Final device unspecified"
-msgstr "Кінцевий пристрій комутації не вказано"
-
-#: pathmaker.php:192 scripts/uploadifive.php:113
-msgid "Unknown Error"
-msgstr "Невідома помилка"
 
 #: pathmaker.php:247 pathmaker.php:324 pathmaker.php:460
 #: /home/runner/openDCIM/paths.php:75 paths.php:132
@@ -4884,18 +4825,6 @@ msgstr "Інвентаризація в розрізі міток"
 msgid "Tag"
 msgstr "Мітка"
 
-#: report_tags.php:115
-msgid "Tag:"
-msgstr "Мітка:"
-
-#: report_tags.php:117
-msgid "Select Tag"
-msgstr "Оберіть мітку"
-
-#: report_tags.php:118
-msgid "All Tags"
-msgstr "Всі мітки"
-
 #: report_vendor_model.php:42
 msgid "Please select the values to limit the report scope as indicated below."
 msgstr ""
@@ -5400,44 +5329,6 @@ msgstr "Список віртуальних машин, що не мають в�
 msgid "This is an automated message from the"
 msgstr "Це автоматичне повідомлення з"
 
-#: vmnamecheck.php:33
-msgid ""
-"Inventory\n"
-"\t\t\tProcess.  This process is scheduled to run once each business day.</"
-"p>\n"
-"\t\t\t<p>The following"
-msgstr ""
-"Процес\n"
-"\t\t\tінвентаризації. Ця операція виконується лише один раз за робочий день."
-"</p>\n"
-"\t\t\t<p>Було знайдено"
-
-#: vmnamecheck.php:35
-msgid ""
-"Virtual Machines were detected in the environment\n"
-"\t\t\tand do not have an associated owner record.  It is assumed that\n"
-"\t\t\tthese are new Virtual Machines.  Please click on the links below to "
-"update\n"
-"\t\t\townership information."
-msgstr ""
-"наступні віртуальні машини у середовищі,\n"
-"\t\t\tщо не мають жодного власника. Припускаємо що це\n"
-"\t\t\tнові віртуальні машини. Будь-ласка, клацніть на посиланні нижче\n"
-"\t\t\tаби оновити інформацію про їх власників."
-
-#: vmnamecheck.php:39
-msgid ""
-"If the appropriate department is not listed as an option for ownership, "
-"please\n"
-"\t\t\tsend an email to"
-msgstr ""
-"Якщо відповідний відділ відсутній у списку власників, будь-ласка\n"
-"\t\t\tнадішліть листа"
-
-#: vmnamecheck.php:40
-msgid "to have it added."
-msgstr "аби його змогли додати."
-
 #: vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Server Name"
 msgstr "Ім'я сервера"
@@ -5445,36 +5336,6 @@ msgstr "Ім'я сервера"
 #: vmnamecheck.php:74
 msgid "Virtual Machine Inventory Expiration Report"
 msgstr "Звітність по закінченню терміну дії віртуальних машин"
-
-#: vmnamecheck.php:75
-msgid ""
-"Virtual Machine Inventory\n"
-"\t\t\tProcess.  This process is scheduled to run once each business day."
-msgstr ""
-"Процес інвентаризації\n"
-"\t\t\tвіртуальних машин. Ця операція виконується лише один раз за робочий "
-"день."
-
-#: vmnamecheck.php:77
-msgid "The following"
-msgstr "Нижче вказані"
-
-#: vmnamecheck.php:77
-msgid ""
-"Virtual Machines have not been detected within the\n"
-"\t\t\tpast"
-msgstr ""
-"віртуальні машини не було знайдено на протязі\n"
-"\t\t\tостанніх"
-
-#: vmnamecheck.php:78
-msgid ""
-"days and are assumed to be expired.  They are being removed from the\n"
-"\t\t\tinventory system."
-msgstr ""
-"днів, тому вважаються такими що закінчили своє існування. Їх буде видалено "
-"з\n"
-"\t\t\tінвентаризації."
 
 #: workorder.php:5
 msgid "Data Center Operations Work Order Builder"
@@ -6078,6 +5939,10 @@ msgstr "Файл неможливо записати на диск"
 msgid "File upload stopped by extension"
 msgstr "Завантаження файлу зупинено внаслідок недозволеного розширення"
 
+#: scripts/uploadifive.php:113
+msgid "Unknown Error"
+msgstr "Невідома помилка"
+
 #: scripts/uploadifive.php:120
 msgid "Invalid file type."
 msgstr "Неправильний формат файлу."
@@ -6124,12 +5989,10 @@ msgid "Row "
 msgstr "Ряд "
 
 #: classes/Device.class.php:2572 classes/Device.class.php:2578
-#: classes/PowerDistribution.class.php:491
 msgid "Critical"
 msgstr "Критичний"
 
 #: classes/Device.class.php:2574 classes/Device.class.php:2580
-#: classes/PowerDistribution.class.php:493
 msgid "Warning"
 msgstr "Попередження"
 
@@ -6227,6 +6090,115 @@ msgid "First port detection failed, please report to openDCIM developers"
 msgstr ""
 "Неможливо визначити перший порт, будь-ласка повідомте про це розробникам "
 "openDCIM"
+
+#~ msgid "Path not initialized"
+#~ msgstr "Комутацію не проініціалізовано"
+
+#~ msgid "Error getting initial device data"
+#~ msgstr "Помилка отримання інформації про початковий пристрій комутації"
+
+#~ msgid "Error: initial device is a panel"
+#~ msgstr "Помилка: початковий пристрій комутації є патчпанеллю"
+
+#~ msgid "Error getting initial device port data"
+#~ msgstr ""
+#~ "Помилка отримання інформації про порт початкового пристрою комутації"
+
+#~ msgid "Error: initial device port is already connected"
+#~ msgstr "Помилка: порт початкового пристрою комутації вже підключено"
+
+#~ msgid "Error getting final device data"
+#~ msgstr "Помилка отримання інформації про кінцевий пристрій комутації"
+
+#~ msgid "Error: final device is a panel"
+#~ msgstr "Помилка: кінцевий пристрій комутації є патчпанеллю"
+
+#~ msgid "Error getting final device port data"
+#~ msgstr "Помилка отримання інформації про порт кінцевого пристрою комутації"
+
+#~ msgid "Error: final device port is already connected"
+#~ msgstr "Помилка: порт кінцевого пристрою комутації вже підключено"
+
+#~ msgid "Path not found"
+#~ msgstr "Шлях комутації не знайдено"
+
+#~ msgid "Initial device unspecified"
+#~ msgstr "Початковий пристрій комутації не вказано"
+
+#~ msgid "Initial device port unspecified"
+#~ msgstr "Порт початкового пристрою комутації не вказано"
+
+#~ msgid "Final device unspecified"
+#~ msgstr "Кінцевий пристрій комутації не вказано"
+
+#~ msgid "Tag:"
+#~ msgstr "Мітка:"
+
+#~ msgid "Select Tag"
+#~ msgstr "Оберіть мітку"
+
+#~ msgid "All Tags"
+#~ msgstr "Всі мітки"
+
+#~ msgid ""
+#~ "Inventory\n"
+#~ "\t\t\tProcess.  This process is scheduled to run once each business day.</"
+#~ "p>\n"
+#~ "\t\t\t<p>The following"
+#~ msgstr ""
+#~ "Процес\n"
+#~ "\t\t\tінвентаризації. Ця операція виконується лише один раз за робочий "
+#~ "день.</p>\n"
+#~ "\t\t\t<p>Було знайдено"
+
+#~ msgid ""
+#~ "Virtual Machines were detected in the environment\n"
+#~ "\t\t\tand do not have an associated owner record.  It is assumed that\n"
+#~ "\t\t\tthese are new Virtual Machines.  Please click on the links below to "
+#~ "update\n"
+#~ "\t\t\townership information."
+#~ msgstr ""
+#~ "наступні віртуальні машини у середовищі,\n"
+#~ "\t\t\tщо не мають жодного власника. Припускаємо що це\n"
+#~ "\t\t\tнові віртуальні машини. Будь-ласка, клацніть на посиланні нижче\n"
+#~ "\t\t\tаби оновити інформацію про їх власників."
+
+#~ msgid ""
+#~ "If the appropriate department is not listed as an option for ownership, "
+#~ "please\n"
+#~ "\t\t\tsend an email to"
+#~ msgstr ""
+#~ "Якщо відповідний відділ відсутній у списку власників, будь-ласка\n"
+#~ "\t\t\tнадішліть листа"
+
+#~ msgid "to have it added."
+#~ msgstr "аби його змогли додати."
+
+#~ msgid ""
+#~ "Virtual Machine Inventory\n"
+#~ "\t\t\tProcess.  This process is scheduled to run once each business day."
+#~ msgstr ""
+#~ "Процес інвентаризації\n"
+#~ "\t\t\tвіртуальних машин. Ця операція виконується лише один раз за робочий "
+#~ "день."
+
+#~ msgid "The following"
+#~ msgstr "Нижче вказані"
+
+#~ msgid ""
+#~ "Virtual Machines have not been detected within the\n"
+#~ "\t\t\tpast"
+#~ msgstr ""
+#~ "віртуальні машини не було знайдено на протязі\n"
+#~ "\t\t\tостанніх"
+
+#~ msgid ""
+#~ "days and are assumed to be expired.  They are being removed from the\n"
+#~ "\t\t\tinventory system."
+#~ msgstr ""
+#~ "днів, тому вважаються такими що закінчили своє існування. Їх буде "
+#~ "видалено з\n"
+#~ "\t\t\tінвентаризації."
 
 #~ msgid "Style"
 #~ msgstr "Стилі"

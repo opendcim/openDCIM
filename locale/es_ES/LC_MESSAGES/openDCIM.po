@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-11 08:49-0500\n"
+"POT-Creation-Date: 2026-10-23 07:20-0500\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -126,7 +126,7 @@ msgid "Data Center"
 msgstr "Centro de Proceso de Datos"
 
 #: bulk_importer.php:223 bulk_moves.php:230 cabinets.php:246 dc_stats.php:317
-#: devices.php:2008 pathmaker.php:227 pathmaker.php:304 pathmaker.php:470
+#: devices.php:2008 pathmaker.php:304 pathmaker.php:470
 #: /home/runner/openDCIM/paths.php:221 paths.php:296
 #: /home/runner/openDCIM/paths.php:380 report_cabinets.php:187
 #: report_contact.php:486 report_cost.php:469 report_exception.php:165
@@ -1953,7 +1953,6 @@ msgid "MediaType"
 msgstr "TipoDeMedio"
 
 #: connections_spreadsheet.php:28 devices.php:2582 devices.php:2645
-#: pathmaker.php:199
 msgid "Connections"
 msgstr "Conexiones"
 
@@ -2020,7 +2019,6 @@ msgid "Parent Container"
 msgstr "Contenedor Padre"
 
 #: container.php:273 datacenter.php:318 classes/Cabinet.class.php:390
-#: classes/Cabinet.class.php:458
 msgid "None"
 msgstr "Ninguno"
 
@@ -2794,7 +2792,6 @@ msgid "Departmental Owner"
 msgstr "Departamento Propietario"
 
 #: devices.php:1922 devices.php:1968 rackrequest.php:393 search_export.php:62
-#: search_export.php:196 scripts/ajax_tooltip.php:318
 msgid "Unassigned"
 msgstr "No Asignado"
 
@@ -3552,62 +3549,6 @@ msgstr "Creación de conexiones extremo a extremo"
 #: pathmaker.php:96 pathmaker.php:98
 msgid "Connection implemented"
 msgstr "Conexión Implementada"
-
-#: pathmaker.php:148
-msgid "Path not initialized"
-msgstr "Camino no inicializado"
-
-#: pathmaker.php:153
-msgid "Error getting initial device data"
-msgstr "Error al obtener los datos del dispositivo inicial"
-
-#: pathmaker.php:156
-msgid "Error: initial device is a panel"
-msgstr "Error: el dispositivo inicial es un panel"
-
-#: pathmaker.php:159
-msgid "Error getting initial device port data"
-msgstr "Error al obtener los datos del puerto del dispositivo inicial"
-
-#: pathmaker.php:162
-msgid "Error: initial device port is already connected"
-msgstr "Error: el dispositivo inicial ya está conectado"
-
-#: pathmaker.php:165
-msgid "Error getting final device data"
-msgstr "Error obteniendo datos del dispositivo final"
-
-#: pathmaker.php:168
-msgid "Error: final device is a panel"
-msgstr "Error: el dispositivo final es un panel"
-
-#: pathmaker.php:171
-msgid "Error getting final device port data"
-msgstr "Error obteniendo datos del puerto del dispositivo final"
-
-#: pathmaker.php:174
-msgid "Error: final device port is already connected"
-msgstr "Error: el puerto del dispositivo final ya está conectado"
-
-#: pathmaker.php:177
-msgid "Path not found"
-msgstr "Camino no encontrado"
-
-#: pathmaker.php:184
-msgid "Initial device unspecified"
-msgstr "Dispositivo inicial no especificado"
-
-#: pathmaker.php:186
-msgid "Initial device port unspecified"
-msgstr "Puerto del dispositivo inicial no especificado"
-
-#: pathmaker.php:188 pathmaker.php:190
-msgid "Final device unspecified"
-msgstr "Dispositivo final no especificado"
-
-#: pathmaker.php:192 scripts/uploadifive.php:113
-msgid "Unknown Error"
-msgstr "Error Desconocido"
 
 #: pathmaker.php:247 pathmaker.php:324 pathmaker.php:460
 #: /home/runner/openDCIM/paths.php:75 paths.php:132
@@ -4928,18 +4869,6 @@ msgstr "Informes de Inventario por Etiqueta"
 msgid "Tag"
 msgstr "Etiqueta"
 
-#: report_tags.php:115
-msgid "Tag:"
-msgstr "Etiqueta:"
-
-#: report_tags.php:117
-msgid "Select Tag"
-msgstr "Seleccionar Etiqueta"
-
-#: report_tags.php:118
-msgid "All Tags"
-msgstr "Todas las Etiquetas"
-
 #: report_vendor_model.php:42
 msgid "Please select the values to limit the report scope as indicated below."
 msgstr "Please select the values to limit the report scope as indicated below."
@@ -5450,45 +5379,6 @@ msgstr "Informe de Incumplimientos de Inventario de Máquinas Virtuales"
 msgid "This is an automated message from the"
 msgstr "Este es un mensaje automático del"
 
-#: vmnamecheck.php:33
-msgid ""
-"Inventory\n"
-"\t\t\tProcess.  This process is scheduled to run once each business day.</"
-"p>\n"
-"\t\t\t<p>The following"
-msgstr ""
-"Proceso\n"
-"\t\t de Inventario. Este proceso está programado para ejecutarse una vez "
-"cada día laborable.</p>\n"
-"\t\t\t<p>El siguiente"
-
-#: vmnamecheck.php:35
-msgid ""
-"Virtual Machines were detected in the environment\n"
-"\t\t\tand do not have an associated owner record.  It is assumed that\n"
-"\t\t\tthese are new Virtual Machines.  Please click on the links below to "
-"update\n"
-"\t\t\townership information."
-msgstr ""
-"Las Máquinas Virtuales fueron detectadas en el entorno\n"
-"\t\ty no tienen un registro de propietario asociado. Se asume que\n"
-"\t\t\tson Máquinas Virtuales nuevas. Por favor, pulse en los enlaces de "
-"abajo para actualizar\n"
-"\t\t\tla información del propietario."
-
-#: vmnamecheck.php:39
-msgid ""
-"If the appropriate department is not listed as an option for ownership, "
-"please\n"
-"\t\t\tsend an email to"
-msgstr ""
-"Si el departamento apropiado no está incluido como propietario, por favor\n"
-"\t\t envíe un correo a"
-
-#: vmnamecheck.php:40
-msgid "to have it added."
-msgstr "tenerlo añadido."
-
 #: vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Server Name"
 msgstr "Nombre del Servidor"
@@ -5496,35 +5386,6 @@ msgstr "Nombre del Servidor"
 #: vmnamecheck.php:74
 msgid "Virtual Machine Inventory Expiration Report"
 msgstr "Informe de Caducidad de Inventario de Máquinas Virtuales"
-
-#: vmnamecheck.php:75
-msgid ""
-"Virtual Machine Inventory\n"
-"\t\t\tProcess.  This process is scheduled to run once each business day."
-msgstr ""
-"Proceso de Inventario de \n"
-"\t\tMáquinas Virtuales. Este proceso está programado para ejecutarse una vez "
-"cada día laborable."
-
-#: vmnamecheck.php:77
-msgid "The following"
-msgstr "El siguiente"
-
-#: vmnamecheck.php:77
-msgid ""
-"Virtual Machines have not been detected within the\n"
-"\t\t\tpast"
-msgstr ""
-"Las Máquinas Virtuales no han sido detectadas en el\n"
-"\t\tpasado"
-
-#: vmnamecheck.php:78
-msgid ""
-"days and are assumed to be expired.  They are being removed from the\n"
-"\t\t\tinventory system."
-msgstr ""
-"días y se asume que han expirado. Serán eliminadas del\n"
-"\t\tsistema de inventario."
 
 #: workorder.php:5
 msgid "Data Center Operations Work Order Builder"
@@ -6135,6 +5996,10 @@ msgstr "Fallo al escribir el archivo en disco"
 msgid "File upload stopped by extension"
 msgstr "Subida del archivo detenida por extensión"
 
+#: scripts/uploadifive.php:113
+msgid "Unknown Error"
+msgstr "Error Desconocido"
+
 #: scripts/uploadifive.php:120
 msgid "Invalid file type."
 msgstr "Tipo de archivo no válido."
@@ -6186,12 +6051,10 @@ msgid "Row "
 msgstr "Row "
 
 #: classes/Device.class.php:2572 classes/Device.class.php:2578
-#: classes/PowerDistribution.class.php:491
 msgid "Critical"
 msgstr "Critical"
 
 #: classes/Device.class.php:2574 classes/Device.class.php:2580
-#: classes/PowerDistribution.class.php:493
 msgid "Warning"
 msgstr "Warning"
 
@@ -6289,6 +6152,115 @@ msgstr ""
 #: classes/SwitchInfo.class.php:105
 msgid "First port detection failed, please report to openDCIM developers"
 msgstr "First port detection failed, please report to openDCIM developers"
+
+#~ msgid "Path not initialized"
+#~ msgstr "Camino no inicializado"
+
+#~ msgid "Error getting initial device data"
+#~ msgstr "Error al obtener los datos del dispositivo inicial"
+
+#~ msgid "Error: initial device is a panel"
+#~ msgstr "Error: el dispositivo inicial es un panel"
+
+#~ msgid "Error getting initial device port data"
+#~ msgstr "Error al obtener los datos del puerto del dispositivo inicial"
+
+#~ msgid "Error: initial device port is already connected"
+#~ msgstr "Error: el dispositivo inicial ya está conectado"
+
+#~ msgid "Error getting final device data"
+#~ msgstr "Error obteniendo datos del dispositivo final"
+
+#~ msgid "Error: final device is a panel"
+#~ msgstr "Error: el dispositivo final es un panel"
+
+#~ msgid "Error getting final device port data"
+#~ msgstr "Error obteniendo datos del puerto del dispositivo final"
+
+#~ msgid "Error: final device port is already connected"
+#~ msgstr "Error: el puerto del dispositivo final ya está conectado"
+
+#~ msgid "Path not found"
+#~ msgstr "Camino no encontrado"
+
+#~ msgid "Initial device unspecified"
+#~ msgstr "Dispositivo inicial no especificado"
+
+#~ msgid "Initial device port unspecified"
+#~ msgstr "Puerto del dispositivo inicial no especificado"
+
+#~ msgid "Final device unspecified"
+#~ msgstr "Dispositivo final no especificado"
+
+#~ msgid "Tag:"
+#~ msgstr "Etiqueta:"
+
+#~ msgid "Select Tag"
+#~ msgstr "Seleccionar Etiqueta"
+
+#~ msgid "All Tags"
+#~ msgstr "Todas las Etiquetas"
+
+#~ msgid ""
+#~ "Inventory\n"
+#~ "\t\t\tProcess.  This process is scheduled to run once each business day.</"
+#~ "p>\n"
+#~ "\t\t\t<p>The following"
+#~ msgstr ""
+#~ "Proceso\n"
+#~ "\t\t de Inventario. Este proceso está programado para ejecutarse una vez "
+#~ "cada día laborable.</p>\n"
+#~ "\t\t\t<p>El siguiente"
+
+#~ msgid ""
+#~ "Virtual Machines were detected in the environment\n"
+#~ "\t\t\tand do not have an associated owner record.  It is assumed that\n"
+#~ "\t\t\tthese are new Virtual Machines.  Please click on the links below to "
+#~ "update\n"
+#~ "\t\t\townership information."
+#~ msgstr ""
+#~ "Las Máquinas Virtuales fueron detectadas en el entorno\n"
+#~ "\t\ty no tienen un registro de propietario asociado. Se asume que\n"
+#~ "\t\t\tson Máquinas Virtuales nuevas. Por favor, pulse en los enlaces de "
+#~ "abajo para actualizar\n"
+#~ "\t\t\tla información del propietario."
+
+#~ msgid ""
+#~ "If the appropriate department is not listed as an option for ownership, "
+#~ "please\n"
+#~ "\t\t\tsend an email to"
+#~ msgstr ""
+#~ "Si el departamento apropiado no está incluido como propietario, por "
+#~ "favor\n"
+#~ "\t\t envíe un correo a"
+
+#~ msgid "to have it added."
+#~ msgstr "tenerlo añadido."
+
+#~ msgid ""
+#~ "Virtual Machine Inventory\n"
+#~ "\t\t\tProcess.  This process is scheduled to run once each business day."
+#~ msgstr ""
+#~ "Proceso de Inventario de \n"
+#~ "\t\tMáquinas Virtuales. Este proceso está programado para ejecutarse una "
+#~ "vez cada día laborable."
+
+#~ msgid "The following"
+#~ msgstr "El siguiente"
+
+#~ msgid ""
+#~ "Virtual Machines have not been detected within the\n"
+#~ "\t\t\tpast"
+#~ msgstr ""
+#~ "Las Máquinas Virtuales no han sido detectadas en el\n"
+#~ "\t\tpasado"
+
+#~ msgid ""
+#~ "days and are assumed to be expired.  They are being removed from the\n"
+#~ "\t\t\tinventory system."
+#~ msgstr ""
+#~ "días y se asume que han expirado. Serán eliminadas del\n"
+#~ "\t\tsistema de inventario."
 
 #~ msgid "Style"
 #~ msgstr "Estilo"

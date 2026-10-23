@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-11 08:49-0500\n"
+"POT-Creation-Date: 2026-10-23 07:20-0500\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -128,7 +128,7 @@ msgid "Data Center"
 msgstr "Data Center"
 
 #: bulk_importer.php:223 bulk_moves.php:230 cabinets.php:246 dc_stats.php:317
-#: devices.php:2008 pathmaker.php:227 pathmaker.php:304 pathmaker.php:470
+#: devices.php:2008 pathmaker.php:304 pathmaker.php:470
 #: /home/runner/openDCIM/paths.php:221 paths.php:296
 #: /home/runner/openDCIM/paths.php:380 report_cabinets.php:187
 #: report_contact.php:486 report_cost.php:469 report_exception.php:165
@@ -1965,7 +1965,6 @@ msgid "MediaType"
 msgstr "Medientyp"
 
 #: connections_spreadsheet.php:28 devices.php:2582 devices.php:2645
-#: pathmaker.php:199
 msgid "Connections"
 msgstr "Verbindungen"
 
@@ -2032,7 +2031,6 @@ msgid "Parent Container"
 msgstr "Übergeordneter Container"
 
 #: container.php:273 datacenter.php:318 classes/Cabinet.class.php:390
-#: classes/Cabinet.class.php:458
 msgid "None"
 msgstr "Keine"
 
@@ -2812,7 +2810,6 @@ msgid "Departmental Owner"
 msgstr "Abteilungsinhaber"
 
 #: devices.php:1922 devices.php:1968 rackrequest.php:393 search_export.php:62
-#: search_export.php:196 scripts/ajax_tooltip.php:318
 msgid "Unassigned"
 msgstr "Nicht zugeordnet"
 
@@ -3569,62 +3566,6 @@ msgstr "End-zu-End Verbindung anlegen"
 #: pathmaker.php:96 pathmaker.php:98
 msgid "Connection implemented"
 msgstr "Verbindung implementiert"
-
-#: pathmaker.php:148
-msgid "Path not initialized"
-msgstr "Pfad nicht initialisiert"
-
-#: pathmaker.php:153
-msgid "Error getting initial device data"
-msgstr "Fehler beim Auslesen der initialen Gerätedaten"
-
-#: pathmaker.php:156
-msgid "Error: initial device is a panel"
-msgstr "Fehler: Ausgangsgerät ist ein Schaltfeld"
-
-#: pathmaker.php:159
-msgid "Error getting initial device port data"
-msgstr "Fehler beim Auslesen der Portdaten des Ausgangsgerätes"
-
-#: pathmaker.php:162
-msgid "Error: initial device port is already connected"
-msgstr "Fehler: Ausgangsgeräteport ist bereits belegt"
-
-#: pathmaker.php:165
-msgid "Error getting final device data"
-msgstr "Fehler beim Auslesen der Endgerätedaten"
-
-#: pathmaker.php:168
-msgid "Error: final device is a panel"
-msgstr "Fehler: Endgerät ist ein Schaltfeld"
-
-#: pathmaker.php:171
-msgid "Error getting final device port data"
-msgstr "Fehler beim Auslesen der Portdaten des Endgerätes"
-
-#: pathmaker.php:174
-msgid "Error: final device port is already connected"
-msgstr "Fehler: Endgeräteport ist bereits belegt"
-
-#: pathmaker.php:177
-msgid "Path not found"
-msgstr "Pfad nicht gefunden"
-
-#: pathmaker.php:184
-msgid "Initial device unspecified"
-msgstr "Ausgangsgerät nicht spezifiziert"
-
-#: pathmaker.php:186
-msgid "Initial device port unspecified"
-msgstr "Ausgangsgeräteport nicht spezifiziert"
-
-#: pathmaker.php:188 pathmaker.php:190
-msgid "Final device unspecified"
-msgstr "Endgerät nicht spezifiziert"
-
-#: pathmaker.php:192 scripts/uploadifive.php:113
-msgid "Unknown Error"
-msgstr "Unbekannter Fehler"
 
 #: pathmaker.php:247 pathmaker.php:324 pathmaker.php:460
 #: /home/runner/openDCIM/paths.php:75 paths.php:132
@@ -4949,18 +4890,6 @@ msgstr "Inventurbericht pro Markierung"
 msgid "Tag"
 msgstr "Markierung"
 
-#: report_tags.php:115
-msgid "Tag:"
-msgstr "Markierung"
-
-#: report_tags.php:117
-msgid "Select Tag"
-msgstr "Wähle Markierung"
-
-#: report_tags.php:118
-msgid "All Tags"
-msgstr "Alle Markierungen"
-
 #: report_vendor_model.php:42
 msgid "Please select the values to limit the report scope as indicated below."
 msgstr ""
@@ -5474,45 +5403,6 @@ msgstr "Bericht Virtuelle Maschinen Inventur Sonderfälle"
 msgid "This is an automated message from the"
 msgstr "Dies ist eine automatische Mitteilung von"
 
-#: vmnamecheck.php:33
-msgid ""
-"Inventory\n"
-"\t\t\tProcess.  This process is scheduled to run once each business day.</"
-"p>\n"
-"\t\t\t<p>The following"
-msgstr ""
-"Inventur\n"
-"\t\t\tProzess. Dieser Prozess ist eingeplant um an jedem Werktag zu laufen.</"
-"p>\n"
-"\t\t\t<p>Der folgende"
-
-#: vmnamecheck.php:35
-msgid ""
-"Virtual Machines were detected in the environment\n"
-"\t\t\tand do not have an associated owner record.  It is assumed that\n"
-"\t\t\tthese are new Virtual Machines.  Please click on the links below to "
-"update\n"
-"\t\t\townership information."
-msgstr ""
-"Virtuelle Maschinen wurden erkannt \n"
-"\t\t\tund haben keinen zugewiesenen Besitzer. Es wird angenommen, dass\n"
-"\t\t\tdies neue virtuelle Maschinen sind. Bitte auf Links unten klicken um "
-"die\n"
-"\t\t\tBesitzer-Information einzutragen."
-
-#: vmnamecheck.php:39
-msgid ""
-"If the appropriate department is not listed as an option for ownership, "
-"please\n"
-"\t\t\tsend an email to"
-msgstr ""
-"Falls die entsprechende Abteilung als Eigentümer nicht gelistet ist, \n"
-"\t\t\tsenden Sie bitte eine E-Mail an"
-
-#: vmnamecheck.php:40
-msgid "to have it added."
-msgstr "um aufgenommen zu werden"
-
 #: vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Server Name"
 msgstr "Server Name"
@@ -5520,35 +5410,6 @@ msgstr "Server Name"
 #: vmnamecheck.php:74
 msgid "Virtual Machine Inventory Expiration Report"
 msgstr "Virtual Machine Inventur Ablauf-Bericht"
-
-#: vmnamecheck.php:75
-msgid ""
-"Virtual Machine Inventory\n"
-"\t\t\tProcess.  This process is scheduled to run once each business day."
-msgstr ""
-"Inventur Virtueller Maschinen\n"
-"\n"
-"\t\t\tProzess. Dieser Prozess ist eingeplant, um an jedem Werktag zu laufen."
-
-#: vmnamecheck.php:77
-msgid "The following"
-msgstr "Das folgende"
-
-#: vmnamecheck.php:77
-msgid ""
-"Virtual Machines have not been detected within the\n"
-"\t\t\tpast"
-msgstr ""
-"Virtuelle Maschine wurden in der \n"
-"\t\t\tVergangenheit nicht erkannt"
-
-#: vmnamecheck.php:78
-msgid ""
-"days and are assumed to be expired.  They are being removed from the\n"
-"\t\t\tinventory system."
-msgstr ""
-"Tage. Es wird angenommen, dass diese abgelaufen sind. Sie werden vom\n"
-"\t\t\tinventur System entfernt. "
 
 #: workorder.php:5
 msgid "Data Center Operations Work Order Builder"
@@ -6169,6 +6030,10 @@ msgstr "Konnte die Datei nicht auf die Festplatte schreiben"
 msgid "File upload stopped by extension"
 msgstr "Datei-Upload wegen Erweiterung gestoppt"
 
+#: scripts/uploadifive.php:113
+msgid "Unknown Error"
+msgstr "Unbekannter Fehler"
+
 #: scripts/uploadifive.php:120
 msgid "Invalid file type."
 msgstr "Ungültige Dateityp."
@@ -6220,12 +6085,10 @@ msgid "Row "
 msgstr "Zeile␣"
 
 #: classes/Device.class.php:2572 classes/Device.class.php:2578
-#: classes/PowerDistribution.class.php:491
 msgid "Critical"
 msgstr "Kritisch"
 
 #: classes/Device.class.php:2574 classes/Device.class.php:2580
-#: classes/PowerDistribution.class.php:493
 msgid "Warning"
 msgstr "Warnung"
 
@@ -6331,6 +6194,115 @@ msgid "First port detection failed, please report to openDCIM developers"
 msgstr ""
 "Die Erkennung des ersten Ports ist fehlgeschlagen, bitte melde das den "
 "openDCIM-Entwicklern"
+
+#~ msgid "Path not initialized"
+#~ msgstr "Pfad nicht initialisiert"
+
+#~ msgid "Error getting initial device data"
+#~ msgstr "Fehler beim Auslesen der initialen Gerätedaten"
+
+#~ msgid "Error: initial device is a panel"
+#~ msgstr "Fehler: Ausgangsgerät ist ein Schaltfeld"
+
+#~ msgid "Error getting initial device port data"
+#~ msgstr "Fehler beim Auslesen der Portdaten des Ausgangsgerätes"
+
+#~ msgid "Error: initial device port is already connected"
+#~ msgstr "Fehler: Ausgangsgeräteport ist bereits belegt"
+
+#~ msgid "Error getting final device data"
+#~ msgstr "Fehler beim Auslesen der Endgerätedaten"
+
+#~ msgid "Error: final device is a panel"
+#~ msgstr "Fehler: Endgerät ist ein Schaltfeld"
+
+#~ msgid "Error getting final device port data"
+#~ msgstr "Fehler beim Auslesen der Portdaten des Endgerätes"
+
+#~ msgid "Error: final device port is already connected"
+#~ msgstr "Fehler: Endgeräteport ist bereits belegt"
+
+#~ msgid "Path not found"
+#~ msgstr "Pfad nicht gefunden"
+
+#~ msgid "Initial device unspecified"
+#~ msgstr "Ausgangsgerät nicht spezifiziert"
+
+#~ msgid "Initial device port unspecified"
+#~ msgstr "Ausgangsgeräteport nicht spezifiziert"
+
+#~ msgid "Final device unspecified"
+#~ msgstr "Endgerät nicht spezifiziert"
+
+#~ msgid "Tag:"
+#~ msgstr "Markierung"
+
+#~ msgid "Select Tag"
+#~ msgstr "Wähle Markierung"
+
+#~ msgid "All Tags"
+#~ msgstr "Alle Markierungen"
+
+#~ msgid ""
+#~ "Inventory\n"
+#~ "\t\t\tProcess.  This process is scheduled to run once each business day.</"
+#~ "p>\n"
+#~ "\t\t\t<p>The following"
+#~ msgstr ""
+#~ "Inventur\n"
+#~ "\t\t\tProzess. Dieser Prozess ist eingeplant um an jedem Werktag zu "
+#~ "laufen.</p>\n"
+#~ "\t\t\t<p>Der folgende"
+
+#~ msgid ""
+#~ "Virtual Machines were detected in the environment\n"
+#~ "\t\t\tand do not have an associated owner record.  It is assumed that\n"
+#~ "\t\t\tthese are new Virtual Machines.  Please click on the links below to "
+#~ "update\n"
+#~ "\t\t\townership information."
+#~ msgstr ""
+#~ "Virtuelle Maschinen wurden erkannt \n"
+#~ "\t\t\tund haben keinen zugewiesenen Besitzer. Es wird angenommen, dass\n"
+#~ "\t\t\tdies neue virtuelle Maschinen sind. Bitte auf Links unten klicken "
+#~ "um die\n"
+#~ "\t\t\tBesitzer-Information einzutragen."
+
+#~ msgid ""
+#~ "If the appropriate department is not listed as an option for ownership, "
+#~ "please\n"
+#~ "\t\t\tsend an email to"
+#~ msgstr ""
+#~ "Falls die entsprechende Abteilung als Eigentümer nicht gelistet ist, \n"
+#~ "\t\t\tsenden Sie bitte eine E-Mail an"
+
+#~ msgid "to have it added."
+#~ msgstr "um aufgenommen zu werden"
+
+#~ msgid ""
+#~ "Virtual Machine Inventory\n"
+#~ "\t\t\tProcess.  This process is scheduled to run once each business day."
+#~ msgstr ""
+#~ "Inventur Virtueller Maschinen\n"
+#~ "\n"
+#~ "\t\t\tProzess. Dieser Prozess ist eingeplant, um an jedem Werktag zu "
+#~ "laufen."
+
+#~ msgid "The following"
+#~ msgstr "Das folgende"
+
+#~ msgid ""
+#~ "Virtual Machines have not been detected within the\n"
+#~ "\t\t\tpast"
+#~ msgstr ""
+#~ "Virtuelle Maschine wurden in der \n"
+#~ "\t\t\tVergangenheit nicht erkannt"
+
+#~ msgid ""
+#~ "days and are assumed to be expired.  They are being removed from the\n"
+#~ "\t\t\tinventory system."
+#~ msgstr ""
+#~ "Tage. Es wird angenommen, dass diese abgelaufen sind. Sie werden vom\n"
+#~ "\t\t\tinventur System entfernt. "
 
 #~ msgid "Style"
 #~ msgstr "Style"

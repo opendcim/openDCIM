@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-11 08:49-0500\n"
+"POT-Creation-Date: 2026-10-23 07:20-0500\n"
 "Language: zh-CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -121,7 +121,7 @@ msgid "Data Center"
 msgstr "数据中心"
 
 #: bulk_importer.php:223 bulk_moves.php:230 cabinets.php:246 dc_stats.php:317
-#: devices.php:2008 pathmaker.php:227 pathmaker.php:304 pathmaker.php:470
+#: devices.php:2008 pathmaker.php:304 pathmaker.php:470
 #: /home/runner/openDCIM/paths.php:221 paths.php:296
 #: /home/runner/openDCIM/paths.php:380 report_cabinets.php:187
 #: report_contact.php:486 report_cost.php:469 report_exception.php:165
@@ -1930,7 +1930,6 @@ msgid "MediaType"
 msgstr "介质类型"
 
 #: connections_spreadsheet.php:28 devices.php:2582 devices.php:2645
-#: pathmaker.php:199
 msgid "Connections"
 msgstr "连接"
 
@@ -1997,7 +1996,6 @@ msgid "Parent Container"
 msgstr "刀片机柜"
 
 #: container.php:273 datacenter.php:318 classes/Cabinet.class.php:390
-#: classes/Cabinet.class.php:458
 msgid "None"
 msgstr "无"
 
@@ -2767,7 +2765,6 @@ msgid "Departmental Owner"
 msgstr "部门主管"
 
 #: devices.php:1922 devices.php:1968 rackrequest.php:393 search_export.php:62
-#: search_export.php:196 scripts/ajax_tooltip.php:318
 msgid "Unassigned"
 msgstr "未分配"
 
@@ -3518,62 +3515,6 @@ msgstr "建立一个末端P2P的连接"
 #: pathmaker.php:96 pathmaker.php:98
 msgid "Connection implemented"
 msgstr "连线实施"
-
-#: pathmaker.php:148
-msgid "Path not initialized"
-msgstr "路径未初始化"
-
-#: pathmaker.php:153
-msgid "Error getting initial device data"
-msgstr "获取设备初始化数据错误"
-
-#: pathmaker.php:156
-msgid "Error: initial device is a panel"
-msgstr "错误: 初始化的设备是一个面板"
-
-#: pathmaker.php:159
-msgid "Error getting initial device port data"
-msgstr "获取设备端口初始化数据错误"
-
-#: pathmaker.php:162
-msgid "Error: initial device port is already connected"
-msgstr "错误: 初始化的设备端口已连接"
-
-#: pathmaker.php:165
-msgid "Error getting final device data"
-msgstr "读取设备最终数据错误"
-
-#: pathmaker.php:168
-msgid "Error: final device is a panel"
-msgstr "错误: 最终设备是一个面板"
-
-#: pathmaker.php:171
-msgid "Error getting final device port data"
-msgstr "获取最终设备端口数据错误"
-
-#: pathmaker.php:174
-msgid "Error: final device port is already connected"
-msgstr "错误: 最终设备端口已连接"
-
-#: pathmaker.php:177
-msgid "Path not found"
-msgstr "路径未找到"
-
-#: pathmaker.php:184
-msgid "Initial device unspecified"
-msgstr "未指定初始设备"
-
-#: pathmaker.php:186
-msgid "Initial device port unspecified"
-msgstr "初始设备端口未指定"
-
-#: pathmaker.php:188 pathmaker.php:190
-msgid "Final device unspecified"
-msgstr "未指定最终设备"
-
-#: pathmaker.php:192 scripts/uploadifive.php:113
-msgid "Unknown Error"
-msgstr "未知错误"
 
 #: pathmaker.php:247 pathmaker.php:324 pathmaker.php:460
 #: /home/runner/openDCIM/paths.php:75 paths.php:132
@@ -4865,18 +4806,6 @@ msgstr "标签库存报告"
 msgid "Tag"
 msgstr "标签"
 
-#: report_tags.php:115
-msgid "Tag:"
-msgstr "标签"
-
-#: report_tags.php:117
-msgid "Select Tag"
-msgstr "选择标签"
-
-#: report_tags.php:118
-msgid "All Tags"
-msgstr "所有标签"
-
 #: report_vendor_model.php:42
 msgid "Please select the values to limit the report scope as indicated below."
 msgstr "Please select the values to limit the report scope as indicated below."
@@ -5386,43 +5315,6 @@ msgstr "虚拟机状态异常清查报告"
 msgid "This is an automated message from the"
 msgstr "这是一条发给我的系统自动提醒"
 
-#: vmnamecheck.php:33
-msgid ""
-"Inventory\n"
-"\t\t\tProcess.  This process is scheduled to run once each business day.</"
-"p>\n"
-"\t\t\t<p>The following"
-msgstr ""
-"库存\n"
-"\t\t\t计算. 每个工作日都会计算一次库存.</p>\n"
-"\t\t\t<p>下列"
-
-#: vmnamecheck.php:35
-msgid ""
-"Virtual Machines were detected in the environment\n"
-"\t\t\tand do not have an associated owner record.  It is assumed that\n"
-"\t\t\tthese are new Virtual Machines.  Please click on the links below to "
-"update\n"
-"\t\t\townership information."
-msgstr ""
-"运行环境中检测到虚拟设备\n"
-"\t\t\t并且未关联任何用户. 如果\n"
-"\t\t\t这些是新开通的虚拟设备. 请点击更新下面的链接\n"
-"\t\t\t设置用户信息."
-
-#: vmnamecheck.php:39
-msgid ""
-"If the appropriate department is not listed as an option for ownership, "
-"please\n"
-"\t\t\tsend an email to"
-msgstr ""
-"如果对应部门没有统计出使用者选项列表, 请\n"
-"\t\t\t发送一份电子邮件至"
-
-#: vmnamecheck.php:40
-msgid "to have it added."
-msgstr "对其增加."
-
 #: vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Server Name"
 msgstr "服务器名"
@@ -5430,34 +5322,6 @@ msgstr "服务器名"
 #: vmnamecheck.php:74
 msgid "Virtual Machine Inventory Expiration Report"
 msgstr "到期虚拟设备清查报告"
-
-#: vmnamecheck.php:75
-msgid ""
-"Virtual Machine Inventory\n"
-"\t\t\tProcess.  This process is scheduled to run once each business day."
-msgstr ""
-"虚拟机列表\n"
-"\t\t\t处理. 该过程被安排为每个工作日运行一次."
-
-#: vmnamecheck.php:77
-msgid "The following"
-msgstr "下列"
-
-#: vmnamecheck.php:77
-msgid ""
-"Virtual Machines have not been detected within the\n"
-"\t\t\tpast"
-msgstr ""
-"虚拟机\n"
-"\t\t\t从未被检测过"
-
-#: vmnamecheck.php:78
-msgid ""
-"days and are assumed to be expired.  They are being removed from the\n"
-"\t\t\tinventory system."
-msgstr ""
-"天如果同时被设置为过期. 这样他们就会被从\n"
-"\t\t\t列表系统中删除."
 
 #: workorder.php:5
 msgid "Data Center Operations Work Order Builder"
@@ -6059,6 +5923,10 @@ msgstr "Failed to write file to disk"
 msgid "File upload stopped by extension"
 msgstr "File upload stopped by extension"
 
+#: scripts/uploadifive.php:113
+msgid "Unknown Error"
+msgstr "未知错误"
+
 #: scripts/uploadifive.php:120
 msgid "Invalid file type."
 msgstr "Invalid file type."
@@ -6110,12 +5978,10 @@ msgid "Row "
 msgstr "Row "
 
 #: classes/Device.class.php:2572 classes/Device.class.php:2578
-#: classes/PowerDistribution.class.php:491
 msgid "Critical"
 msgstr "Critical"
 
 #: classes/Device.class.php:2574 classes/Device.class.php:2580
-#: classes/PowerDistribution.class.php:493
 msgid "Warning"
 msgstr "Warning"
 
@@ -6213,6 +6079,111 @@ msgstr ""
 #: classes/SwitchInfo.class.php:105
 msgid "First port detection failed, please report to openDCIM developers"
 msgstr "First port detection failed, please report to openDCIM developers"
+
+#~ msgid "Path not initialized"
+#~ msgstr "路径未初始化"
+
+#~ msgid "Error getting initial device data"
+#~ msgstr "获取设备初始化数据错误"
+
+#~ msgid "Error: initial device is a panel"
+#~ msgstr "错误: 初始化的设备是一个面板"
+
+#~ msgid "Error getting initial device port data"
+#~ msgstr "获取设备端口初始化数据错误"
+
+#~ msgid "Error: initial device port is already connected"
+#~ msgstr "错误: 初始化的设备端口已连接"
+
+#~ msgid "Error getting final device data"
+#~ msgstr "读取设备最终数据错误"
+
+#~ msgid "Error: final device is a panel"
+#~ msgstr "错误: 最终设备是一个面板"
+
+#~ msgid "Error getting final device port data"
+#~ msgstr "获取最终设备端口数据错误"
+
+#~ msgid "Error: final device port is already connected"
+#~ msgstr "错误: 最终设备端口已连接"
+
+#~ msgid "Path not found"
+#~ msgstr "路径未找到"
+
+#~ msgid "Initial device unspecified"
+#~ msgstr "未指定初始设备"
+
+#~ msgid "Initial device port unspecified"
+#~ msgstr "初始设备端口未指定"
+
+#~ msgid "Final device unspecified"
+#~ msgstr "未指定最终设备"
+
+#~ msgid "Tag:"
+#~ msgstr "标签"
+
+#~ msgid "Select Tag"
+#~ msgstr "选择标签"
+
+#~ msgid "All Tags"
+#~ msgstr "所有标签"
+
+#~ msgid ""
+#~ "Inventory\n"
+#~ "\t\t\tProcess.  This process is scheduled to run once each business day.</"
+#~ "p>\n"
+#~ "\t\t\t<p>The following"
+#~ msgstr ""
+#~ "库存\n"
+#~ "\t\t\t计算. 每个工作日都会计算一次库存.</p>\n"
+#~ "\t\t\t<p>下列"
+
+#~ msgid ""
+#~ "Virtual Machines were detected in the environment\n"
+#~ "\t\t\tand do not have an associated owner record.  It is assumed that\n"
+#~ "\t\t\tthese are new Virtual Machines.  Please click on the links below to "
+#~ "update\n"
+#~ "\t\t\townership information."
+#~ msgstr ""
+#~ "运行环境中检测到虚拟设备\n"
+#~ "\t\t\t并且未关联任何用户. 如果\n"
+#~ "\t\t\t这些是新开通的虚拟设备. 请点击更新下面的链接\n"
+#~ "\t\t\t设置用户信息."
+
+#~ msgid ""
+#~ "If the appropriate department is not listed as an option for ownership, "
+#~ "please\n"
+#~ "\t\t\tsend an email to"
+#~ msgstr ""
+#~ "如果对应部门没有统计出使用者选项列表, 请\n"
+#~ "\t\t\t发送一份电子邮件至"
+
+#~ msgid "to have it added."
+#~ msgstr "对其增加."
+
+#~ msgid ""
+#~ "Virtual Machine Inventory\n"
+#~ "\t\t\tProcess.  This process is scheduled to run once each business day."
+#~ msgstr ""
+#~ "虚拟机列表\n"
+#~ "\t\t\t处理. 该过程被安排为每个工作日运行一次."
+
+#~ msgid "The following"
+#~ msgstr "下列"
+
+#~ msgid ""
+#~ "Virtual Machines have not been detected within the\n"
+#~ "\t\t\tpast"
+#~ msgstr ""
+#~ "虚拟机\n"
+#~ "\t\t\t从未被检测过"
+
+#~ msgid ""
+#~ "days and are assumed to be expired.  They are being removed from the\n"
+#~ "\t\t\tinventory system."
+#~ msgstr ""
+#~ "天如果同时被设置为过期. 这样他们就会被从\n"
+#~ "\t\t\t列表系统中删除."
 
 #~ msgid "Style"
 #~ msgstr "样式"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-11 08:49-0500\n"
+"POT-Creation-Date: 2026-10-23 07:20-0500\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -126,7 +126,7 @@ msgid "Data Center"
 msgstr "ЦОД"
 
 #: bulk_importer.php:223 bulk_moves.php:230 cabinets.php:246 dc_stats.php:317
-#: devices.php:2008 pathmaker.php:227 pathmaker.php:304 pathmaker.php:470
+#: devices.php:2008 pathmaker.php:304 pathmaker.php:470
 #: /home/runner/openDCIM/paths.php:221 paths.php:296
 #: /home/runner/openDCIM/paths.php:380 report_cabinets.php:187
 #: report_contact.php:486 report_cost.php:469 report_exception.php:165
@@ -1946,7 +1946,6 @@ msgid "MediaType"
 msgstr "Тип носителя"
 
 #: connections_spreadsheet.php:28 devices.php:2582 devices.php:2645
-#: pathmaker.php:199
 msgid "Connections"
 msgstr "Подключения"
 
@@ -2013,7 +2012,6 @@ msgid "Parent Container"
 msgstr "Родительский контейнер"
 
 #: container.php:273 datacenter.php:318 classes/Cabinet.class.php:390
-#: classes/Cabinet.class.php:458
 msgid "None"
 msgstr "Отсутствует"
 
@@ -2788,7 +2786,6 @@ msgid "Departmental Owner"
 msgstr "Департамент-владелец"
 
 #: devices.php:1922 devices.php:1968 rackrequest.php:393 search_export.php:62
-#: search_export.php:196 scripts/ajax_tooltip.php:318
 msgid "Unassigned"
 msgstr "Не назначено"
 
@@ -3545,62 +3542,6 @@ msgstr "Создание подключения точка-точка"
 #: pathmaker.php:96 pathmaker.php:98
 msgid "Connection implemented"
 msgstr "Соединение реализовано"
-
-#: pathmaker.php:148
-msgid "Path not initialized"
-msgstr "Путь не инициализирован"
-
-#: pathmaker.php:153
-msgid "Error getting initial device data"
-msgstr "Ошибка получения данных о начальном устройстве"
-
-#: pathmaker.php:156
-msgid "Error: initial device is a panel"
-msgstr "Ошибка: начальное устройство - эелектрощит"
-
-#: pathmaker.php:159
-msgid "Error getting initial device port data"
-msgstr "Ошибка получения данных о порте начального устройства"
-
-#: pathmaker.php:162
-msgid "Error: initial device port is already connected"
-msgstr "Ошибка: порт начального устройства уже подключен"
-
-#: pathmaker.php:165
-msgid "Error getting final device data"
-msgstr "Ошибка получения данных о конечном устройстве"
-
-#: pathmaker.php:168
-msgid "Error: final device is a panel"
-msgstr "Ошибка: конечное устройство - электрощит"
-
-#: pathmaker.php:171
-msgid "Error getting final device port data"
-msgstr "Ошибка получения данных о порте конечного устройства"
-
-#: pathmaker.php:174
-msgid "Error: final device port is already connected"
-msgstr "Ошибка: порт конечного устройства уже подключен"
-
-#: pathmaker.php:177
-msgid "Path not found"
-msgstr "Путь не найден"
-
-#: pathmaker.php:184
-msgid "Initial device unspecified"
-msgstr "Начальное устройство не указано"
-
-#: pathmaker.php:186
-msgid "Initial device port unspecified"
-msgstr "Порт начального устройства не указан"
-
-#: pathmaker.php:188 pathmaker.php:190
-msgid "Final device unspecified"
-msgstr "Конечное устройство не указано"
-
-#: pathmaker.php:192 scripts/uploadifive.php:113
-msgid "Unknown Error"
-msgstr "Неизвестная ошибка"
 
 #: pathmaker.php:247 pathmaker.php:324 pathmaker.php:460
 #: /home/runner/openDCIM/paths.php:75 paths.php:132
@@ -4915,18 +4856,6 @@ msgstr "Отчеты инвентаризации по тегам"
 msgid "Tag"
 msgstr "Тег"
 
-#: report_tags.php:115
-msgid "Tag:"
-msgstr "Тег:"
-
-#: report_tags.php:117
-msgid "Select Tag"
-msgstr "Выберите тег"
-
-#: report_tags.php:118
-msgid "All Tags"
-msgstr "Все теги"
-
 #: report_vendor_model.php:42
 msgid "Please select the values to limit the report scope as indicated below."
 msgstr "Please select the values to limit the report scope as indicated below."
@@ -5439,46 +5368,6 @@ msgstr "Отчет по исключениям инвентаризации ви
 msgid "This is an automated message from the"
 msgstr "Это автоматическое сообщение от"
 
-#: vmnamecheck.php:33
-msgid ""
-"Inventory\n"
-"\t\t\tProcess.  This process is scheduled to run once each business day.</"
-"p>\n"
-"\t\t\t<p>The following"
-msgstr ""
-"Инвентаризация\n"
-"\t\t\tОбработка. Этот процесс запланирован для запуска один раз каждый "
-"рабочий день.</p>\n"
-"\t\t\t<p>Следующие"
-
-#: vmnamecheck.php:35
-msgid ""
-"Virtual Machines were detected in the environment\n"
-"\t\t\tand do not have an associated owner record.  It is assumed that\n"
-"\t\t\tthese are new Virtual Machines.  Please click on the links below to "
-"update\n"
-"\t\t\townership information."
-msgstr ""
-"виртуальные машины были обнаружены в окружении\n"
-"\t\t\tи не имеют ассоциированной записи о владельце. Предполагается, что\n"
-"\t\t\tэто новые виртуальные машины. Пожалуйста, нажмите на ссылки ниже для "
-"обновления\n"
-"\t\t\tинформации о владельце."
-
-#: vmnamecheck.php:39
-msgid ""
-"If the appropriate department is not listed as an option for ownership, "
-"please\n"
-"\t\t\tsend an email to"
-msgstr ""
-"Если соответствующего департамента нет в списке для назначения владельца, "
-"пожалуйста,\n"
-"\t\t\tотправьте письмо"
-
-#: vmnamecheck.php:40
-msgid "to have it added."
-msgstr "чтобы он добавил."
-
 #: vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Server Name"
 msgstr "Имя сервера"
@@ -5486,35 +5375,6 @@ msgstr "Имя сервера"
 #: vmnamecheck.php:74
 msgid "Virtual Machine Inventory Expiration Report"
 msgstr "Отчет по истечению срока инвентаризации виртуальной машины"
-
-#: vmnamecheck.php:75
-msgid ""
-"Virtual Machine Inventory\n"
-"\t\t\tProcess.  This process is scheduled to run once each business day."
-msgstr ""
-"Инвентаризация виртуальных машин\n"
-"\t\t\tОбработка. Этот процесс запланирован для запуска один раз каждый "
-"рабочий день."
-
-#: vmnamecheck.php:77
-msgid "The following"
-msgstr "Следующие"
-
-#: vmnamecheck.php:77
-msgid ""
-"Virtual Machines have not been detected within the\n"
-"\t\t\tpast"
-msgstr ""
-"виртуальные машины не были обнаружены в течение\n"
-"\t\t\tпоследних"
-
-#: vmnamecheck.php:78
-msgid ""
-"days and are assumed to be expired.  They are being removed from the\n"
-"\t\t\tinventory system."
-msgstr ""
-"дней и предполагается, что информация о них устарела. Они будут удалены из\n"
-"\t\t\tсистемы инвентаризации."
 
 #: workorder.php:5
 msgid "Data Center Operations Work Order Builder"
@@ -6123,6 +5983,10 @@ msgstr "Ошибка записи файла на диск"
 msgid "File upload stopped by extension"
 msgstr "Загрузка файла остановлена разширением"
 
+#: scripts/uploadifive.php:113
+msgid "Unknown Error"
+msgstr "Неизвестная ошибка"
+
 #: scripts/uploadifive.php:120
 msgid "Invalid file type."
 msgstr "Недопустимый тип файла."
@@ -6174,12 +6038,10 @@ msgid "Row "
 msgstr "Row "
 
 #: classes/Device.class.php:2572 classes/Device.class.php:2578
-#: classes/PowerDistribution.class.php:491
 msgid "Critical"
 msgstr "Critical"
 
 #: classes/Device.class.php:2574 classes/Device.class.php:2580
-#: classes/PowerDistribution.class.php:493
 msgid "Warning"
 msgstr "Warning"
 
@@ -6277,6 +6139,116 @@ msgstr ""
 #: classes/SwitchInfo.class.php:105
 msgid "First port detection failed, please report to openDCIM developers"
 msgstr "First port detection failed, please report to openDCIM developers"
+
+#~ msgid "Path not initialized"
+#~ msgstr "Путь не инициализирован"
+
+#~ msgid "Error getting initial device data"
+#~ msgstr "Ошибка получения данных о начальном устройстве"
+
+#~ msgid "Error: initial device is a panel"
+#~ msgstr "Ошибка: начальное устройство - эелектрощит"
+
+#~ msgid "Error getting initial device port data"
+#~ msgstr "Ошибка получения данных о порте начального устройства"
+
+#~ msgid "Error: initial device port is already connected"
+#~ msgstr "Ошибка: порт начального устройства уже подключен"
+
+#~ msgid "Error getting final device data"
+#~ msgstr "Ошибка получения данных о конечном устройстве"
+
+#~ msgid "Error: final device is a panel"
+#~ msgstr "Ошибка: конечное устройство - электрощит"
+
+#~ msgid "Error getting final device port data"
+#~ msgstr "Ошибка получения данных о порте конечного устройства"
+
+#~ msgid "Error: final device port is already connected"
+#~ msgstr "Ошибка: порт конечного устройства уже подключен"
+
+#~ msgid "Path not found"
+#~ msgstr "Путь не найден"
+
+#~ msgid "Initial device unspecified"
+#~ msgstr "Начальное устройство не указано"
+
+#~ msgid "Initial device port unspecified"
+#~ msgstr "Порт начального устройства не указан"
+
+#~ msgid "Final device unspecified"
+#~ msgstr "Конечное устройство не указано"
+
+#~ msgid "Tag:"
+#~ msgstr "Тег:"
+
+#~ msgid "Select Tag"
+#~ msgstr "Выберите тег"
+
+#~ msgid "All Tags"
+#~ msgstr "Все теги"
+
+#~ msgid ""
+#~ "Inventory\n"
+#~ "\t\t\tProcess.  This process is scheduled to run once each business day.</"
+#~ "p>\n"
+#~ "\t\t\t<p>The following"
+#~ msgstr ""
+#~ "Инвентаризация\n"
+#~ "\t\t\tОбработка. Этот процесс запланирован для запуска один раз каждый "
+#~ "рабочий день.</p>\n"
+#~ "\t\t\t<p>Следующие"
+
+#~ msgid ""
+#~ "Virtual Machines were detected in the environment\n"
+#~ "\t\t\tand do not have an associated owner record.  It is assumed that\n"
+#~ "\t\t\tthese are new Virtual Machines.  Please click on the links below to "
+#~ "update\n"
+#~ "\t\t\townership information."
+#~ msgstr ""
+#~ "виртуальные машины были обнаружены в окружении\n"
+#~ "\t\t\tи не имеют ассоциированной записи о владельце. Предполагается, что\n"
+#~ "\t\t\tэто новые виртуальные машины. Пожалуйста, нажмите на ссылки ниже "
+#~ "для обновления\n"
+#~ "\t\t\tинформации о владельце."
+
+#~ msgid ""
+#~ "If the appropriate department is not listed as an option for ownership, "
+#~ "please\n"
+#~ "\t\t\tsend an email to"
+#~ msgstr ""
+#~ "Если соответствующего департамента нет в списке для назначения владельца, "
+#~ "пожалуйста,\n"
+#~ "\t\t\tотправьте письмо"
+
+#~ msgid "to have it added."
+#~ msgstr "чтобы он добавил."
+
+#~ msgid ""
+#~ "Virtual Machine Inventory\n"
+#~ "\t\t\tProcess.  This process is scheduled to run once each business day."
+#~ msgstr ""
+#~ "Инвентаризация виртуальных машин\n"
+#~ "\t\t\tОбработка. Этот процесс запланирован для запуска один раз каждый "
+#~ "рабочий день."
+
+#~ msgid "The following"
+#~ msgstr "Следующие"
+
+#~ msgid ""
+#~ "Virtual Machines have not been detected within the\n"
+#~ "\t\t\tpast"
+#~ msgstr ""
+#~ "виртуальные машины не были обнаружены в течение\n"
+#~ "\t\t\tпоследних"
+
+#~ msgid ""
+#~ "days and are assumed to be expired.  They are being removed from the\n"
+#~ "\t\t\tinventory system."
+#~ msgstr ""
+#~ "дней и предполагается, что информация о них устарела. Они будут удалены "
+#~ "из\n"
+#~ "\t\t\tсистемы инвентаризации."
 
 #~ msgid "Style"
 #~ msgstr "Стиль"
