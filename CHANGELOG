@@ -11,6 +11,7 @@ Changes in 26.01
 * Quite a few bug fixes
 * Expansion of fields to allow for EU power certification reporting requirements
 * Ability to merge multiple instances into a single instance of openDCIM (using CLI based script)
+* Updated upstream composer packages
 * Container version patches the PHP2SHELL vulnerability
 
 Changes in 23.04
