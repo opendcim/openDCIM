@@ -95,6 +95,8 @@ class PowerDistribution {
 		return $PDU;
 	}
 	
+	// Conservées pour compatibilité ascendante avec du code appelant existant.
+	// Ne plus utiliser en interne pour des requêtes contenant des valeurs variables.
 	function query($sql){
 		global $dbh;
 		return $dbh->query($sql);
@@ -179,42 +181,87 @@ class PowerDistribution {
 		return $snmpresult;
 	}
 
-	static function calculateEstimatedLoad( $devID ) {
-		global $dbh;
 
-		$sql = "select sum(NominalWatts) as TotalWatts from fac_Device where DeviceID in (select ConnectedDeviceID from fac_PowerPorts where DeviceID=" . intval($devID) . ") or ParentDevice in (select ConnectedDeviceID from fac_PowerPorts where DeviceID=" . intval($devID) . ")";
 
-		if ( $row = $dbh->query( $sql, PDO::FETCH_ASSOC )->fetch() ) {
-			return $row["TotalWatts"];
-		} else {
-			return 0;
-		}
+/** 
+     * @param int $devID 
+	 * @return float
+	 */
+static function calculateEstimatedLoad( $devID ) {
+	global $dbh;
+
+	$stmt = $dbh->prepare(
+		"SELECT SUM(NominalWatts) AS TotalWatts
+		FROM fac_Device
+		WHERE DeviceID IN (
+			SELECT ConnectedDeviceID
+			FROM fac_PowerPorts
+			WHERE DeviceID = :devID1
+		)
+		OR ParentDevice IN (
+			SELECT ConnectedDeviceID
+			FROM fac_PowerPorts
+			WHERE DeviceID = :devID2
+		)"
+	);
+
+	$stmt->execute( [
+		':devID1' => (int)$devID,
+		':devID2' => (int)$devID
+	] );
+
+	if ( $row = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
+		return $row["TotalWatts"];
+	} else {
+		return 0;
 	}
+}
 
 	function CreatePDU($pduid=null){
 		global $dbh;
 
 		$this->MakeSafe();
 
-		$sqladdon=(!is_null($pduid))?", PDUID=".intval($pduid):"";
+		$sql = "INSERT INTO fac_PowerDistribution SET Label = :Label, CabinetID = :CabinetID, 
+			TemplateID = :TemplateID, IPAddress = :IPAddress, SNMPCommunity = :SNMPCommunity, 
+			PanelID = :PanelID, BreakerSize = :BreakerSize, FirmwareVersion = :FirmwareVersion, 
+			PanelPole = :PanelPole, InputAmperage = :InputAmperage, FailSafe = :FailSafe, 
+			PanelID2 = :PanelID2, PanelPole2 = :PanelPole2";
 
-		$sql="INSERT INTO fac_PowerDistribution SET Label=\"$this->Label\", 
-			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID, 
-			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\", 
-			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, FirmwareVersion=\"$this->FirmwareVersion\",
-			PanelPole=\"$this->PanelPole\", InputAmperage=$this->InputAmperage, 
-			FailSafe=$this->FailSafe, PanelID2=\"$this->PanelID2\", 
-			PanelPole2=\"$this->PanelPole2\"$sqladdon;";
+		$params = array(
+			':Label' => $this->Label,
+			':CabinetID' => $this->CabinetID,
+			':TemplateID' => $this->TemplateID,
+			':IPAddress' => $this->IPAddress,
+			':SNMPCommunity' => $this->SNMPCommunity,
+			':PanelID' => $this->PanelID,
+			':BreakerSize' => $this->BreakerSize,
+			':FirmwareVersion' => $this->FirmwareVersion,
+			':PanelPole' => $this->PanelPole,
+			':InputAmperage' => $this->InputAmperage,
+			':FailSafe' => $this->FailSafe,
+			':PanelID2' => $this->PanelID2,
+			':PanelPole2' => $this->PanelPole2,
+		);
+
+		if(!is_null($pduid)){
+			$sql .= ", PDUID = :PDUID";
+			$params[':PDUID'] = intval($pduid);
+		}
+
+		$sql .= ";";
 
 		error_log( $sql );
 
-		if($this->exec($sql)){
+		$stmt = $dbh->prepare($sql);
+
+		if($stmt->execute($params)){
 			$this->PDUID=$dbh->lastInsertId();
 
 			(class_exists('LogActions'))?LogActions::LogThis($this):'';
 			return $this->PDUID;
 		}else{
-			$info=$dbh->errorInfo();
+			$info=$stmt->errorInfo();
 
 			error_log("CreatePDU::PDO Error: {$info[2]} SQL=$sql");
 
@@ -223,22 +270,40 @@ class PowerDistribution {
 	}
 
 	function UpdatePDU(){
+		global $dbh;
 		$this->MakeSafe();
 
 		$oldpdu=new PowerDistribution();
 		$oldpdu->PDUID=$this->PDUID;
 		$oldpdu->GetPDU();
 
-		$sql="UPDATE fac_PowerDistribution SET Label=\"$this->Label\", 
-			CabinetID=$this->CabinetID, TemplateID=$this->TemplateID, 
-			IPAddress=\"$this->IPAddress\", SNMPCommunity=\"$this->SNMPCommunity\", 
-			PanelID=$this->PanelID, BreakerSize=$this->BreakerSize, FirmwareVersion=\"$this->FirmwareVersion\", 
-			PanelPole=\"$this->PanelPole\", InputAmperage=$this->InputAmperage, 
-			FailSafe=$this->FailSafe, PanelID2=$this->PanelID2, PanelPole2=$this->PanelPole2
-			WHERE PDUID=$this->PDUID;";
+		$sql = "UPDATE fac_PowerDistribution SET Label = :Label, CabinetID = :CabinetID, 
+			TemplateID = :TemplateID, IPAddress = :IPAddress, SNMPCommunity = :SNMPCommunity, 
+			PanelID = :PanelID, BreakerSize = :BreakerSize, FirmwareVersion = :FirmwareVersion, 
+			PanelPole = :PanelPole, InputAmperage = :InputAmperage, FailSafe = :FailSafe, 
+			PanelID2 = :PanelID2, PanelPole2 = :PanelPole2 
+			WHERE PDUID = :PDUID";
+
+		$stmt = $dbh->prepare($sql);
+		$result = $stmt->execute(array(
+			':Label' => $this->Label,
+			':CabinetID' => $this->CabinetID,
+			':TemplateID' => $this->TemplateID,
+			':IPAddress' => $this->IPAddress,
+			':SNMPCommunity' => $this->SNMPCommunity,
+			':PanelID' => $this->PanelID,
+			':BreakerSize' => $this->BreakerSize,
+			':FirmwareVersion' => $this->FirmwareVersion,
+			':PanelPole' => $this->PanelPole,
+			':InputAmperage' => $this->InputAmperage,
+			':FailSafe' => $this->FailSafe,
+			':PanelID2' => $this->PanelID2,
+			':PanelPole2' => $this->PanelPole2,
+			':PDUID' => $this->PDUID,
+		));
 
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldpdu):'';
-		return $this->query($sql);
+		return $result;
 	}
 
 	function GetSourceForPDU(){
@@ -253,11 +318,13 @@ class PowerDistribution {
 	}
 	
 	function GetPDU(){
+		global $dbh;
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
+		$stmt = $dbh->prepare("SELECT * FROM fac_PowerDistribution WHERE PDUID = :PDUID");
+		$stmt->execute(array(':PDUID' => $this->PDUID));
 
-		if($PDURow=$this->query($sql)->fetch()){
+		if($PDURow=$stmt->fetch()){
 			foreach(PowerDistribution::RowToObject($PDURow) as $prop => $value){
 				$this->$prop=$value;
 			}
@@ -273,13 +340,18 @@ class PowerDistribution {
 	}
 
 	function GetPDUbyPanel(){
+		global $dbh;
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_PowerDistribution WHERE PanelID=$this->PanelID
-			 OR PanelID2=$this->PanelID ORDER BY PanelPole ASC, CabinetID, Label";
+		$stmt = $dbh->prepare("SELECT * FROM fac_PowerDistribution WHERE PanelID = :PanelID1
+			 OR PanelID2 = :PanelID2 ORDER BY PanelPole ASC, CabinetID, Label");
+		$stmt->execute(array(
+			':PanelID1' => $this->PanelID,
+			':PanelID2' => $this->PanelID,
+		));
 
 		$PDUList=array();
-		foreach($this->query($sql) as $PDURow){
+		foreach($stmt as $PDURow){
 			$PDUList[]=PowerDistribution::RowToObject($PDURow);
 		}
 
@@ -287,12 +359,14 @@ class PowerDistribution {
 	}
 	
 	function GetPDUbyCabinet(){
+		global $dbh;
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_PowerDistribution WHERE CabinetID=$this->CabinetID ORDER BY Label ASC;";
+		$stmt = $dbh->prepare("SELECT * FROM fac_PowerDistribution WHERE CabinetID = :CabinetID ORDER BY Label ASC");
+		$stmt->execute(array(':CabinetID' => $this->CabinetID));
 
 		$PDUList=array();
-		foreach($this->query($sql) as $PDURow){
+		foreach($stmt as $PDURow){
 			$PDUList[$PDURow["PDUID"]]=PowerDistribution::RowToObject($PDURow);
 		}
 
@@ -300,12 +374,14 @@ class PowerDistribution {
 	}
 	
 	function SearchByPDUName(){
+		global $dbh;
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_PowerDistribution WHERE Label LIKE \"%$this->Label%\";";
+		$stmt = $dbh->prepare("SELECT * FROM fac_PowerDistribution WHERE Label LIKE :Label");
+		$stmt->execute(array(':Label' => '%'.$this->Label.'%'));
 
 		$PDUList=array();
-		foreach($this->query($sql) as $PDURow){
+		foreach($stmt as $PDURow){
 			$PDUList[$PDURow["PDUID"]]=PowerDistribution::RowToObject($PDURow);
 		}
 
@@ -314,13 +390,16 @@ class PowerDistribution {
 
 	/* These fac_PDUStats functions are UGLY.  When we build out RESTful API, they should be moved to a separate class and return objects */
 	function GetLastReading(){
+		global $dbh;
 		$this->MakeSafe();
 
-		$sql="SELECT * FROM fac_PDUStats WHERE PDUID=$this->PDUID;";
+		$stmt = $dbh->prepare("SELECT * FROM fac_PDUStats WHERE PDUID = :PDUID");
+		$stmt->execute(array(':PDUID' => $this->PDUID));
+
 		$stats=new stdClass();
 		$stats->Wattage=0;
 		$stats->LastRead=date('Y-m-d G:i:s',0);
-		foreach($this->query($sql) as $row){
+		foreach($stmt as $row){
 			foreach($row as $prop => $value){
 				if(!is_int($prop)){
 					$stats->$prop=$value;
@@ -332,28 +411,32 @@ class PowerDistribution {
 	}
 
 	function GetWattageByDC($dc=null){
+		global $dbh;
 		// What was the idea behind this null function?
 		if($dc==null){
-			$sql="SELECT COUNT(Wattage) FROM fac_PDUStats;";
+			$stmt = $dbh->query("SELECT COUNT(Wattage) FROM fac_PDUStats;");
+			return $stmt->fetchColumn();
 		}else{
-			$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID IN 
-			(SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID IN 
-			(SELECT CabinetID FROM fac_Cabinet WHERE DataCenterID=".intval($dc)."))";
+			$stmt = $dbh->prepare("SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID IN 
+				(SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID IN 
+				(SELECT CabinetID FROM fac_Cabinet WHERE DataCenterID = :DataCenterID))");
+			$stmt->execute(array(':DataCenterID' => intval($dc)));
+			return $stmt->fetchColumn();
 		}		
-		
-		return $this->query($sql)->fetchColumn();
 	}
 	
 	function GetWattageByCabinet($CabinetID){
+		global $dbh;
 		$CabinetID=intval($CabinetID);
 		if($CabinetID <1){
 			return 0;
 		}
 		
-		$sql="SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID 
-			IN (SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID=$CabinetID);";
+		$stmt = $dbh->prepare("SELECT SUM(Wattage) AS Wattage FROM fac_PDUStats WHERE PDUID 
+			IN (SELECT PDUID FROM fac_PowerDistribution WHERE CabinetID = :CabinetID);");
+		$stmt->execute(array(':CabinetID' => $CabinetID));
 
-		if(!$wattage=$this->query($sql)->fetchColumn()){
+		if(!$wattage=$stmt->fetchColumn()){
 			$wattage=0;
 		}
 		
@@ -361,6 +444,7 @@ class PowerDistribution {
 	}
 
 	function LogManualWattage($Wattage){
+		global $dbh;
 		$this->MakeSafe();
 
 		$oldpdu=new PowerDistribution();
@@ -373,11 +457,16 @@ class PowerDistribution {
 		$Wattage=intval($Wattage);
 		$this->Wattage=$Wattage;
 	
-		$sql="INSERT INTO fac_PDUStats SET Wattage=$Wattage, PDUID=$this->PDUID, 
-			LastRead=NOW() ON DUPLICATE KEY UPDATE Wattage=$Wattage, LastRead=NOW();";
+		$stmt = $dbh->prepare("INSERT INTO fac_PDUStats SET Wattage = :Wattage, PDUID = :PDUID, 
+			LastRead = NOW() ON DUPLICATE KEY UPDATE Wattage = :Wattage2, LastRead = NOW();");
+		$result = $stmt->execute(array(
+			':Wattage' => $Wattage,
+			':PDUID' => $this->PDUID,
+			':Wattage2' => $Wattage,
+		));
 		
 		(class_exists('LogActions'))?LogActions::LogThis($this,$oldpdu):'';
-		return ($this->query($sql))?$this->GetLastReading():false;
+		return ($result)?$this->GetLastReading():false;
 	}
 	
 	function UpdateStats( $filterType="None", $filterValue="" ) {
@@ -388,21 +477,30 @@ class PowerDistribution {
 		$htmlMessage = "";
 		$filterValue = sanitize($filterValue);
 
+		$filterSQL = "";
+		$filterParams = array();
+
 		switch ($filterType) {
 			case "Country":
-				$filterSQL = "AND f.countryCode='$filterValue'";
+				$filterSQL = "AND f.countryCode = :filterValue";
+				$filterParams[':filterValue'] = $filterValue;
 				break;
 			case "Container":
-				$filterSQL = "AND f.ContainerID='$filterValue'";
+				$filterSQL = "AND f.ContainerID = :filterValue";
+				$filterParams[':filterValue'] = $filterValue;
 				break;
 			case "DataCenter":
-				$filterSQL = "AND e.DataCenterID='$filterValue'";
+				$filterSQL = "AND e.DataCenterID = :filterValue";
+				$filterParams[':filterValue'] = $filterValue;
 				break;
 			case "Zone":
-				$filterSQL = "AND e.ZoneID='$filterValue'";
+				$filterSQL = "AND e.ZoneID = :filterValue";
+				$filterParams[':filterValue'] = $filterValue;
 				break;
 			case "Row":
-				$filterSQL = "AND e.CabRowID='$filterValue'";
+				$filterSQL = "AND e.CabRowID = :filterValue";
+				$filterParams[':filterValue'] = $filterValue;
+				break;
 			default:
 				$filterSQL = "";
 		}
@@ -414,8 +512,11 @@ class PowerDistribution {
 			e.DataCenterID=f.DataCenterID AND b.Managed=true AND c.PrimaryIP>'' and c.SNMPFailureCount<3 $filterSQL
 			ORDER BY f.Name ASC, e.Location ASC";
 
+		$stmt = $dbh->prepare($sql);
+		$stmt->execute($filterParams);
+
 		// The result set should have no PDU's with blank IP Addresses or SNMP Community, so we can forge ahead with processing them all
-		foreach($this->query($sql) as $row){
+		foreach($stmt as $row){
 			if(!$dev=PowerDistribution::BasicTests($row['PDUID'])){
 				// if we fail the basic test on a single device we don't want to skip all the rest so continue instead of return false;
 				continue;
@@ -470,12 +571,16 @@ class PowerDistribution {
 			// Make the float safe for insert into mysql
 			$watts=float_sqlsafe($watts);
 
-			$sql="INSERT INTO fac_PDUStats SET PDUID={$row["PDUID"]}, Wattage=$watts, 
-				LastRead=now() ON DUPLICATE KEY UPDATE Wattage=$watts, LastRead=now();";
+			$statStmt = $dbh->prepare("INSERT INTO fac_PDUStats SET PDUID = :PDUID, Wattage = :Wattage, 
+				LastRead = now() ON DUPLICATE KEY UPDATE Wattage = :Wattage2, LastRead = now();");
 
-			if(!$dbh->query($sql)){
-				$info=$dbh->errorInfo();
-				error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
+			if(!$statStmt->execute(array(
+				':PDUID' => $row["PDUID"],
+				':Wattage' => $watts,
+				':Wattage2' => $watts,
+			))){
+				$info=$statStmt->errorInfo();
+				error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]}");
 			}
 
 			$maxWatts = $row["Voltage"] * $row["Amperage"];
@@ -488,18 +593,18 @@ class PowerDistribution {
 
 			if ( $config->ParameterArray["PowerAlertsEmail"] == "enabled" ) {
 				if ( $watts >= $config->ParameterArray["PowerRed"] / 100 * $maxWatts ) {
-					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], $row["Label"], $watts, __("Critical"));
+					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", htmlspecialchars($row["Name"]), htmlspecialchars($row["Location"]), htmlspecialchars($row["Label"]), $watts, __("Critical"));
 				} elseif ( $watts >= $config->ParameterArray["PowerYellow"] / 100 * $maxWatts ) {
-					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", $row["Name"], $row["Location"], $row["Label"], $watts, __("Warning"));
+					$AlertList .= sprintf( "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n", htmlspecialchars($row["Name"]), htmlspecialchars($row["Location"]), htmlspecialchars($row["Label"]), $watts, __("Warning"));
 				}
 			}
 			
 			$this->PDUID=$row["PDUID"];
 			if($ver=$this->GetSmartCDUVersion()){
-				$sql="UPDATE fac_PowerDistribution SET FirmwareVersion=\"$ver\" WHERE PDUID=$this->PDUID;";
-				if(!$dbh->query($sql)){
-					$info=$dbh->errorInfo();
-					error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]} SQL=$sql");
+				$fwStmt = $dbh->prepare("UPDATE fac_PowerDistribution SET FirmwareVersion = :FirmwareVersion WHERE PDUID = :PDUID;");
+				if(!$fwStmt->execute(array(':FirmwareVersion' => $ver, ':PDUID' => $this->PDUID))){
+					$info=$fwStmt->errorInfo();
+					error_log("PowerDistribution::UpdateStats::PDO Error: {$info[2]}");
 				}
 			}
 
@@ -644,6 +749,7 @@ class PowerDistribution {
 
 	function DeletePDU(){
 		global $person;
+		global $dbh;
 		$this->MakeSafe();
 
 		// Do not attempt anything else if the lookup fails
@@ -666,11 +772,11 @@ class PowerDistribution {
 
 		// Clear out any records from PDUStats, possible S.U.T. involving changing
 		// a devicetype but leaving behind a phantom reading for a non-power device
-		$sql="DELETE FROM fac_PDUStats WHERE PDUID=$this->PDUID;";
-		$this->exec($sql);
+		$stmt = $dbh->prepare("DELETE FROM fac_PDUStats WHERE PDUID = :PDUID;");
+		$stmt->execute(array(':PDUID' => $this->PDUID));
 
-		$sql="DELETE FROM fac_PowerDistribution WHERE PDUID=$this->PDUID;";
-		if(!$this->exec($sql)){
+		$stmt = $dbh->prepare("DELETE FROM fac_PowerDistribution WHERE PDUID = :PDUID;");
+		if(!$stmt->execute(array(':PDUID' => $this->PDUID))){
 			// Something went south and this didn't delete.
 			return false;
 		}else{
