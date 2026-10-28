@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-23 07:20-0500\n"
+"POT-Creation-Date: 2026-10-28 12:20-0500\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -5515,14 +5515,14 @@ msgstr "Zurück zur Zeile"
 #: api/v1/postRoutes.php:685 api/v1/postRoutes.php:729
 #: api/v1/postRoutes.php:775 api/v1/postRoutes.php:808
 #: api/v1/postRoutes.php:841 api/v1/postRoutes.php:874
-#: api/v1/postRoutes.php:906 api/v1/postRoutes.php:938 api/v1/putRoutes.php:96
-#: api/v1/putRoutes.php:146 api/v1/putRoutes.php:197 api/v1/putRoutes.php:237
-#: api/v1/putRoutes.php:317 api/v1/putRoutes.php:365 api/v1/putRoutes.php:461
-#: api/v1/putRoutes.php:516 api/v1/putRoutes.php:565 api/v1/putRoutes.php:611
-#: api/v1/putRoutes.php:655 api/v1/putRoutes.php:698 api/v1/putRoutes.php:732
-#: api/v1/putRoutes.php:778 api/v1/putRoutes.php:819 api/v1/putRoutes.php:850
-#: api/v1/putRoutes.php:881 api/v1/putRoutes.php:912 api/v1/putRoutes.php:943
-#: api/v1/putRoutes.php:974
+#: api/v1/postRoutes.php:906 api/v1/postRoutes.php:938 api/v1/putRoutes.php:95
+#: api/v1/putRoutes.php:145 api/v1/putRoutes.php:196 api/v1/putRoutes.php:236
+#: api/v1/putRoutes.php:316 api/v1/putRoutes.php:364 api/v1/putRoutes.php:460
+#: api/v1/putRoutes.php:515 api/v1/putRoutes.php:564 api/v1/putRoutes.php:610
+#: api/v1/putRoutes.php:654 api/v1/putRoutes.php:697 api/v1/putRoutes.php:731
+#: api/v1/putRoutes.php:777 api/v1/putRoutes.php:818 api/v1/putRoutes.php:849
+#: api/v1/putRoutes.php:880 api/v1/putRoutes.php:911 api/v1/putRoutes.php:942
+#: api/v1/putRoutes.php:973
 msgid "Access Denied"
 msgstr "Zugriff verweigert"
 
@@ -5608,7 +5608,7 @@ msgstr "Gerät anlegen fehlgeschlagen"
 msgid "Unknown error"
 msgstr "Unbekannter Fehler"
 
-#: api/v1/getRoutes.php:308 api/v1/putRoutes.php:312 api/v1/putRoutes.php:360
+#: api/v1/getRoutes.php:308 api/v1/putRoutes.php:311 api/v1/putRoutes.php:359
 msgid "Cabinet not found"
 msgstr "Cabinet nicht gefunden"
 
@@ -5727,7 +5727,7 @@ msgstr "Vorlagen-Platz nicht gefunden mit id"
 msgid "Template slot update failed"
 msgstr "Vorlagen Platz Update fehlgeschlagen"
 
-#: api/v1/postRoutes.php:540 api/v1/putRoutes.php:476
+#: api/v1/postRoutes.php:540 api/v1/putRoutes.php:475
 #, fuzzy
 msgid "Error creating new status."
 msgstr "Fehler beim Erstellen des neuen Status. "
@@ -5803,23 +5803,23 @@ msgstr "Eingegebene DeviceID nicht gefunden."
 msgid "Invalid input parameters."
 msgstr "Invalide Eingabeparameter."
 
-#: api/v1/putRoutes.php:106
+#: api/v1/putRoutes.php:104
 msgid "UserID already in database.  Use the update API to modify record."
 msgstr ""
 "UserID bereits in der Datenbank. Verwenden Sie die Update-API, um Datensatz "
 "zu ändern."
 
-#: api/v1/putRoutes.php:120
+#: api/v1/putRoutes.php:118
 msgid "Unable to create People resource with the given parameters."
 msgstr ""
 "Nicht möglich, Personen Ressource mit den angegebenen Parametern zu "
 "erstellen."
 
-#: api/v1/putRoutes.php:124
+#: api/v1/putRoutes.php:122
 msgid "People resource created successfully."
 msgstr "Personen Ressource erfolgreich angelegt."
 
-#: api/v1/putRoutes.php:163
+#: api/v1/putRoutes.php:162
 msgid ""
 "Minimum required fields are not set:  DataCenterID, Location, and "
 "CabinetHeight"
@@ -5827,98 +5827,98 @@ msgstr ""
 "Einige erforderliche Felder sind leer: DataCenterID, Location, and "
 "CabinetHeight"
 
-#: api/v1/putRoutes.php:169
+#: api/v1/putRoutes.php:168
 msgid "Error creating cabinet."
 msgstr "Fehler beim Erstellen des neuen Racks."
 
-#: api/v1/putRoutes.php:173
+#: api/v1/putRoutes.php:172
 msgid "New cabinet created successfully."
 msgstr "Neues Rack erfolgreich angelegt."
 
-#: api/v1/putRoutes.php:211
+#: api/v1/putRoutes.php:210
 msgid "Error creating new color."
 msgstr "Fehler beim Erstellen der neuen Farbe."
 
-#: api/v1/putRoutes.php:215
+#: api/v1/putRoutes.php:214
 msgid "New color created successfully."
 msgstr "Neue Farbe erfolgreich erstellt."
 
-#: api/v1/putRoutes.php:252
+#: api/v1/putRoutes.php:251
 msgid "Error creating new department."
 msgstr "Fehler beim Erstellen der neuen Abteilung."
 
-#: api/v1/putRoutes.php:256
+#: api/v1/putRoutes.php:255
 msgid "New department created successfully."
 msgstr "Neue Abteilung erfolgreich angelegt."
 
-#: api/v1/putRoutes.php:322 api/v1/putRoutes.php:370
+#: api/v1/putRoutes.php:321 api/v1/putRoutes.php:369
 msgid "Device creation failed"
 msgstr "Gerät anlegen fehlgeschlagen"
 
-#: api/v1/putRoutes.php:429
+#: api/v1/putRoutes.php:428
 #, fuzzy
 msgid "Port update failed"
 msgstr "Update fehlgeschlagen"
 
-#: api/v1/putRoutes.php:480
+#: api/v1/putRoutes.php:479
 msgid "New status created successfully."
 msgstr "Neuer Status erfolgreich erstellt."
 
-#: api/v1/putRoutes.php:521
+#: api/v1/putRoutes.php:520
 msgid "Device template creation failed"
 msgstr "Erstellung der Gerätevorlage fehlgeschlagen"
 
-#: api/v1/putRoutes.php:570 api/v1/putRoutes.php:616
+#: api/v1/putRoutes.php:569 api/v1/putRoutes.php:615
 msgid "Device template port creation failed"
 msgstr "Erstellung der Vorlage des Geräteanschlusses fehlgeschlagen"
 
-#: api/v1/putRoutes.php:660
+#: api/v1/putRoutes.php:659
 msgid "Device template slot creation failed"
 msgstr "Erstellung der Vorlage des Steckplatzes ist fehlgeschlagen"
 
-#: api/v1/putRoutes.php:701
+#: api/v1/putRoutes.php:700
 msgid "Manufacturer not created: "
 msgstr "Hersteller nicht erstellt:␣"
 
-#: api/v1/putRoutes.php:738
+#: api/v1/putRoutes.php:737
 msgid "No Device found with DeviceID "
 msgstr "Kein Gerät mit der DeviceID ␣ gefunden"
 
-#: api/v1/putRoutes.php:748
+#: api/v1/putRoutes.php:747
 msgid "VM creation failed"
 msgstr "Erstellen der VM fehlgeschlagen"
 
-#: api/v1/putRoutes.php:788
+#: api/v1/putRoutes.php:787
 #, fuzzy
 msgid "Powerpanel creation failed"
 msgstr "Erstellen des Netzschaltfeldes fehlgeschlagen"
 
-#: api/v1/putRoutes.php:822
+#: api/v1/putRoutes.php:821
 #, fuzzy
 msgid "Connector creation failed"
 msgstr "Gerät anlegen fehlgeschlagen"
 
-#: api/v1/putRoutes.php:853
+#: api/v1/putRoutes.php:852
 #, fuzzy
 msgid "Phase creation failed"
 msgstr "Erstellen der VM fehlgeschlagen"
 
-#: api/v1/putRoutes.php:884
+#: api/v1/putRoutes.php:883
 #, fuzzy
 msgid "Voltage creation failed"
 msgstr "Erstellen der VM fehlgeschlagen"
 
-#: api/v1/putRoutes.php:915
+#: api/v1/putRoutes.php:914
 #, fuzzy
 msgid "Media Connector creation failed"
 msgstr "Gerät anlegen fehlgeschlagen"
 
-#: api/v1/putRoutes.php:946
+#: api/v1/putRoutes.php:945
 #, fuzzy
 msgid "Media Rate creation failed"
 msgstr "Gerät anlegen fehlgeschlagen"
 
-#: api/v1/putRoutes.php:977
+#: api/v1/putRoutes.php:976
 #, fuzzy
 msgid "Media Protocol creation failed"
 msgstr "Gerät anlegen fehlgeschlagen"
