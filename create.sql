@@ -121,6 +121,9 @@ CREATE TABLE IF NOT EXISTS fac_TemplatePorts (
   TemplateID int(11) NOT NULL,
   PortNumber int(11) NOT NULL,
   Label varchar(40) NOT NULL,
+  ConnectorID int(11) NOT NULL DEFAULT 0, -- Added in 25.01
+  ProtocolID int(11) NOT NULL DEFAULT 0, -- Added in 25.01
+  RateID int(11) NOT NULL DEFAULT 0, -- Added in 25.01
   MediaID int(11) NOT NULL DEFAULT '0',
   ColorID int(11) NOT NULL DEFAULT '0',
   Notes varchar(80) NOT NULL,
@@ -137,6 +140,9 @@ CREATE TABLE fac_TemplatePowerPorts (
   TemplateID int(11) NOT NULL,
   PortNumber int(11) NOT NULL,
   Label varchar(40) NOT NULL,
+  ConnectorID int(11) DEFAULT NULL, -- Added in 25.01
+  PhaseID int(11) DEFAULT NULL, -- Added in 25.01
+  VoltageID int(11) DEFAULT NULL, -- Added in 25.01
   PortNotes varchar(80) NOT NULL,
   PRIMARY KEY (TemplateID,PortNumber),
   UNIQUE KEY LabeledPort (TemplateID,PortNumber,Label)
@@ -431,9 +437,9 @@ CREATE TABLE fac_Ports (
   DeviceID int(11) NOT NULL,
   PortNumber int(11) NOT NULL,
   Label varchar(40) NOT NULL,
-  ConnectorID int(11) DEFAULT NULL,
-  ProtocolID int(11) DEFAULT NULL,
-  RateID int(11) DEFAULT NULL,
+  ConnectorID int(11) NOT NULL DEFAULT 0, -- Added in 25.01
+  ProtocolID int(11) NOT NULL DEFAULT 0, -- Added in 25.01
+  RateID int(11) NOT NULL DEFAULT 0, -- Added in 25.01
   MediaID int(11) NOT NULL DEFAULT '0',
   ColorID int(11) NOT NULL DEFAULT '0',
   ConnectedDeviceID int(11) DEFAULT NULL,
@@ -466,9 +472,13 @@ DROP TABLE IF EXISTS fac_MediaConnectors;
 CREATE TABLE IF NOT EXISTS fac_MediaConnectors (
   ConnectorID int(11) NOT NULL AUTO_INCREMENT,
   ConnectorType varchar(40) NOT NULL,
-  PRIMARY KEY (ConnectorIDid),
+  PRIMARY KEY (ConnectorID),
   UNIQUE KEY connectortype (ConnectorType)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
+
+-- Added in 25.01: initial fac_MediaConnectors values
+INSERT INTO fac_MediaConnectors set ConnectorType='CAT5e';
+INSERT INTO fac_MediaConnectors set ConnectorType='CAT6';
 
 --
 -- Table structure for table `fac_MediaProtocols`
@@ -482,6 +492,9 @@ CREATE TABLE IF NOT EXISTS fac_MediaProtocols (
   UNIQUE KEY protocolname (ProtocolName)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
+-- Added in 25.01: initial fac_MediaProtocols values
+INSERT INTO fac_MediaProtocols set ProtocolName='Ethernet';
+
 --
 -- Table structure for table `fac_MediaDataRates`
 --
@@ -493,6 +506,10 @@ CREATE TABLE IF NOT EXISTS fac_MediaDataRates (
   PRIMARY KEY (RateID),
   UNIQUE KEY ratetext (RateText)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
+
+-- Added in 25.01: initial fac_MediaDataRates values
+INSERT INTO fac_MediaDataRates set RateText='100M';
+INSERT INTO fac_MediaDataRates set RateText='1G';
 
 --
 -- Table structure for table fac_PanelSchedule
@@ -890,7 +907,7 @@ CREATE TABLE fac_Config (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 INSERT INTO fac_Config VALUES
-	('Version','23.03','','',''),
+	('Version','26.01','','',''), -- Updated in 26.01
 	('OrgName','openDCIM Computer Facilities','Name','string','openDCIM Computer Facilities'),
 	('ClassList','ITS, Internal, Customer','List','string','ITS, Internal, Customer'),
 	('SpaceRed','80','percentage','float','80'),
