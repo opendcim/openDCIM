@@ -89,40 +89,39 @@ $app->put('/people/{userid}', function( Request $request, Response $response, $a
 	$userid = $args["userid"];
 
 	$r = array();
-
 	if ( !$person->ContactAdmin ) {
 		$r['error'] = true;
 		$r['errorcode'] = 401;
 		$r['message'] = __("Access Denied");
-	}
-	
-	$p = new People();
-	$vars = $request->getQueryParams() ?: $request->getParsedBody();
-	$p->UserID = $userid;
+	} else {
+		$p = new People();
+		$vars = $request->getQueryParams() ?: $request->getParsedBody();
+		$p->UserID = $userid;
 
-	if($p->GetPersonByUserID()){
-		$r['error']=true;
-		$r['errorcode']=403;
-		$r['message']=__("UserID already in database.  Use the update API to modify record.");
-	} else {	
-		foreach ( $vars as $prop=>$val ) {
-			if ( property_exists( $p, $prop ) ) {
-				$p->$prop = $val;
-			}
-		}
-		$p->Disabled = false;
-		
-		$p->CreatePerson();
-		
-		if($p->PersonID==false){
+		if($p->GetPersonByUserID()){
 			$r['error']=true;
-			$r['errorcode']=400;
-			$r['message']=__("Unable to create People resource with the given parameters.");
-		}else{
-			$r['error']=false;
-			$r['errorcode']=200;
-			$r['message']=__("People resource created successfully.");
-			$r['people']=$p;
+			$r['errorcode']=403;
+			$r['message']=__("UserID already in database.  Use the update API to modify record.");
+		} else {
+			foreach ( $vars as $prop=>$val ) {
+				if ( property_exists( $p, $prop ) ) {
+					$p->$prop = $val;
+				}
+			}
+			$p->Disabled = false;
+			
+			$p->CreatePerson();
+			
+			if($p->PersonID==false){
+				$r['error']=true;
+				$r['errorcode']=400;
+				$r['message']=__("Unable to create People resource with the given parameters.");
+			}else{
+				$r['error']=false;
+				$r['errorcode']=200;
+				$r['message']=__("People resource created successfully.");
+				$r['people']=$p;
+			}
 		}
 	}
 
