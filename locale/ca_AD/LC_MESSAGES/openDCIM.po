@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-28 12:20-0500\n"
+"POT-Creation-Date: 2026-11-17 12:08-0600\n"
 "PO-Revision-Date: 2014-08-04 13:57-0500\n"
 "Last-Translator: Scott Milliken <scott@themillikens.com>\n"
 "Language-Team: openDCIM <discussion@list.opendcim.org>\n"
@@ -5957,70 +5957,86 @@ msgstr ""
 msgid "SMTP Server Connection Test Successful"
 msgstr ""
 
-#: scripts/uploadifive.php:47
-#, php-format
-msgid "Upload directory '%s' is not writable"
+#: scripts/uploadifive.php:111
+msgid "File content does not match its extension."
 msgstr ""
 
-#: scripts/uploadifive.php:67
-msgid "File was not deleted"
+#: scripts/uploadifive.php:115
+msgid "File is not a valid image."
 msgstr ""
 
-#: scripts/uploadifive.php:86
+#: scripts/uploadifive.php:137 scripts/uploadifive.php:148
+#: scripts/uploadifive.php:152 scripts/uploadifive.php:274
+#: scripts/uploadifive.php:285
 msgid "Couldn't complete file move"
 msgstr ""
 
-#: scripts/uploadifive.php:92
-msgid "The file is bigger than this PHP installation allows"
-msgstr ""
-
-#: scripts/uploadifive.php:95
-msgid "The file is bigger than this form allows"
-msgstr ""
-
-#: scripts/uploadifive.php:98
-msgid "Only part of the file was uploaded"
-msgstr ""
-
-#: scripts/uploadifive.php:101
-msgid "No file was uploaded"
-msgstr ""
-
-#: scripts/uploadifive.php:104
-msgid "Missing a temporary folder"
-msgstr ""
-
-#: scripts/uploadifive.php:107
-msgid "Failed to write file to disk"
-msgstr ""
-
-#: scripts/uploadifive.php:110
-msgid "File upload stopped by extension"
-msgstr ""
-
-#: scripts/uploadifive.php:113
-msgid "Unknown Error"
-msgstr ""
-
-#: scripts/uploadifive.php:120
+#: scripts/uploadifive.php:143 scripts/uploadifive.php:220
+#: scripts/uploadifive.php:263
 #, fuzzy
 msgid "Invalid file type."
 msgstr "Data Center Yardage"
 
-#: scripts/uploadifive.php:127
-msgid "No files uploaded"
-msgstr ""
-
-#: scripts/uploadifive.php:128
+#: scripts/uploadifive.php:160
 msgid "You must be a site admin to add images"
 msgstr ""
 
-#: scripts/uploadifive.php:129
+#: scripts/uploadifive.php:167
 msgid "Token mismatch"
 msgstr ""
 
-#: scripts/uploadifive.php:130
-msgid "God help us something has gone horribly wrong"
+#: scripts/uploadifive.php:172
+msgid "No files uploaded"
+msgstr ""
+
+#: scripts/uploadifive.php:208
+#, php-format
+msgid "Upload directory '%s' is not writable"
+msgstr ""
+
+#: scripts/uploadifive.php:227
+msgid "File was not deleted"
+msgstr ""
+
+#: scripts/uploadifive.php:237 scripts/uploadifive.php:247
+msgid "No file was uploaded"
+msgstr ""
+
+#: scripts/uploadifive.php:244
+msgid "The file is bigger than this PHP installation allows"
+msgstr ""
+
+#: scripts/uploadifive.php:245
+msgid "The file is bigger than this form allows"
+msgstr ""
+
+#: scripts/uploadifive.php:246
+msgid "Only part of the file was uploaded"
+msgstr ""
+
+#: scripts/uploadifive.php:248
+msgid "Missing a temporary folder"
+msgstr ""
+
+#: scripts/uploadifive.php:249
+msgid "Failed to write file to disk"
+msgstr ""
+
+#: scripts/uploadifive.php:250
+msgid "File upload stopped by extension"
+msgstr ""
+
+#: scripts/uploadifive.php:251
+msgid "Unknown Error"
+msgstr ""
+
+#: scripts/uploadifive.php:258
+#, fuzzy
+msgid "Invalid upload"
+msgstr "Contact R'ports"
+
+#: scripts/uploadifive.php:271
+msgid "SVG could not be validated"
 msgstr ""
 
 #: classes/DataCenter.class.php:572

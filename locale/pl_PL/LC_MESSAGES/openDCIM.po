@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-28 12:20-0500\n"
+"POT-Creation-Date: 2026-11-17 12:08-0600\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -5943,70 +5943,86 @@ msgstr "Wystąpił błąd:"
 msgid "SMTP Server Connection Test Successful"
 msgstr "SMTP Server Connection Test Successful"
 
-#: scripts/uploadifive.php:47
+#: scripts/uploadifive.php:111
+msgid "File content does not match its extension."
+msgstr ""
+
+#: scripts/uploadifive.php:115
+msgid "File is not a valid image."
+msgstr ""
+
+#: scripts/uploadifive.php:137 scripts/uploadifive.php:148
+#: scripts/uploadifive.php:152 scripts/uploadifive.php:274
+#: scripts/uploadifive.php:285
+msgid "Couldn't complete file move"
+msgstr "Nie udało się przenieść pliku"
+
+#: scripts/uploadifive.php:143 scripts/uploadifive.php:220
+#: scripts/uploadifive.php:263
+msgid "Invalid file type."
+msgstr "Błędny typ pliku."
+
+#: scripts/uploadifive.php:160
+msgid "You must be a site admin to add images"
+msgstr "Musisz być administratorem lokalizacji aby dodawać obrazy"
+
+#: scripts/uploadifive.php:167
+msgid "Token mismatch"
+msgstr "Niezgodny token"
+
+#: scripts/uploadifive.php:172
+msgid "No files uploaded"
+msgstr "Żadne plik nie został przekazany"
+
+#: scripts/uploadifive.php:208
 #, php-format
 msgid "Upload directory '%s' is not writable"
 msgstr "Katalog do przekazu plików '%s' nie jest zapisywalny "
 
-#: scripts/uploadifive.php:67
+#: scripts/uploadifive.php:227
 msgid "File was not deleted"
 msgstr "Plik nie został skasowany"
 
-#: scripts/uploadifive.php:86
-msgid "Couldn't complete file move"
-msgstr "Nie udało się przenieść pliku"
-
-#: scripts/uploadifive.php:92
-msgid "The file is bigger than this PHP installation allows"
-msgstr "Plik jest większy niż dopuszcza bieżąca instalacja PHP"
-
-#: scripts/uploadifive.php:95
-msgid "The file is bigger than this form allows"
-msgstr "Plik jest większy niż dopuszcza bieżący formularz "
-
-#: scripts/uploadifive.php:98
-msgid "Only part of the file was uploaded"
-msgstr "Tylko cześć tego pliku została przekazana."
-
-#: scripts/uploadifive.php:101
+#: scripts/uploadifive.php:237 scripts/uploadifive.php:247
 msgid "No file was uploaded"
 msgstr "Żaden plik nie został przekazany"
 
-#: scripts/uploadifive.php:104
+#: scripts/uploadifive.php:244
+msgid "The file is bigger than this PHP installation allows"
+msgstr "Plik jest większy niż dopuszcza bieżąca instalacja PHP"
+
+#: scripts/uploadifive.php:245
+msgid "The file is bigger than this form allows"
+msgstr "Plik jest większy niż dopuszcza bieżący formularz "
+
+#: scripts/uploadifive.php:246
+msgid "Only part of the file was uploaded"
+msgstr "Tylko cześć tego pliku została przekazana."
+
+#: scripts/uploadifive.php:248
 msgid "Missing a temporary folder"
 msgstr "Brakuje katalogu tymczasowego"
 
-#: scripts/uploadifive.php:107
+#: scripts/uploadifive.php:249
 msgid "Failed to write file to disk"
 msgstr "Nie powiódł się zapis pliku na dysk"
 
-#: scripts/uploadifive.php:110
+#: scripts/uploadifive.php:250
 msgid "File upload stopped by extension"
 msgstr "Załadunek pliku zatrzymany przez rozszerzenie"
 
-#: scripts/uploadifive.php:113
+#: scripts/uploadifive.php:251
 msgid "Unknown Error"
 msgstr "Napotkano nieznany problem"
 
-#: scripts/uploadifive.php:120
-msgid "Invalid file type."
-msgstr "Błędny typ pliku."
+#: scripts/uploadifive.php:258
+#, fuzzy
+msgid "Invalid upload"
+msgstr "Niepoprawna operacja"
 
-#: scripts/uploadifive.php:127
-msgid "No files uploaded"
-msgstr "Żadne plik nie został przekazany"
-
-#: scripts/uploadifive.php:128
-msgid "You must be a site admin to add images"
-msgstr "Musisz być administratorem lokalizacji aby dodawać obrazy"
-
-#: scripts/uploadifive.php:129
-msgid "Token mismatch"
-msgstr "Niezgodny token"
-
-#: scripts/uploadifive.php:130
-msgid "God help us something has gone horribly wrong"
-msgstr "Boże dopomóż, coś poszło piekielnie źle!"
+#: scripts/uploadifive.php:271
+msgid "SVG could not be validated"
+msgstr ""
 
 #: classes/DataCenter.class.php:572
 #, fuzzy
@@ -6140,6 +6156,9 @@ msgstr ""
 #: classes/SwitchInfo.class.php:105
 msgid "First port detection failed, please report to openDCIM developers"
 msgstr "First port detection failed, please report to openDCIM developers"
+
+#~ msgid "God help us something has gone horribly wrong"
+#~ msgstr "Boże dopomóż, coś poszło piekielnie źle!"
 
 #~ msgid "Path not initialized"
 #~ msgstr "Ścieżka nie zainicjalizowana"
