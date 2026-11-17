@@ -20,7 +20,8 @@
         "jumbojett/openid-connect-php": "^0.9.10",
         "phpmailer/phpmailer": "^6.8",
         "onelogin/php-saml": "^4.1",
-        "mpdf/mpdf": "^8.1"
+        "mpdf/mpdf": "^8.1",
+        "enshrined/svg-sanitize": "^1.1"
     },
     "config": {
 	"platform": {

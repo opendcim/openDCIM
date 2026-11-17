@@ -80,6 +80,55 @@
             "install-path": "./pcre"
         },
         {
+            "name": "enshrined/svg-sanitize",
+            "version": "1.1.1",
+            "version_normalized": "1.1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/darylldoyle/svg-sanitizer.git",
+                "reference": "1976ff93c8d8a234cdd3ff99626bd43ecf11bf49"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/darylldoyle/svg-sanitizer/zipball/1976ff93c8d8a234cdd3ff99626bd43ecf11bf49",
+                "reference": "1976ff93c8d8a234cdd3ff99626bd43ecf11bf49",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-libxml": "*",
+                "php": "^7.1 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.5 || ^8.5"
+            },
+            "time": "2026-10-20T09:45:10+00:00",
+            "published-time": "2026-10-20T09:46:58+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "enshrined\\svgSanitize\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Daryll Doyle",
+                    "email": "daryll@enshrined.co.uk"
+                }
+            ],
+            "description": "An SVG sanitizer for PHP",
+            "support": {
+                "issues": "https://github.com/darylldoyle/svg-sanitizer/issues",
+                "source": "https://github.com/darylldoyle/svg-sanitizer/tree/1.1.1"
+            },
+            "install-path": "../enshrined/svg-sanitize"
+        },
+        {
             "name": "ezyang/htmlpurifier",
             "version": "v4.19.1",
             "version_normalized": "4.19.1.0",
@@ -145,23 +194,23 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "7.16.0",
-            "version_normalized": "7.16.0.0",
+            "version": "7.16.2",
+            "version_normalized": "7.16.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "ffb62ec787050ae4fa9449cdd6b80335db69bda2"
+                "reference": "22e3847536750e5a7b89d4f880f28aaf7b72e287"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/ffb62ec787050ae4fa9449cdd6b80335db69bda2",
-                "reference": "ffb62ec787050ae4fa9449cdd6b80335db69bda2",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/22e3847536750e5a7b89d4f880f28aaf7b72e287",
+                "reference": "22e3847536750e5a7b89d4f880f28aaf7b72e287",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "guzzlehttp/promises": "^2.6",
-                "guzzlehttp/psr7": "^2.13.2",
+                "guzzlehttp/psr7": "^2.13.3",
                 "php": "^7.2.5 || ^8.0",
                 "psr/http-client": "^1.0",
                 "symfony/deprecation-contracts": "^2.5 || ^3.0",
@@ -184,7 +233,8 @@
                 "ext-intl": "Required for Internationalized Domain Name (IDN) support",
                 "psr/log": "Required for using the Log middleware"
             },
-            "time": "2026-10-18T13:38:36+00:00",
+            "time": "2026-11-17T03:22:11+00:00",
+            "published-time": "2026-11-17T03:22:52+00:00",
             "type": "library",
             "extra": {
                 "bamarni-bin": {
@@ -256,7 +306,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/7.16.0"
+                "source": "https://github.com/guzzle/guzzle/tree/7.16.2"
             },
             "funding": [
                 {
@@ -363,17 +413,17 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.13.2",
-            "version_normalized": "2.13.2.0",
+            "version": "2.13.3",
+            "version_normalized": "2.13.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "adee536f95101929f262b8c59e8a61472f347d58"
+                "reference": "6d3cd8285a97eaa352956a4ada92fa03ecce1c4e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/adee536f95101929f262b8c59e8a61472f347d58",
-                "reference": "adee536f95101929f262b8c59e8a61472f347d58",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/6d3cd8285a97eaa352956a4ada92fa03ecce1c4e",
+                "reference": "6d3cd8285a97eaa352956a4ada92fa03ecce1c4e",
                 "shasum": ""
             },
             "require": {
@@ -397,7 +447,8 @@
             "suggest": {
                 "laminas/laminas-httphandlerrunner": "Emit PSR-7 responses"
             },
-            "time": "2026-10-17T23:49:46+00:00",
+            "time": "2026-11-12T15:57:42+00:00",
+            "published-time": "2026-11-12T15:58:42+00:00",
             "type": "library",
             "extra": {
                 "bamarni-bin": {
@@ -465,7 +516,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.13.2"
+                "source": "https://github.com/guzzle/psr7/tree/2.13.3"
             },
             "funding": [
                 {
@@ -1089,30 +1140,30 @@
         },
         {
             "name": "onelogin/php-saml",
-            "version": "4.3.2",
-            "version_normalized": "4.3.2.0",
+            "version": "4.4.1",
+            "version_normalized": "4.4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SAML-Toolkits/php-saml.git",
-                "reference": "26b3a47349415e5b7aa300ba4ab7fc316c65f19e"
+                "reference": "68008d28359928b16a4953c2dda19400ce2d0654"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SAML-Toolkits/php-saml/zipball/26b3a47349415e5b7aa300ba4ab7fc316c65f19e",
-                "reference": "26b3a47349415e5b7aa300ba4ab7fc316c65f19e",
+                "url": "https://api.github.com/repos/SAML-Toolkits/php-saml/zipball/68008d28359928b16a4953c2dda19400ce2d0654",
+                "reference": "68008d28359928b16a4953c2dda19400ce2d0654",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.3",
-                "robrichards/xmlseclibs": "^3.1.5"
+                "php": ">=8.0",
+                "robrichards/xmlseclibs": "^4.0"
             },
             "require-dev": {
                 "pdepend/pdepend": "^2.8.0",
                 "php-coveralls/php-coveralls": "^2.0",
                 "phploc/phploc": "^4.0 || ^5.0 || ^6.0 || ^7.0",
-                "phpunit/phpunit": "^9.5",
+                "phpunit/phpunit": ">9.6.32",
                 "sebastian/phpcpd": "^4.0 || ^5.0 || ^6.0 ",
-                "squizlabs/php_codesniffer": "^3.5.8"
+                "squizlabs/php_codesniffer": "^3.13.6"
             },
             "suggest": {
                 "ext-curl": "Install curl lib to be able to use the IdPMetadataParser for parsing remote XMLs",
@@ -1120,7 +1171,8 @@
                 "ext-openssl": "Install openssl lib in order to handle with x509 certs (require to support sign and encryption)",
                 "ext-zlib": "Install zlib"
             },
-            "time": "2026-05-07T22:38:04+00:00",
+            "time": "2026-11-04T18:13:16+00:00",
+            "published-time": "2026-11-04T18:27:32+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -1156,17 +1208,17 @@
         },
         {
             "name": "paragonie/constant_time_encoding",
-            "version": "v3.1.3",
-            "version_normalized": "3.1.3.0",
+            "version": "v3.1.4",
+            "version_normalized": "3.1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/constant_time_encoding.git",
-                "reference": "d5b01a39b3415c2cd581d3bd3a3575c1ebbd8e77"
+                "reference": "5efef6e6cb43e088ccab7d0c1e2f2ab25b9e8b54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/constant_time_encoding/zipball/d5b01a39b3415c2cd581d3bd3a3575c1ebbd8e77",
-                "reference": "d5b01a39b3415c2cd581d3bd3a3575c1ebbd8e77",
+                "url": "https://api.github.com/repos/paragonie/constant_time_encoding/zipball/5efef6e6cb43e088ccab7d0c1e2f2ab25b9e8b54",
+                "reference": "5efef6e6cb43e088ccab7d0c1e2f2ab25b9e8b54",
                 "shasum": ""
             },
             "require": {
@@ -1178,7 +1230,8 @@
                 "phpunit/phpunit": "^9|^10|^11",
                 "vimeo/psalm": "^4|^5|^6"
             },
-            "time": "2025-09-24T15:06:41+00:00",
+            "time": "2026-11-06T20:31:19+00:00",
+            "published-time": "2026-11-06T20:39:39+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -1365,17 +1418,17 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "1.30.7",
-            "version_normalized": "1.30.7.0",
+            "version": "1.30.8",
+            "version_normalized": "1.30.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "f5dd9c1f084d336ea63cf53099533e061a9c157a"
+                "reference": "8cbf46b81d25f5e8af8b5710b841ec0462c63421"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/f5dd9c1f084d336ea63cf53099533e061a9c157a",
-                "reference": "f5dd9c1f084d336ea63cf53099533e061a9c157a",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/8cbf46b81d25f5e8af8b5710b841ec0462c63421",
+                "reference": "8cbf46b81d25f5e8af8b5710b841ec0462c63421",
                 "shasum": ""
             },
             "require": {
@@ -1421,7 +1474,8 @@
                 "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
                 "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer"
             },
-            "time": "2026-09-17T03:56:23+00:00",
+            "time": "2026-11-08T05:56:37+00:00",
+            "published-time": "2026-11-08T06:02:25+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -1470,23 +1524,23 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.30.7"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.30.8"
             },
             "install-path": "../phpoffice/phpspreadsheet"
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.57",
-            "version_normalized": "3.0.57.0",
+            "version": "3.0.58",
+            "version_normalized": "3.0.58.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "d17e0ddaeaf6f22f7e007cbb437d78792fe2a0e4"
+                "reference": "91f3a6436bb84040ac0cf49e761977f17d16a39b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/d17e0ddaeaf6f22f7e007cbb437d78792fe2a0e4",
-                "reference": "d17e0ddaeaf6f22f7e007cbb437d78792fe2a0e4",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/91f3a6436bb84040ac0cf49e761977f17d16a39b",
+                "reference": "91f3a6436bb84040ac0cf49e761977f17d16a39b",
                 "shasum": ""
             },
             "require": {
@@ -1504,7 +1558,8 @@
                 "ext-mcrypt": "Install the Mcrypt extension in order to speed up a few other cryptographic operations.",
                 "ext-openssl": "Install the OpenSSL extension in order to speed up a wide variety of cryptographic operations."
             },
-            "time": "2026-08-26T12:13:21+00:00",
+            "time": "2026-11-02T10:45:48+00:00",
+            "published-time": "2026-11-02T10:50:21+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -1569,7 +1624,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.57"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.58"
             },
             "funding": [
                 {
@@ -2019,24 +2074,28 @@
         },
         {
             "name": "robrichards/xmlseclibs",
-            "version": "3.1.5",
-            "version_normalized": "3.1.5.0",
+            "version": "4.0.2",
+            "version_normalized": "4.0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/robrichards/xmlseclibs.git",
-                "reference": "03062be78178cbb5e8f605cd255dc32a14981f92"
+                "reference": "a8c54900b91d9cd6569b0c87a8f3809bec6d8170"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/robrichards/xmlseclibs/zipball/03062be78178cbb5e8f605cd255dc32a14981f92",
-                "reference": "03062be78178cbb5e8f605cd255dc32a14981f92",
+                "url": "https://api.github.com/repos/robrichards/xmlseclibs/zipball/a8c54900b91d9cd6569b0c87a8f3809bec6d8170",
+                "reference": "a8c54900b91d9cd6569b0c87a8f3809bec6d8170",
                 "shasum": ""
             },
             "require": {
-                "ext-openssl": "*",
-                "php": ">= 5.4"
+                "php": ">= 8.0",
+                "phpseclib/phpseclib": "^3.0.57"
             },
-            "time": "2026-03-13T10:31:56+00:00",
+            "suggest": {
+                "ext-openssl": "Improves phpseclib performance when available"
+            },
+            "time": "2026-11-07T08:54:15+00:00",
+            "published-time": "2026-11-14T13:24:35+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -2058,28 +2117,28 @@
             ],
             "support": {
                 "issues": "https://github.com/robrichards/xmlseclibs/issues",
-                "source": "https://github.com/robrichards/xmlseclibs/tree/3.1.5"
+                "source": "https://github.com/robrichards/xmlseclibs/tree/4.0.2"
             },
             "install-path": "../robrichards/xmlseclibs"
         },
         {
             "name": "setasign/fpdi",
-            "version": "v2.6.9",
-            "version_normalized": "2.6.9.0",
+            "version": "v2.6.10",
+            "version_normalized": "2.6.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Setasign/FPDI.git",
-                "reference": "d97ade6368aa0b51b6316d5dc16a567e2bf60167"
+                "reference": "be29a9d43c64f06569c1075f181e43d829a3d5bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Setasign/FPDI/zipball/d97ade6368aa0b51b6316d5dc16a567e2bf60167",
-                "reference": "d97ade6368aa0b51b6316d5dc16a567e2bf60167",
+                "url": "https://api.github.com/repos/Setasign/FPDI/zipball/be29a9d43c64f06569c1075f181e43d829a3d5bb",
+                "reference": "be29a9d43c64f06569c1075f181e43d829a3d5bb",
                 "shasum": ""
             },
             "require": {
                 "ext-zlib": "*",
-                "php": ">=7.2 <=8.6.99999"
+                "php": ">=7.2 <8.7"
             },
             "conflict": {
                 "setasign/tfpdf": "<1.31"
@@ -2093,7 +2152,8 @@
             "suggest": {
                 "setasign/fpdf": "FPDI will extend this class but as it is also possible to use TCPDF or tFPDF as an alternative. There's no fixed dependency configured."
             },
-            "time": "2026-10-13T07:36:28+00:00",
+            "time": "2026-11-09T10:58:35+00:00",
+            "published-time": "2026-11-09T11:01:49+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -2126,7 +2186,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Setasign/FPDI/issues",
-                "source": "https://github.com/Setasign/FPDI/tree/v2.6.9"
+                "source": "https://github.com/Setasign/FPDI/tree/v2.6.10"
             },
             "funding": [
                 {
