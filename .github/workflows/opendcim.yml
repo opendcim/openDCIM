@@ -13,4 +13,3 @@ jobs:
     steps:
       - name: Update translations
         run: /home/runner/update
-

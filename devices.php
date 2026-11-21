@@ -52,6 +52,7 @@
 			$v3PrivPassphrase
 		);
 
+		
 		// Try to connect to keep us from killing the system on a failure
 		$error=false;
 		try {
