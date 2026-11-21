@@ -599,14 +599,18 @@
 	if(isset($_POST["currwatts"]) && isset($_POST['pduid']) && $_POST['pduid'] >0){
 		$pdu=new PowerDistribution();
 		$pdu->PDUID=$_POST['pduid'];
+		$wattage=new stdClass();
 		$wattage->Wattage='Err';
 		$wattage->LastRead='Err';
 		if($pdu->GetPDU()){
 			$cab->CabinetID=$pdu->CabinetID;
 			$cab->GetCabinet();
 			if($person->canWrite($cab->AssignedTo)){
-				$wattage=$pdu->LogManualWattage($_POST["currwatts"]);
-				$wattage->LastRead=strftime("%c",strtotime($wattage->LastRead));
+				$result=$pdu->LogManualWattage($_POST["currwatts"]);
+				if($result!==false){
+					$wattage=$result;
+					$wattage->LastRead=strftime("%c",strtotime($wattage->LastRead));
+				}
 			}
 		}
 		header('Content-Type: application/json');

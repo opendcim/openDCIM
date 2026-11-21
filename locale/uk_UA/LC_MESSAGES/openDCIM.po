@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-28 12:20-0500\n"
+"POT-Creation-Date: 2026-11-18 08:21-0600\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -122,7 +122,7 @@ msgid "Data Center"
 msgstr "ЦОД/площадка"
 
 #: bulk_importer.php:223 bulk_moves.php:230 cabinets.php:246 dc_stats.php:317
-#: devices.php:2008 pathmaker.php:304 pathmaker.php:470
+#: devices.php:2012 pathmaker.php:304 pathmaker.php:470
 #: /home/runner/openDCIM/paths.php:221 paths.php:296
 #: /home/runner/openDCIM/paths.php:380 report_cabinets.php:187
 #: report_contact.php:486 report_cost.php:469 report_exception.php:165
@@ -152,7 +152,7 @@ msgstr "Модель"
 msgid "Department"
 msgstr "Відділ"
 
-#: bulk_importer.php:269 devices.php:987 /home/runner/openDCIM/devices.php:1966
+#: bulk_importer.php:269 devices.php:991 /home/runner/openDCIM/devices.php:1970
 #: report_aging.php:425 report_aging.php:460
 #: report_project_outage_simulator.php:354 report_warranty.php:439
 #: report_warranty.php:472 search_export.php:161
@@ -286,7 +286,7 @@ msgstr "Департамент Інформаційних Технологій"
 msgid "Cabinet Audit Report"
 msgstr "Журнал проведення аудиту шафи"
 
-#: cabaudit.php:53 /home/runner/openDCIM/devices.php:2486 report_aging.php:95
+#: cabaudit.php:53 /home/runner/openDCIM/devices.php:2490 report_aging.php:95
 #: report_asset.php:29 report_audit.php:321 report_audit.php:417
 #: report_audit_frequency.php:33 report_contact.php:42 report_cost.php:46
 #: report_department.php:36 report_diverse_power_exceptions.php:35
@@ -317,7 +317,7 @@ msgstr "Сторінка"
 msgid "Cabinet Location"
 msgstr "Розташування шафи"
 
-#: cabaudit.php:404 cabaudit.php:510 configuration.php:2751 devices.php:1879
+#: cabaudit.php:404 cabaudit.php:510 configuration.php:2751 devices.php:1883
 #: rackrequest.php:351 report_aging.php:425 report_aging.php:460
 #: report_asset.php:54 report_warranty.php:439 report_warranty.php:472
 #: sidebar.inc.php:18 workorder.php:156
@@ -332,7 +332,7 @@ msgstr "Серійний №"
 msgid "AssetTag"
 msgstr "Інвентарний №"
 
-#: cabaudit.php:404 connections_spreadsheet.php:58 devices.php:2050
+#: cabaudit.php:404 connections_spreadsheet.php:58 devices.php:2054
 #: rackrequest.php:471 report_asset.php:54 report_contact.php:486
 #: report_cost.php:469 report_diverse_power_exceptions.php:167
 #: report_exception.php:165 report_exception.php:235
@@ -461,21 +461,21 @@ msgstr "Максимальна вага"
 msgid "Date of Installation"
 msgstr "Змонтовано"
 
-#: cabinets.php:335 cabnavigator.php:66 devices.php:1986 search_export.php:159
+#: cabinets.php:335 cabnavigator.php:66 devices.php:1990 search_export.php:159
 #: search_export_storage_room.php:73
 msgid "Tags"
 msgstr "Мітки"
 
 #: cabinets.php:341 conflicts.php:608 connections_spreadsheet.php:23
-#: device_templates.php:921 devices.php:1214 devices.php:1998 devices.php:2524
-#: devices.php:2590 devices.php:2645 pathmaker.php:393 report_tags.php:37
+#: device_templates.php:921 devices.php:1218 devices.php:2002 devices.php:2528
+#: devices.php:2594 devices.php:2649 pathmaker.php:393 report_tags.php:37
 #: sidebar.inc.php:26
 msgid "Notes"
 msgstr "Примітки"
 
 #: cabinets.php:347 /home/runner/openDCIM/cabrow.php:196 cdu_templates.php:236
 #: configuration.php:3054 container.php:306 datacenter.php:352
-#: departments.php:218 device_manufacturers.php:203 devices.php:2702
+#: departments.php:218 device_manufacturers.php:203 devices.php:2706
 #: disposition.php:115 escalations.php:86 power_panel.php:345
 #: project_mgr.php:174 report_logging.php:73 timeperiods.php:86 usermgr.php:337
 #: /home/runner/openDCIM/zone.php:180
@@ -484,7 +484,7 @@ msgstr "Оновити"
 
 #: cabinets.php:348 /home/runner/openDCIM/cabrow.php:197 container.php:307
 #: datacenter.php:358 datacenter.php:373 departments.php:218
-#: device_manufacturers.php:204 devices.php:2711 escalations.php:87
+#: device_manufacturers.php:204 devices.php:2715 escalations.php:87
 #: power_panel.php:346 project_mgr.php:174 report_logging.php:70
 #: timeperiods.php:87 /home/runner/openDCIM/zone.php:181
 msgid "Delete"
@@ -501,14 +501,14 @@ msgstr "Розташування на мапі"
 #: cabinets.php:352 /home/runner/openDCIM/cabrow.php:192 cdu_templates.php:238
 #: container.php:309 datacenter.php:354 departments.php:220
 #: device_manufacturers.php:206 device_templates.php:396
-#: device_templates.php:929 devices.php:2706 disposition.php:117
+#: device_templates.php:929 devices.php:2710 disposition.php:117
 #: escalations.php:89 power_panel.php:349 project_mgr.php:176
 #: rackrequest.php:486 report_logging.php:67 supplybin.php:165
 #: timeperiods.php:89 usermgr.php:339 /home/runner/openDCIM/zone.php:175
 msgid "Create"
 msgstr "Додати"
 
-#: cabinets.php:360 devices.php:2728 devices.php:2730
+#: cabinets.php:360 devices.php:2732 devices.php:2734
 msgid "Return to Navigator"
 msgstr "Назад до шафи"
 
@@ -536,18 +536,18 @@ msgstr ""
 "<br><br><b>ЦЮ ДІЮ ВІДМІНИТИ НЕМОЖЛИВО</b>"
 
 #: cabinets.php:384 /home/runner/openDCIM/cabrow.php:122 container.php:169
-#: datacenter.php:182 devices.php:1619 devices.php:1772 power_panel.php:451
+#: datacenter.php:182 devices.php:1623 devices.php:1776 power_panel.php:451
 #: project_mgr.php:103 report_exception.php:261 zone.php:245
 msgid "Yes"
 msgstr "так"
 
 #: cabinets.php:395 /home/runner/openDCIM/cabrow.php:127 container.php:174
-#: datacenter.php:194 devices.php:1623 devices.php:1778 power_panel.php:463
+#: datacenter.php:194 devices.php:1627 devices.php:1782 power_panel.php:463
 #: project_mgr.php:114 report_exception.php:263 zone.php:250
 msgid "No"
 msgstr "ні"
 
-#: cabnavigator.php:52 devices.php:1903
+#: cabnavigator.php:52 devices.php:1907
 msgid "Install Date"
 msgstr "Змонтовано"
 
@@ -595,7 +595,7 @@ msgid "Space"
 msgstr "U-простір"
 
 #: cabnavigator.php:271 dc_dashboard.php:85 dc_stats.php:298
-#: device_templates.php:774 devices.php:2075 zone_stats.php:287
+#: device_templates.php:774 devices.php:2079 zone_stats.php:287
 #: scripts/ajax_tooltip.php:155
 msgid "Weight"
 msgstr "Вага"
@@ -644,11 +644,11 @@ msgstr "Кліматичні датчики"
 msgid "Add Sensor"
 msgstr "Додати датчик у шафу"
 
-#: cabnavigator.php:395 devices.php:2704
+#: cabnavigator.php:395 devices.php:2708
 msgid "Certify Audit"
 msgstr "Підтвердити аудит"
 
-#: cabnavigator.php:396 devices.php:2407
+#: cabnavigator.php:396 devices.php:2411
 msgid "Add Device"
 msgstr "Додати пристрій"
 
@@ -758,12 +758,12 @@ msgstr "новий..."
 msgid "Managed"
 msgstr "Керований"
 
-#: cdu_templates.php:123 devices.php:2326
+#: cdu_templates.php:123 devices.php:2330
 msgid "Automatic Transfer Switch"
 msgstr "Автомат вводу резерва"
 
 #: cdu_templates.php:129 configuration.php:2495 device_templates.php:802
-#: devices.php:2160
+#: devices.php:2164
 msgid "SNMP Version"
 msgstr "Версія SNMP"
 
@@ -830,7 +830,7 @@ msgstr "Очікуване значення стану АВР"
 msgid "Processing Scheme"
 msgstr "Метод обчислення"
 
-#: cdu_templates.php:222 device_templates.php:1052 devices.php:2522
+#: cdu_templates.php:222 device_templates.php:1052 devices.php:2526
 msgid "Voltage"
 msgstr "Номінальна напруга"
 
@@ -1038,7 +1038,7 @@ msgstr "Часовий пояс"
 msgid "Log Retention (Days)"
 msgstr "Зберігати журнал (днів)"
 
-#: configuration.php:2057 devices.php:1898 rackrequest.php:372
+#: configuration.php:2057 devices.php:1902 rackrequest.php:372
 msgid "Manufacture Date"
 msgstr "Виготовлено"
 
@@ -1438,23 +1438,23 @@ msgstr "Налаштовки SNMP"
 msgid "Default SNMP Community"
 msgstr "SNMP community за промовчанням"
 
-#: configuration.php:2505 devices.php:2177
+#: configuration.php:2505 devices.php:2181
 msgid "SNMPv3 Security Level"
 msgstr "SNMPv3 Security Level"
 
-#: configuration.php:2515 devices.php:2190
+#: configuration.php:2515 devices.php:2194
 msgid "SNMPv3 AuthProtocol"
 msgstr "SNMPv3 AuthProtocol"
 
-#: configuration.php:2524 devices.php:2203
+#: configuration.php:2524 devices.php:2207
 msgid "SNMPv3 Passphrase"
 msgstr "SNMPv3 Passphrase"
 
-#: configuration.php:2528 devices.php:2207
+#: configuration.php:2528 devices.php:2211
 msgid "SNMPv3 PrivProtocol"
 msgstr "SNMPv3 PrivProtocol"
 
-#: configuration.php:2539 devices.php:2223
+#: configuration.php:2539 devices.php:2227
 msgid "SNMPv3 PrivPassphrase"
 msgstr "SNMPv3 PrivPassphrase"
 
@@ -1518,7 +1518,7 @@ msgstr "Сумісність типів кабелів"
 msgid "Enforce"
 msgstr "Примусово"
 
-#: configuration.php:2623 devices.php:2592 devices.php:2645
+#: configuration.php:2623 devices.php:2596 devices.php:2649
 msgid "Media Type"
 msgstr "Тип кабеля"
 
@@ -1559,7 +1559,7 @@ msgstr "Порт або роз'єм"
 msgid "Media Connectors"
 msgstr "Міжпанельна комутація"
 
-#: configuration.php:2663 configuration.php:2687 devices.php:2521
+#: configuration.php:2663 configuration.php:2687 devices.php:2525
 #, fuzzy
 msgid "Connector Type"
 msgstr "Таблиця комутації"
@@ -1897,7 +1897,7 @@ msgstr "Розетка БРЖ або АВР №"
 msgid "Power Supply"
 msgstr "Блок електроживлення №"
 
-#: conflicts.php:608 devices.php:924 /home/runner/openDCIM/devices.php:938
+#: conflicts.php:608 devices.php:928 /home/runner/openDCIM/devices.php:942
 #: rackrequest.php:454
 msgid "Switch"
 msgstr "Комутатор"
@@ -1906,7 +1906,7 @@ msgstr "Комутатор"
 msgid "Switch Port"
 msgstr "Порт комутатора"
 
-#: conflicts.php:608 devices.php:2520 devices.php:2586 devices.php:2645
+#: conflicts.php:608 devices.php:2524 devices.php:2590 devices.php:2649
 msgid "Device Port"
 msgstr "Кінцевий порт або роз'єм"
 
@@ -1938,7 +1938,7 @@ msgstr "Кінцевий порт"
 msgid "MediaType"
 msgstr "Кабель"
 
-#: connections_spreadsheet.php:28 devices.php:2582 devices.php:2645
+#: connections_spreadsheet.php:28 devices.php:2586 devices.php:2649
 msgid "Connections"
 msgstr "Таблиця комутації"
 
@@ -1946,14 +1946,14 @@ msgstr "Таблиця комутації"
 msgid "Device Label"
 msgstr "Маркування пристрою"
 
-#: connections_spreadsheet.php:52 devices.php:1883 rackrequest.php:368
+#: connections_spreadsheet.php:52 devices.php:1887 rackrequest.php:368
 #: report_asset.php:54 report_contact.php:486 report_cost.php:469
 #: report_exception.php:165 report_exception.php:235 search_export.php:154
 #: search_export_storage_room.php:68 sidebar.inc.php:20
 msgid "Serial Number"
 msgstr "Серійний №"
 
-#: connections_spreadsheet.php:54 devices.php:1888 rackrequest.php:376
+#: connections_spreadsheet.php:54 devices.php:1892 rackrequest.php:376
 #: report_asset.php:54 report_contact.php:486 report_cost.php:469
 #: search_export.php:155 search_export_storage_room.php:69 sidebar.inc.php:21
 #: storageroom.php:77
@@ -2351,7 +2351,7 @@ msgstr "openDCIM обслуговування пристроїв"
 msgid "Group to Administer"
 msgstr "Додавання людей в"
 
-#: dept_groups.php:66 devices.php:2316 login_ldap.php:271 people_depts.php:66
+#: dept_groups.php:66 devices.php:2320 login_ldap.php:271 people_depts.php:66
 #: project_members.php:140 supplybin.php:207
 msgid "Submit"
 msgstr "Застосувати"
@@ -2466,7 +2466,7 @@ msgstr "Користувальницький"
 msgid "Invert Port Labels"
 msgstr "Інвертувати назви портів"
 
-#: device_templates.php:770 devices.php:2046 devices.php:2390
+#: device_templates.php:770 devices.php:2050 devices.php:2394
 #: rackrequest.php:426 search_export.php:152 search_export_storage_room.php:66
 msgid "Height"
 msgstr "Формфактор (U)"
@@ -2475,11 +2475,11 @@ msgstr "Формфактор (U)"
 msgid "0 for a vertical mounting"
 msgstr "0, якщо змонтовано вертикально"
 
-#: device_templates.php:778 devices.php:2315
+#: device_templates.php:778 devices.php:2319
 msgid "Wattage"
 msgstr "Виміряна потужність"
 
-#: device_templates.php:782 devices.php:2100 devices.php:2392
+#: device_templates.php:782 devices.php:2104 devices.php:2396
 #: rackrequest.php:447 report_vendor_model.php:53 search_export.php:157
 #: search_export_storage_room.php:71
 msgid "Device Type"
@@ -2557,13 +2557,13 @@ msgstr "Видалити шаблон"
 msgid "Update Devices"
 msgstr "Оновити пристрої"
 
-#: device_templates.php:945 devices.php:2375 devices.php:2645
+#: device_templates.php:945 devices.php:2379 devices.php:2649
 #: classes/DeviceTemplate.class.php:591 classes/DeviceTemplate.class.php:595
 msgid "Front"
 msgstr "Пристрій зпереду"
 
 #: device_templates.php:950 devices.php:445
-#: /home/runner/openDCIM/devices.php:2376 devices.php:2678 misc.inc.php:1142
+#: /home/runner/openDCIM/devices.php:2380 devices.php:2682 misc.inc.php:1142
 #: report_cabinets.php:180 report_cabinets.php:252 report_cabinets.php:293
 #: rowview.php:92 classes/Device.class.php:2211 classes/Device.class.php:2215
 #: classes/Device.class.php:2316 classes/Device.class.php:2319
@@ -2633,7 +2633,7 @@ msgstr "з шаблона"
 msgid "ERROR: No ports found"
 msgstr "ПОМИЛКА: Не знайдено портів"
 
-#: devices.php:643
+#: devices.php:647
 msgid ""
 "This device is a copy of an existing device.  Remember to set the new "
 "location before saving."
@@ -2641,58 +2641,58 @@ msgstr ""
 "Цей пристрій є копією існуючого пристрою. Не забудьте вказати його "
 "розташування перед збереженням."
 
-#: devices.php:791
+#: devices.php:795
 msgid "Device did not copy.  Error."
 msgstr "Пристрій не можна скопіювати. Помилка."
 
-#: devices.php:921 /home/runner/openDCIM/devices.php:935 rackrequest.php:451
+#: devices.php:925 /home/runner/openDCIM/devices.php:939 rackrequest.php:451
 msgid "Server"
 msgstr "Сервер"
 
-#: devices.php:922 /home/runner/openDCIM/devices.php:936 rackrequest.php:452
+#: devices.php:926 /home/runner/openDCIM/devices.php:940 rackrequest.php:452
 msgid "Appliance"
 msgstr "Апаратно-програмний комплекс"
 
-#: devices.php:923 /home/runner/openDCIM/devices.php:937 rackrequest.php:453
+#: devices.php:927 /home/runner/openDCIM/devices.php:941 rackrequest.php:453
 msgid "Storage Array"
 msgstr "Система збереження даних"
 
-#: devices.php:925 /home/runner/openDCIM/devices.php:939 rackrequest.php:455
+#: devices.php:929 /home/runner/openDCIM/devices.php:943 rackrequest.php:455
 msgid "Chassis"
 msgstr "Шасі"
 
-#: devices.php:926 /home/runner/openDCIM/devices.php:940 rackrequest.php:456
+#: devices.php:930 /home/runner/openDCIM/devices.php:944 rackrequest.php:456
 msgid "Patch Panel"
 msgstr "Патчпанель"
 
-#: devices.php:927 /home/runner/openDCIM/devices.php:943
+#: devices.php:931 /home/runner/openDCIM/devices.php:947
 #: classes/Device.class.php:2632
 msgid "Sensor"
 msgstr "Датчик"
 
-#: devices.php:941 /home/runner/openDCIM/devices.php:2005 rackrequest.php:457
+#: devices.php:945 /home/runner/openDCIM/devices.php:2009 rackrequest.php:457
 msgid "Physical Infrastructure"
 msgstr "Інженерна інфраструктура"
 
-#: devices.php:942 classes/PowerDistribution.class.php:555
+#: devices.php:946 classes/PowerDistribution.class.php:555
 msgid "CDU"
 msgstr "Шафний БРЖ або АВР"
 
-#: devices.php:980
+#: devices.php:984
 msgid "openDCIM Device Maintenance"
 msgstr "Обслуговування пристроїв"
 
-#: devices.php:987 vmnamecheck.php:43 vmnamecheck.php:81
+#: devices.php:991 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "VM Name"
 msgstr "Назва віртуальної машини"
 
-#: devices.php:987 /home/runner/openDCIM/devices.php:1867 devices.php:2525
-#: devices.php:2591 disposition.php:102 report_project_outage_simulator.php:350
+#: devices.php:991 /home/runner/openDCIM/devices.php:1871 devices.php:2529
+#: devices.php:2595 disposition.php:102 report_project_outage_simulator.php:350
 #: report_surplus.php:136 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Status"
 msgstr "Стан"
 
-#: devices.php:987 report_aging.php:425 report_aging.php:460
+#: devices.php:991 report_aging.php:425 report_aging.php:460
 #: report_diverse_power_exceptions.php:167 report_power_utilization.php:167
 #: report_project_outage_simulator.php:356 report_tags.php:35
 #: report_warranty.php:439 report_warranty.php:472 search_export.php:160
@@ -2701,36 +2701,36 @@ msgstr "Стан"
 msgid "Owner"
 msgstr "Власник"
 
-#: devices.php:987 vmnamecheck.php:43 vmnamecheck.php:81
+#: devices.php:991 vmnamecheck.php:43 vmnamecheck.php:81
 msgid "Last Updated"
 msgstr "Оновлено"
 
-#: devices.php:995 /home/runner/openDCIM/devices.php:1003
+#: devices.php:999 /home/runner/openDCIM/devices.php:1007
 #: report_exception.php:158 vmnamecheck.php:53 vmnamecheck.php:91
 msgid "Unknown"
 msgstr "Невідомо"
 
-#: devices.php:1073
+#: devices.php:1077
 msgid "Open"
 msgstr "Відкрити"
 
-#: devices.php:1162
+#: devices.php:1166
 msgid "Landscape"
 msgstr "Альбомний"
 
-#: devices.php:1172 devices.php:1852
+#: devices.php:1176 devices.php:1856
 msgid "Portrait"
 msgstr "Портретний"
 
-#: devices.php:1217
+#: devices.php:1221
 msgid "Network & Power"
 msgstr "Комутація та живлення"
 
-#: devices.php:1604
+#: devices.php:1608
 msgid "Verify Delete Device"
 msgstr "Підтвердження видалення пристрою"
 
-#: devices.php:1613
+#: devices.php:1617
 msgid ""
 "If this device has blades installed they will be deleted and there is no "
 "undo. Are you sure?"
@@ -2738,240 +2738,240 @@ msgstr ""
 "Якщо це шасі має встановлені модулі/леза, вони будуть видалені без "
 "можливості відновлення. Ви переконані?"
 
-#: devices.php:1767
+#: devices.php:1771
 msgid "This device will be deleted and there is no undo. Are you sure?"
 msgstr "Цей пристрій буде видалено без можливості відновлення. Ви переконані?"
 
-#: devices.php:1860
+#: devices.php:1864
 msgid "Asset Tracking"
 msgstr "Загальна інформація"
 
-#: devices.php:1863
+#: devices.php:1867
 msgid "Device ID"
 msgstr "ID"
 
-#: devices.php:1885 devices.php:1890
+#: devices.php:1889 devices.php:1894
 msgid "Scan Barcode"
 msgstr "Штрихкод"
 
-#: devices.php:1893 search_export.php:156 search_export_storage_room.php:70
+#: devices.php:1897 search_export.php:156 search_export_storage_room.php:70
 msgid "Primary IP / Host Name"
 msgstr "Основна IP-адреса/Ім'я"
 
-#: devices.php:1907
+#: devices.php:1911
 msgid "Warranty Company"
 msgstr "На гарантії у"
 
-#: devices.php:1911 search_export.php:162 search_export_storage_room.php:76
+#: devices.php:1915 search_export.php:162 search_export_storage_room.php:76
 msgid "Warranty Expiration"
 msgstr "Гарантія закінчується"
 
-#: devices.php:1915
+#: devices.php:1919
 msgid "Last Audit Completed"
 msgstr "Стан аудиту"
 
-#: devices.php:1919 rackrequest.php:390
+#: devices.php:1923 rackrequest.php:390
 msgid "Departmental Owner"
 msgstr "Відділ"
 
-#: devices.php:1922 devices.php:1968 rackrequest.php:393 search_export.php:62
+#: devices.php:1926 devices.php:1972 rackrequest.php:393 search_export.php:62
 msgid "Unassigned"
 msgstr "не визначено"
 
-#: devices.php:1930
+#: devices.php:1934
 msgid "Show Contacts"
 msgstr "Показати контакти"
 
-#: devices.php:1936
+#: devices.php:1940
 msgid "Escalation Information"
 msgstr "Налаштовка ескалації"
 
-#: devices.php:1939
+#: devices.php:1943
 msgid "Time Period"
 msgstr "Тип ескалації"
 
-#: devices.php:1941 devices.php:1953 devices.php:2102
+#: devices.php:1945 devices.php:1957 devices.php:2106
 msgid "Select..."
 msgstr "обрати..."
 
-#: devices.php:1951 escalations.php:80
+#: devices.php:1955 escalations.php:80
 msgid "Details"
 msgstr "Терміни ескалації"
 
-#: devices.php:1980
+#: devices.php:1984
 msgid "Contact Lookup"
 msgstr "Знайти контакти"
 
-#: devices.php:1992
+#: devices.php:1996
 msgid "Custom Attributes"
 msgstr "Користувальницька інформація"
 
-#: devices.php:2016
+#: devices.php:2020
 msgid "Parent Device"
 msgstr "Батьківський пристрій"
 
-#: devices.php:2028 rackrequest.php:406
+#: devices.php:2032 rackrequest.php:406
 msgid "Device Class"
 msgstr "Шаблон"
 
-#: devices.php:2030
+#: devices.php:2034
 msgid "Select a template..."
 msgstr "обрати..."
 
-#: devices.php:2046
+#: devices.php:2050
 msgid "Number of slots"
 msgstr "Кількість слотів"
 
-#: devices.php:2058 search_export.php:165
+#: devices.php:2062 search_export.php:165
 msgid "Half Depth"
 msgstr "Половинна глибина"
 
-#: devices.php:2063 search_export.php:166
+#: devices.php:2067 search_export.php:166
 msgid "Back Side"
 msgstr "Змонтовано ззаду"
 
-#: devices.php:2067
+#: devices.php:2071
 msgid "Number of Data Ports"
 msgstr "Кількість портів"
 
-#: devices.php:2071
+#: devices.php:2075
 msgid "Nominal Draw (Watts)"
 msgstr "Номінальна споживана потужність (Ват)"
 
-#: devices.php:2082 devices.php:2513
+#: devices.php:2086 devices.php:2517
 msgid "Power Connections"
 msgstr "Таблиця електроживлення"
 
-#: devices.php:2090
+#: devices.php:2094
 msgid "Chassis Total Draw"
 msgstr "Сумарна споживана потужність шасі"
 
-#: devices.php:2094
+#: devices.php:2098
 msgid "Chassis Total Weight"
 msgstr "Сумарна вага шасі"
 
-#: devices.php:2116
+#: devices.php:2120
 msgid "Sensor Readings"
 msgstr "Покази датчика"
 
-#: devices.php:2123
+#: devices.php:2127
 msgid "Device Images"
 msgstr "Зображення пристрою"
 
-#: devices.php:2136
+#: devices.php:2140
 msgid "ProxMox Configuration"
 msgstr "Конфігурація ProxMox"
 
-#: devices.php:2139
+#: devices.php:2143
 msgid "API Username"
 msgstr "API Username"
 
-#: devices.php:2143
+#: devices.php:2147
 msgid "API Password"
 msgstr "API Password"
 
-#: devices.php:2147
+#: devices.php:2151
 msgid "API Port"
 msgstr "API Port"
 
-#: devices.php:2151
+#: devices.php:2155
 msgid "ProxMox Realm"
 msgstr "ProxMox Realm"
 
-#: devices.php:2157
+#: devices.php:2161
 msgid "SNMP Configuration"
 msgstr "Конфігурація SNMP"
 
-#: devices.php:2163 devices.php:2180 devices.php:2193 devices.php:2210
+#: devices.php:2167 devices.php:2184 devices.php:2197 devices.php:2214
 msgid "Configuration Default"
 msgstr "За промовчанням"
 
-#: devices.php:2173
+#: devices.php:2177
 msgid "SNMP Read Only Community"
 msgstr "SNMP ro community"
 
-#: devices.php:2174
+#: devices.php:2178
 msgid "Test SNMP"
 msgstr "Опитати пристрій по SNMP"
 
-#: devices.php:2227
+#: devices.php:2231
 msgid "Consecutive SNMP Failures"
 msgstr "Кількість послідовних SNMP невдач"
 
-#: devices.php:2231
+#: devices.php:2235
 msgid "Polling is disabled after three consecutive failures."
 msgstr "Опитування буде припинено після трьох підряд невдалих спроб."
 
-#: devices.php:2234
+#: devices.php:2238
 msgid "Power Specifications"
 msgstr "Інформація по електроживленню"
 
-#: devices.php:2237
+#: devices.php:2241
 msgid "Source Panel"
 msgstr "Модульний БРЖ"
 
-#: devices.php:2240 devices.php:2336
+#: devices.php:2244 devices.php:2340
 msgid "Select Panel"
 msgstr "обрати..."
 
-#: devices.php:2253
+#: devices.php:2257
 #, fuzzy
 msgid "Goto Panel"
 msgstr "Патчпанель"
 
-#: devices.php:2258
+#: devices.php:2262
 msgid "Voltages:"
 msgstr "Напруга (3ф/1ф):"
 
-#: devices.php:2272
+#: devices.php:2276
 msgid "Breaker Size (# of Poles)"
 msgstr "Кількість полюсів автомата"
 
-#: devices.php:2286
+#: devices.php:2290
 msgid "Panel Pole Number"
 msgstr "Номер модуля БРЖ"
 
-#: devices.php:2293
+#: devices.php:2297
 msgid "All Breaker Poles"
 msgstr "Всі полюси автомата"
 
-#: devices.php:2299
+#: devices.php:2303
 msgid "Input Amperage"
 msgstr "Максимальний струм автомата"
 
-#: devices.php:2307
+#: devices.php:2311
 msgid "Uptime"
 msgstr "Uptime"
 
-#: devices.php:2311
+#: devices.php:2315
 msgid "Firmware Version"
 msgstr "Версія мікрокода"
 
-#: devices.php:2316
+#: devices.php:2320
 msgid "Manual Entry"
 msgstr "Вказати вручну"
 
-#: devices.php:2319
+#: devices.php:2323
 msgid "Last Update"
 msgstr "Станом на"
 
-#: devices.php:2329
+#: devices.php:2333
 msgid "Fail Safe Switch?"
 msgstr "Підключено до резервного електроджерела?"
 
-#: devices.php:2333
+#: devices.php:2337
 msgid "Source Panel (Secondary Source)"
 msgstr "Модульний БРЖ (резервне джерело)"
 
-#: devices.php:2348
+#: devices.php:2352
 msgid "Panel Pole Number (Secondary Source)"
 msgstr "Номер модуля БРЖ (резервне джерело)"
 
-#: devices.php:2357
+#: devices.php:2361
 msgid "Switch SNMP"
 msgstr "Опитати комутатор по SNMP"
 
-#: devices.php:2358
+#: devices.php:2362
 msgid ""
 "Use these buttons to set the first port for the switch, check the status of "
 "the ports again, or attempt to load the Port Name Labels from the switch "
@@ -2981,27 +2981,27 @@ msgstr ""
 "стан його портів, а також звантажити умовні назви портів та примітки до них, "
 "якщо останні були прописані."
 
-#: devices.php:2358
+#: devices.php:2362
 msgid "Set First Port"
 msgstr "Вказати перший порт"
 
-#: devices.php:2358 devices.php:2362
+#: devices.php:2362 devices.php:2366
 msgid "Refresh Status"
 msgstr "Оновити стан портів"
 
-#: devices.php:2358 devices.php:2362
+#: devices.php:2362 devices.php:2366
 msgid "Refresh Port Names"
 msgstr "Оновити назви портів"
 
-#: devices.php:2358 devices.php:2362
+#: devices.php:2362 devices.php:2366
 msgid "Refresh Port Notes"
 msgstr "Оновити примітки до портів"
 
-#: devices.php:2361
+#: devices.php:2365
 msgid "CDU SNMP"
 msgstr "Опитати шафний БРЖ або АВР по SNMP"
 
-#: devices.php:2362
+#: devices.php:2366
 msgid ""
 "Use these buttons to set the first power outlet for the CDU, check the "
 "status of the oultets again, or attempt to load the Outlet Name Labels from "
@@ -3011,30 +3011,30 @@ msgstr ""
 "перечитати стан його електророзеток, а також звантажити умовні назви "
 "електророзеток та примітки до них, якщо останні були прописані."
 
-#: devices.php:2362
+#: devices.php:2366
 msgid "Set First Outlet"
 msgstr "Вказати першу розетку"
 
-#: devices.php:2371
+#: devices.php:2375
 msgid "Chassis Contents"
 msgstr "Вміст шасі"
 
-#: devices.php:2379
+#: devices.php:2383
 msgid "Number of Slots in Chassis:"
 msgstr "Кількість слотів в шасі:"
 
-#: devices.php:2389
+#: devices.php:2393
 msgid "Slot #"
 msgstr "Номер слота"
 
-#: devices.php:2391 report_contact.php:486 report_cost.php:469
+#: devices.php:2395 report_contact.php:486 report_cost.php:469
 #: report_diverse_power_exceptions.php:167 report_exception.php:165
 #: report_exception.php:235 report_power_distribution.php:202
 #: report_power_utilization.php:167
 msgid "Device Name"
 msgstr "Ім'я"
 
-#: devices.php:2414
+#: devices.php:2418
 msgid ""
 "You must first define how many slots are in the chassis before you can add "
 "devices."
@@ -3042,93 +3042,93 @@ msgstr ""
 "Перед тим як додати пристрій у слот, необхідно вказати загальну кількість "
 "слотів в шасі."
 
-#: devices.php:2425
+#: devices.php:2429
 msgid "Hypervisor Server Information"
 msgstr "Інформація про гіпервізор"
 
-#: devices.php:2431 search_export.php:167
+#: devices.php:2435 search_export.php:167
 msgid "Hypervisor"
 msgstr "Гіпервізор"
 
-#: devices.php:2457
+#: devices.php:2461
 msgid "Limit device type selection to"
 msgstr "Показувати пристрої тільки типу"
 
-#: devices.php:2471
+#: devices.php:2475
 msgid "Limit device selection to"
 msgstr "Показувати пристрої тільки з"
 
-#: devices.php:2486
+#: devices.php:2490
 msgid "Operational Log"
 msgstr "Журнал подій"
 
-#: devices.php:2518 devices.php:2584
+#: devices.php:2522 devices.php:2588
 msgid "Port Name"
 msgstr "Порт або роз'єм"
 
-#: devices.php:2519 devices.php:2585 pathmaker.php:465 report_cabinets.php:188
+#: devices.php:2523 devices.php:2589 pathmaker.php:465 report_cabinets.php:188
 #: report_sensors.php:25 storageroom.php:76
 msgid "Device"
 msgstr "Кінцевий пристрій"
 
-#: devices.php:2523
+#: devices.php:2527
 #, fuzzy
 msgid "Phase"
 msgstr "Ім'я"
 
-#: devices.php:2526 report_power_distribution.php:186
+#: devices.php:2530 report_power_distribution.php:186
 #: report_power_distribution.php:202
 msgid "Panel"
 msgstr "Модульний БРЖ"
 
-#: devices.php:2587
+#: devices.php:2591
 #, fuzzy
 msgid "Connector"
 msgstr "Таблиця комутації"
 
-#: devices.php:2588
+#: devices.php:2592
 #, fuzzy
 msgid "Protocol"
 msgstr "Порт або роз'єм"
 
-#: devices.php:2589
+#: devices.php:2593
 #, fuzzy
 msgid "Rate"
 msgstr "ЦОД/площадка"
 
-#: devices.php:2593
+#: devices.php:2597
 msgid "Color Code"
 msgstr "Інтерфейс"
 
-#: devices.php:2645
+#: devices.php:2649
 msgid "Patch Port"
 msgstr "Порт патчпанелі"
 
-#: devices.php:2645
+#: devices.php:2649
 msgid "Back"
 msgstr "Пристрій ззаду"
 
-#: devices.php:2703 classes/Device.class.php:524
+#: devices.php:2707 classes/Device.class.php:524
 msgid "Copy"
 msgstr "Копіювати"
 
-#: devices.php:2714 workorder.php:193
+#: devices.php:2718 workorder.php:193
 msgid "Export Connections"
 msgstr "Експорт комутації"
 
-#: devices.php:2727
+#: devices.php:2731
 msgid "Return to Parent Device"
 msgstr "Назад до шасі"
 
-#: devices.php:2733
+#: devices.php:2737
 msgid "Return to Storage Room"
 msgstr "Перейти на склад ЦОДа"
 
-#: devices.php:2735
+#: devices.php:2739
 msgid "Return to General Storage Room"
 msgstr "Перейти на головний склад"
 
-#: devices.php:2740
+#: devices.php:2744
 msgid "Do you certify that you have completed an audit of this device?"
 msgstr "Ви підтверджуєте закінчення аудиту обраного пристрою?"
 
@@ -5898,70 +5898,86 @@ msgstr "Сталася помилка:"
 msgid "SMTP Server Connection Test Successful"
 msgstr "Перевірка підключення до сервера SMTP успішна"
 
-#: scripts/uploadifive.php:47
+#: scripts/uploadifive.php:111
+msgid "File content does not match its extension."
+msgstr ""
+
+#: scripts/uploadifive.php:115
+msgid "File is not a valid image."
+msgstr ""
+
+#: scripts/uploadifive.php:137 scripts/uploadifive.php:148
+#: scripts/uploadifive.php:152 scripts/uploadifive.php:274
+#: scripts/uploadifive.php:285
+msgid "Couldn't complete file move"
+msgstr "Переміщення файлу не було завершено"
+
+#: scripts/uploadifive.php:143 scripts/uploadifive.php:220
+#: scripts/uploadifive.php:263
+msgid "Invalid file type."
+msgstr "Неправильний формат файлу."
+
+#: scripts/uploadifive.php:160
+msgid "You must be a site admin to add images"
+msgstr "Для завантаження зображень необхідно мати права на керування сайтом"
+
+#: scripts/uploadifive.php:167
+msgid "Token mismatch"
+msgstr "Не співпадає токен"
+
+#: scripts/uploadifive.php:172
+msgid "No files uploaded"
+msgstr "Жодного файлу не завантажено"
+
+#: scripts/uploadifive.php:208
 #, php-format
 msgid "Upload directory '%s' is not writable"
 msgstr "Тека завантаження '%s' недоступна на запис"
 
-#: scripts/uploadifive.php:67
+#: scripts/uploadifive.php:227
 msgid "File was not deleted"
 msgstr "Файл не було видалено"
 
-#: scripts/uploadifive.php:86
-msgid "Couldn't complete file move"
-msgstr "Переміщення файлу не було завершено"
-
-#: scripts/uploadifive.php:92
-msgid "The file is bigger than this PHP installation allows"
-msgstr "Розмір файлу перевищує ліміт, дозволений налаштовками PHP"
-
-#: scripts/uploadifive.php:95
-msgid "The file is bigger than this form allows"
-msgstr "Розмір файлу перевищує ліміт, дозволений даною сторінкою"
-
-#: scripts/uploadifive.php:98
-msgid "Only part of the file was uploaded"
-msgstr "Файл було завантажено тільки частково"
-
-#: scripts/uploadifive.php:101
+#: scripts/uploadifive.php:237 scripts/uploadifive.php:247
 msgid "No file was uploaded"
 msgstr "Файл не було завантажено"
 
-#: scripts/uploadifive.php:104
+#: scripts/uploadifive.php:244
+msgid "The file is bigger than this PHP installation allows"
+msgstr "Розмір файлу перевищує ліміт, дозволений налаштовками PHP"
+
+#: scripts/uploadifive.php:245
+msgid "The file is bigger than this form allows"
+msgstr "Розмір файлу перевищує ліміт, дозволений даною сторінкою"
+
+#: scripts/uploadifive.php:246
+msgid "Only part of the file was uploaded"
+msgstr "Файл було завантажено тільки частково"
+
+#: scripts/uploadifive.php:248
 msgid "Missing a temporary folder"
 msgstr "Відсутня тека для тимчасових файлів"
 
-#: scripts/uploadifive.php:107
+#: scripts/uploadifive.php:249
 msgid "Failed to write file to disk"
 msgstr "Файл неможливо записати на диск"
 
-#: scripts/uploadifive.php:110
+#: scripts/uploadifive.php:250
 msgid "File upload stopped by extension"
 msgstr "Завантаження файлу зупинено внаслідок недозволеного розширення"
 
-#: scripts/uploadifive.php:113
+#: scripts/uploadifive.php:251
 msgid "Unknown Error"
 msgstr "Невідома помилка"
 
-#: scripts/uploadifive.php:120
-msgid "Invalid file type."
-msgstr "Неправильний формат файлу."
+#: scripts/uploadifive.php:258
+#, fuzzy
+msgid "Invalid upload"
+msgstr "Недопустима дія"
 
-#: scripts/uploadifive.php:127
-msgid "No files uploaded"
-msgstr "Жодного файлу не завантажено"
-
-#: scripts/uploadifive.php:128
-msgid "You must be a site admin to add images"
-msgstr "Для завантаження зображень необхідно мати права на керування сайтом"
-
-#: scripts/uploadifive.php:129
-msgid "Token mismatch"
-msgstr "Не співпадає токен"
-
-#: scripts/uploadifive.php:130
-msgid "God help us something has gone horribly wrong"
-msgstr "От халепа! Знову щось пішло не так :-/."
+#: scripts/uploadifive.php:271
+msgid "SVG could not be validated"
+msgstr ""
 
 #: classes/DataCenter.class.php:572
 msgid "Composite View of Cabinets"
@@ -6090,6 +6106,9 @@ msgid "First port detection failed, please report to openDCIM developers"
 msgstr ""
 "Неможливо визначити перший порт, будь-ласка повідомте про це розробникам "
 "openDCIM"
+
+#~ msgid "God help us something has gone horribly wrong"
+#~ msgstr "От халепа! Знову щось пішло не так :-/."
 
 #~ msgid "Path not initialized"
 #~ msgstr "Комутацію не проініціалізовано"
