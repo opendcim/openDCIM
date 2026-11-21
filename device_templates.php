@@ -72,7 +72,7 @@
 
 	$status='';
 
-	if(isset($_FILES['templateFile']) && $_FILES['templateFile']['error']==0 && $_FILES['templateFile']['type']='text/xml'){
+	if(isset($_FILES['templateFile']) && $_FILES['templateFile']['error']==0 && $_FILES['templateFile']['type']=='text/xml'){
 		$importresult=$template->ImportTemplate($_FILES['templateFile']['tmp_name']);
 		$status=($importresult["status"]=="")?__("Template File Imported"):$importresult["status"].'<a id="import_err" style="margin-left: 1em;" title="'.__("View errors").'" href="#"><img src="images/info.png"></a>';
 	}
