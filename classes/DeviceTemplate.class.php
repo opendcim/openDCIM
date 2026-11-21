@@ -526,6 +526,11 @@ class DeviceTemplate {
 		$result["log"]=array();
 
 		$templatefile=json_decode(file_get_contents($file));
+		if(!is_object($templatefile) || !isset($templatefile->ManufacturerName, $templatefile->Model)){
+			$result["status"] = __("Import Error");
+			$result["log"][0] = __("Template file is not valid");
+			return $result;
+		}
 
 		//manufacturer
 		$manufacturer=new Manufacturer();
@@ -541,30 +546,23 @@ class DeviceTemplate {
 			$template->$prop=$templatefile->$prop;
 		}
 
-		if($template->FrontPictureFile!='' && preg_match("/^data/i",$template->FrontPictureFile)){
-			preg_match("/image\/([a-zA-Z0-9]{1,5})/i",$template->FrontPictureFile,$ext_matches);
-			list($type, $template->FrontPictureFile) = explode(';', $template->FrontPictureFile);
-			list(, $template->FrontPictureFile)      = explode(',', $template->FrontPictureFile);
-			$front_file = base64_decode($template->FrontPictureFile);
-			$frontfilename=filter_var("{$templatefile->ManufacturerID}.{$templatefile->ManufacturerName}-{$templatefile->Model}-FRONT.{$ext_matches[1]}", FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW);
-			$frontfilename=str_replace(" ","-",$frontfilename);
-			$template->FrontPictureFile=$frontfilename;
-		}else{
-			$template->FrontPictureFile="";
-			$front_file=false;
-		}
-
-		if($template->RearPictureFile!='' && preg_match("/^data/i",$template->RearPictureFile)){
-			preg_match("/image\/([a-zA-Z0-9]{1,5})/i",$template->RearPictureFile,$ext_matches);
-			list($type, $template->RearPictureFile) = explode(';', $template->RearPictureFile);
-			list(, $template->RearPictureFile)      = explode(',', $template->RearPictureFile);
-			$rear_file = base64_decode($template->RearPictureFile);
-			$rearfilename=filter_var("{$templatefile->ManufacturerID}.{$templatefile->ManufacturerName}-{$templatefile->Model}-REAR.{$ext_matches[1]}", FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW);
-			$rearfilename=str_replace(" ","-",$rearfilename);
-			$template->RearPictureFile=$rearfilename;
-		}else{
-			$template->RearPictureFile="";
-			$rear_file=false;
+		$front_file = $rear_file = false;
+		foreach(array('Front' => 'FRONT', 'Rear' => 'REAR') as $side => $tag){
+			$prop = $side.'PictureFile';
+			if($template->$prop === '' || $template->$prop === null){
+				continue;
+			}
+			$img = DeviceTemplate::ValidateImportImage(
+				$template->$prop, $templatefile->ManufacturerID,
+				$templatefile->ManufacturerName, $templatefile->Model, $tag);
+			if(!is_array($img)){
+				$result["status"] = __("Import Error");
+				$result["log"][0] = $img;
+				return $result;
+			}
+			$template->$prop = $img['name'];
+			if($side === 'Front'){ $front_file = $img; $frontfilename = $img['name']; }
+			else                 { $rear_file  = $img; $rearfilename  = $img['name']; }
 		}
 
 		//create the template
@@ -669,13 +667,14 @@ class DeviceTemplate {
 				$result["log"][$ierror++]=sprintf(__("Ignored port %s"),$tp->PortNumber);
 			}
 		}
-		//only write out a file if they don't already exist
-		$path=$config->ParameterArray['picturepath'];
-		if($front_file && !is_file($path.DIRECTORY_SEPARATOR.$frontfilename)){
-			file_put_contents($path.DIRECTORY_SEPARATOR.$frontfilename, $front_file);
+
+		if($front_file && !DeviceTemplate::WriteImportImage($front_file['name'], $front_file['data'])){
+			$result["status"] = __("Import Warning");
+			$result["log"][] = __("Front image could not be saved");
 		}
-		if($rear_file && !is_file($path.DIRECTORY_SEPARATOR.$rearfilename)){
-			file_put_contents($path.DIRECTORY_SEPARATOR.$rearfilename, $rear_file);
+		if($rear_file && !DeviceTemplate::WriteImportImage($rear_file['name'], $rear_file['data'])){
+			$result["status"] = __("Import Warning");
+			$result["log"][] = __("Rear image could not be saved");
 		}
 		return $result;
 	}
@@ -747,6 +746,88 @@ class DeviceTemplate {
 		}
 		return $array;
 	}
+
+	// Validate a data: URI image from an import file.
+	// Returns array('name' => safe filename, 'data' => bytes) or a string error message.
+	static function ValidateImportImage($dataUri, $manufacturerID, $manufacturerName, $model, $side){
+		$maxBytes = 2 * 1024 * 1024;
+		$allowed  = array(
+			'image/jpeg'    => 'jpg',
+			'image/png'     => 'png',
+			'image/gif'     => 'gif',
+			'image/svg+xml' => 'svg',
+		);
+
+		if(!is_string($dataUri) ||
+			!preg_match('#^data:image/[a-z0-9.+-]{1,20};base64,([A-Za-z0-9+/=\s]+)$#i', $dataUri, $m)){
+			return __("Invalid image data in template file");
+		}
+		$bytes = base64_decode($m[1], true);          // strict decode
+		if($bytes === false || $bytes === '' || strlen($bytes) > $maxBytes){
+			return __("Invalid or oversized image in template file");
+		}
+
+		// Trust the bytes, never the declared MIME type or extension
+		$mime = (new finfo(FILEINFO_MIME_TYPE))->buffer($bytes);
+		if(!isset($allowed[$mime]) && in_array($mime, array('text/xml','text/plain','application/xml'), true)
+			&& stripos($bytes, '<svg') !== false){
+			$mime = 'image/svg+xml';
+		}
+		if(!isset($allowed[$mime])){
+			return __("Unsupported image type in template file");
+		}
+
+		if($mime === 'image/svg+xml'){
+			if(!class_exists('\enshrined\svgSanitize\Sanitizer') || preg_match('/<!ENTITY/i', $bytes)){
+				return __("SVG images cannot be imported");
+			}
+			$sanitizer = new \enshrined\svgSanitize\Sanitizer();
+			$sanitizer->removeRemoteReferences(true);
+			$sanitizer->removeXMLTag(true);
+			$bytes = $sanitizer->sanitize($bytes);
+			if($bytes === false || stripos($bytes, '<svg') === false){
+				return __("SVG image could not be validated");
+			}
+		}else{
+			$info = @getimagesizefromstring($bytes);
+			if($info === false || $info['mime'] !== $mime){
+				return __("Image content does not match its declared type");
+			}
+		}
+
+		// Filename is built only from whitelisted characters plus the detected extension
+		$slug = function($s){
+			$s = trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', (string)$s), '-');
+			return substr($s !== '' ? $s : 'x', 0, 60);
+		};
+		$name = intval($manufacturerID).'.'.$slug($manufacturerName).'-'.$slug($model)
+			.'-'.$side.'.'.$allowed[$mime];
+
+		return array('name' => $name, 'data' => $bytes);
+	}
+
+	// Write a validated image into the picture directory. Never overwrites, never escapes the directory.
+	static function WriteImportImage($name, $data){
+		global $config;
+		$dir = realpath($config->ParameterArray['picturepath']);
+		if($dir === false || !is_dir($dir) || !is_writable($dir)){
+			return false;
+		}
+		$target = $dir.DIRECTORY_SEPARATOR.basename($name);
+		if(file_exists($target)){
+			return true;                               // same behavior as before: keep existing file
+		}
+		$fh = @fopen($target, 'xb');                   // 'x' fails if the file appears in the meantime
+		if(!$fh){
+			return false;
+		}
+		$ok = (fwrite($fh, $data) === strlen($data));
+		fclose($fh);
+		@chmod($target, 0644);
+		return $ok;
+	}
+
+
 }
 
 ?>
