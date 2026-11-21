@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openDCIM\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-18 08:21-0600\n"
+"POT-Creation-Date: 2026-11-21 01:48-0600\n"
 "Language: pt-br\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2562,7 +2562,7 @@ msgid "Update Devices"
 msgstr "Atualizar equipamentos"
 
 #: device_templates.php:945 devices.php:2379 devices.php:2649
-#: classes/DeviceTemplate.class.php:591 classes/DeviceTemplate.class.php:595
+#: classes/DeviceTemplate.class.php:589 classes/DeviceTemplate.class.php:593
 msgid "Front"
 msgstr "Frente"
 
@@ -2571,7 +2571,7 @@ msgstr "Frente"
 #: report_cabinets.php:180 report_cabinets.php:252 report_cabinets.php:293
 #: rowview.php:92 classes/Device.class.php:2211 classes/Device.class.php:2215
 #: classes/Device.class.php:2316 classes/Device.class.php:2319
-#: classes/DeviceTemplate.class.php:591 classes/DeviceTemplate.class.php:595
+#: classes/DeviceTemplate.class.php:589 classes/DeviceTemplate.class.php:593
 msgid "Rear"
 msgstr "Traseira"
 
@@ -6081,12 +6081,18 @@ msgstr "Value"
 msgid "Alert Level"
 msgstr "Alert Level"
 
-#: classes/DeviceTemplate.class.php:572
+#: classes/DeviceTemplate.class.php:530 classes/DeviceTemplate.class.php:559
+#: classes/DeviceTemplate.class.php:570
 #, fuzzy
 msgid "Import Error"
 msgstr "Registos de importação"
 
-#: classes/DeviceTemplate.class.php:573
+#: classes/DeviceTemplate.class.php:531
+#, fuzzy
+msgid "Template file is not valid"
+msgstr "Arquivo de modelo importado"
+
+#: classes/DeviceTemplate.class.php:571
 msgid ""
 "An error has occurred creating the template.<br>Possibly there is already a "
 "template of the same manufacturer and model"
@@ -6094,43 +6100,76 @@ msgstr ""
 "An error has occurred creating the template.<br>Possibly there is already a "
 "template of the same manufacturer and model"
 
-#: classes/DeviceTemplate.class.php:590 classes/DeviceTemplate.class.php:594
-#: classes/DeviceTemplate.class.php:618 classes/DeviceTemplate.class.php:636
-#: classes/DeviceTemplate.class.php:647 classes/DeviceTemplate.class.php:651
-#: classes/DeviceTemplate.class.php:664 classes/DeviceTemplate.class.php:668
+#: classes/DeviceTemplate.class.php:588 classes/DeviceTemplate.class.php:592
+#: classes/DeviceTemplate.class.php:616 classes/DeviceTemplate.class.php:634
+#: classes/DeviceTemplate.class.php:645 classes/DeviceTemplate.class.php:649
+#: classes/DeviceTemplate.class.php:662 classes/DeviceTemplate.class.php:666
+#: classes/DeviceTemplate.class.php:672 classes/DeviceTemplate.class.php:676
 #, fuzzy
 msgid "Import Warning"
 msgstr "Alerta de Energia"
 
-#: classes/DeviceTemplate.class.php:591
+#: classes/DeviceTemplate.class.php:589
 #, fuzzy, php-format
 msgid "An error has occurred creating the slot %s"
 msgstr "Ocorreu um erro, Modelo não foi criado"
 
-#: classes/DeviceTemplate.class.php:595
+#: classes/DeviceTemplate.class.php:593
 #, php-format
 msgid "Ignored slot %s"
 msgstr "Ignored slot %s"
 
-#: classes/DeviceTemplate.class.php:619
+#: classes/DeviceTemplate.class.php:617
 #, fuzzy, php-format
 msgid "An error has occurred creating the color code %s"
 msgstr "Ocorreu um erro, Modelo não foi criado"
 
-#: classes/DeviceTemplate.class.php:637
+#: classes/DeviceTemplate.class.php:635
 #, fuzzy, php-format
 msgid "An error has occurred creating the media type %s"
 msgstr "Ocorreu um erro, Modelo não foi criado"
 
-#: classes/DeviceTemplate.class.php:648 classes/DeviceTemplate.class.php:665
+#: classes/DeviceTemplate.class.php:646 classes/DeviceTemplate.class.php:663
 #, fuzzy, php-format
 msgid "An error has occurred creating the port %s"
 msgstr "Ocorreu um erro, Modelo não foi criado"
 
-#: classes/DeviceTemplate.class.php:652 classes/DeviceTemplate.class.php:669
+#: classes/DeviceTemplate.class.php:650 classes/DeviceTemplate.class.php:667
 #, fuzzy, php-format
 msgid "Ignored port %s"
 msgstr "Relatórios de inventário"
+
+#: classes/DeviceTemplate.class.php:673
+msgid "Front image could not be saved"
+msgstr ""
+
+#: classes/DeviceTemplate.class.php:677
+msgid "Rear image could not be saved"
+msgstr ""
+
+#: classes/DeviceTemplate.class.php:763
+msgid "Invalid image data in template file"
+msgstr ""
+
+#: classes/DeviceTemplate.class.php:767
+msgid "Invalid or oversized image in template file"
+msgstr ""
+
+#: classes/DeviceTemplate.class.php:777
+msgid "Unsupported image type in template file"
+msgstr ""
+
+#: classes/DeviceTemplate.class.php:782
+msgid "SVG images cannot be imported"
+msgstr ""
+
+#: classes/DeviceTemplate.class.php:789
+msgid "SVG image could not be validated"
+msgstr ""
+
+#: classes/DeviceTemplate.class.php:794
+msgid "Image content does not match its declared type"
+msgstr ""
 
 #: classes/PowerDistribution.class.php:524
 msgid "Data Center Power Alerts Report"
